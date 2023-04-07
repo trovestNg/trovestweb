@@ -1,0 +1,71 @@
+@keyframes opacityBg {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+.tableicon:hover {
+	display: block;
+	color: red;
+}
+
+.hide {
+	display: none;
+}
+
+.container {
+	background-color: #fff;
+	animation: opacityBg ease-in 1s;
+}
+
+.col1 {
+	background-color: rgb(255, 255, 255);
+}
+.pic {
+	display: flex;
+	width: 150px;
+	height: 150px;
+	border-radius: 75px;
+	justify-content: center;
+	align-items: center;
+}
+.opList {
+	list-style: none;
+	text-decoration: none;
+	font-family: Montserrat-Thin;
+	font-size: 0.9em;
+}
+
+.opLists:hover {
+	background-color: #4148c7;
+	cursor: pointer;
+}
+
+.col2 {
+	background-color: rgb(255, 255, 255);
+}
+
+.col3 {
+	background-color: rgb(255, 0, 102);
+}
+
+@media screen and (max-width: 574px) {
+	.container {
+		background-color: rgb(255, 255, 255);
+	}
+
+	.col1 {
+		background-color: green;
+	}
+
+	.col2 {
+		background-color: #fff;
+	}
+
+	.col3 {
+		background-color: #292222;
+	}
+}

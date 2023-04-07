@@ -1,0 +1,211 @@
+.container>div {
+    width: 97%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+.profile {
+    display: flex;
+    justify-content: center;
+    width: 97%;
+    margin-top: 2em;
+}
+
+.profile img {
+    width: 6.85em;
+    height: 6.85em;
+    border-radius: 100%;
+    margin-left: .8em;
+}
+
+.data {
+    display: flex;
+    justify-self: flex-start;
+    flex-direction: column;
+    width: 100%;
+    padding-left: 1em;
+}
+
+.data h3 {
+    color: var(--text-color);
+    font-family: var(--MoolBoran);
+    font-weight: var(--regular);
+    font-size: 2em;
+    margin-bottom: -.3em;
+}
+
+.data h4 {
+    color: var(--text-color);
+    font-family: var(--Montserrat);
+    font-weight: var(--semiBold);
+    font-size: .8125em;
+    margin-bottom: .7em;
+}
+
+.agentData {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.profiledetails {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* align-items: center; */
+    width: 80%;
+}
+
+.profiledetails2 {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.profiledetails img {
+    width: .9em;
+    height: .809375em;
+}
+
+.profiledetails h3 {
+    color: var(--white);
+    font-family: var(--Montserrat);
+    font-weight: var(--regular);
+    font-size: 1.1875em;
+    margin-bottom: .1em;
+    margin-top: 1em;
+    text-align: left;
+}
+
+.profiledetails h5 {
+    width: 100%;
+    color: var(--white);
+    font-family: var(--Montserrat);
+    font-weight: var(--regular);
+    font-size: 1.5em;
+    margin-bottom: -.6em;
+    text-align: left;
+}
+
+.profiledetails p {
+    width: 100%;
+    color: var(--white);
+    font-family: var(--MoolBoran);
+    font-weight: var(--regular);
+    font-size: 2.375em;
+    margin-bottom: -.8em;
+}
+
+.transaction {
+    padding: 0em .7em;
+    margin-top: 2em;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 97%;
+}
+
+.transaction h3 {
+    color: var(--text-color);
+    font-family: var(--MoolBoran);
+    font-weight: var(--regular);
+    font-size: 2em;
+    margin-bottom: -.8em;
+}
+
+.transaction img {
+    width: 1em;
+    height: .809375em;
+}
+
+.deposit, .withdrawn {
+    padding: 0em .7em;
+    margin-top: 2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--light-gray);
+    height: 3.1875em;
+    width: 9.875em;
+}
+
+.withdrawn {
+    background-color: var(--dark-blue);
+}
+
+.deposit h3, .withdrawn h3 {
+    color: var(--white);
+    font-family: var(--MoolBoran);
+    font-weight: var(--regular);
+    font-size: 1.5em;
+    text-align: center;
+    margin-bottom: -.5em;
+}
+
+.transaction1 {
+    background-color: var(--tro-gray);
+    padding: 1em .7em;
+    margin-top: 2em;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 97%;
+}
+
+.transaction1 h3 {
+    color: var(--black);
+    font-family: var(--Montserrat);
+    font-weight: var(--semiBold);
+    font-size: .95em;
+    text-align: left;
+}
+
+@media screen and (min-width: 400px) {
+
+    .window {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+        flex-direction: column
+    }
+}
+
+@media screen and (min-width: 582px) {
+    .window {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+@media screen and (min-width: 712px) {
+    .container {
+        display: flex;
+        justify-items: center;
+        align-items: center;
+        flex-direction: column;
+        margin-bottom: 9em
+    }
+
+    .container>div {
+        width: 700px;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .window {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+    }
+}

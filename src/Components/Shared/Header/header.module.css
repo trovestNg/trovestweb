@@ -1,0 +1,148 @@
+.headerViewNone {
+    display: none;
+    transition: all 500ms;
+}
+
+.headerView {
+    display: flex;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    flex-direction: column;
+    height: 100vh;
+    background-color: var(--white);
+    transition: all 500ms;
+    z-index: 9999;
+}
+
+.harmburger {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-self: flex-start;
+    align-items: center;
+    margin-bottom: 1em;
+}
+
+.logo {
+    width: 7.5em;
+    height: 2.1em;
+}
+
+.harmburgerView {
+    cursor: pointer;
+    padding: .2em 1.2em;
+    padding-top: 2em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border-radius: .2em;
+    transition: all 500ms;
+}
+
+.close {
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.header {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 500ms;
+}
+
+nav {
+    display: block;
+}
+
+nav ul {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+nav ul li {
+    text-decoration: none;
+    list-style: none;
+    padding: 0em .5em;
+    margin: 1em 0em;
+    text-align: center;
+}
+
+nav ul li a {
+    text-decoration: none;
+    font-family: var(--Montserrat);
+    font-size: .875em;
+    font-weight: var(--semiBold);
+    color: var(--tro-brown);
+    cursor: pointer;
+    padding-bottom: .2em;
+    transition: all .5s;
+}
+
+.connect {
+    text-decoration: none;
+    list-style: none;
+    padding: .6em 3em;
+    margin: 1em 0em;
+    text-align: center; 
+    background-color: var(--tro-brown);
+    border-radius: 1.7em;
+}
+
+.connect a{
+    color: var(--white); 
+}
+
+/* nav ul li a:hover {
+    border-bottom: 2px solid var(--white);
+} */
+
+@media screen and (min-width: 600px) {
+    .harmburger {
+        display: none;
+    }
+
+    .headerViewNone {
+        display: inline-block;
+    }
+
+    nav {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        padding-left: 1em;
+        margin-top: 1em;
+    }
+
+    nav ul {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        padding-left: 1em;
+    }
+
+    nav ul li a {
+        text-decoration: none;
+        font-family: var(--Montserrat);
+        font-size: .94em;
+        font-weight: var(--semiBold);
+        color: var(--tro-blue);
+        padding-bottom: .2em;
+        margin: .4em;
+        transition: border-bottom .5s;
+    }
+
+    nav ul li a:hover {
+        border-bottom: 2px solid var(--tro-blue);
+    }
+}
