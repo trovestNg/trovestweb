@@ -35,10 +35,8 @@
     "generate": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "pushmain": "git push -u trovestajoadmin main",
-    "trovest": "git push -u trovestweb",
-    "pushdev": "git push -u trovestajoadmin dev",
-    "dashboard": "git push -u trovestajoadmin dashboard"
+    "main": "git push -u trovestweb main",
+    "pushdev": "git push -u trovestajoadmin dev"
   },
   "eslintConfig": {
     "extends": [
