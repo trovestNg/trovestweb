@@ -37,6 +37,8 @@ const AdminDashboard = () => {
   const userType = localStorage.getItem(user_storage_type);
   const [refreshData, setRefreshData] = useState();
   const [admin, setadmin] = useState({});
+  const [agents, setAgents] = useState([]);
+  const [totalCollections, setTotalCollections] = useState('')
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setloading] = useState(false);
@@ -52,8 +54,8 @@ const AdminDashboard = () => {
   const financeReport = [
     {
       icon: "bi bi-arrow-down",
-      title: "Total Revenue",
-      amount: 500,
+      title: "Total Collections",
+      amount: convertToThousand(totalCollections),
       startDate: moment(admin?.createdAt).format('DD-MM-YYYY'),
       endDate: new Date(),
     },
@@ -123,9 +125,15 @@ const AdminDashboard = () => {
 
 
   const getAdminRegAgents = async ()=>{
+    setloading(true)
     const payload = { page : page, limit : limit, token :token } ;
     const res = await getAdminAgents(payload);
     console.log({res})
+    if (res?.data?.success){
+      setAgents(res?.data?.data?.agents?.docs);
+      setTotalCollections(res?.data?.data?.total_revenue);
+      setloading(false)
+    }
   }
 
   const searchAgentByName =()=>{
@@ -150,8 +158,10 @@ const AdminDashboard = () => {
       {/* side bar */}
       <AdminSideNav adminInfo={admin}/>
       {/* page */}
-      <Col xs={10} className={`${Styles.col2} min-vh-100`}>
-        {/* navbar constant */}
+      <Col xs={10} className={`${Styles.col2} min-vh-100 d-flex flex-column justify-content-center align-items-center`}>
+        {
+          loading? <Spinner/> :
+          <>
         <Row
           className="w-100 m-0 px-2 bg-white shadow-sm mb-3"
           style={{ height: "5em" }}
@@ -313,7 +323,7 @@ const AdminDashboard = () => {
               </Col>
             </Row>
             {
-            loading? <Spinner/> : <AdminAgentTable data={[1,2,3]}/>
+            loading? <Spinner/> : <AdminAgentTable data={agents}/>
           }</Card>
         </Row>
 
@@ -334,7 +344,8 @@ const AdminDashboard = () => {
           off={() => setFinconCreateModal(!finconCreateModal)}
           fetchService={fetchService}
         /> */}
-
+        </>
+}
       </Col>
     </Container>
   );

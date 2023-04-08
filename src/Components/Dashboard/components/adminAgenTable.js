@@ -36,7 +36,7 @@ const AdminAgentTable = ({ data, loading, agents }) => {
                                 <th scope="col">Name</th>
                                 <th scope="col">Phone Number</th>
                                 <th scope="col">Email</th>
-                                <th scope="col">Amount Generated</th>
+                                <th scope="col">No of Customers</th>
                                 <th scope="col" >
                                 </th>
                             </tr>
@@ -52,7 +52,7 @@ const AdminAgentTable = ({ data, loading, agents }) => {
                                         <td>{`${agent.first_name} ${agent?.last_name}`}</td>
                                         <td>{`${agent?.mobile}`}</td>
                                         <td>{agent?.email}</td>
-                                        <td>{`${Naira} ${calculateEachAdmiGeneratedAmount(agent?._id, agents)}`}</td>
+                                        <td>{agent?.artisans.length}</td>
                                         {/* <td>{`${Naira} ${100000 * Math.random(10).toExponential(2)}`}</td> */}
                                         <td className={`${Styles.tableicon}`}>
                                             <i className="bi bi-three-dots-vertical"></i>
