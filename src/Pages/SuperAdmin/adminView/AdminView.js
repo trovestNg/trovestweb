@@ -45,7 +45,7 @@ export default function AdminView() {
   const dispatch = useDispatch();
   const [totalItem, setTotalItem] = useState({ totalDocs: 0, count: 0, itemsPerPage: 0, currentPage: 0, totalPages: 0 });
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(50);
   const navigate = useNavigate();
   const { auth } = useSelector((state) => state);
   const [openModal, setopenModal] = useState(false);
@@ -247,9 +247,18 @@ console.log({superHereNow:res})
                     fontFamily: "Montserrat-Bold",
                     
                   }}
-                  className="px-4 m-0 mt-4 text-success "
+                  className="px-4 m-0 mt-4 text-primary "
                 >
-                  {`Revenue Made : ${Naira} ${totalRev} `}
+                  {`Total Agents Collection : ${Naira} ${totalRev} `}
+                </p>
+                <p 
+                  style={{
+                    fontFamily: "Montserrat-Bold",
+                    
+                  }}
+                  className="px-4 m-0 mt-2 text-success "
+                >
+                  {`Total Agents Deposit : ${Naira} ${totalRev} `}
                 </p>
 
                 <p
@@ -257,7 +266,7 @@ console.log({superHereNow:res})
                     fontFamily: "Montserrat-Bold",
                     
                   }}
-                  className="px-4 text-secondary m-0"
+                  className="px-4 text-secondary m-0 mt-2" 
                 >
                   {`Amount Paid Out : ${Naira} 0 `}
                 </p>

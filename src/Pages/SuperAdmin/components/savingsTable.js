@@ -3,9 +3,11 @@ import { Alert, Card, ListGroup, Spinner, Row } from "react-bootstrap";
 import Styles from './md.module.css';
 import { Naira } from "../../../config";
 import { useNavigate } from "react-router-dom";
+import moment from "moment";
 
 const SavingsTable = ({ data, agents }) => {
     const navigate = useNavigate();
+    
 
     function calculateEachAdmiGeneratedAmount(admin_id, data) {
         let total = 0;
@@ -40,15 +42,15 @@ const SavingsTable = ({ data, agents }) => {
                         </thead>
                         <tbody>
                             {
-                                data?.map((agent, index) => (
-                                    <tr onClick={() => navigate(`/super-admin/agent/${agent._id}`)}
+                                data?.map((thrift, index) => (
+                                    <tr 
                                         key={index +21}
                                         style={{ cursor: 'pointer' }}
                                     >
                                         <th scope="row">{index + 1}</th>
-                                        <td>{`${agent?.first_name} ${agent?.last_name}`}</td>
-                                        <td>{`${Naira} ${calculateEachAdmiGeneratedAmount(agent?._id, agents)}`}</td>
-                                        <td>{`${agent?.mobile}`}</td>
+                                        <td>{moment(thrift?.date_paid).format('DD-MM-YYYY')}</td>
+                                        <td>{`${Naira} ${thrift?.amount}`}</td>
+                                        <td>{`${thrift?._id}`}</td>
                                         
                                         {/* <td>{`${Naira} ${100000 * Math.random(10).toExponential(2)}`}</td> */}
                                         <td className={`${Styles.tableicon}`}>
