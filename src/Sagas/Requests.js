@@ -99,7 +99,7 @@ export const superAdminGetArtisan = (payload) => {
 };
 
 // This function searchs for admin
-//working fine but does not filter the searched word exclusive to the admin Id
+//working fine but update to filter search result to admin Id and let it come with same data as original
 export const superAdminSearchAdmin = (payload) => {
 	const { token, page, limit, name } = payload;
 	headers.authorization = `Bearer ${token}`;
