@@ -61,8 +61,7 @@ export default function AgentView() {
   const [agentCollection, setAgentCollections] = useState();
   const [adminCreateModal, setAdminCreateModal] = useState(false);
   const [finconCreateModal, setFinconCreateModal] = useState(false);
-  const [finconCreateSuccessModal, setFinconCreateSuccessModal] =
-    useState(false);
+  const [finconCreateSuccessModal, setFinconCreateSuccessModal] = useState(false);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(100);
   const userType = localStorage.getItem(user_storage_type);
@@ -71,6 +70,8 @@ export default function AgentView() {
   const token = localStorage.getItem(user_storage_token);
   const agentCustomers = superAdminAdminData?.client?.docs;
   const specificAgent = superAdminAdminData?.agent;
+
+  // console.log({idHere:})
 
   const navActions = [
     { icon: "bi bi-envelope-fill", name: "Dashboard" },
@@ -107,7 +108,7 @@ export default function AgentView() {
  
 
   const loadAgentData = async () => {
-    
+    setloading(true)
     const payload = {
       page: page,
       limit: limit,
@@ -115,7 +116,7 @@ export default function AgentView() {
       agent_id: agentId,
     };
     const res = await superAdminGetAgentArtisans(payload);
-    console.log({ responsehereNow: res });
+    console.log(res?.data?.data?.client?.docs );
 
     if (res?.data?.success) {
       setAgentInfo(res?.data?.data?.agent);
@@ -133,14 +134,14 @@ export default function AgentView() {
 
   const searchArtisan = async () => {
     const payload = {
-      token: token,
       agent_id: agentId,
       name : userInput,
       page : page,
       limit :limit,
+      token: token
     };
     const res = await superAdminSearchArtisans(payload);
-    console.log({ searched : res });
+    console.log(res);
     if (res?.data?.success) {
       setArtisans(res?.data?.data?.docs);
     }
@@ -160,17 +161,6 @@ export default function AgentView() {
     return navigate("/");
   };
 
-  const totalVal = ()=>{
-let totalRev = 0
-   
-
-
-
-    return totalRev;
-
-  }
-
-  console.log({summationHere: agentInfo});
 
  
 
@@ -269,11 +259,17 @@ loading?<Spinner/> :
                   style={{ fontFamily: "Montserrat-Bold" }}
                   className="px-1 m-0 mt-2 text-success "
                 >
-                  {`Revenue Made : ${Naira} ${agentRevenue}`}
+                  {`Total Collections : ${Naira} ${agentRevenue}`}
                 </p>
                 <p
                   style={{ fontFamily: "Montserrat-Bold" }}
-                  className="px-1 m-0  text-danger "
+                  className="px-1 m-0 mt-2 text-primary "
+                >
+                  {`Total Deposits : ${Naira} ${agentRevenue}`}
+                </p>
+                <p
+                  style={{ fontFamily: "Montserrat-Bold" }}
+                  className="px-1 m-0 mt-2 text-danger "
                 >
                   {`Paid Out : ${Naira} ${agentInfo?.amount}`}
                 </p>

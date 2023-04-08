@@ -69,7 +69,14 @@ export default function SuperAdminDashboard() {
   const financeReport = [
     {
       icon: "bi bi-arrow-down",
-      title: "Total Revenue",
+      title: "Total Collections",
+      amount: revenue,
+      startDate: '23-01-2023',
+      endDate: new Date(),
+    },
+    {
+      icon: "bi bi-bank2",
+      title: "Total Deposits",
       amount: revenue,
       startDate: '23-01-2023',
       endDate: new Date(),
@@ -230,13 +237,13 @@ export default function SuperAdminDashboard() {
                 <>
                   <Col
                     xs={2}
-                    className="d-flex text-success justify-content-center"
+                    className="d-flex justify-content-center"
                   >
                     <i
                       className={report.icon}
                       style={{
                         fontSize: "1.5em",
-                        color: index != 0 ? "red" : "green",
+                        color: index === 0 ? "primary" : index === 1 ?  "green": index === 2 ? 'danger':'none',
                       }}
                     ></i>
                   </Col>
@@ -246,7 +253,7 @@ export default function SuperAdminDashboard() {
                     style={{ fontSize: "1em" }}
                   >
                     <Row
-                      className="w-100 d-flex  text-primary justify-content-center m-0 "
+                      className="w-100 d-flex  justify-content-center m-0 "
                       style={{
                         fontSize: "0.9em",
                         fontFamily: "Montserrat-Regular",
@@ -255,23 +262,25 @@ export default function SuperAdminDashboard() {
                       {report.title}
                     </Row>
                     <Row
-                      className="d-flex text-success justify-content-center m-0 "
+                      className="d-flex justify-content-center m-0 "
                       style={{ fontSize: "1.5em", fontFamily: "Ubuntu" }}
                     >
                       <div
                         className="p-0 d-flex m-0 w-100 flex-column align-items-center"
                         style={{
                           fontSize: "1em",
-                          color: index != 0 ? "red" : "green",
+                          color: index === 0 ? "primary" : index === 1 ? "green" : index === 2 ? "danger":"danger",
                         }}
                       >
+                       
                         {
+                          
                           report?.amount
                         }
                       </div>
                     </Row>
                     <Row
-                      className="w-100 text-primary d-flex justify-content-center m-0 "
+                      className="w-100  d-flex justify-content-center m-0 "
                       style={{
                         fontSize: "0.8em",
                         fontFamily: "Montserrat-Regular",

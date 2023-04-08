@@ -32,7 +32,7 @@ return total
                                 <th scope="col">Name</th>
                                 <th scope="col">Id</th>
                                 <th scope="col">Phone Number</th>
-                                
+                                <th scope="col">No of Customers</th>
                                 <th scope="col" >
                                 </th>
                             </tr>
@@ -48,6 +48,7 @@ return total
                                         <td>{`${agent?.first_name} ${agent?.last_name}`}</td>
                                         <td>{`${agent?.assigned_id}`}</td>
                                         <td>{agent?.mobile}</td>
+                                        <td>{agent?.artisans.length}</td>
                                         
                                         {/* <td>{`${Naira} ${100000 * Math.random(10).toExponential(2)}`}</td> */}
                                         <td className={`${Styles.tableicon}`}>

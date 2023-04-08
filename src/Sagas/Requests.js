@@ -127,11 +127,11 @@ export const superAdminSearchAgent = (payload) => {
 
 //working fine too but does not filter the searched word exclusive to the admin Id
 export const superAdminSearchArtisans = (payload) => {
-	const { token, page, limit, name } = payload;
+	const { token, page, limit, name, agent_id } = payload;
 	headers.authorization = `Bearer ${token}`;
 	const requestOptions = {
 		method: 'get',
-		url: `${baseUrl}/super/search-artisan?name=${name}&page=${page}&limit=${limit}`,
+		url: `${baseUrl}/super/search-artisan?name=${name}&page=${page}&limit=${limit}&agent_id=${agent_id}`,
 		headers: headers,
 	};
 	return axios(requestOptions);
