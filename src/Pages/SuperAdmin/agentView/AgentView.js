@@ -50,7 +50,9 @@ export default function AgentView() {
   const { auth } = useSelector((state) => state);
   const [searchClient, setSearchClient] = useState(false);
   const [agentInfo, setAgentInfo] = useState();
-  const [agentRevenue, setAgentRevenue] = useState()
+  const [allDeposits, setAllDeposits] = useState();
+  const [allCollections, setAllCollections] = useState();
+  const [allPayouts, setAllPayouts] = useState();
   const [artisans, setArtisans] = useState()
   const [admin, setadmin] = useState({});
   const [userInput, setUserInput] = useState('');
@@ -58,7 +60,6 @@ export default function AgentView() {
   const [superAdminAdminData, setSuperAdminAgentInfo] = useState();
   const [adminCreateSuccessModal, setAdminCreateSuccessModal] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
-  const [agentCollection, setAgentCollections] = useState();
   const [adminCreateModal, setAdminCreateModal] = useState(false);
   const [finconCreateModal, setFinconCreateModal] = useState(false);
   const [finconCreateSuccessModal, setFinconCreateSuccessModal] = useState(false);
@@ -121,7 +122,10 @@ export default function AgentView() {
     if (res?.data?.success) {
       setAgentInfo(res?.data?.data?.agent);
       setArtisans(res?.data?.data?.client?.docs);
-      setAgentRevenue(res?.data?.data?.total_revenue)
+      setAllCollections(res?.data?.data?.total_revenue);
+      setAllDeposits(res?.data?.data?.depoists);
+      setAllPayouts(res?.data?.data?.payouts);
+      
       setloading(false)
     }
   };
@@ -259,19 +263,19 @@ loading?<Spinner/> :
                   style={{ fontFamily: "Montserrat-Bold" }}
                   className="px-1 m-0 mt-2 text-success "
                 >
-                  {`Total Collections : ${Naira} ${agentRevenue}`}
+                  {`Total Collections : ${Naira} ${allCollections}`}
                 </p>
                 <p
                   style={{ fontFamily: "Montserrat-Bold" }}
                   className="px-1 m-0 mt-2 text-primary "
                 >
-                  {`Total Deposits : ${Naira} ${agentRevenue}`}
+                  {`Total Deposits : ${Naira} ${allDeposits}`}
                 </p>
                 <p
                   style={{ fontFamily: "Montserrat-Bold" }}
                   className="px-1 m-0 mt-2 text-danger "
                 >
-                  {`Paid Out : ${Naira} ${agentInfo?.amount}`}
+                  {`Paid Out : ${Naira} ${allPayouts}`}
                 </p>
                 <p
                   style={{ fontFamily: "Montserrat-Regular" }}

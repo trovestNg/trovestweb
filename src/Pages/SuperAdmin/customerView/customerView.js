@@ -47,6 +47,7 @@ export default function CustomerView() {
   const [admin, setadmin] = useState({});
   const [thrifts, setThrifts] = useState([]);
   const [totalSaved, setTotalSaved] = useState(0);
+  const [withdrawn, setWithdrawn] = useState(0)
   const [clientData, setClientData] = useState();
   
   
@@ -110,11 +111,13 @@ export default function CustomerView() {
     const payload ={ token :token, artisan_id : clientId }
     try {
       const res = await superAdminGetArtisan(payload);
-      console.log({here : res});
+      console.log(res);
 
       if (res?.data?.success) {
-        setClientData(res?.data?.data);
+        setClientData(res?.data?.data?.artisan);
         setThrifts(res?.data?.data?.thrifts);
+        setTotalSaved(res?.data?.data?.artisan?.total_savings);
+        setWithdrawn(res?.data?.data?.artisan?.total_payout)
         setloading(false);
       }
     } catch (error) {}
@@ -230,7 +233,7 @@ export default function CustomerView() {
                       }}
                       className="px-4 m-0 mt-4 text-success "
                     >
-                      {`Total Money Saved : ${Naira} ${calculateTotalSavings(clientData?.thrifts)} `}
+                      {`Total Money Saved : ${Naira} ${totalSaved} `}
                     </p>
 
                     <p
@@ -239,7 +242,7 @@ export default function CustomerView() {
                       }}
                       className="px-4 text-secondary m-0"
                     >
-                      {`Amount Withdrawn : ${Naira} 0 `}
+                      {`Amount Withdrawn : ${Naira} ${withdrawn}`}
                     </p>
                   </>
                 )}

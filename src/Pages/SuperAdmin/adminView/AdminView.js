@@ -52,7 +52,9 @@ export default function AdminView() {
   const [admin, setadmin] = useState({});
   const [adminAgents, setAdminAgents] = useState([])
   const [adminData, setAdminData] = useState();
-  const [totalRev, setTotalRev] = useState();
+  const [totalDeposits, setTotalDeposits] = useState();
+  const [totalCollections, setTotalCollections] = useState();
+  const [totalPayouts, setTotalPayouts] = useState();
   const [loading, setloading] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
   const [superAdminInfo, setSuperAdminInfo] = useState({});
@@ -130,10 +132,12 @@ if(res?.data?.success){
   
   setAdminData(res?.data?.data?.admin);
   setAdminAgents(res?.data?.data?.agents?.docs)
-  setTotalRev(res?.data?.data?.total_revenue)
+  setTotalCollections(res?.data?.data?.total_collections);
+  setTotalDeposits(res?.data?.data?.total_revenue);
+  setTotalPayouts(res?.data?.data?.total_payout);
   setloading(false)
 }
-console.log({superHereNow:res})
+console.log(res)
 }
 
 
@@ -249,7 +253,7 @@ console.log({superHereNow:res})
                   }}
                   className="px-4 m-0 mt-4 text-primary "
                 >
-                  {`Total Agents Collection : ${Naira} ${totalRev} `}
+                  {`Agents Collection : ${Naira} ${totalCollections} `}
                 </p>
                 <p 
                   style={{
@@ -258,7 +262,7 @@ console.log({superHereNow:res})
                   }}
                   className="px-4 m-0 mt-2 text-success "
                 >
-                  {`Total Agents Deposit : ${Naira} ${totalRev} `}
+                  {`Agents Deposit : ${Naira} ${totalDeposits} `}
                 </p>
 
                 <p
@@ -268,7 +272,7 @@ console.log({superHereNow:res})
                   }}
                   className="px-4 text-secondary m-0 mt-2" 
                 >
-                  {`Amount Paid Out : ${Naira} 0 `}
+                  {`Agents PayOut : ${Naira} ${totalPayouts} `}
                 </p>
             </>
             }

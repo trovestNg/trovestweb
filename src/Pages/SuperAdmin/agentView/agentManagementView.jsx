@@ -35,15 +35,6 @@ export default function AgentManagement() {
   const [openModal, setopenModal] = useState(false);
   
   const [admin, setadmin] = useState({});
-  const [superAdminInfo, setSuperAdminInfo] = useState({});
-  
-  
-  const [superAdminAdminData, setSuperAdminAdminData] = useState();
-  const [adminCreateSuccessModal, setAdminCreateSuccessModal] = useState(false);
-  const [adminCreateModal, setAdminCreateModal] = useState(false);
-  const [finconCreateModal, setFinconCreateModal] = useState(false);
-  const [finconCreateSuccessModal, setFinconCreateSuccessModal] =
-    useState(false);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(15);
 
