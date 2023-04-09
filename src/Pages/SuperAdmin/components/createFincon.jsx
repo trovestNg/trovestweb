@@ -98,7 +98,7 @@ const CreateFincon = ({ on, off, check, success, offSuccess, onSuccess, fetchSer
             <>
                 <Modal show={on} centered size='lg'>
                     <Modal.Header className="bg-secondary text-light">
-                        <Col>Create new admin</Col>
+                        <Col>Create new fincon</Col>
                         <Col onClick={off} className='d-flex px-3 justify-content-end'
                             style={{ cursor: 'pointer' }}
                         >X</Col>

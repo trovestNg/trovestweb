@@ -59,7 +59,7 @@ export default function AllCollections() {
             <Row className="w-100 mt-3">
                 <Col style={{ fontFamily: 'Montserrat', fontSize: '1em' }}>
                     <h1 style={{ fontSize: '1.5em' }}>
-                        All Remmitance Made
+                        All Collections Made
                     </h1>
                 </Col>
                 <Formik

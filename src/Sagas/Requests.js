@@ -31,7 +31,7 @@ export const createFinconAccount = (data, token) => {
 	headers['Content-Type'] = 'multipart/form-data';
 	const requestOptions = {
 		method: 'post',
-		url: `${baseUrl}/super/create-admin`,
+		url: `${baseUrl}/super/create-fincon`,
 		headers: headers,
 		data: data,
 	};

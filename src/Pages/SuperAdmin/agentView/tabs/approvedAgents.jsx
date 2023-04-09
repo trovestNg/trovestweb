@@ -3,11 +3,13 @@ import {
     Col, Row,InputGroup, Button,Spinner} from "react-bootstrap";
 import AgentMTable from "../agentMTable";
 import AgentTable from "../../components/agentTable";
+import AgentMaTable from "../agentMaTable";
 import RemmitanceTable from "../../components/remmitanceTable";
 import { Formik } from "formik";
 import * as yup from 'yup';
 import api from "../../../../app/controllers/endpoints/api";
 import { user_storage_token } from "../../../../config";
+import { superAdminSearchAgent } from "../../../../Sagas/Requests";
 
 export default function ApprovedAgents() {
     const [startDate, setStartDate] = useState('');
@@ -17,12 +19,16 @@ export default function ApprovedAgents() {
     const [searchLoading, setSearchLoading] = useState(false);
     const [searchByName, setSearchByName] = useState(false);
     const [allAgents, setAllAgents] = useState();
+
+    const [page,setPage] = useState(1);
+    const [limit,setLimit] = useState(50);
+    const [userInput,setUserInput] = useState('');
     
     const token = localStorage.getItem(user_storage_token);
 
     const fetch = async () => {
         if(searchByName){
-         
+         searchAgent()
         }
         else {
          fetchService();
@@ -31,7 +37,7 @@ export default function ApprovedAgents() {
 
     useEffect(()=>{
         fetch ()
-    },[]);
+    },[refreshData]);
 
     const fetchService = async () => {
         setLoading(true);
@@ -43,7 +49,7 @@ export default function ApprovedAgents() {
         }
       };
 
-      console.log({Now:allAgents})
+    //   console.log({Now:allAgents})
 
     const initialValue = {
         startDate : '',
@@ -55,13 +61,19 @@ export default function ApprovedAgents() {
         endDate : yup.string().required('Select end date')
     })
 
-    const handleDateSearch = (val)=>{
-        setStartDate(val?.startDate);
-        setEndDate(val?.endDate);
+    const handleAgentSearch = ()=>{
+        setSearchByName(true);
         setRefreshData(!refreshData);
     }
 
-    // console.log({start: startDate, end:endDate});
+    const searchAgent = async ()=>{
+        const payload ={ token : token, page:page, limit:limit, name:userInput }
+        const res = await superAdminSearchAgent(payload);
+        console.log(res);
+        if(res?.data?.success){
+            setAllAgents(res?.data?.data?.docs);
+        }
+    }
 
     
 
@@ -74,7 +86,7 @@ export default function ApprovedAgents() {
                 justify-content-space-between" style={{maxWidth:'16em',}}>
                   <input
                   type="search"
-                  
+                  onChange={(e)=>setUserInput(e.target.value)}
                     className="rounded border w-75 border-0 bg-transparent px-2"
                     placeholder="Search agent name"
                     style={{
@@ -83,7 +95,8 @@ export default function ApprovedAgents() {
                     }}
                   />
                   <button
-                
+                  onClick={()=>handleAgentSearch()}
+                disabled={userInput == ''}
                   className="text-light d-flex flex-column justify-content-center align-items-center
                   bg-primary w-25 h-100 m-0 p-1 py-2 rounded-right"
                   >{
@@ -98,7 +111,7 @@ export default function ApprovedAgents() {
                 {/* <Formik
                 initialValues={initialValue}
                 validationSchema={validationSchema}
-                onSubmit={(val)=>handleDateSearch(val)}
+                onSubmit={(val)=>handleAgentSearch(val)}
                 >
                     
                 {({handleChange, handleSubmit,errors})=>
@@ -133,7 +146,7 @@ export default function ApprovedAgents() {
                 }
                 </Formik> */}
             </Row>
-            <AgentTable data={allAgents} />
+            <AgentMaTable data={allAgents} />
         </>
     )
 }

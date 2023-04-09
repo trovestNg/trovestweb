@@ -62,7 +62,8 @@ export default function SuperAdminDashboard() {
     { icon: "bi bi-bell-fill", name: "Add Fin Con" },
   ];
 
-  const revenue = convertToThousand(superAdminInfo?.total_revenue);
+  const collections = convertToThousand(superAdminInfo?.total_collections);
+  const deposits = convertToThousand(superAdminInfo?.total_remmitance);
   const payouts = convertToThousand(superAdminInfo?.total_payout);
   const admins  = superAdminInfo?.superadmin?.admin
 
@@ -70,14 +71,14 @@ export default function SuperAdminDashboard() {
     {
       icon: "bi bi-arrow-down",
       title: "Total Collections",
-      amount: revenue,
+      amount: collections,
       startDate: '23-01-2023',
       endDate: new Date(),
     },
     {
       icon: "bi bi-bank2",
       title: "Total Deposits",
-      amount: revenue,
+      amount: deposits,
       startDate: '23-01-2023',
       endDate: new Date(),
     },
@@ -311,10 +312,11 @@ export default function SuperAdminDashboard() {
         
         <CreateFincon
           on={finconCreateModal}
+          off={() => setFinconCreateModal(false)}
           success={finconCreateSuccessModal}
           onSuccess={()=>setFinconCreateSuccessModal(true)}
           offSuccess={offFSuccessModal}
-          off={() => setFinconCreateModal(!finconCreateModal)}
+          
           fetchService={fetchService}
         />
         </>
