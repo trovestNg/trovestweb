@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
-    Col, Row,InputGroup, Button,} from "react-bootstrap";
+    Col, Row,InputGroup, Button, Spinner,} from "react-bootstrap";
 import RemmitanceTable from "../../components/remmitanceTable";
 import { Formik } from "formik";
 import * as yup from 'yup';
@@ -32,9 +32,11 @@ export default function AllRemittance() {
     }
 
     const fetch = async ()=>{
+      setLoading(true)
 const res =await api.get('/super/all-collections?page=1&limit=30', token)
 if (res?.data?.success) {
     setAllRemittance(res?.data?.data?.deposit);
+    setLoading(false)
     
   }
 
@@ -65,7 +67,8 @@ console.log({okkkk:res})
                 onSubmit={(val)=>handleDateSearch(val)}
                 >
                     
-                {({handleChange, handleSubmit,errors})=>
+                {
+                ({handleChange, handleSubmit,errors})=>
                 (
                 <Col className="d-flex align-items-center gap-2 justify-content-end">
                     <InputGroup
@@ -116,7 +119,12 @@ console.log({okkkk:res})
                 }
                 </Formik>
             </Row>
-            <RemmitanceTable data={allRemittance} />
+            <Row className="w-100 d-flex justify-content-center mt-3">
+              {
+                loading? <Spinner/> :  <RemmitanceTable data={allRemittance} />
+              }
+            </Row>
+           
         </>
     )
 }

@@ -98,6 +98,7 @@ export default function ACustomerView() {
     }
   };
 
+
   console.log(client_id);
 
   const fetch = () => {
@@ -235,7 +236,7 @@ export default function ACustomerView() {
                       }}
                       className="px-4 m-0 mt-4 text-success "
                     >
-                      {`Total Money Saved : ${Naira} ${totalSaved} `}
+                      {`Total Money Saved : ${Naira} ${calculateTotalSavings(thrifts)} `}
                     </p>
 
                     <p
@@ -336,14 +337,14 @@ export default function ACustomerView() {
                       <Col className="d-flex align-items-center gap-2 justify-content-end">
                         <InputGroup
                           className="d-flex align-items-center border rounded justify-content-center gap-2"
-                          style={{ maxWidth: "13em" }}
+                          style={{ maxWidth: "13em", minHeight:'2em' }}
                         >
                           <label htmlFor="startDate">From :</label>
                           <input
                             onChange={handleChange}
                             name="startDate"
                             type="date"
-                            className="h-100 border border-0 outline py-1 bg-transparent"
+                            className="h-100 border border-0 outline py-1 bg-transparent d-flex align-items-center"
                             style={{ outline: "none" }}
                           />
                         </InputGroup>
@@ -357,7 +358,7 @@ export default function ACustomerView() {
                             onChange={handleChange}
                             name="endDate"
                             type="date"
-                            className="h-100 border border-0 outline py-1 bg-transparent"
+                            className="h-100 border border-0 outline py-1 bg-transparent d-flex align-items-center"
                             style={{ outline: "none" }}
                           />
                         </InputGroup>
