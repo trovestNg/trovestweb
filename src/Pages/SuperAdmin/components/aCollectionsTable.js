@@ -3,8 +3,9 @@ import { Alert, Card, ListGroup, Spinner, Row } from "react-bootstrap";
 import Styles from './md.module.css';
 import { Naira } from "../../../config";
 import { useNavigate } from "react-router-dom";
+import moment from "moment";
 
-const PayoutTable = ({ data, agents }) => {
+const ACollectionsTable = ({ data, agents }) => {
     const navigate = useNavigate();
 
     function calculateEachAdmiGeneratedAmount(admin_id, data) {
@@ -21,8 +22,8 @@ const PayoutTable = ({ data, agents }) => {
         return total?.toLocaleString()
     }
     return (
-        <div className="w-100 d-flex flex-column justify-content-center align-items-center mt-5">
-            {data?.length <= 0 ? <p className="text-secondary" style={{ fontFamily: 'Montserrat-SemiBold' }}>No payouts at this time </p>
+        <div className="w-100 d-flex flex-column justify-content-center align-items-center">
+            {data?.length <= 0 ? <p className="text-secondary" style={{ fontFamily: 'Montserrat-SemiBold' }}>This Admin Has Not Registered Any Agent </p>
 
                 : (
                     <>
@@ -32,10 +33,10 @@ const PayoutTable = ({ data, agents }) => {
                             <tr style={{ fontFamily: 'Montserat-Regular', fontSize: '0.9em' }}>
                                 <th scope="col">#</th>
                                 <th scope="col">Date</th>
-                                <th scope="col">Client name</th>
+                                <th scope="col">Agent Name</th>
+                                <th scope="col">Client Name</th>
                                 <th scope="col">Amount</th>
-                                <th scope="col">Ref Id</th>
-                                
+                                <th scope="col">Ref No</th>
                                 <th scope="col" >
                                 </th>
                             </tr>
@@ -43,15 +44,16 @@ const PayoutTable = ({ data, agents }) => {
                         <tbody>
                             {
                                 data?.map((agent, index) => (
-                                    <tr 
+                                    <tr
                                         key={index +21}
                                         style={{ cursor: 'pointer' }}
                                     >
                                         <th scope="row">{index + 1}</th>
-                                        <td>{`${agent?.first_name} ${agent?.last_name}`}</td>
-                                        <td>{`${agent?.mobile}`}</td>
-                                        <td>{`${Naira} ${calculateEachAdmiGeneratedAmount(agent?._id, agents)}`}</td>
-                                        <td>{`${agent?.mobile}`}</td>
+                                        <td>{moment(agent?.updatedAt).format('DD-MM-YYYY')}</td>
+                                        <td>{`${agent?.agent_id?.first_name} ${agent?.agent_id?.last_name}`}</td>
+                                        <td>{`${agent?.location}`}</td>
+                                        <td>{`${agent?.total}`}</td>
+                                        <td>{`${agent?.payment_reference}`}</td>
                                         
                                         {/* <td>{`${Naira} ${100000 * Math.random(10).toExponential(2)}`}</td> */}
                                         <td className={`${Styles.tableicon}`}>
@@ -69,4 +71,4 @@ const PayoutTable = ({ data, agents }) => {
        
     )
 }
-export default PayoutTable;
+export default ACollectionsTable ;

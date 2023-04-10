@@ -133,7 +133,7 @@ if(res?.data?.success){
   setAdminData(res?.data?.data?.admin);
   setAdminAgents(res?.data?.data?.agents?.docs)
   setTotalCollections(res?.data?.data?.total_collections);
-  setTotalDeposits(res?.data?.data?.total_revenue);
+  setTotalDeposits(res?.data?.data?.total_remmitance);
   setTotalPayouts(res?.data?.data?.total_payout);
   setloading(false)
 }
