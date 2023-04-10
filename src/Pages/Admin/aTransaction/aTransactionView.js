@@ -23,7 +23,9 @@ import CreateFincon from "../components/createFincon";
 import api from "../../../app/controllers/endpoints/api";
 import moment from "moment";
 import DefaultTable from "../../../Components/Dashboard/components/defaultTable";
-import SuperSideNav from "../components/supersidebar";
+import SuperSideNav from "../../SuperAdmin/components/supersidebar";
+import AdminSideNav from "../components/adminsidebar";
+import "./tabs.module.css";
 import {
   superAdminGetAdminAgents,
   getAdminAgentCollection,
@@ -35,7 +37,7 @@ import Payouts from "./tabs/payouts";
 
 const userType = localStorage.getItem(user_storage_type);
 
-export default function TransactionView() {
+export default function ATransactionView() {
   const [refreshData, setRefreshData] = useState();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -65,7 +67,7 @@ export default function TransactionView() {
   ];
 
   const fetch = async () => {
-    console.log(';ok');
+   console.log('ok')
   };
 
   useEffect(() => {
@@ -73,11 +75,12 @@ export default function TransactionView() {
   }, [!refreshData]);
 
   const checkToken = () => {
+
     const userData = localStorage.getItem(user_storage_name);
     userData !== null ? setadmin(JSON.parse(userData)) : setadmin({});
     if (
-      (token === null && (userType === null || userType === "admin")) ||
-      userType === "admin"
+      (token === null && (userType === null || userType !== "admin")) ||
+      userType === "fincon"
     ) {
       alert("Unauthorized Access");
       logUserOut();
@@ -86,6 +89,31 @@ export default function TransactionView() {
     }
   };
 
+
+  const getSuperAdminAgents = async () => {
+    const payload = {
+      page: page,
+      limit: limit,
+      token: token,
+      admin_id: adminId,
+    };
+
+    const res = await superAdminGetAdminAgents(payload);
+    console.log({ responsehere: res?.data });
+
+    if (res?.data?.success) {
+      setSuperAdminAdminData(res?.data?.data);
+    }
+  };
+
+  const getAdmintRevenue = async () => {
+    const payload = {
+      agent_id: adminId,
+      token: token,
+    };
+    const res = await getAdminAgentCollection(payload);
+    console.log({ agentTCollect: res });
+  };
 
   const logUserOut = () => {
     DisplayMessage("logged Out", "success");
@@ -104,7 +132,7 @@ export default function TransactionView() {
   return (
     <Container fluid className={`d-flex p-0 ${Styles.container} min-vh-100`}>
       {/* side bar */}
-      <SuperSideNav superAdminInfo={admin} />
+      <AdminSideNav adminInfo={admin} />
       {/* page */}
       <Col xs={10} className={`${Styles.col2} min-vh-100`}>
         {/* navbar constant */}
@@ -145,7 +173,7 @@ export default function TransactionView() {
           className="w-100 d-flex justify-content-end m-0 p-0 mt-3"
           style={{ backgroundColor: "#FBFBFB" }}
         >
-          
+          <h4>Agent Bola Transaction Report</h4>
         </Row>
         <div className="w-100  ">
           <Container fluid className="">
@@ -160,14 +188,14 @@ export default function TransactionView() {
                   >
                     <Tab
                       eventKey="remitance"
-                      title="Remmitance"
+                      title="Deposits"
                       className="w-100 mt-4"
                       tabClassName="border-1 px-5 py-2 w-100 rounded-5"
                     >
                       <Remittance />
                     </Tab>
                     <Tab
-                      eventKey="Completed"
+                      eventKey="collections"
                       title="Collections"
                       className="w-100 mt-4"
                       tabClassName="px-5 py-2 w-100 rounded-5"
@@ -175,7 +203,7 @@ export default function TransactionView() {
                       <Collections />
                     </Tab>
                     <Tab
-                      eventKey="Terminated"
+                      eventKey="payouts"
                       title="Pay outs"
                       className="w-100 mt-4"
                       tabClassName="px-5 w-100 py-2 rounded-5"

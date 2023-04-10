@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Container, Col, Row, Tabs, Tab } from "react-bootstrap";
 import { toast } from "react-toastify";
 import DashboardPage from "../../../Components/Dashboard/dashboardPage";
-import Styles from "./sadmin.module.css";
+import Styles from "./agent.module.css";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -23,19 +23,18 @@ import CreateFincon from "../components/createFincon";
 import api from "../../../app/controllers/endpoints/api";
 import moment from "moment";
 import DefaultTable from "../../../Components/Dashboard/components/defaultTable";
-import SuperSideNav from "../components/supersidebar";
+import AdminSideNav from "../components/adminsidebar";
+import AdminClients from "./tabs/aApprovedClients";
 import {
   superAdminGetAdminAgents,
   getAdminAgentCollection,
 } from "../../../Sagas/Requests";
 import { useParams } from "react-router-dom";
-import Remittance from "./tabs/remittance";
-import Collections from "./tabs/collections";
-import Payouts from "./tabs/payouts";
+
 
 const userType = localStorage.getItem(user_storage_type);
 
-export default function TransactionView() {
+export default function ACustomerManagement() {
   const [refreshData, setRefreshData] = useState();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -65,7 +64,7 @@ export default function TransactionView() {
   ];
 
   const fetch = async () => {
-    console.log(';ok');
+   console.log('ok')
   };
 
   useEffect(() => {
@@ -73,19 +72,45 @@ export default function TransactionView() {
   }, [!refreshData]);
 
   const checkToken = () => {
+
     const userData = localStorage.getItem(user_storage_name);
     userData !== null ? setadmin(JSON.parse(userData)) : setadmin({});
     if (
-      (token === null && (userType === null || userType === "admin")) ||
-      userType === "admin"
+      (token === null && (userType === null || userType !== "admin")) ||
+      userType === "fincon"
     ) {
       alert("Unauthorized Access");
       logUserOut();
     } else {
-      return fetch();
+      return
     }
   };
 
+
+  const getSuperAdminAgents = async () => {
+    const payload = {
+      page: page,
+      limit: limit,
+      token: token,
+      admin_id: adminId,
+    };
+
+    const res = await superAdminGetAdminAgents(payload);
+    console.log({ responsehere: res?.data });
+
+    if (res?.data?.success) {
+      setSuperAdminAdminData(res?.data?.data);
+    }
+  };
+
+  const getAdmintRevenue = async () => {
+    const payload = {
+      agent_id: adminId,
+      token: token,
+    };
+    const res = await getAdminAgentCollection(payload);
+    console.log({ agentTCollect: res });
+  };
 
   const logUserOut = () => {
     DisplayMessage("logged Out", "success");
@@ -104,7 +129,7 @@ export default function TransactionView() {
   return (
     <Container fluid className={`d-flex p-0 ${Styles.container} min-vh-100`}>
       {/* side bar */}
-      <SuperSideNav superAdminInfo={admin} />
+      <AdminSideNav adminInfo ={admin} />
       {/* page */}
       <Col xs={10} className={`${Styles.col2} min-vh-100`}>
         {/* navbar constant */}
@@ -145,7 +170,7 @@ export default function TransactionView() {
           className="w-100 d-flex justify-content-end m-0 p-0 mt-3"
           style={{ backgroundColor: "#FBFBFB" }}
         >
-          
+          <h4>Clients Management</h4>
         </Row>
         <div className="w-100  ">
           <Container fluid className="">
@@ -154,33 +179,17 @@ export default function TransactionView() {
                 <Row className="w-100">
                   <Tabs
                     className="d-flex justify-content-center align-items-center px-3 m-0  gap-5 mt-5 mb-4"
-                    defaultActiveKey="remitance"
+                    defaultActiveKey="allAgents"
                     variant="pills"
                     id=""
                   >
                     <Tab
-                      eventKey="remitance"
-                      title="Remmitance"
+                      eventKey="allAgents"
+                      title="All Registered Clients"
                       className="w-100 mt-4"
                       tabClassName="border-1 px-5 py-2 w-100 rounded-5"
                     >
-                      <Remittance />
-                    </Tab>
-                    <Tab
-                      eventKey="Completed"
-                      title="Collections"
-                      className="w-100 mt-4"
-                      tabClassName="px-5 py-2 w-100 rounded-5"
-                    >
-                      <Collections />
-                    </Tab>
-                    <Tab
-                      eventKey="Terminated"
-                      title="Pay outs"
-                      className="w-100 mt-4"
-                      tabClassName="px-5 w-100 py-2 rounded-5"
-                    >
-                      <Payouts />
+                      <AdminClients/>
                     </Tab>
                   </Tabs>
                 </Row>

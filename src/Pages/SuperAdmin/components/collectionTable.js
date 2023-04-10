@@ -3,6 +3,7 @@ import { Alert, Card, ListGroup, Spinner, Row } from "react-bootstrap";
 import Styles from './md.module.css';
 import { Naira } from "../../../config";
 import { useNavigate } from "react-router-dom";
+import moment from "moment";
 
 const CollectionTable = ({ data, agents }) => {
     const navigate = useNavigate();
@@ -21,8 +22,8 @@ const CollectionTable = ({ data, agents }) => {
         return total?.toLocaleString()
     }
     return (
-        <div className="w-100 d-flex flex-column justify-content-center align-items-center">
-            {data?.length <= 0 ? <p className="text-secondary" style={{ fontFamily: 'Montserrat-SemiBold' }}>This Admin Has Not Registered Any Agent </p>
+        <div className="w-100 d-flex flex-column justify-content-center align-items-center mt-5">
+            {data?.length <= 0 ? <p className="text-secondary" style={{ fontFamily: 'Montserrat-SemiBold' }}>No collections yet</p>
 
                 : (
                     <>
@@ -32,7 +33,7 @@ const CollectionTable = ({ data, agents }) => {
                             <tr style={{ fontFamily: 'Montserat-Regular', fontSize: '0.9em' }}>
                                 <th scope="col">#</th>
                                 <th scope="col">Date</th>
-                                <th scope="col">Client name</th>
+                                <th scope="col">Agent name</th>
                                 <th scope="col">Amount</th>
                                 <th scope="col">Ref Id</th>
                                 
@@ -48,9 +49,9 @@ const CollectionTable = ({ data, agents }) => {
                                         style={{ cursor: 'pointer' }}
                                     >
                                         <th scope="row">{index + 1}</th>
-                                        <td>{`${agent?.first_name} ${agent?.last_name}`}</td>
-                                        <td>{`${agent?.mobile}`}</td>
-                                        <td>{`${Naira} ${calculateEachAdmiGeneratedAmount(agent?._id, agents)}`}</td>
+                                        <td>{moment(agent?.datePaid).format('DD-MM-YYYY')}</td>
+                                        <td>{`${agent?.agent_id?.first_name} ${agent?.agent_id?.last_name}`}</td>
+                                        <td>{`${Naira} ${agent?.total}`}</td>
                                         <td>{`${agent?.mobile}`}</td>
                                         
                                         {/* <td>{`${Naira} ${100000 * Math.random(10).toExponential(2)}`}</td> */}

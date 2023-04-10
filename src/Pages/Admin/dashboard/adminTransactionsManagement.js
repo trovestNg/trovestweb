@@ -29,7 +29,7 @@ import CreateAdmin from "../../SuperAdmin/components/createAdmin";
 import CreateAgent from "../../SuperAdmin/components/createAgent";
 import api from "../../../app/controllers/endpoints/api";
 
-const AdminClientsManagement = () => {
+const AdminTransactionsManagement = () => {
   const token = localStorage.getItem(user_storage_token);
   const userType = localStorage.getItem(user_storage_type);
   const [refreshData, setRefreshData] = useState();
@@ -157,7 +157,6 @@ const AdminClientsManagement = () => {
               ))}
             </ul>
           </Col>
-          <h1>hhheee</h1>
         </Row>
         
         
@@ -171,4 +170,4 @@ const AdminClientsManagement = () => {
     </Container>
   );
 };
-export default AdminClientsManagement;
+export default AdminTransactionsManagement;

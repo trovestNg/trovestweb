@@ -80,7 +80,7 @@ export default function Remittance() {
                 }
                 </Formik>
             </Row>
-            <PayoutTable data={['a', 'b', 'c', 'd']} />
+            <PayoutTable data={[]} />
         </>
     )
 }

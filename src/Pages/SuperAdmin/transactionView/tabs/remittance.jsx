@@ -1,15 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-    Col, Row,InputGroup, Button,} from "react-bootstrap";
+    Col, Row,InputGroup, Button, Spinner,} from "react-bootstrap";
 import RemmitanceTable from "../../components/remmitanceTable";
 import { Formik } from "formik";
 import * as yup from 'yup';
+import api from "../../../../app/controllers/endpoints/api";
+import { user_storage_token } from "../../../../config";
 
 export default function Remittance() {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [loading,setLoading] = useState(false);
+    const [deposits, setDeposits] = useState([]);
     const [refreshData,setRefreshData] = useState(false);
+    const token = localStorage.getItem(user_storage_token);
+
 
     const initialValue = {
         startDate : '',
@@ -27,23 +32,33 @@ export default function Remittance() {
         setRefreshData(!refreshData);
     }
 
+    const getRemmitance = async () => {
+        setLoading(true)
+        const res = await api.get(`/super/all-collections?page=1&limit=30`,token);
+        if(res?.data?.success){
+            setDeposits(res?.data?.data?.deposit);
+            setLoading(false);
+        }
+      };
     const fetch = ()=>{
 
     }
 
-    console.log({start: startDate, end:endDate});
-
+    useEffect(()=>{
+        getRemmitance()
+    },[])
     
 
     return (
         <>
 
-            <Row className="w-100 mt-3">
+            { loading? <Spinner /> : 
+            <>
+                <Row className="w-100 mt-3">
                 <Col style={{ fontFamily: 'Montserrat', fontSize: '1em' }}>
-                    <h1 style={{ fontSize: '1.5em' }}>
-                        All Remmitance Made
-                    </h1>
+                    
                 </Col>
+                <Spinner/>
                 <Formik
                 initialValues={initialValue}
                 validationSchema={validationSchema}
@@ -82,7 +97,9 @@ export default function Remittance() {
                 }
                 </Formik>
             </Row>
-            <RemmitanceTable data={['a', 'b', 'c', 'd']} />
+            <RemmitanceTable data={deposits} />
+            </>
+            }
         </>
     )
 }

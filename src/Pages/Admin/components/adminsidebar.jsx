@@ -45,14 +45,15 @@ export default function AdminSideNav({adminInfo}) {
           index == 0 && navigate('/admin')
         }
         {
-          index == 1 && navigate('/admin/agent');
+          index == 1 && navigate('/admin/clients');
         }
         {
-          index == 2 && navigate('/admin/transaction');
+          index == 2 && navigate('/admin/transactions');
+        }
+        {
+            index == 3 && navigate('/admin/requests');
         }
       };
-
-      console.log({adminInfo})
 
     return (
         <Col xs={2} className={`${Styles.col1} p-0 m-0 bg-info`}>

@@ -14,8 +14,9 @@ export const sideBarNav = [
 
   export const adminSideBarNav = [
     { icon: "bi bi-house-door-fill mr-3 ml-2", name: "Dashboard" },
-    { icon: "bi bi-person-fill-add", name: "Agent" },
-    { icon: "bi bi-currency-dollar", name: "Transactions" }
+    { icon: "bi bi-person-fill-add", name: "Clients" },
+    { icon: "bi bi-currency-dollar", name: "Transactions" },
+    { icon: "bi bi-currency-dollar", name: "Requests" }
   ];
 
   export const adminNavActions = [

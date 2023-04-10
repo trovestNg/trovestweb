@@ -22,13 +22,25 @@ import FinConManagement from "../Pages/SuperAdmin/finconView/finConManagement";
 import PaymentManagement from "../Pages/SuperAdmin/paymentView/paymentManagement";
 import ProfileManagement from "../Pages/SuperAdmin/profileView/profileManagement";
 import ErrorBoundary from "../Pages/ErrorBoundary/ErrorBoundary";
-import AdminDashboard from "../Pages/Admin/dashboard/adminDashBoard";
 import AgentView from "../Pages/SuperAdmin/agentView/AgentView";
 import CustomerView from "../Pages/SuperAdmin/customerView/customerView";
 import TransactionView from "../Pages/SuperAdmin/transactionView/transactionView";
+import ATransactionView from "../Pages/Admin/aTransaction/aTransactionView";
+
 import CustomerManagement from "../Pages/SuperAdmin/customerView/customerManagement";
+import ACustomerManagement from "../Pages/Admin/aCustomerView/aCustomerManagement";
+import AdminDashboard from "../Pages/Admin/dashboard/adminDashBoard";
+import AdminClientsManagement from "../Pages/Admin/dashboard/adminAgentManagement";
+import AdminTransactionsManagement from "../Pages/Admin/dashboard/adminTransactionsManagement";
+import AdminRequestsManagement from "../Pages/Admin/dashboard/adminRequestsManagement";
+
+import AdminAgentView from "../Pages/Admin/dashboard/adminAgentView";
+import ACustomerView from "../Pages/Admin/aCustomerView/aCustomerView";
 import AdminAgentManagement from "../Pages/Admin/dashboard/adminAgentManagement";
-import AdminTransactionManagement from "../Pages/Admin/dashboard/adminTransactionManagement";
+import AAllTransactionManagement from "../Pages/Admin/aAllTransactionManagement/aAllpaymentManagement";
+
+
+import AdminTransactionManagement from "../Pages/Admin/dashboard/adminTransactionsManagement";
 
 export default function App() {
     const [token, settoken] = useState(null)
@@ -55,30 +67,34 @@ export default function App() {
             element: <Home />,
             errorElement: <ErrorBoundary />
         },
-        //admin routes
+        // super admin routes
         {
-            path: '/admin',
-            element: <AdminDashboard/>
+            path: `/super-admin/dashboard`,
+            element: <SuperAdminDashboard />
         },
         {
-            path: '/admin/agent/:agent_id',
-            element: <AdminAgentManagement/>
+            path: `super-admin/fincon`,
+            element: <FinConManagement />
         },
         {
-            path: '/admin/client/:client_id',
-            element: <AdminAgentManagement/>
+            path: `super-admin/admin`,
+            element: <AdminManagement />
         },
         {
-            path: '/admin/agent',
-            element: <AdminAgentManagement/>
+            path: `super-admin/agents`,
+            element: <AgentManagement />
         },
         {
-            path: '/admin/transaction',
-            element: <AdminTransactionManagement/>
+            path: `super-admin/clients`,
+            element: <CustomerManagement />
         },
         {
-            path: 'admin/:agent_id',
-            element: <Agents />
+            path: `super-admin/transactions`,
+            element: <PaymentManagement />
+        },
+        {
+            path: `super-admin/profile`,
+            element: <ProfileManagement />
         },
         {
             path: `/super-admin/admin/:adminId`,
@@ -89,17 +105,43 @@ export default function App() {
             element: <AgentView/>
         },
         {
-            path: `/super-admin/client/:clientId`,
-            element: <CustomerView/>
-        },
-        {
             path: `/super-admin/agent/transaction/:agentId`,
             element: <TransactionView/>
         },
-        
         {
-            path: `/admin/agent/:agentid/:collectionid`,
-            element: <AdminCollection />
+            path: `/super-admin/client/:clientId`,
+            element: <CustomerView/>
+        },
+
+
+        //admin routes
+        {
+            path: '/admin',
+            element: <AdminDashboard/>
+        },
+        {
+            path: '/admin/clients',
+            element: <ACustomerManagement/>
+        },
+        {
+            path: '/admin/transactions',
+            element: <AAllTransactionManagement/>
+        },
+        {
+            path: '/admin/requests',
+            element: <AdminRequestsManagement/>
+        },
+        {
+            path: '/admin/agent/:agentId',
+            element: <AdminAgentView />
+        },
+        {
+            path: '/admin/client/:client_id',
+            element: <ACustomerView/>
+        },
+        {
+            path: '/admin/transaction/:agentId',
+            element: <ATransactionView/>
         },
         {
             path: '/dashboard',
@@ -124,39 +166,9 @@ export default function App() {
 
 
 
-        // new routes
-        {
-            path: `/super-admin/dashboard`,
-            element: <SuperAdminDashboard />
-        },
-        {
-            path: `super-admin/admin`,
-            element: <AdminManagement />
-        },
-        {
-            path: `super-admin/agents`,
-            element: <AgentManagement />
-        },
-        {
-            path: `super-admin/clients`,
-            element: <CustomerManagement />
-        },
-        {
-            path: `super-admin/:adminid/:agentid`,
-            element: <CustomerView/>
-        },
-        {
-            path: `super-admin/fincon`,
-            element: <FinConManagement />
-        },
-        {
-            path: `super-admin/transactions`,
-            element: <PaymentManagement />
-        },
-        {
-            path: `super-admin/profile`,
-            element: <ProfileManagement />
-        },
+        
+
+        
 
     ])
 

@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import {
     Col, Row,InputGroup, Button,} from "react-bootstrap";
-import CollectionTable from "../../components/collectionTable";
+import APayoutTable from "../../../SuperAdmin/components/aPayoutTable";
 import { Formik } from "formik";
 import * as yup from 'yup';
 import api from "../../../../app/controllers/endpoints/api";
 import { user_storage_token } from "../../../../config";
 
-export default function Remittance() {
+export default function AllRemittance() {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
+    const [allRemittance, setAllRemittance] = useState()
     const [loading,setLoading] = useState(false);
-    const [collections, setCollections] = useState([])
     const [refreshData,setRefreshData] = useState(false);
     const token = localStorage.getItem(user_storage_token);
 
@@ -31,15 +31,24 @@ export default function Remittance() {
         setRefreshData(!refreshData);
     }
 
-    const getAllCollections = async () => {
-        const res = await api.get(`/super/all-collections?page=1&limit=${100}`,token);
-        setCollections(res?.data?.data?.revenue?.docs)
-        console.log(res)
-      };
+    const fetch = async ()=>{
+const res =await api.get('/super/all-collections?page=1&limit=30', token)
+if (res?.data?.success) {
+    setAllRemittance(res?.data?.data?.deposit);
+    
+  }
+
+
+console.log({okkkk:res})
+    }
 
     useEffect(()=>{
-        getAllCollections()
-    },[])
+        fetch()
+    },[]);
+
+    console.log({start: startDate, end:endDate});
+
+    
 
     return (
         <>
@@ -47,7 +56,7 @@ export default function Remittance() {
             <Row className="w-100 mt-3">
                 <Col style={{ fontFamily: 'Montserrat', fontSize: '1em' }}>
                     <h1 style={{ fontSize: '1.5em' }}>
-                        All Remittance Made
+                        All Remmitance Made
                     </h1>
                 </Col>
                 <Formik
@@ -88,7 +97,7 @@ export default function Remittance() {
                 }
                 </Formik>
             </Row>
-            <CollectionTable data={collections} />
+            <APayoutTable data={allRemittance} />
         </>
     )
 }

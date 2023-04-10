@@ -92,11 +92,11 @@ export default function SuperAdminDashboard() {
   ];
 
   const fetch = async () => {
-    checkToken();
+    
   };
 
   useEffect(() => {
-    fetch();
+    checkToken();
     // getSuperAdminAdmins();
   }, [!refreshData]);
 
