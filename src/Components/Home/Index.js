@@ -383,7 +383,7 @@ export default function Index() {
 										textDecoration: 'none',
 										color: '#fff',
 									}}
-									href='https://expo.dev/artifacts/eas/njaxiXKctxwXWx7dA6mYXm.apk'
+									href='https://expo.dev/artifacts/eas/ujwqggxqTtkVBRkoSHEnS2.apk'
 								>
 									Download App
 

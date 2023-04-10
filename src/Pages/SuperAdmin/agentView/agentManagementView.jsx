@@ -123,10 +123,10 @@ export default function AgentManagement() {
         </Row>
 
         <Row
-          className="w-100 d-flex justify-content-end m-0 p-0 mt-3"
+          className="w-100 d-flex justify-content-end m-0 p-0 mt-3 mx-4"
           style={{ backgroundColor: "#FBFBFB" }}
         >
-          <h4>Agent Management Screen</h4>
+          <h4 style={{ fontFamily:'Montserrat' }}>Agents Management</h4>
         </Row>
         <div className="w-100  ">
           <Container fluid className="">

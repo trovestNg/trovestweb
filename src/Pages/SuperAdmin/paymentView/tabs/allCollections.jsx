@@ -69,34 +69,53 @@ export default function AllCollections() {
                 >
 
                     {({ handleChange, handleSubmit, errors }) =>
-                    (<Col className="d-flex align-items-center gap-2 justify-content-end">
-                        <InputGroup className="d-flex align-items-center border rounded justify-content-center gap-2" style={{ maxWidth: '13em' }}>
-                            <label htmlFor="startDate">From :</label>
-                            <input onChange={handleChange} name="startDate" type="date" className="h-100 border border-0 outline py-1 bg-transparent" style={{ outline: 'none' }} />
-                        </InputGroup>
-
-                        <InputGroup className="d-flex align-items-center border rounded justify-content-center gap-2" style={{ maxWidth: '13em' }}>
-                            <label htmlFor="endDate">To :</label>
-                            <input onChange={handleChange} name="endDate" type="date" className="h-100 border border-0 outline py-1 bg-transparent" style={{ outline: 'none' }} />
-
-                        </InputGroup>
-
-                        <Button
-                            type="submit"
-                            onClick={handleSubmit}
-                            disabled={Object.keys(errors).length > 0}
-                            className="text-light d-flex flex-column justify-content-center align-items-center
-                  bg-primary h-100 m-0 p-1 py-1 rounded-right rounded"
-                            style={{ maxWidth: '3em' }}
-                        >{
-
+                    (
+                        <Col className="d-flex align-items-center gap-2 justify-content-end">
+                        <InputGroup
+                              className="d-flex align-items-center border rounded justify-content-center gap-2"
+                              style={{ maxWidth: "13em", minHeight:'2em' }}
+                            >
+                              <label htmlFor="startDate">From :</label>
+                              <input
+                                onChange={handleChange}
+                                name="startDate"
+                                type="date"
+                                className="h-100 border border-0 outline py-1 bg-transparent d-flex align-items-center"
+                                style={{ outline: "none" }}
+                              />
+                            </InputGroup>
+    
+                            <InputGroup
+                              className="d-flex align-items-center border rounded justify-content-center gap-2"
+                              style={{ maxWidth: "13em" }}
+                            >
+                              <label htmlFor="endDate">To :</label>
+                              <input
+                                onChange={handleChange}
+                                name="endDate"
+                                type="date"
+                                className="h-100 border border-0 outline py-1 bg-transparent d-flex align-items-center"
+                                style={{ outline: "none" }}
+                              />
+                            </InputGroup>
+    
+                            <Button
+                              type="submit"
+                              onClick={handleSubmit}
+                              disabled={Object.keys(errors).length > 0}
+                              className="text-light d-flex flex-column justify-content-center align-items-center
+                      bg-primary h-100 m-0 p-1 py-1 rounded-right rounded"
+                              style={{ maxWidth: "3em" }}
+                            >
+                              {
                                 // searchLoading? <Spinner/> :
-                                <i
-                                    className="bi bi-search"></i>
-                            }</Button>
-
-
-                    </Col>)
+                                <i className="bi bi-search"></i>
+                              }
+                            </Button>
+    
+    
+                    </Col>
+                    )
                     }
                 </Formik>
             </Row>

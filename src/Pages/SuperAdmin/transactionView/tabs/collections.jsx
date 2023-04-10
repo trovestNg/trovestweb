@@ -6,14 +6,16 @@ import { Formik } from "formik";
 import * as yup from 'yup';
 import api from "../../../../app/controllers/endpoints/api";
 import { user_storage_token } from "../../../../config";
+import { useParams } from "react-router-dom";
 
-export default function Remittance() {
+export default function AgentCollections() {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [loading,setLoading] = useState(false);
     const [collections, setCollections] = useState([])
     const [refreshData,setRefreshData] = useState(false);
     const token = localStorage.getItem(user_storage_token);
+    const {agentId} = useParams()
 
     const initialValue = {
         startDate : '',
@@ -31,14 +33,14 @@ export default function Remittance() {
         setRefreshData(!refreshData);
     }
 
-    const getAllCollections = async () => {
-        const res = await api.get(`/super/all-collections?page=1&limit=${100}`,token);
+    const getAgentCollections = async () => {
+        const res = await api.get(`/super/get-agent-collections/${agentId}&page=1&limit=${100}`,token);
         setCollections(res?.data?.data?.revenue?.docs)
         console.log(res)
       };
 
     useEffect(()=>{
-        getAllCollections()
+        getAgentCollections();
     },[])
 
     return (
@@ -47,7 +49,7 @@ export default function Remittance() {
             <Row className="w-100 mt-3">
                 <Col style={{ fontFamily: 'Montserrat', fontSize: '1em' }}>
                     <h1 style={{ fontSize: '1.5em' }}>
-                        All Remittance Made
+                        All AgentCollections Made
                     </h1>
                 </Col>
                 <Formik

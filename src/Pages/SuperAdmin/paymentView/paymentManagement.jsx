@@ -176,7 +176,7 @@ console.log(res)
           className="w-100 d-flex justify-content-end m-0 p-0 mt-3"
           style={{ backgroundColor: "#FBFBFB" }}
         >
-          <h4>Transaction Management</h4>
+          <h4 style={{ fontFamily: 'Montserrat'}}>Transaction Management</h4>
         </Row>
         <div className="w-100  ">
           <Container fluid className="">
@@ -191,7 +191,7 @@ console.log(res)
                   >
                     <Tab
                       eventKey="revenue"
-                      title="All Remittance Made"
+                      title="Deposits"
                       className="w-100 mt-4"
                       tabClassName="border-1 px-5 py-2 w-100 rounded-5"
                     >
@@ -199,7 +199,7 @@ console.log(res)
                     </Tab>
                     <Tab
                       eventKey="requests"
-                      title="All Collections"
+                      title="Collections"
                       className="w-100 mt-4"
                       tabClassName="px-5 py-2 w-100 rounded-5"
                     >
@@ -207,7 +207,7 @@ console.log(res)
                     </Tab>
                     <Tab
                       eventKey="paidOuts"
-                      title="All Payouts"
+                      title="Payouts"
                       className="w-100 mt-4"
                       tabClassName="px-5 py-2 w-100 rounded-5"
                     >

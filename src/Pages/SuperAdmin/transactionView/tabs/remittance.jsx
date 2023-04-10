@@ -50,7 +50,7 @@ export default function Remittance() {
     
 
     return (
-        <>
+       <div className="d-flex flex-column align-items-center">
 
             { loading? <Spinner /> : 
             <>
@@ -58,7 +58,6 @@ export default function Remittance() {
                 <Col style={{ fontFamily: 'Montserrat', fontSize: '1em' }}>
                     
                 </Col>
-                <Spinner/>
                 <Formik
                 initialValues={initialValue}
                 validationSchema={validationSchema}
@@ -67,16 +66,33 @@ export default function Remittance() {
                     
                 {({handleChange, handleSubmit,errors})=>
                 (<Col className="d-flex align-items-center gap-2 justify-content-end">
-                    <InputGroup className="d-flex align-items-center border rounded justify-content-center gap-2" style={{ maxWidth: '13em' }}>
-                        <label htmlFor="startDate">From :</label>
-                        <input onChange={handleChange} name="startDate" type="date" className="h-100 border border-0 outline py-1 bg-transparent" style={{ outline: 'none' }} />
-                    </InputGroup>
+                    <InputGroup
+                          className="d-flex align-items-center border rounded justify-content-center gap-2"
+                          style={{ maxWidth: "13em", minHeight:'2em' }}
+                        >
+                          <label htmlFor="startDate">From :</label>
+                          <input
+                            onChange={handleChange}
+                            name="startDate"
+                            type="date"
+                            className="h-100 border border-0 outline py-1 bg-transparent d-flex align-items-center"
+                            style={{ outline: "none" }}
+                          />
+                        </InputGroup>
 
-                    <InputGroup className="d-flex align-items-center border rounded justify-content-center gap-2" style={{ maxWidth: '13em' }}>
-                        <label htmlFor="endDate">To :</label>
-                        <input onChange={handleChange} name="endDate" type="date" className="h-100 border border-0 outline py-1 bg-transparent" style={{ outline: 'none' }} />
-
-                    </InputGroup>
+                        <InputGroup
+                          className="d-flex align-items-center border rounded justify-content-center gap-2"
+                          style={{ maxWidth: "13em", minHeight:'2em' }}
+                        >
+                          <label htmlFor="startDate">To :</label>
+                          <input
+                            onChange={handleChange}
+                            name="endDate"
+                            type="date"
+                            className="h-100 border border-0 outline py-1 bg-transparent d-flex align-items-center"
+                            style={{ outline: "none" }}
+                          />
+                        </InputGroup>
 
                     <Button
                     type="submit"
@@ -100,6 +116,6 @@ export default function Remittance() {
             <RemmitanceTable data={deposits} />
             </>
             }
-        </>
+       </div>
     )
 }
