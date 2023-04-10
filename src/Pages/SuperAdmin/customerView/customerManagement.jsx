@@ -44,11 +44,6 @@ export default function CustomerManagement() {
   const [loading, setloading] = useState(false);
   const [superAdminInfo, setSuperAdminInfo] = useState({});
   const [superAdminAdminData, setSuperAdminAdminData] = useState();
-  const [adminCreateSuccessModal, setAdminCreateSuccessModal] = useState(false);
-  const [adminCreateModal, setAdminCreateModal] = useState(false);
-  const [finconCreateModal, setFinconCreateModal] = useState(false);
-  const [finconCreateSuccessModal, setFinconCreateSuccessModal] =
-    useState(false);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(15);
 
@@ -100,15 +95,6 @@ export default function CustomerManagement() {
     if (res?.data?.success) {
       setSuperAdminAdminData(res?.data?.data);
     }
-  };
-
-  const getAdmintRevenue = async () => {
-    const payload = {
-      agent_id: adminId,
-      token: token,
-    };
-    const res = await getAdminAgentCollection(payload);
-    console.log({ agentTCollect: res });
   };
 
   const logUserOut = () => {
@@ -169,7 +155,7 @@ export default function CustomerManagement() {
           className="w-100 d-flex justify-content-end m-0 p-0 mt-3"
           style={{ backgroundColor: "#FBFBFB" }}
         >
-          <h4>Clients Management</h4>
+          <h4 style={{ fontFamily:'Montserrat' }}>Clients Management</h4>
         </Row>
         <div className="w-100  ">
           <Container fluid className="">
@@ -179,6 +165,7 @@ export default function CustomerManagement() {
                   <Tabs
                     className="d-flex justify-content-center align-items-center px-3 m-0  gap-5 mt-5 mb-4"
                     defaultActiveKey="allAgents"
+                    style={{font:'Montserrat'}}
                     variant="pills"
                     id=""
                   >
@@ -186,6 +173,7 @@ export default function CustomerManagement() {
                       eventKey="allAgents"
                       title="All Registered Clients"
                       className="w-100 mt-4"
+                      
                       tabClassName="border-1 px-5 py-2 w-100 rounded-5"
                     >
                       <ApprovedClients/>

@@ -22,7 +22,7 @@ const RemmitanceTable = ({ data, agents }) => {
         return total?.toLocaleString()
     }
     return (
-        <div className="w-100 d-flex flex-column justify-content-center align-items-center mt-5">
+        <div className="w-100 d-flex flex-column justify-content-center align-items-center">
             {data?.length <= 0 ? <p className="text-secondary" style={{ fontFamily: 'Montserrat-SemiBold' }}>No deposit made</p>
 
                 : (

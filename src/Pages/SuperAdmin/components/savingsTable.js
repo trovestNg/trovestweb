@@ -24,7 +24,7 @@ const SavingsTable = ({ data, agents }) => {
     }
     return (
         <div className="w-100 d-flex flex-column justify-content-center align-items-center">
-            {data?.length <= 0 ? <p className="text-secondary" style={{ fontFamily: 'Montserrat-SemiBold' }}>This Admin Has Not Registered Any Agent </p>
+            {data?.length <= 0 ? <p className="text-secondary" style={{ fontFamily: 'Montserrat-SemiBold' }}>No savings at this time</p>
 
                 : (
                     <>

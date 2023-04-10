@@ -140,6 +140,7 @@ export default function AgentView() {
     }
 
   const searchArtisan = async () => {
+    setSearchLoading(true);
     const payload = {
       agent_id: agentId,
       name : userInput,
@@ -151,6 +152,7 @@ export default function AgentView() {
     console.log(res);
     if (res?.data?.success) {
       setArtisans(res?.data?.data?.docs);
+      setSearchLoading(false);
     }
   };
 

@@ -68,8 +68,13 @@ setRefreshData(!refreshData);
     }
 
     const NameSearch = async ()=>{
-        const res = await api.get(`/super/artisans?page=1&limit=100`, token);
-        console.log(res);
+      setSearchLoading(true)
+        const res = await api.get(`/super/search-all-artisan?name=${userSearch}&page=1&limit=10`, token);
+        if(res?.data?.success){
+          setAllClients(res?.data?.data?.docs);
+          setSearchLoading(false);
+        }
+        
     }
 
     // console.log({start: startDate, end:endDate});
@@ -79,36 +84,38 @@ setRefreshData(!refreshData);
     return (
       <div className="w-100 ">
            <Row className="w-100 mt-3">
-                <Col style={{ fontFamily: 'Montserrat', fontSize: '1em' }}>
+           <Col className="d-flex justify-content-end" style={{ fontFamily: 'Montserrat', fontSize: '1em' }}>
                 <InputGroup className="d-flex m-0 p-0 border w-75 border-primary rounded 
                 justify-content-space-between" style={{maxWidth:'16em',}}>
                   <input
                   type="search"
                   onChange={(e)=>setUserSearch(e.target.value)}
                     className="rounded border w-75 border-0 bg-transparent px-2"
-                    placeholder="Search agent name"
+                    placeholder="Client name"
                     style={{
-                      maxHeight: "2.4em",
+                      minHeight: "2.5em",
                       outline: "none",
                     }}
                   />
                   <button
+                  style={{maxHeight:'2.5em'}}
                   disabled={userSearch == ''}
                 onClick = {handleSearch}
                   className="text-light d-flex flex-column justify-content-center align-items-center
-                  bg-primary w-25 h-100 m-0 p-1 py-2 rounded-right"
-                  >{
-                  
-                    searchLoading? <Spinner/> :
+                  bg-primary h-100 w-25 m-0 p-1 py-2 rounded-right"
+                  >
+                  {
+                    searchLoading? <Spinner size="sm"/> :
                   <i 
                   className="bi bi-search"></i>
-                  }</button>
+                  }
+                  </button>
                   
                 </InputGroup>
                 </Col>
                 
             </Row>
-            <Row className="w-100  min-vh-100 d-flex justify-content-center align-items-center">
+            <Row className="w-100  d-flex justify-content-center align-items-center">
             {
            loading? <Spinner/> : <CustomerTable data={allAgents} />}
             </Row>

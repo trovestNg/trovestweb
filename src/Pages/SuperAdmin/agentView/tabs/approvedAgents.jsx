@@ -67,11 +67,13 @@ export default function ApprovedAgents() {
     }
 
     const searchAgent = async ()=>{
+        setSearchLoading(true);
         const payload ={ token : token, page:page, limit:limit, name:userInput }
-        const res = await superAdminSearchAgent(payload);
+        const res = await api.get(`/super/search-all-agent?name=${userInput}&page=${page}&limit=${limit}`, token);
         console.log(res);
         if(res?.data?.success){
             setAllAgents(res?.data?.data?.docs);
+            setSearchLoading(false);
         }
     }
 
@@ -81,27 +83,28 @@ export default function ApprovedAgents() {
         <>
 
             <Row className="w-100 mt-3">
-                <Col style={{ fontFamily: 'Montserrat', fontSize: '1em' }}>
+                <Col className="d-flex justify-content-end" style={{ fontFamily: 'Montserrat', fontSize: '1em' }}>
                 <InputGroup className="d-flex m-0 p-0 border w-75 border-primary rounded 
                 justify-content-space-between" style={{maxWidth:'16em',}}>
                   <input
                   type="search"
                   onChange={(e)=>setUserInput(e.target.value)}
                     className="rounded border w-75 border-0 bg-transparent px-2"
-                    placeholder="Search agent name"
+                    placeholder="agent name"
                     style={{
-                      maxHeight: "2.4em",
+                      minHeight: "2.5em",
                       outline: "none",
                     }}
                   />
                   <button
+                  style={{maxHeight:'2.5em'}}
                   onClick={()=>handleAgentSearch()}
                 disabled={userInput == ''}
                   className="text-light d-flex flex-column justify-content-center align-items-center
                   bg-primary w-25 h-100 m-0 p-1 py-2 rounded-right"
                   >{
                   
-                    searchLoading? <Spinner/> :
+                    searchLoading? <Spinner size="sm" /> :
                   <i 
                   className="bi bi-search"></i>
                   }</button>
@@ -146,7 +149,11 @@ export default function ApprovedAgents() {
                 }
                 </Formik> */}
             </Row>
-            <AgentMaTable data={allAgents} />
+            <Row className="w-100  d-flex justify-content-center align-items-center">
+            {
+           loading? <Spinner/> :<AgentMaTable data={allAgents} />}
+            </Row>
+            
         </>
     )
 }
