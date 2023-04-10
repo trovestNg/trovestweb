@@ -162,7 +162,9 @@ console.log(res)
       token : token,
       page : page, 
       limit : limit,
-      name : userSearchAgent}
+      name : userSearchAgent,
+      admin_id : adminId
+    }
 
    const res = await superAdminSearchAgent(payload);
    if(res?.data?.success){

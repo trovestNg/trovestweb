@@ -55,6 +55,7 @@ export default function SuperAdminDashboard() {
   const [finconCreateSuccessModal, setFinconCreateSuccessModal] = useState(false);
   const token = localStorage.getItem(user_storage_token);
 
+  console.log(userType);
  
   const navActions = [
     { icon: "bi bi-envelope-fill", name: "Dashboard" },
@@ -219,10 +220,11 @@ export default function SuperAdminDashboard() {
             </h5>
           </Col>
           <Col className="d-flex justify-content-end mt-4 ml-4">
-            <FormGroup className="h-100 d-flex px-3 w-50 gap-2">
-              <Button className="py-3" onClick={()=>setAdminCreateModal(true)}>Create admin</Button>
+            { userType == 'fin_con'? '' :
+              <FormGroup className="h-100 d-flex px-3 w-50 gap-2">
+              <Button  className="py-3" onClick={()=>setAdminCreateModal(true)}>Create admin</Button>
               <Button className="py-3 bg-secondary" onClick={()=>setFinconCreateModal(true)}>Create finCon</Button>
-            </FormGroup>
+            </FormGroup>}
           </Col>
         </Row>
         <Row className="w-100 d-flex mt-4  gap-4 justify-content-center align-items-center p-3 m-0">

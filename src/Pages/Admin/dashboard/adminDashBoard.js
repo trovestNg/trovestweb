@@ -129,12 +129,12 @@ const AdminDashboard = () => {
   }
 
   const searchAgentByName = async ()=>{
-    setloading(true);
+    setSearchLoading(true);
     const res = await api.get(`/admin/admin-search-agent?name=${userInput}&page=${page}&limit=50`, token);
     console.log(res);
     if (res?.data?.success) {
       setAgents(res?.data?.data?.docs);
-      setloading(false);
+      setSearchLoading(false);
     }
   }
 
@@ -303,7 +303,7 @@ const AdminDashboard = () => {
           ))}
         </Row>
         <Row className="w-100 text-primary  p-4 m-0 mt-5 d-flex ">
-          <Card className="w-100 text-primary shadow-sm d-flex justify-content-center align-items-center border border-0 p-4 m-0">
+          <Card className="w-100 text-primary shadow-sm d-flex justify-content-center align-items-center border min-vh-50 border-0 p-4 m-0">
           <Row className="d-flex mb-3 w-100 justify-content-end align-items-end">
               <Col>
                 <h4 style={{ fontFamily: "Montserrat-SemiBold" }}>

@@ -113,11 +113,12 @@ export const superAdminSearchAdmin = (payload) => {
 
 // This function searchs for agent
 export const superAdminSearchAgent = (payload) => {
-	const { token, page, limit, name } = payload;
+	const { token, page, limit, name, admin_id } = payload;
 	headers.authorization = `Bearer ${token}`;
 	const requestOptions = {
 		method: 'get',
-		url: `${baseUrl}/super/search-agent?name=${name}&page=${page}&limit=${limit}`,
+		
+		url: `${baseUrl}/super/search-agent?name=${name}&page=${page}&limit=${limit}&admin_id=${admin_id}`,
 		headers: headers,
 	};
 	return axios(requestOptions);

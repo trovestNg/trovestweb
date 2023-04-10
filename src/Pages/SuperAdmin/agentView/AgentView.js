@@ -57,6 +57,7 @@ export default function AgentView() {
   const [admin, setadmin] = useState({});
   const [userInput, setUserInput] = useState('');
   const [loading, setloading] = useState(false);
+  const [noOfCus,setNoOfCustomer] = useState('')
   const [superAdminAdminData, setSuperAdminAgentInfo] = useState();
   const [adminCreateSuccessModal, setAdminCreateSuccessModal] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
@@ -117,14 +118,16 @@ export default function AgentView() {
       agent_id: agentId,
     };
     const res = await superAdminGetAgentArtisans(payload);
-    console.log(res?.data?.data?.client?.docs );
+    console.log(res );
 
     if (res?.data?.success) {
       setAgentInfo(res?.data?.data?.agent);
       setArtisans(res?.data?.data?.client?.docs);
-      setAllCollections(res?.data?.data?.total_revenue);
-      setAllDeposits(res?.data?.data?.depoists);
-      setAllPayouts(res?.data?.data?.payouts);
+      setAllCollections(res?.data?.data?.total_collections);
+      setAllDeposits(res?.data?.data?.total_remmitance);
+      setAllPayouts(res?.data?.data?.total_payout);
+      setNoOfCustomer(res?.data?.data?.client?.docs.length);
+      
       
       setloading(false)
     }
@@ -227,7 +230,7 @@ loading?<Spinner/> :
               className="p-0 m-0 mx-3"
               style={{ fontFamily: "Montserrat-SemiBold" }}
             >
-              {`Total Custormers :  ${agentInfo?.artisans?.length}`}
+              {`Total Custormers :  ${noOfCus}`}
             </p>
            
           </Col>
