@@ -34,9 +34,11 @@ export default function AgentCollections() {
     }
 
     const getAgentCollections = async () => {
-        const res = await api.get(`/super/get-agent-collections/${agentId}&page=1&limit=${100}`,token);
-        setCollections(res?.data?.data?.revenue?.docs)
-        console.log(res)
+        const res = await api.get(`/super/get-agent-collections/${agentId}?status=0&page=1&limit=${100}`,token);
+        console.log(res);
+        if(res?.data?.success){
+            setCollections(res?.data?.data?.collections)
+        }
       };
 
     useEffect(()=>{
@@ -47,9 +49,9 @@ export default function AgentCollections() {
         <>
 
             <Row className="w-100 mt-3">
-                <Col style={{ fontFamily: 'Montserrat', fontSize: '1em' }}>
+            <Col style={{ fontFamily: 'Montserrat', fontSize: '0.7em' }}>
                     <h1 style={{ fontSize: '1.5em' }}>
-                        All AgentCollections Made
+                       All Collections by this agent
                     </h1>
                 </Col>
                 <Formik
@@ -60,16 +62,33 @@ export default function AgentCollections() {
                     
                 {({handleChange, handleSubmit,errors})=>
                 (<Col className="d-flex align-items-center gap-2 justify-content-end">
-                    <InputGroup className="d-flex align-items-center border rounded justify-content-center gap-2" style={{ maxWidth: '13em' }}>
-                        <label htmlFor="startDate">From :</label>
-                        <input onChange={handleChange} name="startDate" type="date" className="h-100 border border-0 outline py-1 bg-transparent" style={{ outline: 'none' }} />
-                    </InputGroup>
+                    <InputGroup
+                          className="d-flex align-items-center border rounded justify-content-center gap-2"
+                          style={{ maxWidth: "13em", minHeight:'2em' }}
+                        >
+                          <label htmlFor="startDate">From :</label>
+                          <input
+                            onChange={handleChange}
+                            name="startDate"
+                            type="date"
+                            className="h-100 border border-0 outline py-1 bg-transparent d-flex align-items-center"
+                            style={{ outline: "none" }}
+                          />
+                        </InputGroup>
 
-                    <InputGroup className="d-flex align-items-center border rounded justify-content-center gap-2" style={{ maxWidth: '13em' }}>
-                        <label htmlFor="endDate">To :</label>
-                        <input onChange={handleChange} name="endDate" type="date" className="h-100 border border-0 outline py-1 bg-transparent" style={{ outline: 'none' }} />
-
-                    </InputGroup>
+                        <InputGroup
+                          className="d-flex align-items-center border rounded justify-content-center gap-2"
+                          style={{ maxWidth: "13em", minHeight:'2em' }}
+                        >
+                          <label htmlFor="startDate">To :</label>
+                          <input
+                            onChange={handleChange}
+                            name="endDate"
+                            type="date"
+                            className="h-100 border border-0 outline py-1 bg-transparent d-flex align-items-center"
+                            style={{ outline: "none" }}
+                          />
+                        </InputGroup>
 
                     <Button
                     type="submit"

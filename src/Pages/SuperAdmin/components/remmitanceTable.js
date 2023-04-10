@@ -1,7 +1,7 @@
 import React from "react";
 import { Alert, Card, ListGroup, Spinner, Row } from "react-bootstrap";
 import Styles from './md.module.css';
-import { Naira } from "../../../config";
+import { Naira, convertToThousand } from "../../../config";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 
@@ -23,7 +23,7 @@ const RemmitanceTable = ({ data, agents }) => {
     }
     return (
         <div className="w-100 d-flex flex-column justify-content-center align-items-center">
-            {data?.length <= 0 ? <p className="text-secondary" style={{ fontFamily: 'Montserrat-SemiBold' }}>No deposit made</p>
+            {data?.length <= 0 ? <p className="text-secondary mt-4" style={{ fontFamily: 'Montserrat-SemiBold' }}>No deposit made</p>
 
                 : (
                     <>
@@ -33,9 +33,8 @@ const RemmitanceTable = ({ data, agents }) => {
                             <tr style={{ fontFamily: 'Montserat-Regular', fontSize: '0.9em' }}>
                                 <th scope="col">#</th>
                                 <th scope="col">Date</th>
-                                <th scope="col">Agent Name</th>
-                                <th scope="col">Pos Location/Bank Name</th>
                                 <th scope="col">Amount</th>
+                                <th scope="col">Pos Location/Bank Name</th>
                                 <th scope="col">Ref No</th>
                                 <th scope="col" >
                                 </th>
@@ -50,9 +49,8 @@ const RemmitanceTable = ({ data, agents }) => {
                                     >
                                         <th scope="row">{index + 1}</th>
                                         <td>{moment(agent?.updatedAt).format('DD-MM-YYYY')}</td>
-                                        <td>{`${agent?.agent_id?.first_name} ${agent?.agent_id?.last_name}`}</td>
+                                        <td>{convertToThousand(agent?.total) }</td>
                                         <td>{`${agent?.location}`}</td>
-                                        <td>{`${agent?.total}`}</td>
                                         <td>{`${agent?.payment_reference}`}</td>
                                         
                                         {/* <td>{`${Naira} ${100000 * Math.random(10).toExponential(2)}`}</td> */}

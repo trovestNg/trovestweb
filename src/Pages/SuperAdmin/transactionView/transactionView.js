@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, Col, Row, Tabs, Tab } from "react-bootstrap";
+import { Container, Col, Row, Tabs, Tab, Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
 import DashboardPage from "../../../Components/Dashboard/dashboardPage";
 import Styles from "./sadmin.module.css";
@@ -32,6 +32,7 @@ import { useParams } from "react-router-dom";
 import Remittance from "./tabs/remittance";
 import Collections from "./tabs/collections";
 import Payouts from "./tabs/payouts";
+import AgentCollections from "./tabs/collections";
 
 const userType = localStorage.getItem(user_storage_type);
 
@@ -43,20 +44,15 @@ export default function TransactionView() {
   const [openModal, setopenModal] = useState(false);
   const [admin, setadmin] = useState({});
   const [loading, setloading] = useState(false);
-  const [superAdminInfo, setSuperAdminInfo] = useState({});
+  const [agentInfo, setAgentInfo] = useState({});
+  const [totalClient, setTotalClient] = useState();
   const [superAdminAdminData, setSuperAdminAdminData] = useState();
-  const [adminCreateSuccessModal, setAdminCreateSuccessModal] = useState(false);
-  const [adminCreateModal, setAdminCreateModal] = useState(false);
-  const [finconCreateModal, setFinconCreateModal] = useState(false);
-  const [finconCreateSuccessModal, setFinconCreateSuccessModal] =
-    useState(false);
+  const [earnings, setEarnings] = useState();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(15);
-
-  const { adminId } = useParams();
+  const {agentId} = useParams()
   const token = localStorage.getItem(user_storage_token);
-  const adminAgents = superAdminAdminData?.agents?.docs;
-  const adminData = superAdminAdminData?.admin;
+
 
   const navActions = [
     { icon: "bi bi-envelope-fill", name: "Dashboard" },
@@ -65,7 +61,7 @@ export default function TransactionView() {
   ];
 
   const fetch = async () => {
-    console.log(';ok');
+    getAgentInfo();
   };
 
   useEffect(() => {
@@ -86,6 +82,17 @@ export default function TransactionView() {
     }
   };
 
+  const getAgentInfo = async () => {
+    setloading(true)
+    const res = await api.get(`/super/agent-artisans/${agentId}?page=1&limit=10`,token);
+    console.log(res);
+    if(res?.data?.success){
+      setAgentInfo(res?.data?.data?.agent);
+      setTotalClient(res?.data?.data?.client?.docs.length);
+      setEarnings(res?.data?.data)
+        setloading(false);
+    }
+  };
 
   const logUserOut = () => {
     DisplayMessage("logged Out", "success");
@@ -106,88 +113,121 @@ export default function TransactionView() {
       {/* side bar */}
       <SuperSideNav superAdminInfo={admin} />
       {/* page */}
-      <Col xs={10} className={`${Styles.col2} min-vh-100`}>
-        {/* navbar constant */}
-        <Row
-          className="w-100 m-0 px-2 bg-white shadow-sm mb-3"
-          style={{ height: "5em" }}
+  <Col xs={10} className={`${Styles.col2} min-vh-100 d-flex flex-column justify-content-center align-items-center`}>
+    {
+    loading? <Spinner/>:<>
+    <Row
+      className="w-100 m-0 px-2 bg-white shadow-sm mb-3"
+      style={{ height: "5em" }}
+    >
+      {/* search bar column */}
+      <Col xs={9}></Col>
+      {/* notification column */}
+      <Col xs={3} className="">
+        <ul
+          className="d-flex flex-row gap-3 align-items-center 
+                    justify-content-center h-100"
+          style={{ listStyle: "none" }}
         >
-          {/* search bar column */}
-          <Col xs={9}></Col>
-          {/* notification column */}
-          <Col xs={3} className="">
-            <ul
-              className="d-flex flex-row gap-3 align-items-center 
-                        justify-content-center h-100"
-              style={{ listStyle: "none" }}
+          {navActions.map((action, index) => (
+            <div
+              key={index}
+              onClick={() => console.log(index)}
+              className="shadow-sm d-flex align-items-center justify-content-center"
+              style={{
+                width: "2em",
+                height: "2em",
+                borderRadius: "1em",
+                backgroundColor: "#fff",
+                cursor: "pointer",
+              }}
             >
-              {navActions.map((action, index) => (
-                <div
-                  key={index}
-                  onClick={() => console.log(index)}
-                  className="shadow-sm d-flex align-items-center justify-content-center"
-                  style={{
-                    width: "2em",
-                    height: "2em",
-                    borderRadius: "1em",
-                    backgroundColor: "#fff",
-                    cursor: "pointer",
-                  }}
+              <i className={action.icon} style={{ color: "#7D1312" }} />
+            </div>
+          ))}
+        </ul>
+      </Col>
+    </Row>
+
+    <Row
+      className="w-100 d-flex justify-content-end m-0 p-0 mt-3"
+      
+    >
+      <Col xs={3} className="d-flex align-items-center" >
+      <img src={agentInfo?.image} height={'200em'}/>
+      </Col>
+      <Col style={{fontFamily:'Montserrat'}}>
+      <p className="mt-4">
+        {
+          `Name : ${agentInfo?.first_name} ${agentInfo?.last_name}`
+        }
+      </p>
+      <p className="mt-1">
+        {
+          `Total Clients : ${totalClient}`
+        }
+      </p>
+      <p className="mt-1 text-primary">
+        {
+          `Total Collections : ${convertToThousand(earnings?.total_collections)}`
+        }
+      </p>
+      <p className="mt-1 text-success">
+        {
+          `Total Deposits : ${convertToThousand(earnings?.total_remmitance)}`
+        }
+      </p>
+      <p className="mt-1 text-danger">
+        {
+          `Total Payout :${convertToThousand(earnings?.total_payout)}`
+        }
+      </p>
+      </Col>
+      
+    </Row>
+    <div className="w-100 ">
+      <Container fluid className="">
+        <Row className="d-flex justify-content-center m-0">
+          <Col className="w-100 d-flex flex-column align-items-center">
+            <Row className="w-100">
+              <Tabs
+                className="d-flex justify-content-center align-items-center px-3 m-0  gap-5 mt-5 mb-4"
+                defaultActiveKey="remitance"
+                variant="pills"
+                id=""
+              >
+                <Tab
+                  eventKey="remitance"
+                  title="Remmitance"
+                  className="w-100 mt-4"
+                  tabClassName="border-1 px-5 py-2 w-100 rounded-5"
                 >
-                  <i className={action.icon} style={{ color: "#7D1312" }} />
-                </div>
-              ))}
-            </ul>
+                  <Remittance />
+                </Tab>
+                <Tab
+                  eventKey="Completed"
+                  title="Collections"
+                  className="w-100 mt-4"
+                  tabClassName="px-5 py-2 w-100 rounded-5"
+                >
+                  <AgentCollections/>
+                </Tab>
+                <Tab
+                  eventKey="Terminated"
+                  title="Pay outs"
+                  className="w-100 mt-4"
+                  tabClassName="px-5 w-100 py-2 rounded-5"
+                >
+                  <Payouts />
+                </Tab>
+              </Tabs>
+            </Row>
           </Col>
         </Row>
-
-        <Row
-          className="w-100 d-flex justify-content-end m-0 p-0 mt-3"
-          style={{ backgroundColor: "#FBFBFB" }}
-        >
-          
-        </Row>
-        <div className="w-100  ">
-          <Container fluid className="">
-            <Row className="d-flex justify-content-center m-0">
-              <Col className="w-100 d-flex flex-column align-items-center">
-                <Row className="w-100">
-                  <Tabs
-                    className="d-flex justify-content-center align-items-center px-3 m-0  gap-5 mt-5 mb-4"
-                    defaultActiveKey="remitance"
-                    variant="pills"
-                    id=""
-                  >
-                    <Tab
-                      eventKey="remitance"
-                      title="Remmitance"
-                      className="w-100 mt-4"
-                      tabClassName="border-1 px-5 py-2 w-100 rounded-5"
-                    >
-                      <Remittance />
-                    </Tab>
-                    <Tab
-                      eventKey="Completed"
-                      title="Collections"
-                      className="w-100 mt-4"
-                      tabClassName="px-5 py-2 w-100 rounded-5"
-                    >
-                      <Collections />
-                    </Tab>
-                    <Tab
-                      eventKey="Terminated"
-                      title="Pay outs"
-                      className="w-100 mt-4"
-                      tabClassName="px-5 w-100 py-2 rounded-5"
-                    >
-                      <Payouts />
-                    </Tab>
-                  </Tabs>
-                </Row>
-              </Col>
-            </Row>
-          </Container>
-        </div>
+      </Container>
+    </div>
+    </>
+    }
       </Col>
     </Container>
   );

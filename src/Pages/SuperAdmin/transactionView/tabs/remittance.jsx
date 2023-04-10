@@ -5,6 +5,7 @@ import RemmitanceTable from "../../components/remmitanceTable";
 import { Formik } from "formik";
 import * as yup from 'yup';
 import api from "../../../../app/controllers/endpoints/api";
+import { useParams } from "react-router-dom";
 import { user_storage_token } from "../../../../config";
 
 export default function Remittance() {
@@ -14,6 +15,7 @@ export default function Remittance() {
     const [deposits, setDeposits] = useState([]);
     const [refreshData,setRefreshData] = useState(false);
     const token = localStorage.getItem(user_storage_token);
+    const {agentId} = useParams()
 
 
     const initialValue = {
@@ -33,11 +35,12 @@ export default function Remittance() {
     }
 
     const getRemmitance = async () => {
-        setLoading(true)
-        const res = await api.get(`/super/all-collections?page=1&limit=30`,token);
+       
+        const res = await api.get(`/super/get-agent-collections/${agentId}?status=1&page=1&limit=${100}`,token);
+        console.log(res);
         if(res?.data?.success){
-            setDeposits(res?.data?.data?.deposit);
-            setLoading(false);
+            setDeposits(res?.data?.data?.remmitance);
+          
         }
       };
     const fetch = ()=>{
@@ -50,13 +53,12 @@ export default function Remittance() {
     
 
     return (
-       <div className="d-flex flex-column align-items-center">
-
-            { loading? <Spinner /> : 
-            <>
+       <div className="d-flex flex-column align-items-center" style={{minBlockSize:'15em'}}>
                 <Row className="w-100 mt-3">
-                <Col style={{ fontFamily: 'Montserrat', fontSize: '1em' }}>
-                    
+                <Col style={{ fontFamily: 'Montserrat', fontSize: '0.7em' }}>
+                    <h1 style={{ fontSize: '1.5em' }}>
+                       All deposits by this agent
+                    </h1>
                 </Col>
                 <Formik
                 initialValues={initialValue}
@@ -114,8 +116,7 @@ export default function Remittance() {
                 </Formik>
             </Row>
             <RemmitanceTable data={deposits} />
-            </>
-            }
+           
        </div>
     )
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
-    Col, Row, InputGroup, Button,
+    Col, Row, InputGroup, Button, Spinner,
 } from "react-bootstrap";
 import RemmitanceTable from "../../components/remmitanceTable";
 import CollectionTable from "../../components/collectionTable";
@@ -35,9 +35,12 @@ export default function AllCollections() {
     }
 
     const fetch = async () => {
+      setLoading(true)
         const res = await api.get('/super/all-collections?page=1&limit=100', token)
         if (res?.data?.success) {
+          
             setAllCollections(res?.data?.data?.revenue?.docs);
+            setLoading(false);
 
         }
 
@@ -68,7 +71,8 @@ export default function AllCollections() {
                     onSubmit={(val) => handleDateSearch(val)}
                 >
 
-                    {({ handleChange, handleSubmit, errors }) =>
+                    { loading? <Spinner/> :
+                    ({ handleChange, handleSubmit, errors }) =>
                     (
                         <Col className="d-flex align-items-center gap-2 justify-content-end">
                         <InputGroup
