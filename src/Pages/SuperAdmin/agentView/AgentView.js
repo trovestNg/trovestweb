@@ -169,6 +169,13 @@ export default function AgentView() {
     console.log(res);
     if (res?.data?.success) {
       setArtisans(res?.data?.data?.docs);
+      setTotalItem({
+        totalItems: res?.data?.data?.totalDocs,
+        count: res?.data?.data?.pagingCounter,
+        itemsPerPage: res?.data?.data?.limit,
+        currentPage: res?.data?.data?.page,
+        totalPages: res?.data?.data?.totalPages
+      })
       setSearchLoading(false);
     }
   };

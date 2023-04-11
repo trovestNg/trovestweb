@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 
 const AgentTable = ({ data, agents }) => {
     const navigate = useNavigate();
-console.log({tableAgent: data})
 
 const calculateAllThrifts=(array)=>{
     let total = 0;
