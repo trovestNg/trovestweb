@@ -36,6 +36,9 @@ const userType = localStorage.getItem(user_storage_type);
 
 export default function CustomerManagement() {
   const [refreshData, setRefreshData] = useState();
+  const [totalItem, setTotalItem] = useState({ totalItems: 0, count: 0, itemsPerPage: 0, currentPage: 0, totalPages: 0 });
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(8);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { auth } = useSelector((state) => state);
@@ -44,8 +47,6 @@ export default function CustomerManagement() {
   const [loading, setloading] = useState(false);
   const [superAdminInfo, setSuperAdminInfo] = useState({});
   const [superAdminAdminData, setSuperAdminAdminData] = useState();
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(15);
 
   const { adminId } = useParams();
   const token = localStorage.getItem(user_storage_token);
@@ -80,23 +81,6 @@ export default function CustomerManagement() {
     }
   };
 
-
-  const getSuperAdminAgents = async () => {
-    const payload = {
-      page: page,
-      limit: limit,
-      token: token,
-      admin_id: adminId,
-    };
-
-    const res = await superAdminGetAdminAgents(payload);
-    console.log({ responsehere: res?.data });
-
-    if (res?.data?.success) {
-      setSuperAdminAdminData(res?.data?.data);
-    }
-  };
-
   const logUserOut = () => {
     DisplayMessage("logged Out", "success");
     localStorage.removeItem(user_storage_name);
@@ -110,7 +94,6 @@ export default function CustomerManagement() {
     dispatch(setAdminAction(superAdminInfo));
     return navigate("/");
   };
-  console.log({ respon: superAdminAdminData });
   return (
     <Container fluid className={`d-flex p-0 ${Styles.container} min-vh-100`}>
       {/* side bar */}

@@ -45,6 +45,10 @@ import CustomerTable from "../components/customerTable";
 export default function AgentView() {
   
   const [refreshData, setRefreshData] = useState();
+  const [totalItem, setTotalItem] = useState({ totalItems: 0, count: 0, itemsPerPage: 0, currentPage: 0, totalPages: 0 });
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(8);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { auth } = useSelector((state) => state);
@@ -53,25 +57,16 @@ export default function AgentView() {
   const [allDeposits, setAllDeposits] = useState();
   const [allCollections, setAllCollections] = useState();
   const [allPayouts, setAllPayouts] = useState();
-  const [artisans, setArtisans] = useState()
+  const [artisans, setArtisans] = useState([])
   const [admin, setadmin] = useState({});
   const [userInput, setUserInput] = useState('');
   const [loading, setloading] = useState(false);
   const [noOfCus,setNoOfCustomer] = useState('')
-  const [superAdminAdminData, setSuperAdminAgentInfo] = useState();
-  const [adminCreateSuccessModal, setAdminCreateSuccessModal] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
-  const [adminCreateModal, setAdminCreateModal] = useState(false);
-  const [finconCreateModal, setFinconCreateModal] = useState(false);
-  const [finconCreateSuccessModal, setFinconCreateSuccessModal] = useState(false);
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(100);
   const userType = localStorage.getItem(user_storage_type);
 
   const { agentId } = useParams();
   const token = localStorage.getItem(user_storage_token);
-  const agentCustomers = superAdminAdminData?.client?.docs;
-  const specificAgent = superAdminAdminData?.agent;
 
   // console.log({idHere:})
 
@@ -107,6 +102,21 @@ export default function AgentView() {
       return fetch();
     }
   };
+  const handlePagination = (value) => {
+    setPage(value);
+    setRefreshData(!refreshData);
+  }
+
+  const handleNext = () => {
+    setPage(totalItem.currentPage + 1)
+    setRefreshData(!refreshData)
+
+  }
+
+  const handlePrevious = () => {
+    setPage(totalItem.currentPage - 1)
+    setRefreshData(!refreshData)
+  };
  
 
   const loadAgentData = async () => {
@@ -123,6 +133,13 @@ export default function AgentView() {
     if (res?.data?.success) {
       setAgentInfo(res?.data?.data?.agent);
       setArtisans(res?.data?.data?.client?.docs);
+      setTotalItem({
+        totalItems: res?.data?.data?.client?.totalDocs,
+        count: res?.data?.data?.client?.pagingCounter,
+        itemsPerPage: res?.data?.data?.client?.limit,
+        currentPage: res?.data?.data?.client?.page,
+        totalPages: res?.data?.data?.client?.totalPages
+      })
       setAllCollections(res?.data?.data?.total_collections);
       setAllDeposits(res?.data?.data?.total_remmitance);
       setAllPayouts(res?.data?.data?.total_payout);
@@ -169,17 +186,6 @@ export default function AgentView() {
     dispatch(setAdminAction(superAdminInfo));
     return navigate("/");
   };
-
-
- 
-
-
-
-  
-
-
-
-
 
   return (
     <Container fluid className={`d-flex p-0 ${Styles.container} min-vh-100`}>
@@ -387,17 +393,44 @@ loading?<Spinner/> :
               </Col>
             </Row>
             {loading ? <Spinner /> : <CustomerTable data={artisans} />}
+            <Row className="w-100 mb-4">
+        {
+          artisans.length > 0 ? (
+            <nav aria-label="..." className="d-flex justify-content-center ">
+              <ul className="pagination">
+                <Button className="page-item" 
+                disabled={totalItem.currentPage == 1}
+                onClick={handlePrevious}
+                >
+                  Previous
+                </Button>
+                {
+                  Array(totalItem.totalPages).fill("").map((value, index)=>(
+                    <li
+                    key={index}
+                    onClick={() => handlePagination(index + 1)}
+                      
+                      className="page-item"
+                    >
+                      <a className="page-link"
+                      style={{ backgroundColor: index + 1 == totalItem.currentPage ? 'gray' : '', cursor: 'pointer' }}
+                       >{index + 1}</a>
+                    </li>
+                  ))
+                }
+                <Button className="page-item" 
+                disabled={totalItem.currentPage == totalItem.totalPages}
+                onClick={handleNext}
+                >
+                  Next
+                </Button>
+              </ul>
+            </nav>
+          ) : null
+        }
+      </Row>
           </Card>
         </Row>
-
-        <CreateFincon
-          on={finconCreateModal}
-          success={finconCreateSuccessModal}
-          offSuccess={() =>
-            setAdminCreateSuccessModal(!finconCreateSuccessModal)
-          }
-          off={() => setFinconCreateModal(!finconCreateModal)}
-        />
         </>
       }</Col>
     </Container>

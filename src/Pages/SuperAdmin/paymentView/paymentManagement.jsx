@@ -64,9 +64,7 @@ export default function PaymentManagement() {
     { icon: "bi bi-bell-fill", name: "Add Fin Con" },
   ];
 
-  const fetch = async () => {
-    getAllCollections();
-  };
+  
 
   useEffect(() => {
     checkToken()
@@ -82,40 +80,8 @@ export default function PaymentManagement() {
       alert("Unauthorized Access");
       logUserOut();
     } else {
-      return fetch();
+      return
     }
-  };
-
-  const getAllCollections = async ()=>{
-const res = await api.get(`/super/all-collections?page=1&limit=30`, token)
-console.log(res)
-
-  }
-
-
-  const getSuperAdminAgents = async () => {
-    const payload = {
-      page: page,
-      limit: limit,
-      token: token,
-      admin_id: adminId,
-    };
-
-    const res = await superAdminGetAdminAgents(payload);
-    console.log({ responsehere: res?.data });
-
-    if (res?.data?.success) {
-      setSuperAdminAdminData(res?.data?.data);
-    }
-  };
-
-  const getAdmintRevenue = async () => {
-    const payload = {
-      agent_id: adminId,
-      token: token,
-    };
-    const res = await getAdminAgentCollection(payload);
-    console.log({ agentTCollect: res });
   };
 
   const logUserOut = () => {
@@ -131,7 +97,6 @@ console.log(res)
     dispatch(setAdminAction(superAdminInfo));
     return navigate("/");
   };
-  console.log({ respon: superAdminAdminData });
   return (
     <Container fluid className={`d-flex p-0 ${Styles.container} min-vh-100`}>
       {/* side bar */}

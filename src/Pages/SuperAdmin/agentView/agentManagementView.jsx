@@ -11,34 +11,23 @@ import {
   user_storage_name,
   user_storage_type
  } from "../../../config";
-import PendingAgents from "./tabs/pendingAgents";
 import { setAgentAction } from "../../../Reducers/agent.reducer";
 import { setAdminAction } from "../../../Reducers/admin.reducer";
-import { getAdmin } from "../../../Sagas/Requests";
 import DisplayMessage from "../../../Components/Message";
 import SuperSideNav from "../components/supersidebar";
 import ApprovedAgents from "./tabs/approvedAgents";
-import {
-  superAdminGetAdminAgents,
-  getAdminAgentCollection,
-} from "../../../Sagas/Requests";
-import { useParams } from "react-router-dom";
+
 
 
 const userType = localStorage.getItem(user_storage_type);
 
 export default function AgentManagement() {
-  const [refreshData, setRefreshData] = useState();
+  
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { auth } = useSelector((state) => state);
-  const [openModal, setopenModal] = useState(false);
-  
   const [admin, setadmin] = useState({});
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(15);
-
-  const { adminId } = useParams();
+  const [refreshData, setRefreshData] = useState(false);
   const token = localStorage.getItem(user_storage_token);
 
   const navActions = [

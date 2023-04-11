@@ -41,6 +41,9 @@ const userType = localStorage.getItem(user_storage_type);
 export default function SuperAdminDashboard() {
 
   const [refreshData, setRefreshData] = useState();
+  const [totalItem, setTotalItem] = useState({ totalItems: 0, count: 0, itemsPerPage: 0, currentPage: 0, totalPages: 0 });
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(8);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { auth } = useSelector((state) => state);
@@ -48,6 +51,8 @@ export default function SuperAdminDashboard() {
   const [admin, setadmin] = useState({});
   const [loading, setloading] = useState(false);
   const [superAdminInfo, setSuperAdminInfo] = useState({});
+  const [admins,setAdmins] = useState([]);
+  
   const [ superAdminData, setSuperAdminData] = useState()
   const [adminCreateSuccessModal, setAdminCreateSuccessModal] = useState(false);
   const [adminCreateModal, setAdminCreateModal] = useState(false);
@@ -66,7 +71,6 @@ export default function SuperAdminDashboard() {
   const collections = convertToThousand(superAdminInfo?.total_collections);
   const deposits = convertToThousand(superAdminInfo?.total_remmitance);
   const payouts = convertToThousand(superAdminInfo?.total_payout);
-  const admins  = superAdminInfo?.superadmin?.admin
 
   const financeReport = [
     {
@@ -118,9 +122,17 @@ export default function SuperAdminDashboard() {
 
   const fetchService = async () => {
     setloading(true);
-    const res = await api.get(`/super/dashboard?limit=30`, token);
+    const res = await api.get(`/super/dashboard?limit=${limit}&page=${page}`, token);
     if (res?.data?.success) {
       setSuperAdminInfo(res?.data?.data);
+      setAdmins(res?.data?.data?.superadmin?.admin)
+      setTotalItem({
+        totalItems: res?.data?.data?.revenue?.totalDocs,
+        count: res?.data?.data?.revenue?.pagingCounter,
+        itemsPerPage: res?.data?.data?.revenue?.limit,
+        currentPage: res?.data?.data?.revenue?.page,
+        totalPages: res?.data?.data?.revenue?.totalPages
+      })
       setloading(false);
     }
   };
@@ -158,6 +170,22 @@ export default function SuperAdminDashboard() {
     dispatch(setAgentAction(superAdminInfo));
     dispatch(setAdminAction(superAdminInfo));
     return navigate("/");
+  };
+
+  const handlePagination = (value) => {
+    setPage(value);
+    setRefreshData(!refreshData);
+  }
+
+  const handleNext = () => {
+    setPage(totalItem.currentPage + 1)
+    setRefreshData(!refreshData)
+
+  }
+
+  const handlePrevious = () => {
+    setPage(totalItem.currentPage - 1)
+    setRefreshData(!refreshData)
   };
 
   return (
@@ -302,6 +330,42 @@ export default function SuperAdminDashboard() {
             <DefaultTable data={admins} />
           </Card>
         </Row>
+        <Row className="w-100 mb-4">
+        {
+          admins.length > 0 ? (
+            <nav aria-label="..." className="d-flex justify-content-center ">
+              <ul className="pagination">
+                <Button className="page-item" 
+                disabled={totalItem.currentPage == 1}
+                onClick={handlePrevious}
+                >
+                  Previous
+                </Button>
+                {
+                  Array(totalItem.totalPages).fill("").map((value, index)=>(
+                    <li
+                    key={index}
+                    onClick={() => handlePagination(index + 1)}
+                      
+                      className="page-item"
+                    >
+                      <a className="page-link"
+                      style={{ backgroundColor: index + 1 == totalItem.currentPage ? 'gray' : '', cursor: 'pointer' }}
+                       >{index + 1}</a>
+                    </li>
+                  ))
+                }
+                <Button className="page-item" 
+                disabled={totalItem.currentPage == totalItem.totalPages}
+                onClick={handleNext}
+                >
+                  Next
+                </Button>
+              </ul>
+            </nav>
+          ) : null
+        }
+      </Row>
 
         
         <CreateAdmin
