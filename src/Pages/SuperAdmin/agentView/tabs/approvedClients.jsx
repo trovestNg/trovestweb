@@ -11,14 +11,17 @@ import { user_storage_token } from "../../../../config";
 import CustomerTable from "../../components/customerTable";
 
 export default function ApprovedClients() {
+  const [refreshData, setRefreshData] = useState();
+  const [totalItem, setTotalItem] = useState({ totalItems: 0, count: 0, itemsPerPage: 0, currentPage: 0, totalPages: 0 });
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(8);
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [loading,setLoading] = useState(false);
-    const [refreshData,setRefreshData] = useState(false);
     const [searchLoading, setSearchLoading] = useState(false);
     const [searchByName, setSearchByName] = useState(false);
     const [userSearch,setUserSearch] = useState('');
-    const [allAgents, setAllClients] = useState();
+    const [allAgents, setAllClients] = useState([]);
     
     const token = localStorage.getItem(user_storage_token);
 
@@ -37,9 +40,17 @@ export default function ApprovedClients() {
 
     const fetchService = async () => {
         setLoading(true);
-        const res = await api.get(`/super/artisans?page=1&limit=100`, token);
+        const res = await api.get(`/super/artisans?page=${page}&limit=${limit}`, token);
+        console.log(res);
         if (res?.data?.success) {
           setAllClients(res?.data?.data?.docs);
+          setTotalItem({
+            totalItems: res?.data?.data?.totalDocs,
+            count: res?.data?.data?.pagingCounter,
+            itemsPerPage: res?.data?.data?.limit,
+            currentPage: res?.data?.data?.page,
+            totalPages: res?.data?.data?.totalPages
+          })
           setLoading(false);
         }
       };
@@ -76,6 +87,22 @@ setRefreshData(!refreshData);
         }
         
     }
+
+    const handlePagination = (value) => {
+      setPage(value);
+      setRefreshData(!refreshData);
+    }
+  
+    const handleNext = () => {
+      setPage(totalItem.currentPage + 1)
+      setRefreshData(!refreshData)
+  
+    }
+  
+    const handlePrevious = () => {
+      setPage(totalItem.currentPage - 1)
+      setRefreshData(!refreshData)
+    };
 
     // console.log({start: startDate, end:endDate});
 
@@ -115,10 +142,46 @@ setRefreshData(!refreshData);
                 </Col>
                 
             </Row>
-            <Row className="w-100  d-flex justify-content-center align-items-center">
+            <Row className="w-100  d-flex justify-content-center align-items-center" style={{minHeight:'25em'}}>
             {
            loading? <Spinner/> : <CustomerTable data={allAgents} />}
             </Row>
+            <Row className="w-100 mb-4">
+        {
+          allAgents.length > 0 ? (
+            <nav aria-label="..." className="d-flex justify-content-center ">
+              <ul className="pagination">
+                <Button className="page-item" 
+                disabled={totalItem.currentPage == 1}
+                onClick={handlePrevious}
+                >
+                  Previous
+                </Button>
+                {
+                  Array(totalItem.totalPages).fill("").map((value, index)=>(
+                    <li
+                    key={index}
+                    onClick={() => handlePagination(index + 1)}
+                      
+                      className="page-item"
+                    >
+                      <a className="page-link"
+                      style={{ backgroundColor: index + 1 == totalItem.currentPage ? 'gray' : '', cursor: 'pointer' }}
+                       >{index + 1}</a>
+                    </li>
+                  ))
+                }
+                <Button className="page-item" 
+                disabled={totalItem.currentPage == totalItem.totalPages}
+                onClick={handleNext}
+                >
+                  Next
+                </Button>
+              </ul>
+            </nav>
+          ) : null
+        }
+      </Row>
            
        </div>
     )

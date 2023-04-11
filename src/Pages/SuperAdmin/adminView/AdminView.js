@@ -1,38 +1,24 @@
 import { useEffect, useState } from "react";
 import {
-  Container,
-  Col,
-  Row,
-  Card,
-  Table,
-  FormGroup,
+  Container,Col,Row,
   Button,
+  Card,
   InputGroup,
   Spinner,
 } from "react-bootstrap";
-import { toast } from "react-toastify";
-import DashboardPage from "../../../Components/Dashboard/dashboardPage";
 import Styles from "./sadmin.module.css";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import {
   user_storage_token,
   user_storage_name,
-  dateFormat,
-  convertToThousand,
   Naira,
-  calculateRevenueTotalObject,
   user_storage_type,
 } from "../../../config";
 import { setAgentAction } from "../../../Reducers/agent.reducer";
 import { setAdminAction } from "../../../Reducers/admin.reducer";
-import { getAdmin } from "../../../Sagas/Requests";
 import DisplayMessage from "../../../Components/Message";
-import CreateAdmin from "../components/createAdmin";
-import CreateFincon from "../components/createFincon";
-import api from "../../../app/controllers/endpoints/api";
 import moment from "moment";
-import DefaultTable from "../../../Components/Dashboard/components/defaultTable";
 import SuperSideNav from "../components/supersidebar";
 import { superAdminGetAdminAgents,getAdminAgentCollection,superAdminSearchAgent } from "../../../Sagas/Requests";
 import { useParams } from "react-router-dom";
@@ -43,9 +29,9 @@ const userType = localStorage.getItem(user_storage_type);
 export default function AdminView() {
   const [refreshData, setRefreshData] = useState();
   const dispatch = useDispatch();
-  const [totalItem, setTotalItem] = useState({ totalDocs: 0, count: 0, itemsPerPage: 0, currentPage: 0, totalPages: 0 });
+  const [totalItem, setTotalItem] = useState({ totalItems: 0, count: 0, itemsPerPage: 0, currentPage: 0, totalPages: 0 });
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(50);
+  const [limit, setLimit] = useState(8);
   const navigate = useNavigate();
   const { auth } = useSelector((state) => state);
   const [openModal, setopenModal] = useState(false);
@@ -57,13 +43,7 @@ export default function AdminView() {
   const [totalPayouts, setTotalPayouts] = useState();
   const [loading, setloading] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
-  const [superAdminInfo, setSuperAdminInfo] = useState({});
   const [searchAgent, setSearchAgent] = useState(false);
-  const [adminCreateSuccessModal, setAdminCreateSuccessModal] = useState(false);
-  const [adminCreateModal, setAdminCreateModal] = useState(false);
-  const [finconCreateModal, setFinconCreateModal] = useState(false);
-  const [finconCreateSuccessModal, setFinconCreateSuccessModal] =
-    useState(false);
     const [userSearchAgent, setUserSearchAgent] = useState('');
 
   const { adminId } = useParams();
@@ -90,6 +70,24 @@ export default function AdminView() {
       return fetch();
     }
   };
+
+  const handlePagination = (value) => {
+    setPage(value);
+    setRefreshData(!refreshData);
+  }
+
+  const handleNext = () => {
+    setPage(totalItem.currentPage + 1)
+    setRefreshData(!refreshData)
+
+  }
+
+  const handlePrevious = () => {
+    setPage(totalItem.currentPage - 1)
+    setRefreshData(!refreshData)
+  };
+
+ 
 
   const logUserOut = () => {
     DisplayMessage("logged Out", "success");
@@ -132,6 +130,13 @@ if(res?.data?.success){
   
   setAdminData(res?.data?.data?.admin);
   setAdminAgents(res?.data?.data?.agents?.docs)
+  setTotalItem({
+    totalItems: res?.data?.data?.agents?.totalDocs,
+    count: res?.data?.data?.agents?.pagingCounter,
+    itemsPerPage: res?.data?.data?.agents?.limit,
+    currentPage: res?.data?.data?.agents?.page,
+    totalPages: res?.data?.data?.agents?.totalPages
+  })
   setTotalCollections(res?.data?.data?.total_collections);
   setTotalDeposits(res?.data?.data?.total_remmitance);
   setTotalPayouts(res?.data?.data?.total_payout);
@@ -173,14 +178,9 @@ console.log(res)
     setTotalItem({totalDocs: res?.data?.data?.totalDocs, pagingCounter: res?.data?.data?.pagingCounter,
     pagingCounter: res?.data?.data?.pagingCounter, currentPage: 0, totalPages: 0 })
    }
-   console.log({searchedHere : res})
 
   }
   
-
-
-  
-  console.log({ respon: adminData });
   return (
     <Container fluid className={`d-flex p-0 ${Styles.container} min-vh-100`}>
       {/* side bar */}
@@ -374,17 +374,47 @@ console.log(res)
             </Row>
             {
             loading? <Spinner/> : <AgentTable data={adminAgents}/>
-          }</Card>
-        </Row>
-
-        <CreateFincon
-          on={finconCreateModal}
-          success={finconCreateSuccessModal}
-          offSuccess={() =>
-            setAdminCreateSuccessModal(!finconCreateSuccessModal)
           }
-          off={() => setFinconCreateModal(!finconCreateModal)}
-        />
+          <Row className="w-100 mb-4">
+        {
+          adminAgents.length > 0 ? (
+            <nav aria-label="..." className="d-flex justify-content-center ">
+              <ul className="pagination">
+                <Button className="page-item" 
+                disabled={totalItem.currentPage == 1}
+                onClick={handlePrevious}
+                >
+                  Previous
+                </Button>
+                {
+                  Array(totalItem.totalPages).fill("").map((value, index)=>(
+                    <li
+                    key={index}
+                    onClick={() => handlePagination(index + 1)}
+                      
+                      className="page-item"
+                    >
+                      <a className="page-link"
+                      style={{ backgroundColor: index + 1 == totalItem.currentPage ? 'gray' : '', cursor: 'pointer' }}
+                       >{index + 1}</a>
+                    </li>
+                  ))
+                }
+                <Button className="page-item" 
+                disabled={totalItem.currentPage == totalItem.totalPages}
+                onClick={handleNext}
+                >
+                  Next
+                </Button>
+              </ul>
+            </nav>
+          ) : null
+        }
+      </Row>
+          
+          </Card>
+        </Row>
+        
       </>}</Col>
     </Container>
   );
