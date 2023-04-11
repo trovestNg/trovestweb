@@ -142,7 +142,7 @@ if(res?.data?.success){
   setTotalPayouts(res?.data?.data?.total_payout);
   setloading(false)
 }
-console.log(res)
+
 }
 
 
@@ -172,11 +172,18 @@ console.log(res)
     }
 
    const res = await superAdminSearchAgent(payload);
+   console.log(res);
    if(res?.data?.success){
     setSearchLoading(false);
     setAdminAgents(res?.data?.data?.docs);
-    setTotalItem({totalDocs: res?.data?.data?.totalDocs, pagingCounter: res?.data?.data?.pagingCounter,
-    pagingCounter: res?.data?.data?.pagingCounter, currentPage: 0, totalPages: 0 })
+    setTotalItem({
+      totalItems: res?.data?.data?.totalDocs,
+      count: res?.data?.data?.pagingCounter,
+      itemsPerPage: res?.data?.data?.limit,
+      currentPage: res?.data?.data?.page,
+      totalPages: res?.data?.data?.totalPages
+    })
+    
    }
 
   }
