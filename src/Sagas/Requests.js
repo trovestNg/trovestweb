@@ -25,6 +25,8 @@ export const createSuperAdminAdmin = (data, token) => {
 	return axios(requestOptions);
 };
 
+
+
 // Create finconn
 export const createFinconAccount = (data, token) => {
 	headers.authorization = `Bearer ${token}`;
@@ -247,7 +249,7 @@ export const getAdminAgents = (payload) => {
 	headers.authorization = `Bearer ${token}`;
 	const requestOptions = {
 		method: 'get',
-		url: `${baseUrl}/admin/get-admin-agents?page=${page}&limit=${limit}`,
+		url: `${baseUrl}/admin/get-admin-agents?page=${page}&limit=${100}`,
 		headers: headers,
 	};
 	return axios(requestOptions);
@@ -273,6 +275,20 @@ export const getAdmin = (token) => {
 		method: 'get',
 		url: `${baseUrl}/admin/get-admin`,
 		headers: headers,
+	};
+	return axios(requestOptions);
+};
+
+export const debitClient = (payload) => {
+	const {data, token, userId}= payload
+	headers.authorization = `Bearer ${token}`;
+	headers['Content-Type'] = 'application/json';
+	const requestOptions = {
+		method: 'post',
+		url: `${baseUrl}/admin/payout/${userId}`,
+		data: {amount :data},
+		headers: headers,
+		
 	};
 	return axios(requestOptions);
 };

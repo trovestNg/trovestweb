@@ -227,6 +227,15 @@ const AdminAgentView = () => {
                   style={{}}
                 >{`${agentInfo?.assigned_id}`}</p>
                 <p className="m-0 p-0" style={{}}>{`${agentInfo?.mobile}`}</p>
+                
+                      <Button
+                        // onClick={() => setDebitModal(true)}
+                        className="ml-3"
+                        disabled
+                        
+                      >
+                        Update Info
+                      </Button>
               </Col>
               <Col xs={9} className="" style={{ fontFamily: "Montserrat" }}>
                 <h5 className="mt-2 w-100 bg-secondary py-2 text-light d-flex justify-content-center">

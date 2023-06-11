@@ -39,7 +39,21 @@ export default {
 
     },
 
-    push: async () => {
-
+    post: async (url, token) => {
+        {
+            try {
+                const res = await axios.post(`${baseUrl}${url}`, config(token))
+                return res
+            } catch (error) {
+                const status = error.response?.data?.statusCode
+                if (status == 401 || status == 403) {
+                    localStorage.clear();
+                    if (!window.location?.pathname?.includes("/login")) {
+                        return window.location.href = "/login";
+                    }
+                }
+                return error.response
+            }
+        }
     }
 }

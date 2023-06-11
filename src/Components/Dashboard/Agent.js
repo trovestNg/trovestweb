@@ -12,6 +12,7 @@ import Loader from '../Modal/Loader';
 import DisplayMessage from '../Message';
 import { getAdminAgentCollection } from '../../Sagas/Requests';
 import { setAgenCollectiontAction } from '../../Reducers/agent.reducer'
+import { Button } from 'react-bootstrap';
 import Footer from '../Footer/Footer'
 
 
@@ -133,6 +134,13 @@ export default function Agent() {
                                 <h4>{`${agent.mobile}`}</h4>
                                 {/* <h4>{`${agent.gender}`}</h4> */}
                             </div>
+                            <Button
+                        // onClick={() => setDebitModal(true)}
+                        className="ml-3 bg-secondary"
+                        
+                      >
+                        Update Info
+                      </Button>
                         </div>
                         <div className={style.dashboardintro} style={{
                             width: '97%',
