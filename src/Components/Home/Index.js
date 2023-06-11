@@ -33,10 +33,7 @@ export default function Index() {
 	const [loading, setloading] = useState(false);
 	const [secureText, setSecureText] = useState(true);
 	const validationSchema = yup.object().shape({
-		userType: yup
-			.string()
-			.typeError('Must be a string')
-			.required('User type Is required'),
+		userType: yup.string().typeError('Must be a string').required('User type Is required'),
 		userEmail: yup
 			.string()
 			// .email
