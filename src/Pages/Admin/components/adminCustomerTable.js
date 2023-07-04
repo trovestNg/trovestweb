@@ -48,7 +48,7 @@ const AdminCustomerTable = ({ data, agents }) => {
                                         <td>{`${client?.full_name}`}</td>
                                         <td>{`${client?.mobile}`}</td>
                                         <td>{moment(client?.createdAt).format('DD-MM-YYYY')}</td>
-                                        <td>{`${Naira} ${calculateClientSavings(client?.thrifts)}`}</td>
+                                        <td>{`${Naira} ${client?.total_balance}`}</td>
                                         {/* <td>{`${Naira} ${100000 * Math.random(10).toExponential(2)}`}</td> */}
                                         <td className={`${Styles.tableicon}`}>
                                             <i className="bi bi-three-dots-vertical"></i>

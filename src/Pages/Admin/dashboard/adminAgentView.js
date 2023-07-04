@@ -149,6 +149,7 @@ const AdminAgentView = () => {
     return total;
   };
 
+  console.log(artisans);
   return (
     <Container fluid className={`d-flex p-0 ${Styles.container} min-vh-100`}>
       {/* side bar */}
@@ -253,13 +254,13 @@ const AdminAgentView = () => {
                       style={{ fontFamily: "Montserrat-Bold" }}
                       className="px-1 m-0 mt-2 text-primary "
                     >
-                      {`Total Deposits : ${Naira} ${agentInfo?.amount}`}
+                      {`Total Deposits : ${Naira} ${allDeposits}`}
                     </p>
                     <p
                       style={{ fontFamily: "Montserrat-Bold" }}
                       className="px-1 m-0 mt-2 text-danger "
                     >
-                      {`Paid Out : ${Naira} ${0}`}
+                      {`Paid Out : ${Naira} ${allPayouts}`}
                     </p>
                     <p
                       style={{ fontFamily: "Montserrat-Regular" }}
