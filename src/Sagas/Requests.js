@@ -293,3 +293,47 @@ export const debitClient = (payload) => {
 	return axios(requestOptions);
 };
 
+export const resetAgentPassword = (payload) => {
+	const {pass, token, userId}= payload
+	headers.authorization = `Bearer ${token}`;
+	headers['Content-Type'] = 'application/json';
+	const requestOptions = {
+		method: 'patch',
+		url: `${baseUrl}/admin/agent/password/${userId}`,
+		data: {"password" :pass},
+		headers: headers,
+		
+	};
+	return axios(requestOptions);
+};
+
+export const updateClientInfo = (payload) => {
+	const {body, token, artisanId}= payload
+	headers.authorization = `Bearer ${token}`;
+	headers['Content-Type'] = 'application/json';
+	const requestOptions = {
+		method: 'patch',
+		url: `${baseUrl}/admin/update-artisan/${artisanId}`,
+		data: {"mobile" :body},
+		headers: headers,
+		
+	};
+	return axios(requestOptions);
+};
+
+export const adminUpdateAgentBio = (payload) => {
+	const {info, token, agentId}= payload
+	headers.authorization = `Bearer ${token}`;
+	headers['Content-Type'] = 'application/json';
+	const requestOptions = {
+		method: 'patch',
+		url: `${baseUrl}/admin/update-agent/${agentId}`,
+		data: { body :info},
+		headers: headers,
+		
+	};
+	return axios(requestOptions);
+};
+
+
+
