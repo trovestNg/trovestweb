@@ -328,7 +328,12 @@ export const adminUpdateAgentBio = (payload) => {
 	const requestOptions = {
 		method: 'patch',
 		url: `${baseUrl}/admin/update-agent/${agentId}`,
-		data: { body :info},
+		data: { 
+			"first_name": info?.firstName,
+			"last_name": info?.lastName,
+			"mobile": info?.phoneNumber,
+			"email": info?.newMail,
+		},
 		headers: headers,
 		
 	};
