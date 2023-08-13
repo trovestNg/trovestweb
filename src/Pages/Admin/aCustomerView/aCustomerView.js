@@ -39,6 +39,7 @@ import ASavingsTable from "../../SuperAdmin/components/aSavingsTable";
 import FormControlLabel from "rsuite/esm/FormControlLabel";
 import { convertToThousand } from "../../../config";
 import { debitClient } from "../../../Sagas/Requests";
+import UpdateClientInfo from "../../../Components/Modal/clientInfoUpdateModal";
 
 const userType = localStorage.getItem(user_storage_type);
 
@@ -60,6 +61,8 @@ export default function ACustomerView() {
   const [withdrawn, setWithdrawn] = useState(0);
   const [clientData, setClientData] = useState();
   const [amountToDebit, setAmountToDebit] = useState(0);
+
+  const [updateModal, setUpdateModate] = useState(false)
 
   const [adminCreateSuccessModal, setAdminCreateSuccessModal] = useState(false);
   const [finconCreateModal, setFinconCreateModal] = useState(false);
@@ -127,6 +130,10 @@ export default function ACustomerView() {
       setDebitSucModal(true);
       setDebitLoading(false);
     }
+
+  }
+
+  const handleUpdateCLientInfo = ()=>{
 
   }
   const calculateBalance = () => {
@@ -215,6 +222,10 @@ export default function ACustomerView() {
     <Container fluid className={`d-flex p-0 ${Styles.container} min-vh-100`}>
       {/* side bar */}
       <AdminSideNav adminInfo={admin} />
+      <UpdateClientInfo on={updateModal} off={()=>{
+        setUpdateModate(false)
+        setRefreshData(!refreshData)
+        }}/>
       {/* page */}
       <Col
         xs={10}
@@ -318,11 +329,11 @@ export default function ACustomerView() {
                       </Button>
 
                       <Button
-                        disabled
                         className="ml-3 bg-secondary"
+                        onClick={()=>setUpdateModate(true)}
                         
                       >
-                        Update Info
+                        Update Phone
                       </Button>
                       <Modal show={debitnModal} centered>
                         <Modal.Header className="bg-primary text-light">

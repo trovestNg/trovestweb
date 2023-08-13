@@ -8,6 +8,7 @@ import {
   Button,
   InputGroup,
   Spinner,
+  Modal
 } from "react-bootstrap";
 
 import {
@@ -28,17 +29,22 @@ import moment from "moment";
 import api from "../../../app/controllers/endpoints/api";
 import { Naira } from "../../../config";
 import AdminCustomerTable from "../components/adminCustomerTable";
+import UpdateAgentBio from "../../../Components/Modal/agentBioModal";
+import UpdateAgentPass from "../../../Components/Modal/agentPassModal";
 
 const AdminAgentView = () => {
   const token = localStorage.getItem(user_storage_token);
   const userType = localStorage.getItem(user_storage_type);
-  const [refreshData, setRefreshData] = useState();
+  const [refreshData, setRefreshData] = useState(false);
   const [admin, setadmin] = useState({});
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setloading] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
   const [userInput, setUserInput] = useState("");
+
+  const [updateAgentInfo, setUpdateAgentInfo] = useState(false);
+  const [updateAgentPass, setUpdateAgentPass] = useState(false);
 
   const [agentInfo, setAgentInfo] = useState();
   const [allDeposits, setAllDeposits] = useState();
@@ -63,6 +69,8 @@ const AdminAgentView = () => {
     setFinconCreateSuccessModal(false);
     setRefreshData(!refreshData);
   };
+
+  const handleUpdateAgentBio = () => {};
 
   const checkToken = () => {
     const userData = localStorage.getItem(user_storage_name);
@@ -94,7 +102,6 @@ const AdminAgentView = () => {
   };
 
   const fetch = () => {
-    
     if (searchClient) {
       searchartisan();
     } else {
@@ -123,13 +130,16 @@ const AdminAgentView = () => {
       setAllCollections(res?.data?.data?.total_collections);
       setAllDeposits(res?.data?.data?.total_remmitance);
       setAllPayouts(res?.data?.data?.total_payout);
-
       setloading(false);
     }
   };
   const fetchAgentArtisans = async () => {
+   
     setloading(true);
-    const res = await api.get(`/admin/agent-artisans/${agentId}?page=1&limit=10`,token);
+    const res = await api.get(
+      `/admin/agent-artisans/${agentId}?page=1&limit=10`,
+      token
+    );
     // console.log(res);
 
     if (res?.data?.success) {
@@ -139,7 +149,7 @@ const AdminAgentView = () => {
 
   useEffect(() => {
     checkToken();
-  }, []);
+  }, [refreshData]);
 
   const calculateAgentCollections = (array) => {
     let total = 0;
@@ -152,6 +162,13 @@ const AdminAgentView = () => {
   console.log(artisans);
   return (
     <Container fluid className={`d-flex p-0 ${Styles.container} min-vh-100`}>
+      <UpdateAgentBio on={updateAgentInfo} off={()=>{
+        setUpdateAgentInfo(false)
+        setRefreshData(!refreshData)
+      }
+        
+        } initialInfo={agentInfo} agId ={agentId}/>
+      <UpdateAgentPass on={updateAgentPass} off={()=>setUpdateAgentPass(false)} initialInfo={agentInfo} agId ={agentId}/>
       {/* side bar */}
       <AdminSideNav adminInfo={admin} />
       {/* page */}
@@ -210,7 +227,7 @@ const AdminAgentView = () => {
             </Row>
             <Row className="m-0 w-100">
               <Col
-                xs={3}
+                xs={4}
                 className=" d-flex flex-column align-items-center m-0"
                 style={{ fontFamily: "Montserrat" }}
               >
@@ -228,17 +245,26 @@ const AdminAgentView = () => {
                   style={{}}
                 >{`${agentInfo?.assigned_id}`}</p>
                 <p className="m-0 p-0" style={{}}>{`${agentInfo?.mobile}`}</p>
-                
-                      <Button
-                        // onClick={() => setDebitModal(true)}
-                        className="ml-3"
-                        disabled
-                        
-                      >
-                        Update Info
-                      </Button>
+
+                <div className="d-flex  w-100 p-2 gap-2">
+                <Button
+                  // onClick={() => setDebitModal(true)}
+                  className="ml-3"
+                  onClick={() => setUpdateAgentInfo(true)}
+                >
+                  Update Info
+                </Button>
+
+                <Button
+                  // onClick={() => setDebitModal(true)}
+                  className="ml-3 bg-secondary border border-0"
+                  onClick={() => setUpdateAgentPass(true)}
+                >
+                  Reset Password
+                </Button>
+                </div>
               </Col>
-              <Col xs={9} className="" style={{ fontFamily: "Montserrat" }}>
+              <Col xs={8} className="" style={{ fontFamily: "Montserrat" }}>
                 <h5 className="mt-2 w-100 bg-secondary py-2 text-light d-flex justify-content-center">
                   Agent Perfomance & Activity Record
                 </h5>
