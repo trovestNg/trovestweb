@@ -340,5 +340,20 @@ export const adminUpdateAgentBio = (payload) => {
 	return axios(requestOptions);
 };
 
+export const adminUpdateArtisanBio = (payload) => {
+	console.log("updated to :",payload);
+	const {artisanId, body, token}= payload
+	headers.authorization = `Bearer ${token}`;
+	headers['Content-Type'] = 'application/json';
+	const requestOptions = {
+		method: 'patch',
+		url: `${baseUrl}/admin/update-artisan/${artisanId}`,
+		data: body,
+		headers: headers,
+		
+	};
+	return axios(requestOptions);
+};
+
 
 
