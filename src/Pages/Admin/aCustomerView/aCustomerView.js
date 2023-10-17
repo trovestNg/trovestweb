@@ -225,7 +225,9 @@ export default function ACustomerView() {
       <UpdateClientInfo on={updateModal} off={()=>{
         setUpdateModate(false)
         setRefreshData(!refreshData)
-        }}/>
+        }}
+        initialInfo={clientData}
+        />
       {/* page */}
       <Col
         xs={10}
@@ -333,7 +335,7 @@ export default function ACustomerView() {
                         onClick={()=>setUpdateModate(true)}
                         
                       >
-                        Update Phone
+                        Update Info
                       </Button>
                       <Modal show={debitnModal} centered>
                         <Modal.Header className="bg-primary text-light">

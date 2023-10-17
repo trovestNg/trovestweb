@@ -8,7 +8,7 @@ import {
   Button,
   InputGroup,
   Spinner,
-  Modal
+  Modal,
 } from "react-bootstrap";
 
 import {
@@ -134,7 +134,6 @@ const AdminAgentView = () => {
     }
   };
   const fetchAgentArtisans = async () => {
-   
     setloading(true);
     const res = await api.get(
       `/admin/agent-artisans/${agentId}?page=1&limit=10`,
@@ -162,13 +161,21 @@ const AdminAgentView = () => {
   console.log(artisans);
   return (
     <Container fluid className={`d-flex p-0 ${Styles.container} min-vh-100`}>
-      <UpdateAgentBio on={updateAgentInfo} off={()=>{
-        setUpdateAgentInfo(false)
-        setRefreshData(!refreshData)
-      }
-        
-        } initialInfo={agentInfo} agId ={agentId}/>
-      <UpdateAgentPass on={updateAgentPass} off={()=>setUpdateAgentPass(false)} initialInfo={agentInfo} agId ={agentId}/>
+      <UpdateAgentBio
+        on={updateAgentInfo}
+        off={() => {
+          setUpdateAgentInfo(false);
+          setRefreshData(!refreshData);
+        }}
+        initialInfo={agentInfo}
+        agId={agentId}
+      />
+      <UpdateAgentPass
+        on={updateAgentPass}
+        off={() => setUpdateAgentPass(false)}
+        initialInfo={agentInfo}
+        agId={agentId}
+      />
       {/* side bar */}
       <AdminSideNav adminInfo={admin} />
       {/* page */}
@@ -247,21 +254,21 @@ const AdminAgentView = () => {
                 <p className="m-0 p-0" style={{}}>{`${agentInfo?.mobile}`}</p>
 
                 <div className="d-flex  w-100 p-2 gap-2">
-                <Button
-                  // onClick={() => setDebitModal(true)}
-                  className="ml-3"
-                  onClick={() => setUpdateAgentInfo(true)}
-                >
-                  Update Info
-                </Button>
+                  <Button
+                    // onClick={() => setDebitModal(true)}
+                    className="ml-3"
+                    onClick={() => setUpdateAgentInfo(true)}
+                  >
+                    Update Info
+                  </Button>
 
-                <Button
-                  // onClick={() => setDebitModal(true)}
-                  className="ml-3 bg-secondary border border-0"
-                  onClick={() => setUpdateAgentPass(true)}
-                >
-                  Reset Password
-                </Button>
+                  <Button
+                    // onClick={() => setDebitModal(true)}
+                    className="ml-3 bg-secondary border border-0"
+                    onClick={() => setUpdateAgentPass(true)}
+                  >
+                    Reset Password
+                  </Button>
                 </div>
               </Col>
               <Col xs={8} className="" style={{ fontFamily: "Montserrat" }}>
