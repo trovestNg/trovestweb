@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "../../../.."
+		},
+		{
+			"path": "../../../../../fshwebsite"
+		},
+		{
+			"path": "../../../../../ogasela-app"
+		},
+		{
+			"path": "../../../../../../Leetcode"
+		},
+		{
+			"path": "../../../../../PolicyPortal"
+		}
+	]
+}

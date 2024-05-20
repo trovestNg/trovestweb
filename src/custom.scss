@@ -1,0 +1,73 @@
+
+
+// custom.scss
+$primary: #004987;
+$secondary: #f9f9f9;
+$light: #fff;
+
+@font-face {
+    font-family: 'primary';
+    src: url('./assets/fonts/Avenir-Medium.ttf');
+    font-size: '16px';
+    font-weight: '800';
+}
+
+@font-face {
+    font-family: 'semi-bold';
+    src: url('./assets/fonts/Avenir-Medium.ttf');
+    font-size: '18px';
+    font-weight: 800;
+}
+
+@font-face {
+    font-family: 'title';
+    src: url('./assets/fonts/Avenir-Black.ttf');
+}
+
+body{
+overflow: hidden
+}
+
+.custom-select {
+  /* Force dropdown menu to always drop down */
+  position: relative;
+}
+
+.custom-select select {
+  /* Adjust position to always drop down */
+  transform: translateY(0) !important;
+}
+
+// .nav-item{
+//   // background-color: pink
+// }
+
+.nav-item:hover{
+  background-color: #fff !important;
+}
+
+// thead {
+//   background-color: red !important;
+// }
+
+.nav-link .active{
+ 
+}
+
+.nav-underline .nav-link.active, .nav-underline .show > .nav-link {
+  background-color:none !important;
+  color: #004987 !important;
+}
+// Import Bootstrap SCSS
+
+
+// Override Bootstrap variables
+@import "../node_modules/bootstrap/scss/functions";
+@import "../node_modules/bootstrap/scss/mixins";
+@import "~bootstrap/scss/bootstrap";
+@import "../node_modules/bootstrap/scss/variables.scss";
+@import '~bootstrap/scss/bootstrap.scss';
+@import '~bootstrap-icons/font/bootstrap-icons.css';
+
+// Include custom styles
+// Your custom styles go here
