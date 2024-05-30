@@ -10,6 +10,7 @@ import { getAllDepartments } from "../../../controllers/department";
 import {toast} from 'react-toastify';
 import { getUserInfo, loginUser } from "../../../controllers/auth";
 import api from "../../../config/api";
+import successElipse from '../../../assets/images/Ellipse-success.png';
 
 
 const UserAttestedPoliciesTab: React.FC<any> = () => {
@@ -214,8 +215,10 @@ const UserAttestedPoliciesTab: React.FC<any> = () => {
                                         <td>{policy.department}</td>
                                         <td>{moment(policy.deadlineDate).format('MMM DD YYYY')}</td>
                                         <td className={`text-success`}>
-                                            <i className="bi bi-dot"></i>
-                                            <span >Attested</span></td>
+                                                <img src={successElipse} height={'10px'} />
+                                                {'  '}
+                                                <span >{'Attested'}</span>
+                                        </td>
                                     </tr>
                                 ))
                                 }

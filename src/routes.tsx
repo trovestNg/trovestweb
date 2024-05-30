@@ -23,6 +23,9 @@ import AdminPendingPoliciesPage from "./pages/admin/adminPendingPoliciesPage";
 import AdminRejectedPoliciesPage from "./pages/admin/adminRejectedPoliciesPage";
 import AdminDeletedPoliciesPage from "./pages/admin/adminDeletedPoliciesPage";
 
+import ApproverDashboardContainer from "./pages/approver/dashboard";
+import ApproverDashboardPage from "./pages/approver/dashboardpage";
+
 // const UserDBC = React.lazy(() => import("./pages/user/dashboard"));
 
 
@@ -54,8 +57,8 @@ export default function () {
                 <Route path="deleted-policies" element={<AdminDeletedPoliciesPage/>}/>
                 <Route path="policy/:id/:attestationStatus" element={<PolicyViewPage />} />
             </Route>
-            <Route path="/superadmin" element={<DashboardContainer />}>
-                <Route index element={<DashboardPage />} />
+            <Route path="/admn" element={<ApproverDashboardContainer/>}>
+                <Route index element={<ApproverDashboardPage/>} />
             </Route>
 
         </Routes>

@@ -12,6 +12,8 @@ import {toast} from 'react-toastify';
 import { getUserInfo, loginUser } from "../../../controllers/auth";
 import api from "../../../config/api";
 import { shortenString } from "../../../util";
+import successElipse from '../../../assets/images/Ellipse-success.png';
+import warningElipse from '../../../assets/images/Ellipse-warning.png';
 
 const UserAllPoliciesTab: React.FC<any> = () => {
     const userDat = localStorage.getItem('loggedInUser') || '';
@@ -203,11 +205,13 @@ const UserAllPoliciesTab: React.FC<any> = () => {
                                     >
                                         <th scope="row">{index + 1}</th>
                                         <td><i className="bi bi-file-earmark-pdf text-danger"></i> {shortenString(policy.fileName,40)}</td>
-                                        <td>{policy.department}</td>
+                                        <td>{policy.policyDepartment}</td>
                                         <td>{moment(policy.deadlineDate).format('MMM DD YYYY')}</td>
                                         <td className={`text-${policy.isAttested ? 'success' : 'warning'}`}>
-                                            <i className="bi bi-dot"></i>
-                                            <span >{policy.isAttested ? 'Attested' : 'Not Attested'}</span></td>
+                                                <img src={policy.isAttested ? successElipse : warningElipse} height={'10px'} />
+                                                {'  '}
+                                                <span >{policy.isAttested ? 'Attested' : 'Not attested'}</span>
+                                        </td>
                                     </tr>
                                 ))
                                 }

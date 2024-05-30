@@ -12,10 +12,11 @@ import { IPolicy } from "../../interfaces/policy";
 import { IDept } from "../../interfaces/dept";
 import { getPolicies } from "../../controllers/policy";
 import api from "../../config/api";
+import ApproverSideBar from "../../components/bars/approversidebar";
 
 
 
-const AdminDashboardContainer = () => {const userDat = localStorage.getItem('loggedInUser') || '';
+const ApproverDashboardContainer = () => {const userDat = localStorage.getItem('loggedInUser') || '';
 const data = JSON.parse(userDat);
 const userName = data?.profile?.sub.split('\\').pop();
 const [policies, setPolicies] = useState<IPolicy[]>([]);
@@ -65,7 +66,7 @@ useEffect(()=>{
 
     return (
         <div className="d-flex p-0 m-0 min-vh-100 p-0 w-100">
-            <div><AdminSideBar/></div>
+            <div><ApproverSideBar/></div>
             <div className="m-0" style={{ width: '100%' }}>
                 <div className="w-100"><TopBar payload={userDBInfo} /></div>
                 <div className="mt-2 m-0 p-3 rounded rounded-3 w-100 shadow-sm bg-light" style={{ overflowY: 'scroll', height: '85vh' }}>{<Outlet />}</div>
@@ -78,4 +79,4 @@ useEffect(()=>{
 
 }
 
-export default AdminDashboardContainer;
+export default ApproverDashboardContainer;

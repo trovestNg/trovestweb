@@ -8,6 +8,7 @@ import error from '../../assets/images/error.png';
 import { Tabs, Tab } from "react-bootstrap";
 import UploadedPoliciesTab from "../../components/tabs/admintabs/uploaded-policies-tab";
 import UserAllPoliciesTab from "../../components/tabs/userTabs/user-all-policies-tab";
+import AdminApprovedPoliciesTab from "../../components/tabs/admintabs/adminApprovedPoliciesTab";
 import UserNotAttestedPoliciesTab from "../../components/tabs/userTabs/user-not-attested-policies-tab";
 import UserAttestedPoliciesTab from "../../components/tabs/userTabs/attested-policies-tab";
 import { IPolicy } from "../../interfaces/policy";
@@ -16,6 +17,7 @@ import { getPolicies } from "../../controllers/policy";
 import { getUserInfo, loginUser } from "../../controllers/auth";
 import { toast } from "react-toastify";
 import api from "../../config/api";
+import { IUserDashboard } from "../../interfaces/user";
 
 
 const AdminUploadedPoliciesPage = () => {
@@ -26,41 +28,47 @@ const AdminUploadedPoliciesPage = () => {
     // const [regUsers, setRegUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
     const [refreshComponent,setRefreshComponent] = useState(false)
+    const userName = data?.profile?.sub.split('\\').pop();
+    const [userDBInfo,setUserDBInfo]  = useState<IUserDashboard>()
 
     const [totalPolicyCount,setTotalPolicyCount] =useState(0);
     const [totalAttested,setTotalAttested] =useState(0);
     const [totalNotAttested,setTotalNotAttested] =useState(0);
     
-    const getAllPolicies = async () => {
+    const getInitiatorDashboard = async () => {
         setLoading(true)
         try {
-            let userInfo = await getUserInfo();
-            console.log({gotten: userInfo})
-            if(userInfo){
-                const res = await api.get(`Policy?subsidiaryName=FSDH Merchant Bank`, `${userInfo.access_token}`);
-                if (res?.data) {
-                    setPolicies(res?.data);
-                    setLoading(false)
-                } else {
-                    // loginUser()
-                    // toast.error('Session expired!, You have been logged out!!')
-                }
-                console.log({ response: res })
+            const res = await api.get(`Dashboard/initiator?userName=${userName}`, `${data?.access_token}`);
+            setUserDBInfo(res?.data);
+            console.log({here:res})
+            if (res?.data) {
+                let allAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>data.isAuthorized);
+                let unAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>!data.isAuthorized);
+                
+                setUserDBInfo(res?.data);
+                // setTotalAttested(allAttested.length);
+                // setTotalNotAttested(unAttested.length)
+                setPolicies([]);
+                setLoading(false);
+            } else {
+                setLoading(false);
+                // loginUser()
+                // toast.error('Session expired!, You have been logged out!!')
             }
-           
+            console.log({ response: res })
         } catch (error) {
-
+    
         }
     }
 
    
     useEffect(()=>{
-        getAllPolicies(); 
+        getInitiatorDashboard(); 
     },[refreshComponent])
 
     return (
         <div className="w-100">
-            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Uploaded Policies {policies.length} </h5>
+            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Uploaded Policies {userDBInfo?.totalUploadedPolicyByInitiator} </h5>
             <p>Here, you'll find all policies you have uploaded.</p>
             {/* <div className="d-flex gap-5">
                 {
@@ -69,7 +77,7 @@ const AdminUploadedPoliciesPage = () => {
             </div> */}
 
             <div className="w-100 mt-5">
-                <UserAllPoliciesTab />
+                <AdminApprovedPoliciesTab/>
             </div>
         </div>
     )

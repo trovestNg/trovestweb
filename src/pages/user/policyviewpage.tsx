@@ -127,14 +127,17 @@ const PolicyViewPage = () => {
                 </div>
 
                 <div className="d-flex flex-column gap-2" style={{ minWidth: '20%' }}>
-                    <div className="bg-primary text-light rounded rounded-3 p-3">
+                   { 
+                   attestationStatus == 'false'?
+                   <div className="bg-primary text-light rounded rounded-3 p-3">
                         <p className="d-flex gap-2">
                             <i className="bi bi-info-circle"></i>
                             Note :</p>
                         <p>
                             Kindly review this policy until the final page and proceed to the bottom to confirm.
                         </p>
-                    </div>
+                    </div> : ''
+                    }
 
                     <div className=" shadow shadow-sm border rounded rounded-3 p-3">
                         <p className=" d-flex gap-2 text-primary">

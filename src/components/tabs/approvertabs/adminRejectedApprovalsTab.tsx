@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Badge, Button, Form, FormControl, FormSelect, Spinner, Table } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { IUserPolicy } from "../../../interfaces/user";
+import { IPolicy } from "../../../interfaces/policy";
 import { IDept } from "../../../interfaces/dept";
 import moment from "moment";
 import { getPolicies } from "../../../controllers/policy";
@@ -10,16 +10,13 @@ import { getAllDepartments } from "../../../controllers/department";
 import {toast} from 'react-toastify';
 import { getUserInfo, loginUser } from "../../../controllers/auth";
 import api from "../../../config/api";
-import successElipse from '../../../assets/images/Ellipse-success.png';
-import warningElipse from '../../../assets/images/Ellipse-warning.png';
 
-const UserNotAttestedPoliciesTab: React.FC<any> = () => {
+const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
     const userDat = localStorage.getItem('loggedInUser') || '';
     const data = JSON.parse(userDat);
-    const userName = data?.profile?.sub.split('\\').pop();
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
-    const [policies, setPolicies] = useState<IUserPolicy[]>([]);
+    const [policies, setPolicies] = useState<IPolicy[]>([]);
     const [depts, setDepts] = useState<IDept[]>([]);
     const [loading, setLoading] = useState(false);
     const [sortByDept, setSortByDept] = useState(false);
@@ -27,15 +24,14 @@ const UserNotAttestedPoliciesTab: React.FC<any> = () => {
     const [selectedDept, setSelectedDept] = useState('');
     const [userSearch, setUserSearch] = useState('')
 
-    const getUnattestedPolicies = async () => {
-       
+
+    const getUploadedPolicies = async () => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
             console.log({gotten: userInfo})
             if(userInfo){
-                // const res = await api.get(`Policy/user-policy?userName=majadi`, `${userInfo.access_token}`);
-                const res = await api.get(`Attest/unattested?userName=${userName}`, `${userInfo.access_token}`);
+                const res = await api.get(`Policy/rejected`, `${userInfo.access_token}`);
                 if (res?.data) {
                     setPolicies(res?.data);
                     setLoading(false)
@@ -49,7 +45,6 @@ const UserNotAttestedPoliciesTab: React.FC<any> = () => {
         } catch (error) {
 
         }
-    
     }
 
     const handleGetDepts = async () => {
@@ -133,7 +128,7 @@ const UserNotAttestedPoliciesTab: React.FC<any> = () => {
         } else if(bySearch) {
             getBySearch();
         } else {
-            getUnattestedPolicies();
+            getUploadedPolicies();
         }
     }
 
@@ -166,14 +161,18 @@ const UserNotAttestedPoliciesTab: React.FC<any> = () => {
                     </Form.Select>
 
                 </div>
-                {/* <div className="">
-                    <Button variant="primary" style={{ minWidth: '100px' }}>Create New Policy</Button>
-                </div> */}
+                <div className="">
+                    <Button
+                        variant="primary"
+                        style={{ minWidth: '100px' }}
+                        onClick={()=>handleCreatePolicy()}
+                    >Create New Policy</Button>
+                </div>
             </div>
 
             <div className="mt-4" >
                 {
-                    loading ? <table className="table w-100">
+                    loading ? <table className="table table-stripped w-100">
                         <thead className="thead-dark">
                             <tr >
                                 <th scope="col" className="bg-primary text-light">#</th>
@@ -198,27 +197,18 @@ const UserNotAttestedPoliciesTab: React.FC<any> = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {policies.length <= 0?<tr>
-                                    <td className="text-center" colSpan={5}>
-                                        <img src={receiptImg} height={85}/>
-                                        <p className="p-0 m-0 text-primary" style={{fontFamily:'title'}}>You have attested all policies</p>
-                                        <p >
-                                        You are up to date all all polices please check back from time to time to stay updated on these polices
-                                        </p>
-                                    </td></tr> :
+                                {policies.length <= 0?<tr><td className="text-center" colSpan={5}>No Data Available</td></tr> :
                                 policies.map((policy, index) => (
                                     <tr key={index} style={{ cursor: 'pointer' }}
-                                    onClick={() => navigate(`/policy-portal/policy/false/${policy.policyId}`)}
+                                        onClick={() => navigate(`/policy-portal/policy/${policy.id}`)}
                                     >
                                         <th scope="row">{index + 1}</th>
                                         <td><i className="bi bi-file-earmark-pdf text-danger"></i> {policy.fileName}</td>
-                                        <td>{policy.policyDepartment}</td>
+                                        <td>{'Info'}</td>
                                         <td>{moment(policy.deadlineDate).format('MMM DD YYYY')}</td>
-                                        <td className={`text-${policy.isAttested ? 'success' : 'warning'}`}>
-                                                <img src={policy.isAttested ? successElipse : warningElipse} height={'10px'} />
-                                                {'  '}
-                                                <span >{policy.isAttested ? 'Attested' : 'Not attested'}</span>
-                                        </td>
+                                        <td className={`text-${policy.isAuthorized ? 'success' : 'warning'}`}>
+                                            <i className="bi bi-dot"></i>
+                                            <span >{policy.isAuthorized ? 'Attested' : 'Not Attested'}</span></td>
                                     </tr>
                                 ))
                                 }
@@ -250,4 +240,4 @@ const UserNotAttestedPoliciesTab: React.FC<any> = () => {
     )
 
 }
-export default UserNotAttestedPoliciesTab;
+export default AdminRejectedApprovalsTab;

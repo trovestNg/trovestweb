@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from './sidebar.module.css';
 import logo from '../../assets/icons/logo1.png';
 import { useLocation, useNavigate, useNavigation } from "react-router-dom";
-import { logoutUser } from "../../controllers/auth";
+import { getUserInfo, logoutUser } from "../../controllers/auth";
 import PromptModal from "../modals/promptModal";
 
 const UserSideBar: React.FC<any> = ({ payload }) => {
@@ -10,17 +10,24 @@ const UserSideBar: React.FC<any> = ({ payload }) => {
     const user = localStorage.getItem('loggedInUser') || '';
     const userInfo = JSON.parse(user);
     const navigate = useNavigate();
-    const [showPromt,setShowPromt] = useState(false);
+    const [showPromt, setShowPromt] = useState(false);
+    const [showApproverPrompt, setApproverPrompt] = useState(false);
+    const [userType, setUserType] = useState('');
 
     console.log(currentPath)
 
-   
-    const handleSwitch = ()=>{
-        window.history.replaceState(null,'',window.location.href)
-       navigate('/admin', {replace:true})
+
+    const handleSwitch = () => {
+        window.history.replaceState(null, '', window.location.href)
+        navigate('/admin', { replace: true })
     }
 
-    const handleUserLogout = async ()=>{
+    const handleAdminSwitch = () => {
+        window.history.replaceState(null, '', window.location.href)
+        navigate('/admn', { replace: true })
+    }
+
+    const handleUserLogout = async () => {
         // navigate('/logout', {replace:true});
         // console.log(JSON.stringify(localStorage))
         // localStorage.clear()
@@ -29,16 +36,16 @@ const UserSideBar: React.FC<any> = ({ payload }) => {
         // window.history.pushState(null, '', window.location.href);
         // window.onpopstate = function(event) {
         //   window.history.go(1);
-          
+
         // };
 
         // window.history.replaceState(null,'',window.location.href)
-        
-        
-       
-        
+
+
+
+
         // // console.log(res);
-        
+
     }
     const navlinksUser = [
         {
@@ -62,9 +69,36 @@ const UserSideBar: React.FC<any> = ({ payload }) => {
             path: '/policy-portal/unattested-policy',
         }
     ]
+
+    const getAttestedPolicies = async () => {
+        try {
+            let userInfo = await getUserInfo();
+            console.log({ gotten: userInfo })
+            if (userInfo?.profile.role?.includes("DOMAIN1\\GROUP_POLICY_INIT")) {
+                setUserType('initiator')
+
+            }
+            else if (userInfo?.profile.role?.includes(" DOMAIN1\\GROUP_POLICY_AUTH")) {
+                setUserType('authorizer')
+
+            } else {
+                setUserType('user')
+            }
+
+        } catch (error) {
+
+        }
+
+    }
+
+    useEffect(() => {
+        getAttestedPolicies()
+    })
     return (
         <div className={`min-vh-100 bg-primary ${styles.sidebarContainer}`} style={{ minWidth: '18em' }}>
-            <PromptModal show={showPromt} off={()=>setShowPromt(false)} action={handleSwitch}/>
+            <PromptModal show={showPromt} off={() => setShowPromt(false)} action={handleSwitch} />
+            <PromptModal show={showApproverPrompt} off={() => setApproverPrompt(false)} action={handleAdminSwitch} />
+
             <div className="d-flex justify-content-center mb-3 py-3  align-items-center w-100">
                 <img src={logo} height={'60.15px'} />
             </div>
@@ -74,10 +108,10 @@ const UserSideBar: React.FC<any> = ({ payload }) => {
             >
                 {
                     navlinksUser.map((nav, index) => (
-                        <li 
-                        onClick={()=>navigate(nav.path)}
-                        key={index} className="d-flex  align-items-center gap-3 p-0 m-0"
-                            style={{ cursor: 'pointer', backgroundColor:currentPath == nav.path?'#236aa9':'',minHeight: '3.5em' }}
+                        <li
+                            onClick={() => navigate(nav.path)}
+                            key={index} className="d-flex  align-items-center gap-3 p-0 m-0"
+                            style={{ cursor: 'pointer', backgroundColor: currentPath == nav.path ? '#236aa9' : '', minHeight: '3.5em' }}
                         >
                             {
                                 currentPath === nav.path &&
@@ -91,17 +125,37 @@ const UserSideBar: React.FC<any> = ({ payload }) => {
 
             <ul className="px-2 mt-3 w-100">
                 {
-                    userInfo?.profile?.department !=='Info Tech'?'':                 
+                    userType == 'authorizer' &&
                     <li
-                    className="d-flex text-light  align-items-center gap-3 p-0 m-0"
-                    style={{ cursor: 'pointer'}}
-                    onClick={()=>setShowPromt(true)}
-                >
-                    <span className="bg-light px-0 h-100 py-2" style={{ minHeight: '3.5em' }}></span>
-                    <i className="bi bi-arrow-repeat"></i>
-                    <p className="py-2 m-0"
-                    >Switch to Admin Portal</p>
-                </li>}
+                        className="d-flex text-light  align-items-center gap-3 p-0 m-0"
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => setApproverPrompt(true)}
+                    >
+                        <span className="bg-light px-0 h-100 py-2" style={{ minHeight: '3.5em' }}></span>
+                        <i className="bi bi-arrow-repeat"></i>
+                        <p className="py-2 m-0"
+                        >Switch to Admin Portal</p>
+                    </li>
+                }
+
+                {
+                    userType == 'initiator' &&
+                    <li
+                        className="d-flex text-light  align-items-center gap-3 p-0 m-0"
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => setShowPromt(true)}
+                    >
+                        <span className="bg-light px-0 h-100 py-2" style={{ minHeight: '3.5em' }}></span>
+                        <i className="bi bi-arrow-repeat"></i>
+                        <p className="py-2 m-0"
+                        >Switch to Admin Portal</p>
+                    </li>
+                }
+
+                {
+                    userType == 'user' &&
+                    ''
+                }
 
                 <li
                     className="d-flex text-light  align-items-center gap-3 p-0 m-0"
