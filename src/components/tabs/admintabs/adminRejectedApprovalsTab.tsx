@@ -177,9 +177,9 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
                             <tr >
                                 <th scope="col" className="bg-primary text-light">#</th>
                                 <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                <th scope="col" className="bg-primary text-light">Department</th>
-                                <th scope="col" className="bg-primary text-light">Deadline to Attest</th>
-                                <th scope="col" className="bg-primary text-light">Status</th>
+                                <th scope="col" className="bg-primary text-light">Reason for Rejection</th>
+                                <th scope="col" className="bg-primary text-light">Date Rejected</th>
+                                <th scope="col" className="bg-primary text-light">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -191,9 +191,9 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
                                 <tr >
                                     <th scope="col" className="bg-primary text-light">#</th>
                                     <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                    <th scope="col" className="bg-primary text-light">Department</th>
-                                    <th scope="col" className="bg-primary text-light">Deadline to Attest</th>
-                                    <th scope="col" className="bg-primary text-light">Status</th>
+                                    <th scope="col" className="bg-primary text-light">Reason for Rejection</th>
+                                    <th scope="col" className="bg-primary text-light">Date Rejected</th>
+                                    <th scope="col" className="bg-primary text-light">Action</th>
                                 </tr>
                             </thead>
                             <tbody>

@@ -25,4 +25,5 @@ uploadTime: string,
 uploadedBy: string
 url: string,
 subsidiaryName:string
+policyDepartment:string
 }

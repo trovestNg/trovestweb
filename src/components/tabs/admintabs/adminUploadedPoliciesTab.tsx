@@ -35,7 +35,7 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
             let userInfo = await getUserInfo();
             console.log({ gotten: userInfo })
             if (userInfo) {
-                const res = await api.get(`Policy/uploaded`, `${userInfo.access_token}`);
+                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
                 if (res?.data) {
                     setPolicies(res?.data);
                     setLoading(false)
@@ -215,7 +215,7 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                         >
                                             <th scope="row">{index + 1}</th>
                                             <td><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.fileName,40)}`}</td>
-                                            <td>{policy.subsidiaryName}</td>
+                                            <td>{policy?.policyDepartment}</td>
                                             <td>{policy.authorizedBy}</td>
                                             <td>{moment(policy.uploadTime).format('MMM DD YYYY')}</td>
                                             <td className={`text-${policy.isAuthorized ? 'success' : 'warning'}`}>

@@ -17,6 +17,7 @@ import { getUserInfo, loginUser } from "../../controllers/auth";
 import { toast } from "react-toastify";
 import api from "../../config/api";
 import { IUserDashboard } from "../../interfaces/user";
+import AdminRejectedApprovalsTab from "../../components/tabs/admintabs/adminRejectedApprovalsTab";
 
 
 const AdminRejectedPoliciesPage = () => {
@@ -76,7 +77,7 @@ const AdminRejectedPoliciesPage = () => {
             </div> */}
 
             <div className="w-100 mt-5">
-                <UserAllPoliciesTab />
+                <AdminRejectedApprovalsTab />
             </div>
         </div>
     )

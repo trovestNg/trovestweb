@@ -192,8 +192,9 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({handleCreatePolicy}) =>
                                     <th scope="col" className="bg-primary text-light">#</th>
                                     <th scope="col" className="bg-primary text-light">Policy Title</th>
                                     <th scope="col" className="bg-primary text-light">Department</th>
-                                    <th scope="col" className="bg-primary text-light">Deadline to Attest</th>
-                                    <th scope="col" className="bg-primary text-light">Status</th>
+                                    <th scope="col" className="bg-primary text-light">Authorizer</th>
+                                    <th scope="col" className="bg-primary text-light">Date Uploaded</th>
+                                    <th scope="col" className="bg-primary text-light">Action</th>
                                 </tr>
                             </thead>
                             <tbody>

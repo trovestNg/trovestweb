@@ -18,6 +18,7 @@ import { getUserInfo, loginUser } from "../../controllers/auth";
 import { toast } from "react-toastify";
 import api from "../../config/api";
 import { IUserDashboard } from "../../interfaces/user";
+import AdminUploadedPoliciesTab from "../../components/tabs/admintabs/adminUploadedPoliciesTab";
 
 
 const AdminUploadedPoliciesPage = () => {
@@ -77,7 +78,7 @@ const AdminUploadedPoliciesPage = () => {
             </div> */}
 
             <div className="w-100 mt-5">
-                <AdminApprovedPoliciesTab/>
+                <AdminUploadedPoliciesTab/>
             </div>
         </div>
     )
