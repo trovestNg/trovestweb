@@ -11,7 +11,7 @@ import {toast} from 'react-toastify';
 import { getUserInfo, loginUser } from "../../../controllers/auth";
 import api from "../../../config/api";
 
-const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
+const AdminPendingDeleteTab: React.FC<any> = ({handleCreatePolicy}) => {
     const userDat = localStorage.getItem('loggedInUser') || '';
     const data = JSON.parse(userDat);
     const [refreshData, setRefreshData] = useState(false);
@@ -31,12 +31,12 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
             let userInfo = await getUserInfo();
             console.log({gotten: userInfo})
             if(userInfo){
-                const res = await api.get(`Policy/rejected`, `${userInfo.access_token}`);
+                const res = await api.get(`Policy/delete/marked`, `${userInfo.access_token}`);
                 if (res?.data) {
                     setPolicies(res?.data);
                     setLoading(false)
                 } else {
-                    loginUser()
+                    // loginUser()
                     // toast.error('Session expired!, You have been logged out!!')
                 }
                 console.log({ response: res })
@@ -401,4 +401,4 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
     )
 
 }
-export default AdminRejectedApprovalsTab;
+export default AdminPendingDeleteTab;

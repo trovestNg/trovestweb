@@ -70,17 +70,15 @@ const UserSideBar: React.FC<any> = ({ payload }) => {
         }
     ]
 
-    const getAttestedPolicies = async () => {
+    const getUserType = async () => {
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
+            // console.log({ gotten: userInfo })
             if (userInfo?.profile.role?.includes("DOMAIN1\\GROUP_POLICY_INIT")) {
                 setUserType('initiator')
-
             }
             else if (userInfo?.profile.role?.includes(" DOMAIN1\\GROUP_POLICY_AUTH")) {
                 setUserType('authorizer')
-
             } else {
                 setUserType('user')
             }
@@ -92,8 +90,8 @@ const UserSideBar: React.FC<any> = ({ payload }) => {
     }
 
     useEffect(() => {
-        getAttestedPolicies()
-    })
+        getUserType()
+    },[])
     return (
         <div className={`min-vh-100 bg-primary ${styles.sidebarContainer}`} style={{ minWidth: '18em' }}>
             <PromptModal show={showPromt} off={() => setShowPromt(false)} action={handleSwitch} />

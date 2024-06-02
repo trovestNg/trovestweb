@@ -11,7 +11,7 @@ import {toast} from 'react-toastify';
 import { getUserInfo, loginUser } from "../../../controllers/auth";
 import api from "../../../config/api";
 
-const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
+const AdminDeletedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
     const userDat = localStorage.getItem('loggedInUser') || '';
     const data = JSON.parse(userDat);
     const [refreshData, setRefreshData] = useState(false);
@@ -182,7 +182,8 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
                             <tr >
                                 <th scope="col" className="bg-primary text-light">#</th>
                                 <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                <th scope="col" className="bg-primary text-light">Reason for Rejection</th>
+                                <th scope="col" className="bg-primary text-light">Authorizer</th>
+                                <th scope="col" className="bg-primary text-light">Department</th>
                                 <th scope="col" className="bg-primary text-light">Date Rejected</th>
                                 <th scope="col" className="bg-primary text-light">Action</th>
                             </tr>
@@ -193,13 +194,14 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
                     </table> :
                         <table className="table w-100">
                             <thead className="thead-dark">
-                                <tr >
-                                    <th scope="col" className="bg-primary text-light">#</th>
-                                    <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                    <th scope="col" className="bg-primary text-light">Reason for Rejection</th>
-                                    <th scope="col" className="bg-primary text-light">Date Rejected</th>
-                                    <th scope="col" className="bg-primary text-light">Action</th>
-                                </tr>
+                            <tr >
+                                <th scope="col" className="bg-primary text-light">#</th>
+                                <th scope="col" className="bg-primary text-light">Policy Title</th>
+                                <th scope="col" className="bg-primary text-light">Authorizer</th>
+                                <th scope="col" className="bg-primary text-light">Department</th>
+                                <th scope="col" className="bg-primary text-light">Date Rejected</th>
+                                <th scope="col" className="bg-primary text-light">Action</th>
+                            </tr>
                             </thead>
                             <tbody>
                                 {policies.length <= 0?<tr><td className="text-center" colSpan={5}>No Data Available</td></tr> :
@@ -401,4 +403,4 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
     )
 
 }
-export default AdminRejectedApprovalsTab;
+export default AdminDeletedPoliciesTab;

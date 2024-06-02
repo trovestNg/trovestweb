@@ -11,7 +11,7 @@ import moment from "moment";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-const PolicyViewPage = () => {
+const AdminPolicyviewpage = () => {
     const userDat = localStorage.getItem('loggedInUser') || '';
     const data = JSON.parse(userDat);
     const navigate = useNavigate();
@@ -31,8 +31,8 @@ const PolicyViewPage = () => {
             if (res?.data) {
                 setPolicy(res?.data);
             } else {
-                toast.error('Session expired!, You have been logged out!!');
-                loginUser();
+                // toast.error('Session expired!, You have been logged out!!');
+                // loginUser();
 
             }
             console.log({ response: res })
@@ -95,15 +95,8 @@ const PolicyViewPage = () => {
 
                 </div>
 
-                <div className="d-flex flex-column gap-2" style={{ minWidth: '20%' }}>
-                    <div className="bg-primary text-light rounded rounded-3 p-3">
-                        <p className="d-flex gap-2">
-                            <i className="bi bi-info-circle"></i>
-                            Note :</p>
-                        <p>
-                            Kindly review this policy until the final page and proceed to the bottom to confirm.
-                        </p>
-                    </div>
+                <div className="d-flex flex-column gap-2" style={{ minWidth: '25%' }}>
+                  
 
                     <div className=" shadow shadow-sm border rounded rounded-3 p-3">
                         <p className=" d-flex gap-2 text-primary">
@@ -139,6 +132,7 @@ const PolicyViewPage = () => {
                             {/* <i className="bi bi-file-earmark"></i> */}
                            {policy?.departmentId}
                         </p>
+                        <hr/>
                         <div className="d-flex justify-content-between">
                             <div>
                             <p className=" d-flex gap-2 text-grey p-0 m-0">
@@ -152,7 +146,7 @@ const PolicyViewPage = () => {
                             </div>
 
                             <div>
-                            <p className=" d-flex gap-2 text-grey p-0 m-0">
+                            <p className=" d-flex gap-2 text-danger p-0 m-0">
                             {/* <i className="bi bi-file-earmark"></i> */}
                             Deadline Date
                         </p>
@@ -163,19 +157,11 @@ const PolicyViewPage = () => {
                             </div>
                         </div>
                     </div>
+                    <div className="d-flex mt-4 gap-3">
+                    <Button>Edit Policy</Button>
+                    <Button>Cancel Request</Button>
+                    </div>
 
-                    {
-                        !policy?.isAuthorized &&
-                        <>
-                        <Button disabled={pageNumber !== numPages} onClick={() => setAttestedSuccessModal(true)} className="W-100 mt-3">
-                        Click To Attest To This Policy
-                    </Button>
-                    {/* <i className="bi bi-caret-up-fill text-center text-primary"></i> */}
-                    <p className="text-center m-0 py-0">
-                    Please click the button above to confirm your agreement with the policy
-                    </p>
-                    </>
-                    }
 
                     {
                         policy?.isAuthorized &&
@@ -211,4 +197,4 @@ const PolicyViewPage = () => {
         </div>
     )
 }
-export default PolicyViewPage;
+export default AdminPolicyviewpage;

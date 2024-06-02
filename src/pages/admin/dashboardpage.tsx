@@ -141,11 +141,11 @@ const AdminDashboardPage = () => {
                     <AdminApprovedPoliciesTab handleCreatePolicy={()=>navigate('/admin/create-policy')} />
                     </Tab>
                     <Tab eventKey="pending" title="Policies Pending Approval">
-                    {/* <AdminPoliciesPendingApprovalTab handleCreatePolicy={()=>navigate('/admin/create-policy')} /> */}
+                    <AdminPoliciesPendingApprovalTab handleCreatePolicy={()=>navigate('/admin/create-policy')} />
                     </Tab>
 
                     <Tab eventKey="rejected" title="Rejected Policies">
-                    {/* <AdminRejectedApprovalsTab handleCreatePolicy={()=>navigate('/admin/create-policy')} /> */}
+                    <AdminRejectedApprovalsTab handleCreatePolicy={()=>navigate('/admin/create-policy')} />
                     </Tab>
                 </Tabs>
                 

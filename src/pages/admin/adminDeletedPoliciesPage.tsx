@@ -16,6 +16,9 @@ import { IDept } from "../../interfaces/dept";
 import { toast } from "react-toastify";
 import { loginUser } from "../../controllers/auth";
 import CreatePolicyModal from "../../components/modals/createPolicyModal";
+import AdminPendingDeleteTab from "../../components/tabs/admintabs/adminPendingDeleteTab";
+import AdminDeletedPoliciesTab from "../../components/tabs/admintabs/adminDeletedPoliciesTab";
+import { useNavigate } from "react-router-dom";
 
 
 const AdminDeletedPoliciesPage = () => {
@@ -26,7 +29,8 @@ const AdminDeletedPoliciesPage = () => {
     const [depts, setDepts] = useState<IDept[]>([]);
     // const [regUsers, setRegUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
-    const [refreshComponent,setRefreshComponent] = useState(false)
+    const [refreshComponent,setRefreshComponent] = useState(false);
+    const navigate = useNavigate()
 
     const [totalPolicyCount,setTotalPolicyCount] =useState(0);
     const [totalAttested,setTotalAttested] =useState(0);
@@ -121,10 +125,10 @@ const AdminDeletedPoliciesPage = () => {
                     <Tab eventKey="uploaded" title="Policies Pending Deletion (20) "
                     tabClassName="px-3"
                     >
-                        <UploadedPoliciesTab handleCreatePolicy={()=>setCreatePolicy(true)} />
+                        <AdminPendingDeleteTab handleCreatePolicy={ ()=>navigate('/admin/create-policy')} />
                     </Tab>
                     <Tab eventKey="approved" title="Deleted Policies (100)">
-                        Tab content for Profile
+                    <AdminDeletedPoliciesTab handleCreatePolicy={ ()=>navigate('/admin/create-policy')} />
                     </Tab>
                     
                 </Tabs>

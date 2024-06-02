@@ -19,6 +19,7 @@ import { toast } from "react-toastify";
 import api from "../../config/api";
 import { IUserDashboard } from "../../interfaces/user";
 import AdminUploadedPoliciesTab from "../../components/tabs/admintabs/adminUploadedPoliciesTab";
+import { useNavigate } from "react-router-dom";
 
 
 const AdminUploadedPoliciesPage = () => {
@@ -30,7 +31,8 @@ const AdminUploadedPoliciesPage = () => {
     const [loading, setLoading] = useState(false);
     const [refreshComponent,setRefreshComponent] = useState(false)
     const userName = data?.profile?.sub.split('\\').pop();
-    const [userDBInfo,setUserDBInfo]  = useState<IUserDashboard>()
+    const [userDBInfo,setUserDBInfo]  = useState<IUserDashboard>();
+    const navigate = useNavigate();
 
     const [totalPolicyCount,setTotalPolicyCount] =useState(0);
     const [totalAttested,setTotalAttested] =useState(0);
@@ -78,7 +80,7 @@ const AdminUploadedPoliciesPage = () => {
             </div> */}
 
             <div className="w-100 mt-5">
-                <AdminUploadedPoliciesTab/>
+                <AdminUploadedPoliciesTab handleCreatePolicy={ ()=>navigate('/admin/create-policy')}/>
             </div>
         </div>
     )
