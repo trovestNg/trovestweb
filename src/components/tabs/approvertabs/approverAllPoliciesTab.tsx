@@ -14,7 +14,7 @@ import successElipse from '../../../assets/images/Ellipse-success.png';
 import warningElipse from '../../../assets/images/Ellipse-warning.png';
 import { shortenString } from "../../../util";
 
-const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
+const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const userDat = localStorage.getItem('loggedInUser') || '';
     const data = JSON.parse(userDat);
     const userName = data?.profile?.sub.split('\\').pop();
@@ -35,14 +35,12 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
             let userInfo = await getUserInfo();
             console.log({ gotten: userInfo })
             if (userInfo) {
-                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
-                
+                const res = await api.get(`Dashboard/authorizer-policy?userName=${userName}`, `${userInfo.access_token}`);
                 if (res?.data) {
-                    let approvedPolicies =  res?.data.filter((policy:IPolicy)=>policy.isAuthorized)
-                    setPolicies(approvedPolicies);
+                    setPolicies(res?.data);
                     setLoading(false)
                 } else {
-                    // loginUser()
+                    loginUser()
                     // toast.error('Session expired!, You have been logged out!!')
                 }
                 console.log({ response: res })
@@ -52,8 +50,6 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
         }
     }
-
-  
 
     const handleGetDepts = async () => {
         // setLoading(true)
@@ -145,11 +141,6 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
         toast.error('hii')
     }
 
-    const handleGetAttestersList = (e: any,pol:IPolicy) => {
-        e.stopPropagation();
-        navigate(`/admin/attesters-list/${pol.id}`);
-    }
-
 
     useEffect(() => {
         fetchData();
@@ -179,59 +170,60 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     </Form.Select>
 
                 </div>
-                <div className="">
+                {/* <div className="">
                     <Button
                         variant="primary"
                         style={{ minWidth: '100px' }}
                         onClick={() => handleCreatePolicy()}
                     >Create New Policy</Button>
-                </div>
+                </div> */}
             </div>
 
             <div className="mt-4" >
                 {
                     loading ? <table className="table table-stripped w-100">
                         <thead className="thead-dark">
-                            <tr >
-                                <th scope="col" className="bg-primary text-light">#</th>
-                                <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                <th scope="col" className="bg-primary text-light">Initiator</th>
-                                <th scope="col" className="bg-primary text-light">Authorizer</th>
-                                <th scope="col" className="bg-primary text-light">Deadline Date</th>
-                                <th scope="col" className="bg-primary text-light">Action</th>
-                            </tr>
+                        <tr >
+                                    <th scope="col" className="bg-primary text-light">#</th>
+                                    <th scope="col" className="bg-primary text-light">Policy Title</th>
+                                    <th scope="col" className="bg-primary text-light">Authorizer</th>
+                                    <th scope="col" className="bg-primary text-light">Date Uploaded</th>
+                                    <th scope="col" className="bg-primary text-light">Status</th>
+                                    <th scope="col" className="bg-primary text-light">Action</th>
+                                </tr>
                         </thead>
                         <tbody>
-                            <tr className=""><td className="text-center" colSpan={5}><Spinner className="spinner-grow text-primary" /></td></tr>
+                            <tr className=""><td className="text-center" colSpan={7}><Spinner className="spinner-grow text-primary" /></td></tr>
                         </tbody>
                     </table> :
                         <table className="table table-striped w-100">
                             <thead className="thead-dark">
-                            <tr >
-                                <th scope="col" className="bg-primary text-light">#</th>
-                                <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                <th scope="col" className="bg-primary text-light">Initiator</th>
-                                <th scope="col" className="bg-primary text-light">Authorizer</th>
-                                <th scope="col" className="bg-primary text-light">Deadline Date</th>
-                                <th scope="col" className="bg-primary text-light">Action</th>
-                            </tr>
+                                <tr >
+                                    <th scope="col" className="bg-primary text-light">#</th>
+                                    <th scope="col" className="bg-primary text-light">Policy Title</th>
+                                    <th scope="col" className="bg-primary text-light">Authorizer</th>
+                                    <th scope="col" className="bg-primary text-light">Date Uploaded</th>
+                                    <th scope="col" className="bg-primary text-light">Status</th>
+                                    <th scope="col" className="bg-primary text-light">Action</th>
+                                </tr>
                             </thead>
                             <tbody className="">
-                                {policies.length <= 0 ? <tr><td className="text-center" colSpan={5}>No Data Available</td></tr> :
+                                {policies.length <= 0 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
                                     policies.map((policy, index) => (
                                         <tr key={index} style={{ cursor: 'pointer' }}
-                                        onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
+                                            onClick={() => navigate(`/admn/policy/${policy.id}/${policy.isAuthorized}`)}
                                         >
                                             <th scope="row">{index + 1}</th>
                                             <td><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.fileName,40)}`}</td>
-                                            <td>{policy.uploadedBy}</td>
+                                           
                                             <td>{policy.authorizedBy}</td>
-                                            <td>{moment(policy.deadlineDate).format('MMM DD YYYY')}</td>
-                                            {/* <td className={`text-${policy.isAuthorized ? 'success' : 'warning'}`}>
+                                            <td>{moment(policy.uploadTime).format('MMM DD YYYY')}</td>
+                                            <td className={`text-${policy.isAuthorized ? 'success' : 'warning'}`}>
                                                 <img src={policy.isAuthorized ? successElipse : warningElipse} height={'10px'} />
                                                 {'  '}
-                                                <span >{policy.isAuthorized ? 'Approved' : 'Pending'}</span></td> */}
-                                            <td className="table-icon">
+                                                <span >{policy.isAuthorized ? 'Approved' : 'Pending'}</span>
+                                            </td>
+                                            <td className="table-icon" onClick={(e) => handleClick(e)}>
                                                 <i className=" bi bi-three-dots"></i>
                                                 <div className="content ml-5" style={{ position: 'relative' }}>
                                                     {
@@ -259,9 +251,7 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                         }}
                                                                     >
                                                                         <ListGroup>
-                                                                            <ListGroupItem
-                                                                            onClick={(e) => handleGetAttestersList(e,policy)}
-                                                                            >
+                                                                            <ListGroupItem>
                                                                                 <span className="w-100 d-flex justify-content-between">
                                                                                     <div className="d-flex gap-2">
                                                                                         <i className="bi bi-file-text"></i>
@@ -424,4 +414,4 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
     )
 
 }
-export default AdminApprovedPoliciesTab;
+export default ApproverAllPoliciesTab;

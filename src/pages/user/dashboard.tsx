@@ -7,9 +7,6 @@ import { getPolicies } from "../../controllers/policy";
 import { IPolicy } from "../../interfaces/policy";
 import { IUserDashboard } from "../../interfaces/user";
 import { IDept } from "../../interfaces/dept";
-import { toast } from "react-toastify";
-import { getUserInfo, loginUser } from "../../controllers/auth";
-import api from "../../config/api";
 
 
 const UserDashboardContainer = () => {
@@ -47,8 +44,8 @@ const UserDashboardContainer = () => {
                 setLoading(false);
             } else {
                 setLoading(false);
-                loginUser()
-                toast.error('Session expired!, You have been logged out!!')
+                // loginUser()
+                // toast.error('Session expired!, You have been logged out!!')
             }
             console.log({ response: res })
         } catch (error) {

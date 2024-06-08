@@ -141,6 +141,22 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
         toast.error('hii')
     }
 
+    const handleEdit = (e:any,policy:IPolicy)=>{
+        e.stopPropagation();
+        navigate(`/admin/edit-policy/${policy.id}`)
+    }
+
+    const handlePolicyDelete = async (e: any,policy:IPolicy) => {
+        e.stopPropagation();
+        const res = await api.post(`Policy/delete/request`,{"id":policy.id,"username":userName},data?.access_token);
+        if(res?.status==200){
+            toast.success('Delete request sent for approval!');
+            setRefreshData(!refreshData)
+        } else{
+            toast.error('Failed to delete policy')
+        }
+    }
+
 
     useEffect(() => {
         fetchData();
@@ -223,7 +239,7 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                 {'  '}
                                                 <span >{policy.isAuthorized ? 'Approved' : 'Pending'}</span>
                                             </td>
-                                            <td className="table-icon" onClick={(e) => handleClick(e)}>
+                                            <td className="table-icon">
                                                 <i className=" bi bi-three-dots"></i>
                                                 <div className="content ml-5" style={{ position: 'relative' }}>
                                                     {
@@ -231,7 +247,9 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                         <Card className="p-2  shadow-sm rounded border-0"
                                                         style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
                                                         <ListGroup>
-                                                            <ListGroupItem className="multi-layer">
+                                                            <ListGroupItem className="multi-layer"
+                                                            
+                                                            >
                                                                 <span className="w-100 d-flex justify-content-between">
                                                                     <div className="d-flex gap-2">
                                                                     <i className="bi bi-clipboard-check"></i>
@@ -251,7 +269,9 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                         }}
                                                                     >
                                                                         <ListGroup>
-                                                                            <ListGroupItem>
+                                                                            <ListGroupItem
+                                                                            onClick={(e) => handleClick(e)}
+                                                                            >
                                                                                 <span className="w-100 d-flex justify-content-between">
                                                                                     <div className="d-flex gap-2">
                                                                                         <i className="bi bi-file-text"></i>
@@ -324,7 +344,10 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                 </span>
                                                             </ListGroupItem>
 
-                                                            <ListGroupItem>
+                                                            <ListGroupItem
+                                                            disabled={policy?.markedForDeletion}
+                                                            onClick={(e)=>handlePolicyDelete(e,policy)}
+                                                            >
                                                                 <span className="w-100 d-flex justify-content-between">
                                                                     <div className="d-flex gap-2">
                                                                     <i className="bi bi-trash"></i>
@@ -341,7 +364,9 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                         <Card className="p-2  shadow-sm rounded border-0"
                                                         style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
                                                         <ListGroup>
-                                                            <ListGroupItem>
+                                                            <ListGroupItem
+                                                            onClick={(e)=>handleEdit(e,policy)}
+                                                            >
                                                             <span className="w-100 d-flex justify-content-between">
                                                                     <div className="d-flex gap-2">
                                                                         <i className="bi bi-file-text"></i>
@@ -368,7 +393,10 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                 </span>
                                                             </ListGroupItem>
 
-                                                            <ListGroupItem>
+                                                            <ListGroupItem
+                                                            disabled={policy?.markedForDeletion}
+                                                            onClick={(e)=>handlePolicyDelete(e,policy)}
+                                                            >
                                                                 <span className="w-100 d-flex justify-content-between">
                                                                     <div className="d-flex gap-2">
                                                                         <i className="bi bi-file-text"></i>

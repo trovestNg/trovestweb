@@ -7,7 +7,7 @@ import timer from '../../assets/images/deadline.png';
 import error from '../../assets/images/error.png';
 import { Tabs, Tab } from "react-bootstrap";
 import UploadedPoliciesTab from "../../components/tabs/admintabs/uploaded-policies-tab";
-import AdminUploadedPoliciesTab from "../../components/tabs/admintabs/adminUploadedPoliciesTab";
+import ApproverAllPoliciesTab from "../../components/tabs/approvertabs/approverAllPoliciesTab";
 import { getPolicies } from "../../controllers/policy";
 import { IPolicy } from "../../interfaces/policy";
 import { IDept } from "../../interfaces/dept";
@@ -43,10 +43,10 @@ const ApproverDashboardPage = () => {
 
     const dashCardInfo = [
         {
-            title: 'Uploaded Policies',
+            title: 'All Uploaded Policies',
             img: openBook,
             color : 'primary',
-            count: userDBInfo?.totalUploadedPolicyByInitiator,
+            count: userDBInfo?.totalUploadedPolicy,
             icon: '',
 
         },
@@ -83,10 +83,14 @@ const ApproverDashboardPage = () => {
     
     
     
-    const getInitiatorDashboard = async () => {
+
+
+
+
+    const getAuthorizerDashboard = async () => {
         setLoading(true)
         try {
-            const res = await api.get(`Dashboard/initiator?userName=${userName}`, `${data?.access_token}`);
+            const res = await api.get(`Dashboard/authorizer?userName=${userName}`, `${data?.access_token}`);
             setUserDBInfo(res?.data);
             console.log({here:res})
             if (res?.data) {
@@ -111,7 +115,7 @@ const ApproverDashboardPage = () => {
     
     
     useEffect(()=>{
-        getInitiatorDashboard(); 
+        getAuthorizerDashboard(); 
     },[refreshComponent])
     return (
         <div className="w-100">
@@ -132,20 +136,23 @@ const ApproverDashboardPage = () => {
                     variant="underline"
                     className="mb-3"
                 >
-                    <Tab eventKey="uploaded" title="Uploaded Policies"
+                    <Tab eventKey="uploaded" title="All Policies"
                     tabClassName="px-3"
                     >
-                        <AdminUploadedPoliciesTab handleCreatePolicy={()=>navigate('/admin/create-policy')} />
+                        <ApproverAllPoliciesTab handleCreatePolicy={()=>navigate('/admin/create-policy')} />
                     </Tab>
+
+                    <Tab eventKey="pending" title="Policies Pending Approval">
+                    <AdminPoliciesPendingApprovalTab handleCreatePolicy={()=>navigate('/admin/create-policy')} />
+                    </Tab>
+
                     <Tab eventKey="approved" title="Approved Policies">
                     <AdminApprovedPoliciesTab handleCreatePolicy={()=>navigate('/admin/create-policy')} />
                     </Tab>
-                    <Tab eventKey="pending" title="Policies Pending Approval">
-                    {/* <AdminPoliciesPendingApprovalTab handleCreatePolicy={()=>navigate('/admin/create-policy')} /> */}
-                    </Tab>
+                    
 
                     <Tab eventKey="rejected" title="Rejected Policies">
-                    {/* <AdminRejectedApprovalsTab handleCreatePolicy={()=>navigate('/admin/create-policy')} /> */}
+                    <AdminRejectedApprovalsTab handleCreatePolicy={()=>navigate('/admin/create-policy')} />
                     </Tab>
                 </Tabs>
                 

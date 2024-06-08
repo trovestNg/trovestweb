@@ -14,6 +14,7 @@ import api from "../../../config/api";
 const AdminPoliciesPendingApprovalTab: React.FC<any> = ({handleCreatePolicy}) => {
     const userDat = localStorage.getItem('loggedInUser') || '';
     const data = JSON.parse(userDat);
+    const userName = data?.profile?.sub.split('\\').pop();
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
     const [policies, setPolicies] = useState<IPolicy[]>([]);
@@ -31,9 +32,11 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({handleCreatePolicy}) =>
             let userInfo = await getUserInfo();
             console.log({gotten: userInfo})
             if(userInfo){
-                const res = await api.get(`Policy/unauthorized`, `${userInfo.access_token}`);
+                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
+                
                 if (res?.data) {
-                    setPolicies(res?.data);
+                    let unApprovedPolicies =  res?.data.filter((policy:IPolicy)=>!policy.isAuthorized)
+                    setPolicies(unApprovedPolicies);
                     setLoading(false)
                 } else {
                     loginUser()

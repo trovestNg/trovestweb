@@ -90,6 +90,7 @@ export const logoutUser = async () => {
     await userManager.signoutRedirect();
     // Clear token from local storage
     localStorage.removeItem('access_token');
+    localStorage.clear()
   } catch (error) {
     console.error('Error signing out:', error);
   }

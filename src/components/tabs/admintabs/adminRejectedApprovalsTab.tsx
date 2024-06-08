@@ -14,6 +14,7 @@ import api from "../../../config/api";
 const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
     const userDat = localStorage.getItem('loggedInUser') || '';
     const data = JSON.parse(userDat);
+    const userName = data?.profile?.sub.split('\\').pop();
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
     const [policies, setPolicies] = useState<IPolicy[]>([]);
@@ -31,9 +32,11 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
             let userInfo = await getUserInfo();
             console.log({gotten: userInfo})
             if(userInfo){
-                const res = await api.get(`Policy/rejected`, `${userInfo.access_token}`);
+                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
+                
                 if (res?.data) {
-                    setPolicies(res?.data);
+                    let rejectedPolicies =  res?.data.filter((policy:IPolicy)=>policy.isRejected)
+                    setPolicies(rejectedPolicies);
                     setLoading(false)
                 } else {
                     loginUser()
@@ -123,6 +126,12 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
 
     const handleClick = (e: any) => {
         e.stopPropagation();
+        toast.error('hii')
+    }
+
+    const handleGetAttestersList = (e: any,pol:IPolicy) => {
+        e.stopPropagation();
+        navigate(`/admin/list/${pol.id}`);
         toast.error('hii')
     }
 
@@ -239,7 +248,9 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
                                                                         }}
                                                                     >
                                                                         <ListGroup>
-                                                                            <ListGroupItem>
+                                                                            <ListGroupItem
+                                                                            onClick={(e:any)=>handleGetAttestersList(e,policy)}
+                                                                            >
                                                                                 <span className="w-100 d-flex justify-content-between">
                                                                                     <div className="d-flex gap-2">
                                                                                         <i className="bi bi-file-text"></i>

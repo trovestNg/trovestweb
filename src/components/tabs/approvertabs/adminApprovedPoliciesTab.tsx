@@ -186,9 +186,10 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                             <tr >
                                 <th scope="col" className="bg-primary text-light">#</th>
                                 <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                <th scope="col" className="bg-primary text-light">Department</th>
-                                <th scope="col" className="bg-primary text-light">Deadline to Attest</th>
-                                <th scope="col" className="bg-primary text-light">Status</th>
+                                <th scope="col" className="bg-primary text-light">Initiator</th>
+                                <th scope="col" className="bg-primary text-light">Authorizer</th>
+                                <th scope="col" className="bg-primary text-light">Deadline Date</th>
+                                <th scope="col" className="bg-primary text-light">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -197,31 +198,30 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     </table> :
                         <table className="table table-striped w-100">
                             <thead className="thead-dark">
-                                <tr >
-                                    <th scope="col" className="bg-primary text-light">#</th>
-                                    <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                    <th scope="col" className="bg-primary text-light">Subsidiary</th>
-                                    <th scope="col" className="bg-primary text-light">Authorizer</th>
-                                    <th scope="col" className="bg-primary text-light">Date Uploaded</th>
-                                    <th scope="col" className="bg-primary text-light">Status</th>
-                                    <th scope="col" className="bg-primary text-light">Action</th>
-                                </tr>
+                            <tr >
+                                <th scope="col" className="bg-primary text-light">#</th>
+                                <th scope="col" className="bg-primary text-light">Policy Title</th>
+                                <th scope="col" className="bg-primary text-light">Initiator</th>
+                                <th scope="col" className="bg-primary text-light">Authorizer</th>
+                                <th scope="col" className="bg-primary text-light">Deadline Date</th>
+                                <th scope="col" className="bg-primary text-light">Action</th>
+                            </tr>
                             </thead>
                             <tbody className="" style={{ height: '500px' }}>
                                 {policies.length <= 0 ? <tr><td className="text-center" colSpan={5}>No Data Available</td></tr> :
                                     policies.map((policy, index) => (
                                         <tr key={index} style={{ cursor: 'pointer' }}
-                                            onClick={() => navigate(`/policy-portal/policy/${policy.id}`)}
+                                        onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
                                         >
                                             <th scope="row">{index + 1}</th>
                                             <td><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.fileName,40)}`}</td>
-                                            <td>{policy.subsidiaryName}</td>
+                                            <td>{policy.uploadedBy}</td>
                                             <td>{policy.authorizedBy}</td>
-                                            <td>{moment(policy.uploadTime).format('MMM DD YYYY')}</td>
-                                            <td className={`text-${policy.isAuthorized ? 'success' : 'warning'}`}>
+                                            <td>{moment(policy.deadlineDate).format('MMM DD YYYY')}</td>
+                                            {/* <td className={`text-${policy.isAuthorized ? 'success' : 'warning'}`}>
                                                 <img src={policy.isAuthorized ? successElipse : warningElipse} height={'10px'} />
                                                 {'  '}
-                                                <span >{policy.isAuthorized ? 'Approved' : 'Pending'}</span></td>
+                                                <span >{policy.isAuthorized ? 'Approved' : 'Pending'}</span></td> */}
                                             <td className="table-icon" onClick={(e) => handleClick(e)}>
                                                 <i className=" bi bi-three-dots"></i>
                                                 <div className="content ml-5" style={{ position: 'relative' }}>

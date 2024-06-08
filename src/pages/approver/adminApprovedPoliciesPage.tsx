@@ -17,6 +17,8 @@ import { getUserInfo, loginUser } from "../../controllers/auth";
 import { toast } from "react-toastify";
 import api from "../../config/api";
 import { IUserDashboard } from "../../interfaces/user";
+import AdminApprovedPoliciesTab from "../../components/tabs/admintabs/adminApprovedPoliciesTab";
+import { useNavigate } from "react-router-dom";
 
 
 const AdminApprovedPoliciesPage = () => {
@@ -27,7 +29,8 @@ const AdminApprovedPoliciesPage = () => {
     const userName = data?.profile?.sub.split('\\').pop();
     // const [regUsers, setRegUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
-    const [refreshComponent,setRefreshComponent] = useState(false)
+    const [refreshComponent,setRefreshComponent] = useState(false);
+    const navigate = useNavigate()
 
     const [totalPolicyCount,setTotalPolicyCount] =useState(0);
     const [totalAttested,setTotalAttested] =useState(0);
@@ -76,7 +79,7 @@ const AdminApprovedPoliciesPage = () => {
             </div> */}
 
             <div className="w-100 mt-5">
-                <UserAllPoliciesTab />
+                <AdminApprovedPoliciesTab handleCreatePolicy={ ()=>navigate('/admin/create-policy')} />
             </div>
         </div>
     )

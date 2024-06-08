@@ -20,7 +20,9 @@ export interface IUserDashboard {
     totalUploadedPolicyByInitiator:number,
     totalApprovedPolicy:number,
     totalPendingPolicy:number,
-    totalRejectedPolicy:number
+    totalRejectedPolicy:number,
+    totalUploadedPolicy : number
+
 }
 
 export interface IUserPolicy {
