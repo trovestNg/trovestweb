@@ -89,7 +89,7 @@ const AdminDeletedPoliciesPage = () => {
                 setLoading(false);
             } else {
                 setLoading(false);
-                // loginUser()
+                loginUser()
                 toast.error('Session expired!, You have been logged out!!')
             }
             console.log({ response: res })
@@ -122,12 +122,12 @@ const AdminDeletedPoliciesPage = () => {
                     variant="underline"
                     className="mb-3"
                 >
-                    <Tab eventKey="uploaded" title="Policies Pending Deletion"
+                    <Tab eventKey="uploaded" title="Policies Pending Deletion (20) "
                     tabClassName="px-3"
                     >
                         <AdminPendingDeleteTab handleCreatePolicy={ ()=>navigate('/admin/create-policy')} />
                     </Tab>
-                    <Tab eventKey="approved" title="Deleted Policies">
+                    <Tab eventKey="approved" title="Deleted Policies (100)">
                     <AdminDeletedPoliciesTab handleCreatePolicy={ ()=>navigate('/admin/create-policy')} />
                     </Tab>
                     

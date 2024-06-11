@@ -23,13 +23,18 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const [policies, setPolicies] = useState<IPolicy[]>([]);
     const [depts, setDepts] = useState<IDept[]>([]);
     const [loading, setLoading] = useState(false);
-    const [sortByDept, setSortByDept] = useState(false);
-    const [bySearch, setBySearch] = useState(false);
+    
     const [selectedDept, setSelectedDept] = useState('');
     const [userSearch, setUserSearch] = useState('')
 
+    const [query, setQuery] = useState<string>('');
+    const [sortCriteria, setSortCriteria] = useState<string>('name');
 
-    const getUploadedPolicies = async () => {
+    const [sortByDept, setSortByDept] = useState(false);
+    const [searchByName, setBySearch] = useState(false);
+
+
+    const getInitiatorPolicies = async () => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
@@ -38,7 +43,7 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                 const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
                 
                 if (res?.data) {
-                    let approvedPolicies =  res?.data.filter((policy:IPolicy)=>policy.isAuthorized)
+                    let approvedPolicies =  res?.data.filter((policy:IPolicy)=>policy.isAuthorized && !policy.markedForDeletion)
                     setPolicies(approvedPolicies);
                     setLoading(false)
                 } else {
@@ -52,10 +57,85 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
         }
     }
+    const handleSearchByPolicyNameOrDept = async () => {
+        // toast.error('Searching by name of dept or title!')
+        setLoading(true)
+        try {
+            let userInfo = await getUserInfo();
+            console.log({ gotten: userInfo })
+            if (userInfo) {
+                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
+                if (res?.data) {
 
-  
+                    setLoading(false)
 
-    const handleGetDepts = async () => {
+                    let filtered = res?.data.filter((policy: IPolicy) =>
+                        policy.fileName.toLowerCase().includes(query.toLowerCase()) &&policy.isAuthorized&&!policy.markedForDeletion ||
+                        policy.policyDepartment.toLowerCase().includes(query.toLowerCase())&&policy.isAuthorized &&!policy.markedForDeletion
+                    );
+                    setPolicies(filtered.reverse());
+
+                } else {
+                    // loginUser()
+                    // toast.error('Session expired!, You have been logged out!!')
+                }
+                console.log({ response: res })
+            }
+
+        } catch (error) {
+
+        }
+
+    };
+
+    const handleSortByDepartment = async () => {
+        // s
+        setLoading(true)
+        try {
+            let userInfo = await getUserInfo();
+            console.log({ gotten: userInfo })
+            if (userInfo) {
+                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
+                if (res?.data) {
+
+                    setLoading(false)
+
+                    let filtered = res?.data.filter((policy: IPolicy) =>
+                        policy.policyDepartment.toLowerCase().includes(sortCriteria.toLowerCase())
+                    &&!policy.markedForDeletion &&policy.isAuthorized
+                    );
+                    setPolicies(filtered.reverse());
+
+                } else {
+                    // loginUser()
+                    // toast.error('Session expired!, You have been logged out!!')
+                }
+                console.log({ response: res })
+            }
+
+        } catch (error) {
+
+        }
+
+    };
+
+    const handleSearch = () => {
+        setBySearch(true);
+        setSortByDept(false);
+        setRefreshData(!refreshData)
+    }
+
+    const handleClear = () => {
+        setBySearch(false);
+        setSortByDept(false);
+        setQuery('')
+        setRefreshData(!refreshData)
+    }
+
+
+
+
+    const handleGetAllDepts = async () => {
         // setLoading(true)
         try {
             const res = await getAllDepartments(`filter?subsidiaryName=FSDH+Merchant+Bank`, `${data?.access_token}`);
@@ -73,77 +153,39 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     }
 
-    const handleSearch = () => {
-
-        setBySearch(true);
-        setRefreshData(!refreshData)
-
-    }
-
-    const getBySearch = async () => {
-        setLoading(true)
-        try {
-            const res = await getPolicies(`Policy/searchByWord?searchWord=${userSearch}`, `${data?.access_token}`);
-            if (res?.data) {
-                // let searched = res?.data.filter((data:IPolicy)=>data.fileName.includes(userSearch));
-                setPolicies(res?.data);
-                // if(allAttested.length >= res?.data.length){
-                //     setPolicies([]);
-                // } else{
-
-                // }
-
-                setLoading(false)
-            } else {
-                toast.error('Search failed!');
-                setBySearch(false);
-                setLoading(false);
-            }
-            console.log({ response: res })
-        } catch (error) {
-
-        }
-    }
-
-    const getBySort = async () => {
-        setLoading(true)
-        try {
-            const res = await getPolicies(`filterByDepartment?departmentName=${selectedDept}`, `${data?.access_token}`);
-            if (res?.data) {
-                setPolicies(res?.data);
-                setLoading(false);
-            } else {
-                toast.error('Fail to sort!')
-                setLoading(false);
-                setSortByDept(false);
-            }
-            console.log({ response: res })
-        } catch (error) {
-
-        }
-    }
-
     const handleDeptSelection = (val: string) => {
-        setSelectedDept(val);
-        setSortByDept(true)
-        setRefreshData(!refreshData)
+        if (val == 'all') {
+            setBySearch(false)
+            setSortByDept(false)
+            setRefreshData(!refreshData)
+        } else {
+            setSortCriteria(val);
+            setBySearch(false);
+            setSortByDept(true)
+            setRefreshData(!refreshData)
+        }
+
     }
 
 
     const fetchData = () => {
-        if (sortByDept) {
-            getBySort();
-        } else if (bySearch) {
-            getBySearch();
+        if (searchByName) {
+            handleSearchByPolicyNameOrDept()
+        } else if (sortByDept) {
+            handleSortByDepartment()
         } else {
-            getUploadedPolicies();
+            getInitiatorPolicies();
         }
+
     }
 
-    const handleClick = (e: any) => {
-        e.stopPropagation();
-        toast.error('hii')
-    }
+
+    useEffect(() => {
+        fetchData();
+        handleGetAllDepts();
+    }, [refreshData])
+
+    
 
     const handleGetAttestersList = (e: any,pol:IPolicy) => {
         e.stopPropagation();
@@ -153,26 +195,33 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     useEffect(() => {
         fetchData();
-        handleGetDepts();
+        handleGetAllDepts();
     }, [refreshData])
 
     return (
         <div className="w-100">
             <div className="d-flex w-100 justify-content-between">
-                <div className="d-flex gap-4">
-                    <div className="d-flex">
+            <div className="d-flex gap-4">
+                    <div className="d-flex align-items-center" style={{ position: 'relative' }}>
                         <FormControl
-                            onChange={(e) => setUserSearch(e.target.value)}
+                            onChange={(e) => setQuery(e.target.value)}
                             placeholder="Search by Name, Department..."
+                            value={query}
                             className="py-2" style={{ minWidth: '350px' }} />
+                        <i
+                            className="bi bi-x-lg"
+                            onClick={handleClear}
+                            style={{ marginLeft: '310px', display: query == '' ? 'none' : 'flex', cursor: 'pointer', float: 'right', position: 'absolute' }}></i>
+
                         <Button
-                            disabled={userSearch == ''}
+                            disabled={query == ''}
                             onClick={() => handleSearch()}
 
                             variant="primary" style={{ minWidth: '100px', marginLeft: '-5px' }}>Search</Button>
                     </div>
-                    <Form.Select onChange={(e) => handleDeptSelection(e.currentTarget.value)} className="custom-select" style={{ maxWidth: '170px' }}>
-                        <option>Select Department</option>
+                    <Form.Select onChange={(e) => handleDeptSelection(e.currentTarget.value)} className="custom-select"
+                        style={{ maxWidth: '170px' }}>
+                        <option value={'all'}>Select Department</option>
                         {
                             depts.map((dept) => <option key={dept.id} value={dept.name}>{dept.name}</option>)
                         }
@@ -217,7 +266,7 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                             </tr>
                             </thead>
                             <tbody className="">
-                                {policies.length <= 0 ? <tr><td className="text-center" colSpan={5}>No Data Available</td></tr> :
+                                {policies.length <= 0 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
                                     policies.map((policy, index) => (
                                         <tr key={index} style={{ cursor: 'pointer' }}
                                         onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}

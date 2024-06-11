@@ -1,15 +1,11 @@
 import React, { Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
-import Hompepage from "./pages/home";
-import DashboardContainer from "./pages/dashboard";
-import DashboardPage from "./pages/dashboardpage";
 import UserDashboardContainer from "./pages/user/dashboard";
 import UserDashboardPage from "./pages/user/dashboardpage";
 import PolicyViewPage from "./pages/user/policyviewpage";
 import Landingpage from "./pages/landingpage";
 import LoggedOutPage from "./pages/loggedoutpage";
 import SigninCallBackPage from "./pages/signinCallBackPage";
-import AllPolicyViewPage from "./pages/user/allPolicyPage";
 import UserAllPolicyPage from "./pages/user/userAllPolicyPage";
 import UserAttestedPoliciesTab from "./components/tabs/userTabs/attested-policies-tab";
 import UserAttestedPolicyPage from "./pages/user/userAttestedPolicyPage";

@@ -35,7 +35,7 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
                 const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
                 
                 if (res?.data) {
-                    let rejectedPolicies =  res?.data.filter((policy:IPolicy)=>policy.isRejected)
+                    let rejectedPolicies =  res?.data.filter((policy:IPolicy)=>policy.isRejected && !policy.markedForDeletion)
                     setPolicies(rejectedPolicies);
                     setLoading(false)
                 } else {

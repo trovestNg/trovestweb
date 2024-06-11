@@ -35,7 +35,7 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({handleCreatePolicy}) =>
                 const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
                 
                 if (res?.data) {
-                    let unApprovedPolicies =  res?.data.filter((policy:IPolicy)=>!policy.isAuthorized)
+                    let unApprovedPolicies =  res?.data.filter((policy:IPolicy)=>!policy.isAuthorized && !policy.markedForDeletion)
                     setPolicies(unApprovedPolicies);
                     setLoading(false)
                 } else {

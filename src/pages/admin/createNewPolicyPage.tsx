@@ -13,8 +13,19 @@ import SureToCreatePolicyModal from "../../components/modals/sureToCreatePolicyM
 import PolicyCreatedSuccessModal from "../../components/modals/policyCreatedSuccessModal";
 
 const CreateNewPolicyPage: React.FC<any> = () => {
+    interface IAuthorizers {
+        "id": number
+		"authorizerName": string,
+		"userName": string,
+		"department": string,
+		"subsidiary": string,
+		"emailAddress": string
+    }
+
+
     const [policyDoc, setPolicyDoc] = useState('');
     const [subSidiaries, setSubSidiaries] = useState<IDept[]>();
+    const [authorizers, setAuthorizers] = useState< IAuthorizers[]>();
     const userDat = localStorage.getItem('loggedInUser') || '';
     const data = JSON.parse(userDat);
     const userName = data?.profile?.sub.split('\\').pop();
@@ -61,24 +72,7 @@ const CreateNewPolicyPage: React.FC<any> = () => {
         }
     };
 
-    const subsidiaries = [
-        {
-            id: "0",
-            name: "ABUJA BRANCH"
-        },
-        {
-            id: "1",
-            name: "ADMIN"
-        },
-        {
-            id: "2",
-            name: "BRAND STRATEGY & MARKETING"
-        },
-        {
-            id: "3",
-            name: "Info Tech"
-        },
-    ]
+    
 
     const remFreq = [
         {
@@ -92,22 +86,6 @@ const CreateNewPolicyPage: React.FC<any> = () => {
         {
             id: 2,
             name: "Monthly"
-        },
-    ]
-
-    const authorizers = [
-        {
-            id: 0,
-            name: "Olubukola Lanipekun-Lawal"
-
-        },
-        {
-            id: 1,
-            name: "Taiwo Sanusi"
-        },
-        {
-            id: 2,
-            name: "Peju Siyanbola"
         },
     ]
 
@@ -129,18 +107,40 @@ const CreateNewPolicyPage: React.FC<any> = () => {
 
     }
 
+    const handleGetAuthorizers = async () => {
+        // setLoading(true)
+        try {
+            const res = await api.get(`Policy/authorizer`, `${data?.access_token}`);
+            // console.log({ dataHere: res })
+
+            if (res?.data) {
+                setAuthorizers(res?.data)
+            } else {
+                
+            }
+            console.log({ response: res })
+        } catch (error) {
+
+        }
+
+    }
+
     const createNewPolicy = async (body: any) => {
         console.log({ bodyHere: body });
         setCreateLoading(true)
+        let convertedToInt = body?.Department.map((id:any)=> +id)
   let formData = new FormData()
-        
+
+  let dep :any = ['1023']
+
         formData.append('policyDocument', body?.policyDocument)
         formData.append('fileDescription', body?.fileDescription)
         formData.append('policyName', body?.policyName)
-        formData.append('Department', body?.Department)
+        formData.append('Subsidiary',convertedToInt)
         formData.append('Frequency', body?.Frequency)
         formData.append('Authorizer', body?.Authorizer)
         formData.append('DeadlineDate', body?.DeadlineDate)
+        // formData.append('Department', dep)
 
         let userInfo = await getUserInfo();
 
@@ -163,10 +163,12 @@ const CreateNewPolicyPage: React.FC<any> = () => {
 
     useEffect(()=>{
         handleGetDepts();
+        handleGetAuthorizers()
     },[])
 
     return (
         <div>
+            <div><Button variant="outline border border-2" onClick={() => navigate(-1)}>Go Back</Button></div>
             {/* <Formik
                     initialValues={initialVal}
                     validationSchema={validationSchem}
@@ -379,8 +381,8 @@ const CreateNewPolicyPage: React.FC<any> = () => {
                                     style={{ marginTop: '5px', maxWidth: '400px' }}>
                                     <option>Select</option>
                                     {
-                                        authorizers.map((sub, index) =>
-                                            <option key={index} value={sub.name}>{sub.name}</option>
+                                       authorizers && authorizers.map((sub, index) =>
+                                            <option key={index} value={sub.authorizerName}>{sub.authorizerName}</option>
                                         )
                                     }
                                 </FormSelect>

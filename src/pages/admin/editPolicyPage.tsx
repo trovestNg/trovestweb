@@ -167,6 +167,7 @@ const EditPolicyPage: React.FC<any> = () => {
 
     return (
         <div>
+            <div><Button variant="outline border border-2" onClick={() => navigate(-1)}>Go Back</Button></div>
             {/* <Formik
                     initialValues={initialVal}
                     validationSchema={validationSchem}

@@ -90,7 +90,7 @@ const UserSideBar: React.FC<any> = ({ payload }) => {
     }
 
     useEffect(() => {
-        getUserType()
+        getUserType();
     },[])
     return (
         <div className={`min-vh-100 bg-primary ${styles.sidebarContainer}`} style={{ minWidth: '18em' }}>

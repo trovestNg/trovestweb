@@ -8,7 +8,7 @@ import moment from "moment";
 import { getPolicies } from "../../../controllers/policy";
 import receiptImg from '../../../assets/images/receipt.png';
 import { getAllDepartments } from "../../../controllers/department";
-import {toast} from 'react-toastify';
+import { toast } from 'react-toastify';
 import { getUserInfo, loginUser } from "../../../controllers/auth";
 import api from "../../../config/api";
 import { shortenString } from "../../../util";
@@ -21,21 +21,32 @@ const UserAllPoliciesTab: React.FC<any> = () => {
     const userName = data?.profile?.sub.split('\\').pop();
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
+
     const [policies, setPolicies] = useState<IUserPolicy[]>([]);
+    const [filteredData, setFilteredData] = useState<IUserPolicy[]>([]);
+    const [sortedData, setSortedData] = useState<IUserPolicy[]>([]);
+
     const [depts, setDepts] = useState<IDept[]>([]);
     const [loading, setLoading] = useState(false);
+
     const [sortByDept, setSortByDept] = useState(false);
-    const [bySearch, setBySearch] = useState(false);
+    const [searchByName, setBySearch] = useState(false);
+
     const [selectedDept, setSelectedDept] = useState('');
     const [userSearch, setUserSearch] = useState('')
+
+
+    const [query, setQuery] = useState<string>('');
+    const [sortCriteria, setSortCriteria] = useState<string>('name');
+
 
 
     const getAllPolicies = async () => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({gotten: userInfo})
-            if(userInfo){
+            console.log({ gotten: userInfo })
+            if (userInfo) {
                 const res = await api.get(`Policy/user-policy?userName=${userName}`, `${userInfo.access_token}`);
                 if (res?.data) {
                     setPolicies(res?.data);
@@ -46,13 +57,88 @@ const UserAllPoliciesTab: React.FC<any> = () => {
                 }
                 console.log({ response: res })
             }
-           
+
         } catch (error) {
 
         }
     }
 
-    const handleGetDepts = async () => {
+    const handleSearchByPolicyNameOrDept = async () => {
+        // toast.error('Searching by name of dept or title!')
+        setLoading(true)
+        try {
+            let userInfo = await getUserInfo();
+            console.log({ gotten: userInfo })
+            if (userInfo) {
+                const res = await api.get(`Policy/user-policy?userName=${userName}`, `${userInfo.access_token}`);
+                if (res?.data) {
+
+                    setLoading(false)
+
+                    let filtered = res?.data.filter((policy: IUserPolicy) =>
+                        policy.fileName.toLowerCase().includes(query.toLowerCase()) ||
+                        policy.policyDepartment.toLowerCase().includes(query.toLowerCase())
+                    );
+                    setPolicies(filtered);
+
+                } else {
+                    // loginUser()
+                    // toast.error('Session expired!, You have been logged out!!')
+                }
+                console.log({ response: res })
+            }
+
+        } catch (error) {
+
+        }
+
+    };
+
+    const handleSortByDepartment = async () => {
+        // s
+        setLoading(true)
+        try {
+            let userInfo = await getUserInfo();
+            console.log({ gotten: userInfo })
+            if (userInfo) {
+                const res = await api.get(`Policy/user-policy?userName=${userName}`, `${userInfo.access_token}`);
+                if (res?.data) {
+
+                    setLoading(false)
+
+                    let filtered = res?.data.filter((policy: IUserPolicy) =>
+                        policy.policyDepartment.toLowerCase().includes(sortCriteria.toLowerCase())
+                    );
+                    setPolicies(filtered);
+
+                } else {
+                    // loginUser()
+                    // toast.error('Session expired!, You have been logged out!!')
+                }
+                console.log({ response: res })
+            }
+
+        } catch (error) {
+
+        }
+
+    };
+
+    const handleSearch = () => {
+        setBySearch(true);
+        setRefreshData(!refreshData)
+    }
+
+    const handleClear = () => {
+        setBySearch(false);
+        setQuery('')
+        setRefreshData(!refreshData)
+    }
+
+   
+
+
+    const handleGetAllDepts = async () => {
         // setLoading(true)
         try {
             const res = await getAllDepartments(`filter?subsidiaryName=FSDH+Merchant+Bank`, `${data?.access_token}`);
@@ -70,96 +156,62 @@ const UserAllPoliciesTab: React.FC<any> = () => {
 
     }
 
-    const handleSearch = () => {
-        
-        setBySearch(true);
-        setRefreshData(!refreshData)
-
-    }
-
-    const getBySearch = async () => {
-        setLoading(true)
-        try {
-            const res = await getPolicies(`Policy/searchByWord?searchWord=${userSearch}`, `${data?.access_token}`);
-            if (res?.data) {
-                // let searched = res?.data.filter((data:IPolicy)=>data.fileName.includes(userSearch));
-                setPolicies(res?.data);
-                // if(allAttested.length >= res?.data.length){
-                //     setPolicies([]);
-                // } else{
-
-                // }
-
-                setLoading(false)
-            } else {
-                toast.error('Search failed!');
-                setBySearch(false);
-                setLoading(false);
-            }
-            console.log({ response: res })
-        } catch (error) {
-
-        }
-    }
-
-    const getBySort = async () => {
-        setLoading(true)
-        try {
-            const res = await getPolicies(`filterByDepartment?departmentName=${selectedDept}`, `${data?.access_token}`);
-            if (res?.data) {
-                setPolicies(res?.data);
-                setLoading(false);
-            } else {
-                toast.error('Fail to sort!')
-                setLoading(false);
-                setSortByDept(false);
-            }
-            console.log({ response: res })
-        } catch (error) {
-
-        }
-    }
-
     const handleDeptSelection = (val: string) => {
-        setSelectedDept(val);
-        setSortByDept(true)
-        setRefreshData(!refreshData)
+        if(val == 'all'){
+            setBySearch(false)
+            setSortByDept(false)
+            setRefreshData(!refreshData)
+        } else {
+            setSortCriteria(val);
+            setBySearch(false);
+            setSortByDept(true)
+            setRefreshData(!refreshData)
+        }
+        
     }
 
 
     const fetchData = () => {
-        if (sortByDept) {
-            getBySort();
-        } else if(bySearch) {
-            getBySearch();
+        if (searchByName) {
+            handleSearchByPolicyNameOrDept()
+        } else if (sortByDept) {
+            handleSortByDepartment()
         } else {
             getAllPolicies();
         }
+
     }
 
 
     useEffect(() => {
         fetchData();
-        handleGetDepts();
+        handleGetAllDepts();
     }, [refreshData])
 
     return (
         <div className="w-100">
             <div className="d-flex w-100 justify-content-between">
                 <div className="d-flex gap-4">
-                    <div className="d-flex">
+                    <div className="d-flex align-items-center" style={{position:'relative'}}>
                         <FormControl
-                            onChange={(e) => setUserSearch(e.target.value)}
+                            onChange={(e) => setQuery(e.target.value)}
                             placeholder="Search by Name, Department..."
+                            value={query}
                             className="py-2" style={{ minWidth: '350px' }} />
-                        <Button 
-                        disabled={userSearch==''}
-                        onClick={()=>handleSearch()}
-                       
-                        variant="primary" style={{ minWidth: '100px', marginLeft: '-5px' }}>Search</Button>
+                                <i 
+                                className="bi bi-x-lg" 
+                                onClick={handleClear}
+                                style={{marginLeft:'310px', display:query==''?'none':'flex',cursor:'pointer', float:'right', position:'absolute'}}></i>
+                            
+                        <Button
+                            disabled={query == ''}
+                            onClick={() => handleSearch()}
+
+                            variant="primary" style={{ minWidth: '100px', marginLeft: '-5px' }}>Search</Button>
                     </div>
-                    <Form.Select onChange={(e) => handleDeptSelection(e.currentTarget.value)} className="custom-select" style={{ maxWidth: '170px' }}>
-                        <option>Select Department</option>
+                    <Form.Select onChange={(e) => handleDeptSelection(e.currentTarget.value)} className="custom-select"
+                     style={{ maxWidth: '170px' }}>
+                        <option value={'all'}>Select Department</option>
                         {
                             depts.map((dept) => <option key={dept.id} value={dept.name}>{dept.name}</option>)
                         }
@@ -198,22 +250,22 @@ const UserAllPoliciesTab: React.FC<any> = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {policies.length <= 0?<tr><td className="text-center" colSpan={5}>No Data Available</td></tr> :
-                                policies.map((policy, index) => (
-                                    <tr key={index} style={{ cursor: 'pointer' }}
-                                        onClick={() => navigate(`/policy-portal/policy/${policy.isAttested}/${policy.id}`)}
-                                    >
-                                        <th scope="row">{index + 1}</th>
-                                        <td><i className="bi bi-file-earmark-pdf text-danger"></i> {shortenString(policy.fileName,40)}</td>
-                                        <td>{policy.policyDepartment}</td>
-                                        <td>{moment(policy.deadlineDate).format('MMM DD YYYY')}</td>
-                                        <td className={`text-${policy.isAttested ? 'success' : 'warning'}`}>
+                                {policies.length <= 0 ? <tr><td className="text-center" colSpan={5}>No Data Available</td></tr> :
+                                    policies.map((policy, index) => (
+                                        <tr key={index} style={{ cursor: 'pointer' }}
+                                            onClick={() => navigate(`/policy-portal/policy/${policy.isAttested}/${policy.id}`)}
+                                        >
+                                            <th scope="row">{index + 1}</th>
+                                            <td><i className="bi bi-file-earmark-pdf text-danger"></i> {shortenString(policy.fileName, 40)}</td>
+                                            <td>{policy.policyDepartment}</td>
+                                            <td>{moment(policy.deadlineDate).format('MMM DD YYYY')}</td>
+                                            <td className={`text-${policy.isAttested ? 'success' : 'warning'}`}>
                                                 <img src={policy.isAttested ? successElipse : warningElipse} height={'10px'} />
                                                 {'  '}
                                                 <span >{policy.isAttested ? 'Attested' : 'Not attested'}</span>
-                                        </td>
-                                    </tr>
-                                ))
+                                            </td>
+                                        </tr>
+                                    ))
                                 }
                             </tbody>
                         </table>

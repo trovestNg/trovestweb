@@ -14,6 +14,7 @@ import api from "../../../config/api";
 const AdminDeletedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
     const userDat = localStorage.getItem('loggedInUser') || '';
     const data = JSON.parse(userDat);
+    const userName = data?.profile?.sub.split('\\').pop();
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
     const [policies, setPolicies] = useState<IPolicy[]>([]);
@@ -29,19 +30,21 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({gotten: userInfo})
-            if(userInfo){
-                const res = await api.get(`Policy/rejected`, `${userInfo.access_token}`);
+            console.log({ gotten: userInfo })
+            if (userInfo) {
+                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
+                
                 if (res?.data) {
-                    setPolicies(res?.data);
+                    let deletedPolicy =  res?.data.filter((policy:IPolicy)=>policy.isDeleted)
+                    setPolicies(deletedPolicy);
                     setLoading(false)
                 } else {
-                    loginUser()
+                    // loginUser()
                     // toast.error('Session expired!, You have been logged out!!')
                 }
                 console.log({ response: res })
             }
-           
+
         } catch (error) {
 
         }
@@ -182,8 +185,7 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
                             <tr >
                                 <th scope="col" className="bg-primary text-light">#</th>
                                 <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                <th scope="col" className="bg-primary text-light">Authorizer</th>
-                                <th scope="col" className="bg-primary text-light">Department</th>
+                                <th scope="col" className="bg-primary text-light">Reason for Rejection</th>
                                 <th scope="col" className="bg-primary text-light">Date Rejected</th>
                                 <th scope="col" className="bg-primary text-light">Action</th>
                             </tr>
@@ -194,25 +196,27 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
                     </table> :
                         <table className="table w-100">
                             <thead className="thead-dark">
-                            <tr >
-                                <th scope="col" className="bg-primary text-light">#</th>
-                                <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                <th scope="col" className="bg-primary text-light">Authorizer</th>
-                                <th scope="col" className="bg-primary text-light">Department</th>
-                                <th scope="col" className="bg-primary text-light">Date Rejected</th>
-                                <th scope="col" className="bg-primary text-light">Action</th>
-                            </tr>
+                                <tr >
+                                    <th scope="col" className="bg-primary text-light">#</th>
+                                    <th scope="col" className="bg-primary text-light">Policy Title</th>
+                                    <th scope="col" className="bg-primary text-light">Authorizer</th>
+                                    <th scope="col" className="bg-primary text-light">Department</th>
+                                    <th scope="col" className="bg-primary text-light">Date Deleted</th>
+                                    <th scope="col" className="bg-primary text-light">Action</th>
+                                </tr>
                             </thead>
                             <tbody>
-                                {policies.length <= 0?<tr><td className="text-center" colSpan={5}>No Data Available</td></tr> :
+                                {policies.length <= 0?<tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
                                 policies.map((policy, index) => (
                                     <tr key={index} style={{ cursor: 'pointer' }}
                                     onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
                                     >
                                         <th scope="row">{index + 1}</th>
                                         <td><i className="bi bi-file-earmark-pdf text-danger"></i> {policy.fileName}</td>
-                                        <td>{policy.comment}</td>
-                                        <td>{moment(policy.deadlineDate).format('MMM DD YYYY')}</td>
+                                        <td>{policy.authorizedBy}</td>
+                                        <td>{policy.policyDepartment}</td>
+                                        {/* <td>{policy.comment}</td> */}
+                                        <td>{moment(policy.deleteRequestedTime).format('MMM DD YYYY')}</td>
                                         <td className="table-icon" onClick={(e) => handleClick(e)}>
                                                 <i className=" bi bi-three-dots"></i>
                                                 <div className="content ml-5" style={{ position: 'relative' }}>
@@ -314,14 +318,14 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
                                                                 </span>
                                                             </ListGroupItem>
 
-                                                            <ListGroupItem>
+                                                            {/* <ListGroupItem>
                                                                 <span className="w-100 d-flex justify-content-between">
                                                                     <div className="d-flex gap-2">
                                                                     <i className="bi bi-trash"></i>
                                                                         Delete
                                                                     </div>
                                                                 </span>
-                                                            </ListGroupItem>
+                                                            </ListGroupItem> */}
                                                         </ListGroup>
                                                     </Card>}
 

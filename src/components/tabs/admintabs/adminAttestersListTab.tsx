@@ -36,7 +36,7 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
             let userInfo = await getUserInfo();
             console.log({ gotten: userInfo })
             if (userInfo) {
-                const res = await api.get(`Attest/${id}`, `${userInfo.access_token}`);
+                const res = await api.get(`Attest/${id}?policyId=${id}`, `${userInfo.access_token}`);
                 
                 if (res?.data) {
                     let approvedPolicies =  res?.data.filter((policy:IPolicy)=>policy.isAuthorized)
@@ -203,7 +203,7 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr className=""><td className="text-center" colSpan={5}><Spinner className="spinner-grow text-primary" /></td></tr>
+                            <tr className=""><td className="text-center" colSpan={7}><Spinner className="spinner-grow text-primary" /></td></tr>
                         </tbody>
                     </table> :
                         <table className="table table-striped w-100">
@@ -218,7 +218,7 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
                             </tr>
                             </thead>
                             <tbody className="">
-                                {policies.length <= 0 ? <tr><td className="text-center" colSpan={5}>No Data Available</td></tr> :
+                                {policies.length <= 0 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
                                     policies.map((policy, index) => (
                                         <tr key={index} style={{ cursor: 'pointer' }}
                                         onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}

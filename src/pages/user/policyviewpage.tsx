@@ -186,7 +186,7 @@ const PolicyViewPage = () => {
                             </div>
 
                             <div>
-                                <p className=" d-flex gap-2 text-grey p-0 m-0">
+                                <p className=" d-flex gap-2 text-danger p-0 m-0">
                                     {/* <i className="bi bi-file-earmark"></i> */}
                                     Deadline Date
                                 </p>
@@ -214,11 +214,10 @@ const PolicyViewPage = () => {
                     
                             :
                              <>
-                             <Button disabled={pageNumber !== numPages} 
-                             onClick={() => setAttestedSuccessModal(true)} 
-                             variant="outline border-0 shadow-sm text-primary" className="W-100 mt-3">
+                             <p  
+                              className="W-100 mt-3 text-center bg-light text-primary shadow-sm py-2">
                              You have attested to this policy
-                         </Button>
+                         </p>
                          {/* <i className="bi bi-caret-up-fill text-center text-primary"></i> */}
                          <p className="text-center m-0 py-0">
                          You've attested to this policy, but feel free to review it again if needed. Your understanding is valued.

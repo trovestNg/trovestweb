@@ -9,6 +9,7 @@ import { IUserDashboard } from "../../interfaces/user";
 import AdminApprovedPoliciesTab from "../../components/tabs/admintabs/adminApprovedPoliciesTab";
 import AdminAttestersListTab from "../../components/tabs/admintabs/adminAttestersListTab";
 import { useNavigate,useParams } from "react-router-dom";
+import { Button } from "react-bootstrap";
 
 
 const AdminAttestersListPage = () => {
@@ -58,7 +59,8 @@ const AdminAttestersListPage = () => {
 
     return (
         <div className="w-100">
-            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Approved Policies {userDBInfo?.totalApprovedPolicy} </h5>
+            <div><Button variant="outline border border-2" onClick={() => navigate(-1)}>Go Back</Button></div>
+            <h5 className="font-weight-bold text-primary mt-3" style={{ fontFamily: 'title' }}>{`Data Protection Policy & Procedure Attesters List-${userDBInfo?.totalApprovedPolicy}`} </h5>
            
             {/* <div className="d-flex gap-5">
                 {
