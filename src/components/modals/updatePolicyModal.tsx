@@ -4,21 +4,18 @@ import { Formik } from 'formik';
 import { object, string, number, date, InferType } from 'yup';
 import api from "../../config/api";
 import { getUserInfo } from "../../controllers/auth";
+import moment from "moment";
+import { toast } from 'react-toastify';
 
 const UpdatePolicyModal: React.FC<any> = ({ show, off, pol }) => {
-    const initialVal = {
-        policyDocument: 'File name',
-        fileDescription: '',
-        policyName: '',
-        Department: '',
-        Dept: '',
-        Frequency: '',
-        DeadlineDate: ''
-    }
+    const initialVal  = {
+        "id": pol?.id,
+        "deadlineDate": pol?.deadlineDate
+      }
 
     let validationSchem = object({
         // policyDocument: string().required('Kindly upload a file'),
-        policyName: string().required('File title cannot be empty'),
+        deadlineDate: string().required('Date is required'),
         // fileDescription: string().required('Description cannot be empty'),
 
         // age: number().required().positive().integer(),
@@ -28,23 +25,18 @@ const UpdatePolicyModal: React.FC<any> = ({ show, off, pol }) => {
     });
 
     const createNewPolicy = async (body: any) => {
-        const newBody = {
-            "policyName": [
-                body?.policyName
-            ],
-            "policyDocument": [
-                body?.policyDocument
-            ],
-            "fileDescription": [
-                body?.fileDescription
-            ]
-        }
+        // console.log({
+        //     sending : body
+        // })
         let userInfo = await getUserInfo();
-
         if (userInfo) {
-
-            const res = await api.post(`policy/upload?UploaderName=${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`, newBody, `${userInfo?.access_token}`)
-            console.log(res)
+            const res = await api.post(`Policy/adjust/deadline`, body, `${userInfo?.access_token}`)
+            if (res?.status == 200) {
+                toast.success('Deadline updated succesfully!');
+                off();
+            } else {
+                toast.error('Error updating deadline date')
+            }
         }
 
 
@@ -60,12 +52,12 @@ const UpdatePolicyModal: React.FC<any> = ({ show, off, pol }) => {
                 <Modal.Body >
                     <Formik
                         initialValues={initialVal}
-                        validationSchema={validationSchem}
+                        // validationSchema={validationSchem}
                         validateOnBlur
                         onSubmit={(val) => createNewPolicy(val)
                         }
                     >{
-                            ({ handleChange, handleSubmit, errors, touched, handleBlur }) => (
+                            ({ handleChange, handleSubmit, errors,values, touched, handleBlur }) => (
 
                                 <form onSubmit={handleSubmit} className="px-2">
                                     <div className="d-flex">
@@ -82,13 +74,13 @@ const UpdatePolicyModal: React.FC<any> = ({ show, off, pol }) => {
                                         </div>
                                         <div className="w-50">
                                             <p className="text-danger p-0 m-0"> Deadline date</p>
-                                            <p>{pol?.deadlineDate}</p>
+                                            <p>{moment(pol?.deadlineDate).format('MMM DD YYYY')}</p>
 
                                             <div className="p-2">
                                                 <p className="p-0 m-0">New Deadline Date</p>
                                                 <FormControl
                                                     onChange={handleChange}
-                                                    id="DeadlineDate"
+                                                    id="deadlineDate"
                                                     type="date" placeholder="Select date" style={{ marginTop: '5px', maxWidth: '200px' }} />
                                             </div>
                                         </div>

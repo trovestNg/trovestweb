@@ -130,10 +130,10 @@ const AdminDashboardPage = () => {
                     defaultActiveKey="uploaded"
                     id="uncontrolled-tab-example"
                     variant="underline"
-                    className="mb-3"
+                    className="mb-3 gap-5"
                 >
                     <Tab eventKey="uploaded" title="Uploaded Policies"
-                    tabClassName="px-3"
+                    tabClassName=""
                     >
                         <AdminUploadedPoliciesTab handleCreatePolicy={()=>navigate('/admin/create-policy')} />
                     </Tab>

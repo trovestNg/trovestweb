@@ -232,7 +232,7 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     const handleSendAuthorizationReminder = async (e: any,policy:IPolicy) => {
         e.stopPropagation();
-        const res = await api.post(`Policy/reminder`, { "policyId": policy.id}, data?.access_token);
+        const res = await api.post(`Policy/nudge-authorizer?policyId=${policy.id}`,{"policyId" :policy.id}, data?.access_token);
         if (res?.status == 200) {
             toast.success('Reminder sent!');
             setRefreshData(!refreshData)
@@ -276,7 +276,10 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
             <UpdatePolicyModal 
             show={updatePolicyModal} 
             pol={policy}
-            off={()=>setUpdatePolicyModal(false)}
+            off={()=>{
+                setUpdatePolicyModal(false);
+                setRefreshData(!refreshData)
+            }}
             />
             <div className="d-flex w-100 justify-content-between">
                 <div className="d-flex gap-4">
