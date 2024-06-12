@@ -12,6 +12,8 @@ import { getUserInfo, loginUser } from "../../../controllers/auth";
 import api from "../../../config/api";
 import successElipse from '../../../assets/images/Ellipse-success.png';
 import warningElipse from '../../../assets/images/Ellipse-warning.png';
+import SureToDeletePolicyModal from "../../modals/sureToDeletePolicyModal";
+import UpdatePolicyModal from "../../modals/updatePolicyModal";
 import { shortenString } from "../../../util";
 
 const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
@@ -22,6 +24,7 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const navigate = useNavigate();
 
     const [policies, setPolicies] = useState<IPolicy[]>([]);
+    const [policy, setPolicy] = useState<IPolicy>();
 
     const [depts, setDepts] = useState<IDept[]>([]);
     const [loading, setLoading] = useState(false);
@@ -32,6 +35,10 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const [selectedDept, setSelectedDept] = useState('');
     const [userSearch, setUserSearch] = useState('')
 
+    const [policyId, setPolicyId] = useState<number>(0)
+    const [deletePolicyModal, setDeteletPolicyModal] = useState<boolean>(false);
+
+    const [updatePolicyModal, setUpdatePolicyModal] = useState<boolean>(false);
 
     const [query, setQuery] = useState<string>('');
     const [sortCriteria, setSortCriteria] = useState<string>('name');
@@ -204,21 +211,54 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
         navigate(`/admin/edit-policy/${policy.id}`)
     }
 
-    const handlePolicyDelete = async (e: any, policy: IPolicy) => {
+    const handleUpdate = (e: any, policy: IPolicy) => {
         e.stopPropagation();
-        const res = await api.post(`Policy/delete/request`, { "id": policy.id, "username": userName }, data?.access_token);
+        setPolicy(policy);
+        setUpdatePolicyModal(true);
+        // navigate(`/admin/edit-policy/${policy.id}`)
+    }
+
+    const handlePolicyDelete = async (e: any) => {
+        e.stopPropagation();
+        const res = await api.post(`Policy/delete/request`, { "id": policyId, "username": userName }, data?.access_token);
         if (res?.status == 200) {
             toast.success('Delete request sent for approval!');
+            setDeteletPolicyModal(false);
             setRefreshData(!refreshData)
         } else {
             toast.error('Failed to delete policy')
         }
     }
 
+    const handleSendAuthorizationReminder = async (e: any,policy:IPolicy) => {
+        e.stopPropagation();
+        const res = await api.post(`Policy/reminder`, { "policyId": policy.id}, data?.access_token);
+        if (res?.status == 200) {
+            toast.success('Reminder sent!');
+            setRefreshData(!refreshData)
+        } else {
+            toast.error('Error sending reminder')
+        }
+    }
+
+    const handleDelete = async (e: any, policy: any) => {
+        e.stopPropagation();
+        setPolicyId(policy.id)
+        setDeteletPolicyModal(true);
+    }
+
+
     const handleGetAttestersList = (e: any, pol: IPolicy) => {
         e.stopPropagation();
         navigate(`/admin/attesters-list/${pol.id}`);
     }
+
+    const handleGetDefaultersList = (e: any, pol: IPolicy) => {
+        e.stopPropagation();
+        navigate(`/admin/defaulters-list/${pol.id}`);
+    }
+
+    
 
 
     useEffect(() => {
@@ -228,6 +268,16 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     return (
         <div className="w-100">
+            <SureToDeletePolicyModal 
+            action={(e:any)=>handlePolicyDelete(e)} 
+            show={deletePolicyModal} 
+            off={()=>setDeteletPolicyModal(false)}/>
+
+            <UpdatePolicyModal 
+            show={updatePolicyModal} 
+            pol={policy}
+            off={()=>setUpdatePolicyModal(false)}
+            />
             <div className="d-flex w-100 justify-content-between">
                 <div className="d-flex gap-4">
                     <div className="d-flex align-items-center" style={{ position: 'relative' }}>
@@ -383,7 +433,10 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                             }}
                                                                         >
                                                                             <ListGroup>
-                                                                                <ListGroupItem>
+                                                                                <ListGroupItem
+                                                                                
+                                                                                onClick={(e) => handleGetDefaultersList(e, policy)}
+                                                                                >
                                                                                     <span className="w-100 d-flex justify-content-between">
                                                                                         <div className="d-flex gap-2">
                                                                                             <i className="bi bi-file-text"></i>
@@ -405,7 +458,9 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                     </div>
                                                                 </ListGroupItem>
 
-                                                                <ListGroupItem>
+                                                                <ListGroupItem
+                                                                onClick={(e) => handleUpdate(e, policy)}
+                                                                >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
                                                                             <i className="bi bi-calendar-event"></i>
@@ -416,7 +471,7 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
                                                                 <ListGroupItem
                                                                     disabled={policy?.markedForDeletion}
-                                                                    onClick={(e) => handlePolicyDelete(e, policy)}
+                                                                    onClick={(e) => handleDelete(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
@@ -454,7 +509,9 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                     </span>
                                                                 </ListGroupItem>
 
-                                                                <ListGroupItem>
+                                                                <ListGroupItem
+                                                                onClick={(e)=>handleSendAuthorizationReminder(e,policy)}
+                                                                >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
                                                                             <i className="bi bi-file-text"></i>
@@ -465,7 +522,7 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
                                                                 <ListGroupItem
                                                                     disabled={policy?.markedForDeletion}
-                                                                    onClick={(e) => handlePolicyDelete(e, policy)}
+                                                                    onClick={(e) => handleDelete(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">

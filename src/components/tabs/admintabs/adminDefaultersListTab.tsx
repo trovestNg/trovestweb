@@ -14,7 +14,7 @@ import successElipse from '../../../assets/images/Ellipse-success.png';
 import warningElipse from '../../../assets/images/Ellipse-warning.png';
 import { shortenString } from "../../../util";
 
-const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
+const AdminDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const userDat = localStorage.getItem('loggedInUser') || '';
     const data = JSON.parse(userDat);
     const userName = data?.profile?.sub.split('\\').pop();
@@ -36,14 +36,13 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
             let userInfo = await getUserInfo();
             console.log({ gotten: userInfo })
             if (userInfo) {
-                const res = await api.get(`Attest/${id}`, `${userInfo.access_token}`);
+                const res = await api.get(`Policy/defaulters/${id}`, `${userInfo.access_token}`);
                 
                 if (res?.data) {
                     let approvedPolicies =  res?.data.filter((policy:IPolicy)=>policy.isAuthorized)
                     setPolicies(approvedPolicies);
                     setLoading(false)
                 } else {
-                    // loginUser()
                     toast.error('Network error!')
                     setLoading(false)
                 }
@@ -426,4 +425,4 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
     )
 
 }
-export default AdminAttestersListTab;
+export default AdminDefaultersListTab;

@@ -20,12 +20,13 @@ import AdminPendingPoliciesPage from "./pages/admin/adminPendingPoliciesPage";
 import AdminRejectedPoliciesPage from "./pages/admin/adminRejectedPoliciesPage";
 import AdminDeletedPoliciesPage from "./pages/admin/adminDeletedPoliciesPage";
 import EditPolicyPage from "./pages/admin/editPolicyPage";
+import AdminPolicyviewpage from "./pages/admin/adminPolicyviewpage";
+import AdminAttestersListPage from "./pages/admin/adminAttestersListPage";
+import AdminDefaultersListPage from "./pages/admin/adminDefaultersListPage";
 
 import ApproverDashboardContainer from "./pages/approver/dashboard";
 import ApproverDashboardPage from "./pages/approver/dashboardpage";
 import ApproverAllPoliciesPage from "./pages/approver/approverAllPoliciesPage";
-import AdminPolicyviewpage from "./pages/admin/adminPolicyviewpage";
-import AdminAttestersListPage from "./pages/admin/adminAttestersListPage";
 
 // const UserDBC = React.lazy(() => import("./pages/user/dashboard"));
 
@@ -52,6 +53,7 @@ export default function () {
                 <Route path="create-policy" element={<CreateNewPolicyPage />}/>
                 <Route path="edit-policy/:id" element={<EditPolicyPage/>}/>
                 <Route path="attesters-list/:id" element={<AdminAttestersListPage/>}/>
+                <Route path="defaulters-list/:id" element={<AdminDefaultersListPage/>}/>
                 <Route path="uploaded-policies" element={<AdminUploadedPoliciesPage/>}/>
                 <Route path="approved-policies" element={<AdminApprovedPoliciesPage/>}/>
                 <Route path="pending-policies" element={<AdminPendingPoliciesPage/>}/>
