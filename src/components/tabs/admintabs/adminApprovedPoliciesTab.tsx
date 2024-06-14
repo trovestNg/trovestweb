@@ -13,6 +13,22 @@ import api from "../../../config/api";
 import successElipse from '../../../assets/images/Ellipse-success.png';
 import warningElipse from '../../../assets/images/Ellipse-warning.png';
 import { shortenString } from "../../../util";
+import SureToDeletePolicyModal from "../../modals/sureToDeletePolicyModal";
+import UpdatePolicyModal from "../../modals/updatePolicyModal";
+
+
+{/* <SureToDeletePolicyModal 
+            action={(e:any)=>handlePolicyDelete(e)} 
+            show={deletePolicyModal} 
+            off={()=>setDeteletPolicyModal(false)}/>
+
+            <UpdatePolicyModal 
+            show={updatePolicyModal} 
+            pol={policy}
+            off={()=>{
+                setUpdatePolicyModal(false);
+                setRefreshData(!refreshData)
+            }} */}
 
 const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const userDat = localStorage.getItem('loggedInUser') || '';
@@ -21,17 +37,24 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
     const [policies, setPolicies] = useState<IPolicy[]>([]);
+    const [policy, setPolicy] = useState<IPolicy>();
+
     const [depts, setDepts] = useState<IDept[]>([]);
     const [loading, setLoading] = useState(false);
-    
-    const [selectedDept, setSelectedDept] = useState('');
-    const [userSearch, setUserSearch] = useState('')
-
-    const [query, setQuery] = useState<string>('');
-    const [sortCriteria, setSortCriteria] = useState<string>('name');
 
     const [sortByDept, setSortByDept] = useState(false);
     const [searchByName, setBySearch] = useState(false);
+
+    const [selectedDept, setSelectedDept] = useState('');
+    const [userSearch, setUserSearch] = useState('')
+
+    const [policyId, setPolicyId] = useState<number>(0)
+    const [deletePolicyModal, setDeteletPolicyModal] = useState<boolean>(false);
+
+    const [updatePolicyModal, setUpdatePolicyModal] = useState<boolean>(false);
+
+    const [query, setQuery] = useState<string>('');
+    const [sortCriteria, setSortCriteria] = useState<string>('name');
 
 
     const getInitiatorPolicies = async () => {
@@ -185,23 +208,81 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
         handleGetAllDepts();
     }, [refreshData])
 
-    
+    const handleEdit = (e: any, policy: IPolicy) => {
+        e.stopPropagation();
+        navigate(`/admin/edit-policy/${policy.id}`)
+    }
 
-    const handleGetAttestersList = (e: any,pol:IPolicy) => {
+    const handleUpdate = (e: any, policy: IPolicy) => {
+        e.stopPropagation();
+        setPolicy(policy);
+        setUpdatePolicyModal(true);
+        // navigate(`/admin/edit-policy/${policy.id}`)
+    }
+
+    const handlePolicyDelete = async (e: any) => {
+        e.stopPropagation();
+        const res = await api.post(`Policy/delete/request`, { "id": policyId, "username": userName }, data?.access_token);
+        if (res?.status == 200) {
+            toast.success('Delete request sent for approval!');
+            setDeteletPolicyModal(false);
+            setRefreshData(!refreshData)
+        } else {
+            toast.error('Failed to delete policy')
+        }
+    }
+
+    const handleSendAuthorizationReminder = async (e: any,policy:IPolicy) => {
+        e.stopPropagation();
+        const res = await api.post(`Policy/nudge-authorizer?policyId=${policy.id}`,{"policyId" :policy.id}, data?.access_token);
+        if (res?.status == 200) {
+            toast.success('Reminder sent!');
+            setRefreshData(!refreshData)
+        } else {
+            toast.error('Error sending reminder')
+        }
+    }
+
+    const handleDelete = async (e: any, policy: any) => {
+        e.stopPropagation();
+        setPolicyId(policy.id)
+        setDeteletPolicyModal(true);
+    }
+
+
+    const handleGetAttestersList = (e: any, pol: IPolicy) => {
         e.stopPropagation();
         navigate(`/admin/attesters-list/${pol.id}`);
     }
 
+    const handleGetDefaultersList = (e: any, pol: IPolicy) => {
+        e.stopPropagation();
+        navigate(`/admin/defaulters-list/${pol.id}`);
+    }
 
-    useEffect(() => {
-        fetchData();
-        handleGetAllDepts();
-    }, [refreshData])
+    const handleDownloadPolicy = (e: any, pol: IPolicy) => {
+        e.stopPropagation();
+        toast.success('Downloading file')
+        
+    }
 
     return (
         <div className="w-100">
+            <SureToDeletePolicyModal 
+            action={(e:any)=>handlePolicyDelete(e)} 
+            show={deletePolicyModal} 
+            off={()=>setDeteletPolicyModal(false)}/>
+
+            <UpdatePolicyModal 
+            show={updatePolicyModal} 
+            pol={policy}
+            off={()=>{
+                setUpdatePolicyModal(false);
+                setRefreshData(!refreshData)
+            }}
+            />
             <div className="d-flex w-100 justify-content-between">
-            <div className="d-flex gap-4">
+                <div className="d-flex gap-4">
                     <div className="d-flex align-items-center" style={{ position: 'relative' }}>
                         <FormControl
                             onChange={(e) => setQuery(e.target.value)}
@@ -219,13 +300,13 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
                             variant="primary" style={{ minWidth: '100px', marginLeft: '-5px' }}>Search</Button>
                     </div>
-                    <Form.Select onChange={(e) => handleDeptSelection(e.currentTarget.value)} className="custom-select"
+                    {/* <Form.Select onChange={(e) => handleDeptSelection(e.currentTarget.value)} className="custom-select"
                         style={{ maxWidth: '170px' }}>
                         <option value={'all'}>Select Department</option>
                         {
                             depts.map((dept) => <option key={dept.id} value={dept.name}>{dept.name}</option>)
                         }
-                    </Form.Select>
+                    </Form.Select> */}
 
                 </div>
                 <div className="">
@@ -286,113 +367,125 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                     {
                                                         policy.isAuthorized &&
                                                         <Card className="p-2  shadow-sm rounded border-0"
-                                                        style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
-                                                        <ListGroup>
-                                                            <ListGroupItem className="multi-layer">
-                                                                <span className="w-100 d-flex justify-content-between">
-                                                                    <div className="d-flex gap-2">
-                                                                    <i className="bi bi-clipboard-check"></i>
-                                                                        Attesters List
+                                                            style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
+                                                            <ListGroup>
+                                                                <ListGroupItem className="multi-layer"
+                                                                   onClick={(e) => handleGetAttestersList(e, policy)}
+                                                                >
+                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                        <div className="d-flex gap-2">
+                                                                            <i className="bi bi-clipboard-check"></i>
+                                                                            Attesters List
+                                                                        </div>
+
+                                                                        <i className="bi bi-chevron-right"></i>
+                                                                    </span>
+                                                                    <div className="container">
+                                                                        <Card
+                                                                            className="p-2  shadow-sm rounded border-0"
+                                                                            style={{
+                                                                                minWidth: '15em',
+                                                                                marginLeft: '-16.5em',
+                                                                                marginTop: '-2.5em',
+                                                                                position: 'absolute'
+                                                                            }}
+                                                                        >
+                                                                            <ListGroup>
+                                                                                <ListGroupItem
+                                                                                    onClick={(e) => handleGetAttestersList(e, policy)}
+                                                                                >
+                                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                                        <div className="d-flex gap-2">
+                                                                                            <i className="bi bi-file-text"></i>
+                                                                                            View List
+                                                                                        </div>
+                                                                                    </span>
+                                                                                </ListGroupItem>
+
+                                                                                {/* <ListGroupItem>
+                                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                                        <div className="d-flex gap-2">
+                                                                                            <i className="bi bi-download"></i>
+                                                                                            Download List
+                                                                                        </div>
+                                                                                    </span>
+                                                                                </ListGroupItem> */}
+                                                                            </ListGroup>
+                                                                        </Card>
                                                                     </div>
+                                                                </ListGroupItem>
 
-                                                                    <i className="bi bi-chevron-right"></i>
-                                                                </span>
-                                                                <div className="container">
-                                                                    <Card
-                                                                        className="p-2  shadow-sm rounded border-0"
-                                                                        style={{
-                                                                            minWidth: '15em',
-                                                                            marginLeft: '-16.5em',
-                                                                            marginTop: '-2.5em',
-                                                                            position: 'absolute'
-                                                                        }}
-                                                                    >
-                                                                        <ListGroup>
-                                                                            <ListGroupItem
-                                                                            onClick={(e) => handleGetAttestersList(e,policy)}
-                                                                            >
-                                                                                <span className="w-100 d-flex justify-content-between">
-                                                                                    <div className="d-flex gap-2">
-                                                                                        <i className="bi bi-file-text"></i>
-                                                                                        View List
-                                                                                    </div>
-                                                                                </span>
-                                                                            </ListGroupItem>
+                                                                <ListGroupItem className="multi-layer"
+                                                                onClick={(e) => handleGetDefaultersList(e, policy)}
+                                                                >
+                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                        <div className="d-flex gap-2">
+                                                                            <i className="bi bi-clipboard-x"></i>
+                                                                            Defaulters List
+                                                                        </div>
 
-                                                                            <ListGroupItem>
-                                                                                <span className="w-100 d-flex justify-content-between">
-                                                                                    <div className="d-flex gap-2">
-                                                                                    <i className="bi bi-download"></i>
-                                                                                        Download List
-                                                                                    </div>
-                                                                                </span>
-                                                                            </ListGroupItem>
-                                                                        </ListGroup>
-                                                                    </Card>
-                                                                </div>
-                                                            </ListGroupItem>
+                                                                        <i className="bi bi-chevron-right"></i>
+                                                                    </span>
+                                                                    <div className="container">
+                                                                        <Card
+                                                                            className="p-2  shadow-sm rounded border-0"
+                                                                            style={{
+                                                                                minWidth: '15em',
+                                                                                marginLeft: '-16.5em',
+                                                                                marginTop: '-2.5em',
+                                                                                position: 'absolute'
+                                                                            }}
+                                                                        >
+                                                                            <ListGroup>
+                                                                                <ListGroupItem
+                                                                                
+                                                                                onClick={(e) => handleGetDefaultersList(e, policy)}
+                                                                                >
+                                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                                        <div className="d-flex gap-2">
+                                                                                            <i className="bi bi-file-text"></i>
+                                                                                            View List
+                                                                                        </div>
+                                                                                    </span>
+                                                                                </ListGroupItem>
 
-                                                            <ListGroupItem className="multi-layer">
-                                                                <span className="w-100 d-flex justify-content-between">
-                                                                    <div className="d-flex gap-2">
-                                                                    <i className="bi bi-clipboard-x"></i>
-                                                                       Defaulters List
+                                                                                {/* <ListGroupItem>
+                                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                                        <div className="d-flex gap-2">
+                                                                                            <i className="bi bi-download"></i>
+                                                                                            Download List
+                                                                                        </div>
+                                                                                    </span>
+                                                                                </ListGroupItem> */}
+                                                                            </ListGroup>
+                                                                        </Card>
                                                                     </div>
+                                                                </ListGroupItem>
 
-                                                                    <i className="bi bi-chevron-right"></i>
-                                                                </span>
-                                                                <div className="container">
-                                                                    <Card
-                                                                        className="p-2  shadow-sm rounded border-0"
-                                                                        style={{
-                                                                            minWidth: '15em',
-                                                                            marginLeft: '-16.5em',
-                                                                            marginTop: '-2.5em',
-                                                                            position: 'absolute'
-                                                                        }}
-                                                                    >
-                                                                        <ListGroup>
-                                                                            <ListGroupItem>
-                                                                                <span className="w-100 d-flex justify-content-between">
-                                                                                    <div className="d-flex gap-2">
-                                                                                        <i className="bi bi-file-text"></i>
-                                                                                        View List
-                                                                                    </div>
-                                                                                </span>
-                                                                            </ListGroupItem>
+                                                                <ListGroupItem
+                                                                onClick={(e) => handleUpdate(e, policy)}
+                                                                >
+                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                        <div className="d-flex gap-2">
+                                                                            <i className="bi bi-calendar-event"></i>
+                                                                            Update Deadline
+                                                                        </div>
+                                                                    </span>
+                                                                </ListGroupItem>
 
-                                                                            <ListGroupItem>
-                                                                                <span className="w-100 d-flex justify-content-between">
-                                                                                    <div className="d-flex gap-2">
-                                                                                    <i className="bi bi-download"></i>
-                                                                                        Download List
-                                                                                    </div>
-                                                                                </span>
-                                                                            </ListGroupItem>
-                                                                        </ListGroup>
-                                                                    </Card>
-                                                                </div>
-                                                            </ListGroupItem>
-
-                                                            <ListGroupItem>
-                                                                <span className="w-100 d-flex justify-content-between">
-                                                                    <div className="d-flex gap-2">
-                                                                    <i className="bi bi-calendar-event"></i>
-                                                                        Update Deadline
-                                                                    </div>
-                                                                </span>
-                                                            </ListGroupItem>
-
-                                                            <ListGroupItem>
-                                                                <span className="w-100 d-flex justify-content-between">
-                                                                    <div className="d-flex gap-2">
-                                                                    <i className="bi bi-trash"></i>
-                                                                        Delete
-                                                                    </div>
-                                                                </span>
-                                                            </ListGroupItem>
-                                                        </ListGroup>
-                                                    </Card>}
+                                                                <ListGroupItem
+                                                                    disabled={policy?.markedForDeletion}
+                                                                    onClick={(e) => handleDelete(e, policy)}
+                                                                >
+                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                        <div className="d-flex gap-2">
+                                                                            <i className="bi bi-trash"></i>
+                                                                            Delete
+                                                                        </div>
+                                                                    </span>
+                                                                </ListGroupItem>
+                                                            </ListGroup>
+                                                        </Card>}
 
 
                                                     {
@@ -449,7 +542,7 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                         </table>
                 }
             </div>
-            {
+            {/* {
                 policies.length <= 0 ? '' :
                     <div className="d-flex justify-content-between align-items-center">
                         <p className="p-0 m-0">Showing 1 to 10 of 100 entries</p>
@@ -468,7 +561,7 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                 </li>
                             </ul>
                         </nav>
-                    </div>}
+                    </div>} */}
         </div>
     )
 

@@ -1,19 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { Badge, Button, Card, Form, FormControl, FormSelect, ListGroup, ListGroupItem, Spinner, Table } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useParams } from "react-router-dom";
 import { IPolicy } from "../../../interfaces/policy";
 import { IDept } from "../../../interfaces/dept";
 import moment from "moment";
 import { getPolicies } from "../../../controllers/policy";
 import receiptImg from '../../../assets/images/receipt.png';
 import { getAllDepartments } from "../../../controllers/department";
-import {toast} from 'react-toastify';
+import { toast } from 'react-toastify';
 import { getUserInfo, loginUser } from "../../../controllers/auth";
 import api from "../../../config/api";
+import successElipse from '../../../assets/images/Ellipse-success.png';
+import warningElipse from '../../../assets/images/Ellipse-warning.png';
+import { shortenString } from "../../../util";
 
-const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
+const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const userDat = localStorage.getItem('loggedInUser') || '';
     const data = JSON.parse(userDat);
+    const userName = data?.profile?.sub.split('\\').pop();
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
     const [policies, setPolicies] = useState<IPolicy[]>([]);
@@ -22,30 +26,36 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
     const [sortByDept, setSortByDept] = useState(false);
     const [bySearch, setBySearch] = useState(false);
     const [selectedDept, setSelectedDept] = useState('');
-    const [userSearch, setUserSearch] = useState('')
+    const [userSearch, setUserSearch] = useState('');
+    const { id } = useParams();
 
 
     const getUploadedPolicies = async () => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({gotten: userInfo})
-            if(userInfo){
-                const res = await api.get(`Policy/rejected`, `${userInfo.access_token}`);
+            console.log({ gotten: userInfo })
+            if (userInfo) {
+                const res = await api.get(`Attest/${id}`, `${userInfo.access_token}`);
+                
                 if (res?.data) {
-                    setPolicies(res?.data);
+                    let approvedPolicies =  res?.data.filter((policy:IPolicy)=>policy.isAuthorized)
+                    setPolicies(approvedPolicies);
                     setLoading(false)
                 } else {
-                    loginUser()
-                    // toast.error('Session expired!, You have been logged out!!')
+                    // loginUser()
+                    toast.error('Network error!')
+                    setLoading(false)
                 }
                 console.log({ response: res })
             }
-           
+
         } catch (error) {
 
         }
     }
+
+  
 
     const handleGetDepts = async () => {
         // setLoading(true)
@@ -56,7 +66,7 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
             if (res?.data) {
                 setDepts(res?.data)
             } else {
-                
+
             }
             console.log({ response: res })
         } catch (error) {
@@ -66,7 +76,7 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
     }
 
     const handleSearch = () => {
-        
+
         setBySearch(true);
         setRefreshData(!refreshData)
 
@@ -121,20 +131,25 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
         setRefreshData(!refreshData)
     }
 
+
+    const fetchData = () => {
+        if (sortByDept) {
+            getBySort();
+        } else if (bySearch) {
+            getBySearch();
+        } else {
+            getUploadedPolicies();
+        }
+    }
+
     const handleClick = (e: any) => {
         e.stopPropagation();
         toast.error('hii')
     }
 
-
-    const fetchData = () => {
-        if (sortByDept) {
-            getBySort();
-        } else if(bySearch) {
-            getBySearch();
-        } else {
-            getUploadedPolicies();
-        }
+    const handleGetAttestersList = (e: any,pol:IPolicy) => {
+        e.stopPropagation();
+        navigate(`/admin/attesters-list/${pol.id}`);
     }
 
 
@@ -152,11 +167,11 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
                             onChange={(e) => setUserSearch(e.target.value)}
                             placeholder="Search by Name, Department..."
                             className="py-2" style={{ minWidth: '350px' }} />
-                        <Button 
-                        disabled={userSearch==''}
-                        onClick={()=>handleSearch()}
-                       
-                        variant="primary" style={{ minWidth: '100px', marginLeft: '-5px' }}>Search</Button>
+                        <Button
+                            disabled={userSearch == ''}
+                            onClick={() => handleSearch()}
+
+                            variant="primary" style={{ minWidth: '100px', marginLeft: '-5px' }}>Search</Button>
                     </div>
                     <Form.Select onChange={(e) => handleDeptSelection(e.currentTarget.value)} className="custom-select" style={{ maxWidth: '170px' }}>
                         <option>Select Department</option>
@@ -170,8 +185,8 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
                     <Button
                         variant="primary"
                         style={{ minWidth: '100px' }}
-                        onClick={()=>handleCreatePolicy()}
-                    >Create New Policy</Button>
+                        onClick={() => handleCreatePolicy()}
+                    >Download List</Button>
                 </div>
             </div>
 
@@ -182,36 +197,43 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
                             <tr >
                                 <th scope="col" className="bg-primary text-light">#</th>
                                 <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                <th scope="col" className="bg-primary text-light">Reason for Rejection</th>
-                                <th scope="col" className="bg-primary text-light">Date Rejected</th>
+                                <th scope="col" className="bg-primary text-light">Initiator</th>
+                                <th scope="col" className="bg-primary text-light">Authorizer</th>
+                                <th scope="col" className="bg-primary text-light">Deadline Date</th>
                                 <th scope="col" className="bg-primary text-light">Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr className=""><td className="text-center" colSpan={5}><Spinner className="spinner-grow text-primary" /></td></tr>
+                            <tr className=""><td className="text-center" colSpan={7}><Spinner className="spinner-grow text-primary" /></td></tr>
                         </tbody>
                     </table> :
-                        <table className="table w-100">
+                        <table className="table table-striped w-100">
                             <thead className="thead-dark">
-                                <tr >
-                                    <th scope="col" className="bg-primary text-light">#</th>
-                                    <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                    <th scope="col" className="bg-primary text-light">Reason for Rejection</th>
-                                    <th scope="col" className="bg-primary text-light">Date Rejected</th>
-                                    <th scope="col" className="bg-primary text-light">Action</th>
-                                </tr>
+                            <tr >
+                                <th scope="col" className="bg-primary text-light">#</th>
+                                <th scope="col" className="bg-primary text-light">Policy Title</th>
+                                <th scope="col" className="bg-primary text-light">Initiator</th>
+                                <th scope="col" className="bg-primary text-light">Authorizer</th>
+                                <th scope="col" className="bg-primary text-light">Deadline Date</th>
+                                <th scope="col" className="bg-primary text-light">Action</th>
+                            </tr>
                             </thead>
-                            <tbody>
-                                {policies.length <= 0?<tr><td className="text-center" colSpan={5}>No Data Available</td></tr> :
-                                policies.map((policy, index) => (
-                                    <tr key={index} style={{ cursor: 'pointer' }}
-                                    onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
-                                    >
-                                        <th scope="row">{index + 1}</th>
-                                        <td><i className="bi bi-file-earmark-pdf text-danger"></i> {policy.fileName}</td>
-                                        <td>{policy.comment}</td>
-                                        <td>{moment(policy.deadlineDate).format('MMM DD YYYY')}</td>
-                                        <td className="table-icon" onClick={(e) => handleClick(e)}>
+                            <tbody className="">
+                                {policies.length <= 0 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
+                                    policies.map((policy, index) => (
+                                        <tr key={index} style={{ cursor: 'pointer' }}
+                                        onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
+                                        >
+                                            <th scope="row">{index + 1}</th>
+                                            <td><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.fileName,40)}`}</td>
+                                            <td>{policy.uploadedBy}</td>
+                                            <td>{policy.authorizedBy}</td>
+                                            <td>{moment(policy.deadlineDate).format('MMM DD YYYY')}</td>
+                                            {/* <td className={`text-${policy.isAuthorized ? 'success' : 'warning'}`}>
+                                                <img src={policy.isAuthorized ? successElipse : warningElipse} height={'10px'} />
+                                                {'  '}
+                                                <span >{policy.isAuthorized ? 'Approved' : 'Pending'}</span></td> */}
+                                            <td className="table-icon">
                                                 <i className=" bi bi-three-dots"></i>
                                                 <div className="content ml-5" style={{ position: 'relative' }}>
                                                     {
@@ -239,7 +261,9 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
                                                                         }}
                                                                     >
                                                                         <ListGroup>
-                                                                            <ListGroupItem>
+                                                                            <ListGroupItem
+                                                                            onClick={(e) => handleGetAttestersList(e,policy)}
+                                                                            >
                                                                                 <span className="w-100 d-flex justify-content-between">
                                                                                     <div className="d-flex gap-2">
                                                                                         <i className="bi bi-file-text"></i>
@@ -370,14 +394,15 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
                                                 </div>
 
                                             </td>
-                                    </tr>
-                                ))
+
+                                        </tr>
+                                    ))
                                 }
                             </tbody>
                         </table>
                 }
             </div>
-            {/* {
+            {
                 policies.length <= 0 ? '' :
                     <div className="d-flex justify-content-between align-items-center">
                         <p className="p-0 m-0">Showing 1 to 10 of 100 entries</p>
@@ -396,9 +421,9 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
                                 </li>
                             </ul>
                         </nav>
-                    </div>} */}
+                    </div>}
         </div>
     )
 
 }
-export default AdminRejectedApprovalsTab;
+export default AdminAttestersListTab;

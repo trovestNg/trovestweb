@@ -7,7 +7,7 @@ import { getUserInfo } from "../../controllers/auth";
 import moment from "moment";
 import { toast } from 'react-toastify';
 
-const UpdatePolicyModal: React.FC<any> = ({ show, off, pol }) => {
+const RejectReasonModal: React.FC<any> = ({ show, off, pol }) => {
     const initialVal  = {
         "id": pol?.id,
         "deadlineDate": pol?.deadlineDate
@@ -64,7 +64,6 @@ const UpdatePolicyModal: React.FC<any> = ({ show, off, pol }) => {
                                         <div className="w-50">
                                             <h6>File name</h6>
                                             <div className="d-flex">
-                                                {' '}
                                                 <i className="bi bi-file-earmark-pdf text-danger"></i>
                                                 <h5>{pol?.fileName}</h5>
                                             </div>
@@ -74,23 +73,15 @@ const UpdatePolicyModal: React.FC<any> = ({ show, off, pol }) => {
                                             </div>
                                         </div>
                                         <div className="w-50">
-                                            <p className="text-danger p-0 m-0"> Deadline date</p>
-                                            <p>{moment(pol?.deadlineDate).format('MMM DD YYYY')}</p>
-
-                                            <div className="p-2">
-                                                <p className="p-0 m-0">New Deadline Date</p>
-                                                <FormControl
-                                                    onChange={handleChange}
-                                                    id="deadlineDate"
-                                                    type="date" placeholder="Select date" style={{ marginTop: '5px', maxWidth: '200px' }} />
-                                            </div>
+                                            <p className="text-danger p-0 m-0"> Reason for rejection</p>
+                                            <p className="p-0 m-0">{pol?.comment}</p>
                                         </div>
 
 
                                     </div>
                                     <div className="w-100 d-flex gap-4 mt-4 justify-content-center">
-                                        <Button type="submit" variant="primary">Update</Button>
-                                        <Button onClick={()=>off()}  variant="outline border py-1">Cancel</Button>
+                                        <Button onClick={()=>off()} variant="primary">0k</Button>
+                                        {/* <Button   variant="outline border py-1">Cancel</Button> */}
                                     </div>
 
                                 </form>)
@@ -101,4 +92,4 @@ const UpdatePolicyModal: React.FC<any> = ({ show, off, pol }) => {
         </div>
     )
 }
-export default UpdatePolicyModal;
+export default RejectReasonModal;

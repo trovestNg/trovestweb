@@ -130,23 +130,23 @@ const UserNotAttestedPoliciesTab: React.FC<any> = () => {
    
 
 
-    const handleGetAllDepts = async () => {
-        // setLoading(true)
-        try {
-            const res = await getAllDepartments(`filter?subsidiaryName=FSDH+Merchant+Bank`, `${data?.access_token}`);
-            console.log({ dataHere: res })
+    // const handleGetAllDepts = async () => {
+    //     // setLoading(true)
+    //     try {
+    //         const res = await getAllDepartments(`filter?subsidiaryName=FSDH+Merchant+Bank`, `${data?.access_token}`);
+    //         console.log({ dataHere: res })
 
-            if (res?.data) {
-                setDepts(res?.data)
-            } else {
+    //         if (res?.data) {
+    //             setDepts(res?.data)
+    //         } else {
                 
-            }
-            console.log({ response: res })
-        } catch (error) {
+    //         }
+    //         console.log({ response: res })
+    //     } catch (error) {
 
-        }
+    //     }
 
-    }
+    // }
 
     const handleDeptSelection = (val: string) => {
         if(val == 'all'){
@@ -177,7 +177,7 @@ const UserNotAttestedPoliciesTab: React.FC<any> = () => {
 
     useEffect(() => {
         fetchData();
-        handleGetAllDepts();
+        // handleGetAllDepts();
     }, [refreshData])
 
     return (
@@ -200,12 +200,12 @@ const UserNotAttestedPoliciesTab: React.FC<any> = () => {
 
                             variant="primary" style={{ minWidth: '100px', marginLeft: '-5px' }}>Search</Button>
                     </div>
-                    <Form.Select onChange={(e) => handleDeptSelection(e.currentTarget.value)} className="custom-select" style={{ maxWidth: '170px' }}>
+                    {/* <Form.Select onChange={(e) => handleDeptSelection(e.currentTarget.value)} className="custom-select" style={{ maxWidth: '170px' }}>
                     <option value={'all'}>Select Department</option>
                         {
                             depts.map((dept) => <option key={dept.id} value={dept.name}>{dept.name}</option>)
                         }
-                    </Form.Select>
+                    </Form.Select> */}
 
                 </div>
                 {/* <div className="">

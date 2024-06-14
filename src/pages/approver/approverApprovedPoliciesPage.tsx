@@ -17,23 +17,26 @@ import { getUserInfo, loginUser } from "../../controllers/auth";
 import { toast } from "react-toastify";
 import api from "../../config/api";
 import { IUserDashboard } from "../../interfaces/user";
-import AdminRejectedApprovalsTab from "../../components/tabs/admintabs/adminRejectedApprovalsTab";
+import AdminApprovedPoliciesTab from "../../components/tabs/admintabs/adminApprovedPoliciesTab";
+import ApproverApprovedPoliciesTab from "../../components/tabs/approvertabs/approverApprovedPoliciesTab";
+import { useNavigate } from "react-router-dom";
 
 
-const AdminRejectedPoliciesPage = () => {
+const ApproverApprovedPoliciesPage = () => {
     const userDat = localStorage.getItem('loggedInUser') || '';
     const data = JSON.parse(userDat);
-    const userName = data?.profile?.sub.split('\\').pop();
-    const [userDBInfo,setUserDBInfo]  = useState<IUserDashboard>()
     const [policies, setPolicies] = useState<IPolicy[]>([]);
     const [depts, setDepts] = useState<IDept[]>([]);
+    const userName = data?.profile?.sub.split('\\').pop();
     // const [regUsers, setRegUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
-    const [refreshComponent,setRefreshComponent] = useState(false)
+    const [refreshComponent,setRefreshComponent] = useState(false);
+    const navigate = useNavigate()
 
     const [totalPolicyCount,setTotalPolicyCount] =useState(0);
     const [totalAttested,setTotalAttested] =useState(0);
     const [totalNotAttested,setTotalNotAttested] =useState(0);
+    const [userDBInfo,setUserDBInfo]  = useState<IUserDashboard>()
     
     const getInitiatorDashboard = async () => {
         setLoading(true)
@@ -68,8 +71,8 @@ const AdminRejectedPoliciesPage = () => {
 
     return (
         <div className="w-100">
-            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Rejected Policies {userDBInfo?.totalRejectedPolicy} </h5>
-            <p>Here, you'll find rejected policies awaiting your reveiw.</p>
+            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Approved Policies {userDBInfo?.totalApprovedPolicy} </h5>
+            <p>Here, you'll find approved policies. Download lists of attesters and defaulters..</p>
             {/* <div className="d-flex gap-5">
                 {
                     dashCardInfo.map((info, index) => (<DashboardCard key={index} imgSrc={info.img} title={info.title} />))
@@ -77,11 +80,11 @@ const AdminRejectedPoliciesPage = () => {
             </div> */}
 
             <div className="w-100 mt-5">
-                <AdminRejectedApprovalsTab />
+                <ApproverApprovedPoliciesTab handleCreatePolicy={ ()=>navigate('/admin/create-policy')} />
             </div>
         </div>
     )
 
 }
 
-export default AdminRejectedPoliciesPage;
+export default ApproverApprovedPoliciesPage;

@@ -12,17 +12,30 @@ import { getUserInfo, loginUser } from "../../../controllers/auth";
 import api from "../../../config/api";
 import successElipse from '../../../assets/images/Ellipse-success.png';
 import warningElipse from '../../../assets/images/Ellipse-warning.png';
+import { shortenString } from "../../../util";
 import SureToDeletePolicyModal from "../../modals/sureToDeletePolicyModal";
 import UpdatePolicyModal from "../../modals/updatePolicyModal";
-import { shortenString } from "../../../util";
 
-const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
+
+{/* <SureToDeletePolicyModal 
+            action={(e:any)=>handlePolicyDelete(e)} 
+            show={deletePolicyModal} 
+            off={()=>setDeteletPolicyModal(false)}/>
+
+            <UpdatePolicyModal 
+            show={updatePolicyModal} 
+            pol={policy}
+            off={()=>{
+                setUpdatePolicyModal(false);
+                setRefreshData(!refreshData)
+            }} */}
+
+const ApproverApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const userDat = localStorage.getItem('loggedInUser') || '';
     const data = JSON.parse(userDat);
     const userName = data?.profile?.sub.split('\\').pop();
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
-
     const [policies, setPolicies] = useState<IPolicy[]>([]);
     const [policy, setPolicy] = useState<IPolicy>();
 
@@ -51,9 +64,10 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
             console.log({ gotten: userInfo })
             if (userInfo) {
                 const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
+                
                 if (res?.data) {
-                    let allPolicy = res?.data.filter((pol: IPolicy) => pol.isDeleted)
-                    setPolicies(allPolicy.reverse());
+                    let approvedPolicies =  res?.data.filter((policy:IPolicy)=>policy.isAuthorized && !policy.markedForDeletion)
+                    setPolicies(approvedPolicies);
                     setLoading(false)
                 } else {
                     // loginUser()
@@ -66,11 +80,6 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
         }
     }
-
-
-
-    //sdfdsds
-
     const handleSearchByPolicyNameOrDept = async () => {
         // toast.error('Searching by name of dept or title!')
         setLoading(true)
@@ -84,8 +93,8 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     setLoading(false)
 
                     let filtered = res?.data.filter((policy: IPolicy) =>
-                        policy.fileName.toLowerCase().includes(query.toLowerCase()) && policy.isDeleted||
-                        policy.policyDepartment.toLowerCase().includes(query.toLowerCase()) && policy.isDeleted
+                        policy.fileName.toLowerCase().includes(query.toLowerCase()) &&policy.isAuthorized&&!policy.markedForDeletion ||
+                        policy.policyDepartment.toLowerCase().includes(query.toLowerCase())&&policy.isAuthorized &&!policy.markedForDeletion
                     );
                     setPolicies(filtered.reverse());
 
@@ -116,7 +125,7 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
                     let filtered = res?.data.filter((policy: IPolicy) =>
                         policy.policyDepartment.toLowerCase().includes(sortCriteria.toLowerCase())
-                        && !policy.markedForDeletion
+                    &&!policy.markedForDeletion &&policy.isAuthorized
                     );
                     setPolicies(filtered.reverse());
 
@@ -141,6 +150,7 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     const handleClear = () => {
         setBySearch(false);
+        setSortByDept(false);
         setQuery('')
         setRefreshData(!refreshData)
     }
@@ -197,14 +207,6 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
         fetchData();
         handleGetAllDepts();
     }, [refreshData])
-
-
-    //dsfsfdsf
-
-    const handleClick = (e: any) => {
-        e.stopPropagation();
-        toast.error('hii')
-    }
 
     const handleEdit = (e: any, policy: IPolicy) => {
         e.stopPropagation();
@@ -264,14 +266,6 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
         
     }
 
-    
-
-
-    useEffect(() => {
-        fetchData();
-        handleGetAllDepts();
-    }, [refreshData])
-
     return (
         <div className="w-100">
             <SureToDeletePolicyModal 
@@ -316,11 +310,11 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
                 </div>
                 <div className="">
-                    <Button
+                    {/* <Button
                         variant="primary"
                         style={{ minWidth: '100px' }}
                         onClick={() => handleCreatePolicy()}
-                    >Create New Policy</Button>
+                    >Create New Policy</Button> */}
                 </div>
             </div>
 
@@ -332,13 +326,13 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                 <th scope="col" className="bg-primary text-light">#</th>
                                 <th scope="col" className="bg-primary text-light">Policy Title</th>
                                 <th scope="col" className="bg-primary text-light">Initiator</th>
-                                <th scope="col" className="bg-primary text-light">Department</th>
-                                <th scope="col" className="bg-primary text-light">Date Deleted</th>
+                                <th scope="col" className="bg-primary text-light">Authorizer</th>
+                                <th scope="col" className="bg-primary text-light">Deadline Date</th>
                                 <th scope="col" className="bg-primary text-light">Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr className=""><td className="text-center" colSpan={7}><Spinner className="spinner-grow text-primary" /></td></tr>
+                            <tr className=""><td className="text-center" colSpan={5}><Spinner className="spinner-grow text-primary" /></td></tr>
                         </tbody>
                     </table> :
                         <table className="table table-striped w-100">
@@ -347,28 +341,26 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                 <th scope="col" className="bg-primary text-light">#</th>
                                 <th scope="col" className="bg-primary text-light">Policy Title</th>
                                 <th scope="col" className="bg-primary text-light">Initiator</th>
-                                <th scope="col" className="bg-primary text-light">Department</th>
-                                <th scope="col" className="bg-primary text-light">Date Deleted</th>
+                                <th scope="col" className="bg-primary text-light">Authorizer</th>
+                                <th scope="col" className="bg-primary text-light">Deadline Date</th>
                                 <th scope="col" className="bg-primary text-light">Action</th>
                             </tr>
-                        </thead>
-                            <tbody>
+                            </thead>
+                            <tbody className="">
                                 {policies.length <= 0 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
                                     policies.map((policy, index) => (
                                         <tr key={index} style={{ cursor: 'pointer' }}
-                                            onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
+                                        onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
                                         >
                                             <th scope="row">{index + 1}</th>
-                                            <td><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.fileName, 40)}`}</td>
-
+                                            <td><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.fileName,40)}`}</td>
                                             <td>{policy.uploadedBy}</td>
-                                            <td>{policy.policyDepartment}</td>
-                                            <td>{moment(policy.deleteRequestedTime).format('MMM DD YYYY')}</td>
+                                            <td>{policy.authorizedBy}</td>
+                                            <td>{moment(policy.deadlineDate).format('MMM DD YYYY')}</td>
                                             {/* <td className={`text-${policy.isAuthorized ? 'success' : 'warning'}`}>
                                                 <img src={policy.isAuthorized ? successElipse : warningElipse} height={'10px'} />
                                                 {'  '}
-                                                <span >{policy.isAuthorized ? 'Approved' : 'Pending'}</span>
-                                            </td> */}
+                                                <span >{policy.isAuthorized ? 'Approved' : 'Pending'}</span></td> */}
                                             <td className="table-icon">
                                                 <i className=" bi bi-three-dots"></i>
                                                 <div className="content ml-5" style={{ position: 'relative' }}>
@@ -499,55 +491,45 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                     {
                                                         !policy.isAuthorized &&
                                                         <Card className="p-2  shadow-sm rounded border-0"
-                                                            style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
-                                                            <ListGroup>
-                                                                <ListGroupItem
-                                                                    onClick={(e) => handleEdit(e, policy)}
-                                                                >
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-file-text"></i>
-                                                                            Edit Policy
-                                                                        </div>
-                                                                    </span>
-                                                                </ListGroupItem>
+                                                        style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
+                                                        <ListGroup>
+                                                            <ListGroupItem>
+                                                            <span className="w-100 d-flex justify-content-between">
+                                                                    <div className="d-flex gap-2">
+                                                                        <i className="bi bi-file-text"></i>
+                                                                        Edit Policy
+                                                                    </div>
+                                                                </span>
+                                                            </ListGroupItem>
 
-                                                                <ListGroupItem
-                                                                onClick={(e) => handleDownloadPolicy(e, policy)}
-                                                               
-                                                                >
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-download"></i>
-                                                                            Download Policy
-                                                                        </div>
-                                                                    </span>
-                                                                </ListGroupItem>
+                                                            <ListGroupItem>
+                                                            <span className="w-100 d-flex justify-content-between">
+                                                                    <div className="d-flex gap-2">
+                                                                    <i className="bi bi-download"></i>
+                                                                        Download Policy
+                                                                    </div>
+                                                                </span>
+                                                            </ListGroupItem>
 
-                                                                <ListGroupItem
-                                                                onClick={(e)=>handleSendAuthorizationReminder(e,policy)}
-                                                                >
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-file-text"></i>
-                                                                            Send Reminder
-                                                                        </div>
-                                                                    </span>
-                                                                </ListGroupItem>
+                                                            <ListGroupItem>
+                                                                <span className="w-100 d-flex justify-content-between">
+                                                                    <div className="d-flex gap-2">
+                                                                        <i className="bi bi-file-text"></i>
+                                                                        Send Reminder
+                                                                    </div>
+                                                                </span>
+                                                            </ListGroupItem>
 
-                                                                <ListGroupItem
-                                                                    disabled={policy?.markedForDeletion}
-                                                                    onClick={(e) => handleDelete(e, policy)}
-                                                                >
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-file-text"></i>
-                                                                            Delete
-                                                                        </div>
-                                                                    </span>
-                                                                </ListGroupItem>
-                                                            </ListGroup>
-                                                        </Card>}
+                                                            <ListGroupItem>
+                                                                <span className="w-100 d-flex justify-content-between">
+                                                                    <div className="d-flex gap-2">
+                                                                        <i className="bi bi-file-text"></i>
+                                                                        Delete
+                                                                    </div>
+                                                                </span>
+                                                            </ListGroupItem>
+                                                        </ListGroup>
+                                                    </Card>}
 
                                                 </div>
 
@@ -584,4 +566,4 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
     )
 
 }
-export default AdminDeletedPoliciesTab;
+export default ApproverApprovedPoliciesTab;

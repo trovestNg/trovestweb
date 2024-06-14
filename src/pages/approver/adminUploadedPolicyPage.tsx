@@ -22,7 +22,7 @@ import AdminUploadedPoliciesTab from "../../components/tabs/admintabs/adminUploa
 import { useNavigate } from "react-router-dom";
 
 
-const ApproverAllPoliciesPage = () => {
+const AdminUploadedPoliciesPage = () => {
     const userDat = localStorage.getItem('loggedInUser') || '';
     const data = JSON.parse(userDat);
     const [policies, setPolicies] = useState<IPolicy[]>([]);
@@ -87,4 +87,4 @@ const ApproverAllPoliciesPage = () => {
 
 }
 
-export default ApproverAllPoliciesPage;
+export default AdminUploadedPoliciesPage;

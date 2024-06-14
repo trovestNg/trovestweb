@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Badge, Button, Card, Form, FormControl, FormSelect, ListGroup, ListGroupItem, Spinner, Table } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useParams } from "react-router-dom";
 import { IPolicy } from "../../../interfaces/policy";
 import { IDept } from "../../../interfaces/dept";
 import moment from "moment";
@@ -14,7 +14,7 @@ import successElipse from '../../../assets/images/Ellipse-success.png';
 import warningElipse from '../../../assets/images/Ellipse-warning.png';
 import { shortenString } from "../../../util";
 
-const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
+const AdminDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const userDat = localStorage.getItem('loggedInUser') || '';
     const data = JSON.parse(userDat);
     const userName = data?.profile?.sub.split('\\').pop();
@@ -26,7 +26,8 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const [sortByDept, setSortByDept] = useState(false);
     const [bySearch, setBySearch] = useState(false);
     const [selectedDept, setSelectedDept] = useState('');
-    const [userSearch, setUserSearch] = useState('')
+    const [userSearch, setUserSearch] = useState('');
+    const { id } = useParams();
 
 
     const getUploadedPolicies = async () => {
@@ -35,13 +36,15 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
             let userInfo = await getUserInfo();
             console.log({ gotten: userInfo })
             if (userInfo) {
-                const res = await api.get(`Policy/authorized`, `${userInfo.access_token}`);
+                const res = await api.get(`Policy/defaulters/${id}`, `${userInfo.access_token}`);
+                
                 if (res?.data) {
-                    setPolicies(res?.data);
+                    let approvedPolicies =  res?.data.filter((policy:IPolicy)=>policy.isAuthorized)
+                    setPolicies(approvedPolicies);
                     setLoading(false)
                 } else {
-                    // loginUser()
-                    // toast.error('Session expired!, You have been logged out!!')
+                    toast.error('Network error!')
+                    setLoading(false)
                 }
                 console.log({ response: res })
             }
@@ -50,6 +53,8 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
         }
     }
+
+  
 
     const handleGetDepts = async () => {
         // setLoading(true)
@@ -141,6 +146,11 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
         toast.error('hii')
     }
 
+    const handleGetAttestersList = (e: any,pol:IPolicy) => {
+        e.stopPropagation();
+        navigate(`/admin/attesters-list/${pol.id}`);
+    }
+
 
     useEffect(() => {
         fetchData();
@@ -175,7 +185,7 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                         variant="primary"
                         style={{ minWidth: '100px' }}
                         onClick={() => handleCreatePolicy()}
-                    >Create New Policy</Button>
+                    >Download List</Button>
                 </div>
             </div>
 
@@ -193,7 +203,7 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr className=""><td className="text-center" colSpan={5}><Spinner className="spinner-grow text-primary" /></td></tr>
+                            <tr className=""><td className="text-center" colSpan={7}><Spinner className="spinner-grow text-primary" /></td></tr>
                         </tbody>
                     </table> :
                         <table className="table table-striped w-100">
@@ -207,8 +217,8 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                 <th scope="col" className="bg-primary text-light">Action</th>
                             </tr>
                             </thead>
-                            <tbody className="" style={{ height: '500px' }}>
-                                {policies.length <= 0 ? <tr><td className="text-center" colSpan={5}>No Data Available</td></tr> :
+                            <tbody className="">
+                                {policies.length <= 0 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
                                     policies.map((policy, index) => (
                                         <tr key={index} style={{ cursor: 'pointer' }}
                                         onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
@@ -222,7 +232,7 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                 <img src={policy.isAuthorized ? successElipse : warningElipse} height={'10px'} />
                                                 {'  '}
                                                 <span >{policy.isAuthorized ? 'Approved' : 'Pending'}</span></td> */}
-                                            <td className="table-icon" onClick={(e) => handleClick(e)}>
+                                            <td className="table-icon">
                                                 <i className=" bi bi-three-dots"></i>
                                                 <div className="content ml-5" style={{ position: 'relative' }}>
                                                     {
@@ -250,7 +260,9 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                         }}
                                                                     >
                                                                         <ListGroup>
-                                                                            <ListGroupItem>
+                                                                            <ListGroupItem
+                                                                            onClick={(e) => handleGetAttestersList(e,policy)}
+                                                                            >
                                                                                 <span className="w-100 d-flex justify-content-between">
                                                                                     <div className="d-flex gap-2">
                                                                                         <i className="bi bi-file-text"></i>
@@ -413,4 +425,4 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
     )
 
 }
-export default AdminApprovedPoliciesTab;
+export default AdminDefaultersListTab;

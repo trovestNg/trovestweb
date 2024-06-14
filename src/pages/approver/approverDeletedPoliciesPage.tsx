@@ -18,10 +18,12 @@ import { loginUser } from "../../controllers/auth";
 import CreatePolicyModal from "../../components/modals/createPolicyModal";
 import AdminPendingDeleteTab from "../../components/tabs/admintabs/adminPendingDeleteTab";
 import AdminDeletedPoliciesTab from "../../components/tabs/admintabs/adminDeletedPoliciesTab";
+import ApproverPendingDeleteTab from "../../components/tabs/approvertabs/approverPendingDeleteTab";
 import { useNavigate } from "react-router-dom";
+import ApproverDeletedPoliciesTab from "../../components/tabs/approvertabs/approverDeletedPoliciesTab";
 
 
-const AdminDeletedPoliciesPage = () => {
+const ApproverDeletedPoliciesPage = () => {
 
     const userDat = localStorage.getItem('loggedInUser') || '';
     const data = JSON.parse(userDat);
@@ -89,7 +91,7 @@ const AdminDeletedPoliciesPage = () => {
                 setLoading(false);
             } else {
                 setLoading(false);
-                loginUser()
+                // loginUser()
                 toast.error('Session expired!, You have been logged out!!')
             }
             console.log({ response: res })
@@ -122,22 +124,22 @@ const AdminDeletedPoliciesPage = () => {
                     variant="underline"
                     className="mb-3"
                 >
-                    <Tab eventKey="uploaded" title="Policies Pending Deletion (20) "
+                    <Tab eventKey="uploaded" title="Policies Pending Deletion"
                     tabClassName="px-3"
                     >
-                        <AdminPendingDeleteTab handleCreatePolicy={ ()=>navigate('/admin/create-policy')} />
+                        <ApproverPendingDeleteTab handleCreatePolicy={ ()=>navigate('/admin/create-policy')} />
                     </Tab>
-                    <Tab eventKey="approved" title="Deleted Policies (100)">
-                    <AdminDeletedPoliciesTab handleCreatePolicy={ ()=>navigate('/admin/create-policy')} />
+                    <Tab eventKey="approved" title="Deleted Policies">
+                    <ApproverDeletedPoliciesTab handleCreatePolicy={ ()=>navigate('/admin/create-policy')} />
                     </Tab>
                     
                 </Tabs>
                 
             </div>
-            <CreatePolicyModal show={createPolicy} off={()=>setCreatePolicy(false)}/>
+            {/* <CreatePolicyModal show={createPolicy} off={()=>setCreatePolicy(false)}/> */}
         </div>
     )
 
 }
 
-export default AdminDeletedPoliciesPage;
+export default ApproverDeletedPoliciesPage;

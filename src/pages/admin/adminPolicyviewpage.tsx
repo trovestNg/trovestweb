@@ -157,26 +157,20 @@ const AdminPolicyviewpage = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="d-flex mt-4 gap-3">
-                    <Button>Edit Policy</Button>
-                    <Button>Cancel Request</Button>
-                    </div>
-
-
                     {
-                        policy?.isAuthorized &&
-                         <>
-                         <Button disabled={pageNumber !== numPages} 
-                         onClick={() => setAttestedSuccessModal(true)} 
-                         variant="outline border-0 shadow-sm text-primary" className="W-100 mt-3">
-                         You have attested to this policy
-                     </Button>
-                     {/* <i className="bi bi-caret-up-fill text-center text-primary"></i> */}
-                     <p className="text-center m-0 py-0">
-                     You've attested to this policy, but feel free to review it again if needed. Your understanding is valued.
-                     </p>
-                     </>
-                    }
+                        !policy?.isAuthorized &&
+                        <div className="d-flex mt-4 gap-3">
+                    <Button 
+                    variant="border border-primary text-primary outline"
+                    onClick={()=>navigate(`/admin/edit-policy/${id}`)}
+                    
+                    >Edit Policy</Button>
+                    <Button
+                    variant="border border-danger text-danger outline"
+                    onClick={()=>navigate(-1)}
+                    >Cancel Request</Button>
+                    
+                    </div>}
                 </div>
 
             </div>

@@ -16,7 +16,7 @@ import SureToDeletePolicyModal from "../../modals/sureToDeletePolicyModal";
 import UpdatePolicyModal from "../../modals/updatePolicyModal";
 import { shortenString } from "../../../util";
 
-const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
+const ApproverPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const userDat = localStorage.getItem('loggedInUser') || '';
     const data = JSON.parse(userDat);
     const userName = data?.profile?.sub.split('\\').pop();
@@ -52,7 +52,7 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
             if (userInfo) {
                 const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
                 if (res?.data) {
-                    let allPolicy = res?.data.filter((pol: IPolicy) => pol.isDeleted)
+                    let allPolicy = res?.data.filter((pol: IPolicy) => pol.markedForDeletion)
                     setPolicies(allPolicy.reverse());
                     setLoading(false)
                 } else {
@@ -84,8 +84,8 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     setLoading(false)
 
                     let filtered = res?.data.filter((policy: IPolicy) =>
-                        policy.fileName.toLowerCase().includes(query.toLowerCase()) && policy.isDeleted||
-                        policy.policyDepartment.toLowerCase().includes(query.toLowerCase()) && policy.isDeleted
+                        policy.fileName.toLowerCase().includes(query.toLowerCase()) && policy.markedForDeletion ||
+                        policy.policyDepartment.toLowerCase().includes(query.toLowerCase()) && policy.markedForDeletion
                     );
                     setPolicies(filtered.reverse());
 
@@ -584,4 +584,4 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
     )
 
 }
-export default AdminDeletedPoliciesTab;
+export default ApproverPendingDeleteTab;

@@ -11,31 +11,33 @@ import { IDept } from "../../interfaces/dept";
 import { useNavigate } from "react-router-dom";
 import SureToCreatePolicyModal from "../../components/modals/sureToCreatePolicyModal";
 import PolicyCreatedSuccessModal from "../../components/modals/policyCreatedSuccessModal";
+import style from './upload.module.css';
 
 const CreateNewPolicyPage: React.FC<any> = () => {
     interface IAuthorizers {
         "id": number
-		"authorizerName": string,
-		"userName": string,
-		"department": string,
-		"subsidiary": string,
-		"emailAddress": string
+        "authorizerName": string,
+        "userName": string,
+        "department": string,
+        "subsidiary": string,
+        "emailAddress": string
     }
 
 
     const [policyDoc, setPolicyDoc] = useState('');
     const [subSidiaries, setSubSidiaries] = useState<IDept[]>();
-    const [authorizers, setAuthorizers] = useState< IAuthorizers[]>();
+    const [authorizers, setAuthorizers] = useState<IAuthorizers[]>();
     const userDat = localStorage.getItem('loggedInUser') || '';
     const data = JSON.parse(userDat);
     const userName = data?.profile?.sub.split('\\').pop();
     const navigate = useNavigate();
 
-    const [showCreatePrompt, setShowCreatePrompt] =useState(false)
-    const [policyCreatedSucc, setpolicyCreatedSucc] =useState(false)
-    const [createLoading,setCreateLoading] = useState(false)
+    const [showCreatePrompt, setShowCreatePrompt] = useState(false)
+    const [policyCreatedSucc, setpolicyCreatedSucc] = useState(false)
+    const [createLoading, setCreateLoading] = useState(false)
 
-    const [showSub,setShowSub] = useState(false)
+    const [showSub, setShowSub] = useState(false);
+    const [fileName,setFileName] = useState('')
 
     const initialValues = {
         policyName: '',
@@ -62,17 +64,9 @@ const CreateNewPolicyPage: React.FC<any> = () => {
             }),
     });
 
-    const handleFileChange = (event: any) => {
-        const file = event.target.files[0];
-        if (file) {
-            setPolicyDoc(file)
-        } else {
-            toast.error('No file selected!');
-            setPolicyDoc('');
-        }
-    };
-
     
+
+
 
     const remFreq = [
         {
@@ -98,7 +92,7 @@ const CreateNewPolicyPage: React.FC<any> = () => {
             if (res?.data) {
                 setSubSidiaries(res?.data)
             } else {
-                
+
             }
             console.log({ response: res })
         } catch (error) {
@@ -116,7 +110,7 @@ const CreateNewPolicyPage: React.FC<any> = () => {
             if (res?.data) {
                 setAuthorizers(res?.data)
             } else {
-                
+
             }
             console.log({ response: res })
         } catch (error) {
@@ -125,18 +119,26 @@ const CreateNewPolicyPage: React.FC<any> = () => {
 
     }
 
+    const handleFileChange = (event:any, setFieldValue:any) => {
+        const file = event.currentTarget.files[0];
+        if (file) {
+          setFileName(file.name);
+          setFieldValue('policyDocument', file);
+        }
+      };
+
     const createNewPolicy = async (body: any) => {
         console.log({ bodyHere: body });
         setCreateLoading(true)
-        let convertedToInt = body?.Department.map((id:any)=> +id)
-  let formData = new FormData()
+        let convertedToInt = body?.Department.map((id: any) => +id)
+        let formData = new FormData()
 
-  let dep :any = ['1023']
+        let dep: any = ['1023']
 
         formData.append('policyDocument', body?.policyDocument)
         formData.append('fileDescription', body?.fileDescription)
         formData.append('policyName', body?.policyName)
-        formData.append('Subsidiary',convertedToInt)
+        formData.append('Subsidiary', convertedToInt)
         formData.append('Frequency', body?.Frequency)
         formData.append('Authorizer', body?.Authorizer)
         formData.append('DeadlineDate', body?.DeadlineDate)
@@ -148,11 +150,11 @@ const CreateNewPolicyPage: React.FC<any> = () => {
 
             const res = await api.post(`policy/upload?userName=majadi`, formData, `${userInfo?.access_token}`)
             console.log(res)
-            if(res?.statusText=="Created"){
+            if (res?.statusText == "Created") {
                 setShowCreatePrompt(false)
                 setpolicyCreatedSucc(true)
                 setCreateLoading(false)
-            } else{
+            } else {
                 toast.error('Error uploading policy, kindly try again');
                 setCreateLoading(false)
             }
@@ -161,10 +163,10 @@ const CreateNewPolicyPage: React.FC<any> = () => {
 
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         handleGetDepts();
         handleGetAuthorizers()
-    },[])
+    }, [])
 
     return (
         <div>
@@ -221,10 +223,10 @@ const CreateNewPolicyPage: React.FC<any> = () => {
 
             <Formik
                 initialValues={initialValues}
-                // validationSchema={validationSchema}
+                validationSchema={validationSchema}
                 onSubmit={createNewPolicy}
             >
-                {({ values, setFieldValue, handleReset, handleBlur,handleSubmit, handleChange, touched,errors }) => (
+                {({ values, setFieldValue, handleReset, handleBlur, handleSubmit, handleChange, touched, errors }) => (
                     <Form onSubmit={handleSubmit} onReset={handleReset} className="d-flex flex-column align-items-center">
                         <div>
 
@@ -240,40 +242,77 @@ const CreateNewPolicyPage: React.FC<any> = () => {
                                     onBlur={handleBlur}
                                     placeholder="Enter Policy Title" />
                                 <p
-                                            className="p-0 text-danger m-0 mt-1"
-                                            style={{ fontSize: '0.7em' }}>{touched.policyName && errors['policyName']}
-                                        </p>
+                                    className="p-0 text-danger m-0 mt-1"
+                                    style={{ fontSize: '0.7em' }}>{touched.policyName && errors['policyName']}
+                                </p>
 
                             </div>
 
-                            <div className="p-2" style={{ marginTop: '5px', minWidth: '400px' }}>
-                                <p className="p-0 m-0">Upload File (PDF)</p>
+                            <div  style={{ marginTop: '5px', minWidth: '400px' }}>
+                                <div style={{paddingLeft:'10px'}}>
+                                <p>Upload File (PDF)</p>
+                            <label htmlFor="policyDocument" className={`p-4 w-100 text-center text-primary border-1 m-0 ${style.fileUploadLabel}`}>
+                                {<i className="bi bi-file-earmark-pdf"></i>}
+                                {fileName==''?' Click to upload file':' Click to Replace File'}
+                                
+                                </label>
                                 <input
                                     id="policyDocument"
                                     name="policyDocument"
                                     type="file"
-                                    onChange={(event: any) => {
-                                        setFieldValue("policyDocument", event.currentTarget.files[0]);
-                                    }}
+                                    className={`p-2 ${style.fileInput}`}
+                                    onChange={(event) => handleFileChange(event, setFieldValue)}
+                                    
+                                    // {handleFileChange(event: any) => {
+                                    //     setFieldValue("policyDocument", event.currentTarget.files[0]);
+                                    // }}
                                 />
-<p
-                                            className="p-0 text-danger m-0 mt-1"
-                                            style={{ fontSize: '0.7em' }}>{touched.policyDocument && errors['policyDocument']}
-                                        </p>
+                                </div>
+                                <p
+                                    className="p-0 text-danger m-0 mt-1"
+                                    style={{ fontSize: '0.7em' }}>{touched.policyDocument && errors['policyDocument']}
+                                </p>
                             </div>
+                            {fileName &&
+                                <div className="px-3 d-flex">
+                            <i className="bi bi-file-earmark-pdf text-danger"></i>
+                            <p className="px-1 text-primary">{fileName}</p>
+                            </div>}
+                            
+
+                            {/* {
+                                <div className="mt-1 text-primary d-flex">
+                                     {
+                                        
+                                        
+                                        && fileName
+                                     }
+                                </div>
+                               
+                            } */}
 
                             <div className="p-2" style={{ marginTop: '5px', minWidth: '400px' }}>
                                 <p className="p-0 m-0">Policy Description</p>
-                                <FormControl
+                                <textarea
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                     id="fileDescription"
                                     name="fileDescription"
-                                    className="py-4" type="textfield" placeholder="Enter Policy Description" style={{ marginTop: '5px', maxWidth: '400px' }} />
+                                    className="p-2 border rounded border-1 " placeholder="Enter Policy Description"
+                                    style={{
+                                        marginTop: '5px',
+                                        minWidth: '400px',
+                                        minHeight: '8em',
+                                        padding: '0px',
+                                        boxSizing:'border-box',
+                                        lineHeight:'1.5',
+                                        overflow:'auto',
+                                        outline:'0px'
+                                    }} />
                                 <p
-                                            className="p-0 text-danger m-0 mt-1"
-                                            style={{ fontSize: '0.7em' }}>{touched.fileDescription && errors['fileDescription']}
-                                        </p>
+                                    className="p-0 text-danger m-0 mt-1"
+                                    style={{ fontSize: '0.7em' }}>{touched.fileDescription && errors['fileDescription']}
+                                </p>
                             </div>
 
                             <div className="p-2" style={{ marginTop: '5px', minWidth: '400px' }}>
@@ -286,24 +325,24 @@ const CreateNewPolicyPage: React.FC<any> = () => {
                                     name="DeadlineDate"
                                     type="date" placeholder="Select date" style={{ marginTop: '5px', maxWidth: '400px' }} />
                                 <p
-                                            className="p-0 text-danger m-0 mt-1"
-                                            style={{ fontSize: '0.7em' }}>{touched.DeadlineDate && errors['DeadlineDate']}
-                                        </p>
+                                    className="p-0 text-danger m-0 mt-1"
+                                    style={{ fontSize: '0.7em' }}>{touched.DeadlineDate && errors['DeadlineDate']}
+                                </p>
                             </div>
 
                             <div className="px-2">
                                 <label className="d-flex justify-content-between rounded border border-1 w-100 py-2 px-2">
                                     Select Subsidiaries
-                                    <i 
-                                    onClick={()=>setShowSub(!showSub)}
-                                    className={`bi bi-chevron-${showSub?'up':'down'}`} style={{cursor:'pointer'}}></i>
-                                    </label>
+                                    <i
+                                        onClick={() => setShowSub(!showSub)}
+                                        className={`bi bi-chevron-${showSub ? 'up' : 'down'}`} style={{ cursor: 'pointer' }}></i>
+                                </label>
                                 <Collapse
                                     in={showSub}
                                 >
                                     <Card className="py-1 px-2">
                                         <div className="d-flex flex-column" role="group">
-                                            {subSidiaries &&subSidiaries.map((option) => (
+                                            {subSidiaries && subSidiaries.map((option) => (
                                                 <label key={option.id}>
                                                     <Field
                                                         type="checkbox"
@@ -318,9 +357,9 @@ const CreateNewPolicyPage: React.FC<any> = () => {
                                 </Collapse>
 
                                 <p
-                                            className="p-0 text-danger m-0 mt-1"
-                                            style={{ fontSize: '0.7em' }}>{touched.Department && errors['Department']}
-                                        </p>
+                                    className="p-0 text-danger m-0 mt-1"
+                                    style={{ fontSize: '0.7em' }}>{touched.Department && errors['Department']}
+                                </p>
                             </div>
 
 
@@ -350,7 +389,7 @@ const CreateNewPolicyPage: React.FC<any> = () => {
 
                             <div className="p-2" style={{ marginTop: '5px', minWidth: '400px' }}>
 
-                                <p className="p-0 m-0">Reminder Frequency</p>
+                                <p className="p-0 m-0">Set Reminder Frequency</p>
                                 <FormSelect
                                     id="Frequency"
                                     className="py-2"
@@ -366,13 +405,13 @@ const CreateNewPolicyPage: React.FC<any> = () => {
                                 </FormSelect>
 
                                 <p
-                                            className="p-0 text-danger m-0 mt-1"
-                                            style={{ fontSize: '0.7em' }}>{touched.Frequency && errors['Frequency']}
-                                        </p>
+                                    className="p-0 text-danger m-0 mt-1"
+                                    style={{ fontSize: '0.7em' }}>{touched.Frequency && errors['Frequency']}
+                                </p>
                             </div>
 
                             <div className="p-2" style={{ marginTop: '5px', minWidth: '400px' }}>
-                                <p className="p-0 m-0">Authorizer</p>
+                                <p className="p-0 m-0">Select Authorizer</p>
                                 <FormSelect
                                     id="Authorizer"
                                     className="py-2"
@@ -381,30 +420,30 @@ const CreateNewPolicyPage: React.FC<any> = () => {
                                     style={{ marginTop: '5px', maxWidth: '400px' }}>
                                     <option>Select</option>
                                     {
-                                       authorizers && authorizers.map((sub, index) =>
+                                        authorizers && authorizers.map((sub, index) =>
                                             <option key={index} value={sub.authorizerName}>{sub.authorizerName}</option>
                                         )
                                     }
                                 </FormSelect>
 
                                 <p
-                                            className="p-0 text-danger m-0 mt-1"
-                                            style={{ fontSize: '0.7em' }}>{touched.Authorizer && errors['Authorizer']}
-                                        </p>
+                                    className="p-0 text-danger m-0 mt-1"
+                                    style={{ fontSize: '0.7em' }}>{touched.Authorizer && errors['Authorizer']}
+                                </p>
                             </div>
 
 
 
                             <div className="mt-2">
-                                <Button onClick={()=>setShowCreatePrompt(true)} variant="primary mt-3">Submit for Approval </Button>
+                                <Button onClick={() => setShowCreatePrompt(true)} variant="primary mt-3">Submit for Approval </Button>
                             </div>
                         </div>
-                        <SureToCreatePolicyModal loading={createLoading} action={handleSubmit} off={()=>setShowCreatePrompt(false)} show={showCreatePrompt}/>
-                        <PolicyCreatedSuccessModal off={()=>setpolicyCreatedSucc(false)} show={policyCreatedSucc}/>
+                        <SureToCreatePolicyModal loading={createLoading} action={handleSubmit} off={() => setShowCreatePrompt(false)} show={showCreatePrompt} />
+                        <PolicyCreatedSuccessModal off={() => setpolicyCreatedSucc(false)} show={policyCreatedSucc} />
                     </Form>
                 )}
             </Formik>
-            
+
         </div>
     )
 }

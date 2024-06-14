@@ -8,7 +8,6 @@ import error from '../../assets/images/error.png';
 import { Tabs, Tab } from "react-bootstrap";
 import UploadedPoliciesTab from "../../components/tabs/admintabs/uploaded-policies-tab";
 import UserAllPoliciesTab from "../../components/tabs/userTabs/user-all-policies-tab";
-import AdminApprovedPoliciesTab from "../../components/tabs/admintabs/adminApprovedPoliciesTab";
 import UserNotAttestedPoliciesTab from "../../components/tabs/userTabs/user-not-attested-policies-tab";
 import UserAttestedPoliciesTab from "../../components/tabs/userTabs/attested-policies-tab";
 import { IPolicy } from "../../interfaces/policy";
@@ -18,25 +17,24 @@ import { getUserInfo, loginUser } from "../../controllers/auth";
 import { toast } from "react-toastify";
 import api from "../../config/api";
 import { IUserDashboard } from "../../interfaces/user";
-import AdminUploadedPoliciesTab from "../../components/tabs/admintabs/adminUploadedPoliciesTab";
-import { useNavigate } from "react-router-dom";
+import AdminPoliciesPendingApprovalTab from "../../components/tabs/admintabs/adminPoliciesPendingApprovalTab";
 
 
-const ApproverAllPoliciesPage = () => {
+const ApproverPendingPoliciesPage = () => {
     const userDat = localStorage.getItem('loggedInUser') || '';
     const data = JSON.parse(userDat);
+    const [userDBInfo,setUserDBInfo]  = useState<IUserDashboard>()
+    const userName = data?.profile?.sub.split('\\').pop();
     const [policies, setPolicies] = useState<IPolicy[]>([]);
     const [depts, setDepts] = useState<IDept[]>([]);
     // const [regUsers, setRegUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
     const [refreshComponent,setRefreshComponent] = useState(false)
-    const userName = data?.profile?.sub.split('\\').pop();
-    const [userDBInfo,setUserDBInfo]  = useState<IUserDashboard>();
-    const navigate = useNavigate();
 
     const [totalPolicyCount,setTotalPolicyCount] =useState(0);
     const [totalAttested,setTotalAttested] =useState(0);
     const [totalNotAttested,setTotalNotAttested] =useState(0);
+    
     
     const getInitiatorDashboard = async () => {
         setLoading(true)
@@ -71,8 +69,8 @@ const ApproverAllPoliciesPage = () => {
 
     return (
         <div className="w-100">
-            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Uploaded Policies {userDBInfo?.totalUploadedPolicyByInitiator} </h5>
-            <p>Here, you'll find all policies you have uploaded.</p>
+            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Pending Policies {userDBInfo?.totalPendingPolicy} </h5>
+            <p>Here, you'll find Pending policies. You can cancel, edit and delete before approval.</p>
             {/* <div className="d-flex gap-5">
                 {
                     dashCardInfo.map((info, index) => (<DashboardCard key={index} imgSrc={info.img} title={info.title} />))
@@ -80,11 +78,11 @@ const ApproverAllPoliciesPage = () => {
             </div> */}
 
             <div className="w-100 mt-5">
-                <AdminUploadedPoliciesTab handleCreatePolicy={ ()=>navigate('/admin/create-policy')}/>
+                <AdminPoliciesPendingApprovalTab/>
             </div>
         </div>
     )
 
 }
 
-export default ApproverAllPoliciesPage;
+export default ApproverPendingPoliciesPage;

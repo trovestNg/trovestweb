@@ -1,15 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Container, Modal, Card, Button } from "react-bootstrap";
-import DashboardCard from "../../components/cards/dashboard-card";
-import openBook from '../../assets/images/open-book.png'
-import checked from '../../assets/images/check.png';
-import timer from '../../assets/images/deadline.png';
-import error from '../../assets/images/error.png';
-import { Tabs, Tab } from "react-bootstrap";
-import UploadedPoliciesTab from "../../components/tabs/admintabs/uploaded-policies-tab";
-import UserAllPoliciesTab from "../../components/tabs/userTabs/user-all-policies-tab";
-import UserNotAttestedPoliciesTab from "../../components/tabs/userTabs/user-not-attested-policies-tab";
-import UserAttestedPoliciesTab from "../../components/tabs/userTabs/attested-policies-tab";
 import { IPolicy } from "../../interfaces/policy";
 import { IDept } from "../../interfaces/dept";
 import { getPolicies } from "../../controllers/policy";
@@ -18,23 +7,23 @@ import { toast } from "react-toastify";
 import api from "../../config/api";
 import { IUserDashboard } from "../../interfaces/user";
 import AdminApprovedPoliciesTab from "../../components/tabs/admintabs/adminApprovedPoliciesTab";
-import { useNavigate } from "react-router-dom";
+import AdminAttestersListTab from "../../components/tabs/admintabs/adminAttestersListTab";
+import { useNavigate,useParams } from "react-router-dom";
+import { Button } from "react-bootstrap";
 
 
-const AdminApprovedPoliciesPage = () => {
+const AdminAttestersListPage = () => {
     const userDat = localStorage.getItem('loggedInUser') || '';
     const data = JSON.parse(userDat);
     const [policies, setPolicies] = useState<IPolicy[]>([]);
     const [depts, setDepts] = useState<IDept[]>([]);
     const userName = data?.profile?.sub.split('\\').pop();
+    
     // const [regUsers, setRegUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
     const [refreshComponent,setRefreshComponent] = useState(false);
     const navigate = useNavigate()
 
-    const [totalPolicyCount,setTotalPolicyCount] =useState(0);
-    const [totalAttested,setTotalAttested] =useState(0);
-    const [totalNotAttested,setTotalNotAttested] =useState(0);
     const [userDBInfo,setUserDBInfo]  = useState<IUserDashboard>()
     
     const getInitiatorDashboard = async () => {
@@ -70,8 +59,9 @@ const AdminApprovedPoliciesPage = () => {
 
     return (
         <div className="w-100">
-            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Approved Policies {userDBInfo?.totalApprovedPolicy} </h5>
-            <p>Here, you'll find approved policies. Download lists of attesters and defaulters..</p>
+            <div><Button variant="outline border border-2" onClick={() => navigate(-1)}>Go Back</Button></div>
+            <h5 className="font-weight-bold text-primary mt-3" style={{ fontFamily: 'title' }}>{`Data Protection Policy & Procedure Attesters List-${userDBInfo?.totalApprovedPolicy}`} </h5>
+           
             {/* <div className="d-flex gap-5">
                 {
                     dashCardInfo.map((info, index) => (<DashboardCard key={index} imgSrc={info.img} title={info.title} />))
@@ -79,11 +69,11 @@ const AdminApprovedPoliciesPage = () => {
             </div> */}
 
             <div className="w-100 mt-5">
-                <AdminApprovedPoliciesTab handleCreatePolicy={ ()=>navigate('/admin/create-policy')} />
+                <AdminAttestersListTab handleCreatePolicy={ ()=>navigate('/admin/create-policy')} />
             </div>
         </div>
     )
 
 }
 
-export default AdminApprovedPoliciesPage;
+export default AdminAttestersListPage;

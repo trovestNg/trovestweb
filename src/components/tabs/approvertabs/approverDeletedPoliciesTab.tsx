@@ -16,7 +16,7 @@ import SureToDeletePolicyModal from "../../modals/sureToDeletePolicyModal";
 import UpdatePolicyModal from "../../modals/updatePolicyModal";
 import { shortenString } from "../../../util";
 
-const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
+const ApproverDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const userDat = localStorage.getItem('loggedInUser') || '';
     const data = JSON.parse(userDat);
     const userName = data?.profile?.sub.split('\\').pop();
@@ -584,4 +584,4 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
     )
 
 }
-export default AdminDeletedPoliciesTab;
+export default ApproverDeletedPoliciesTab;

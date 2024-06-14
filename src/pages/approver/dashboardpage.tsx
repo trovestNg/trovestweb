@@ -6,7 +6,6 @@ import checked from '../../assets/images/check.png';
 import timer from '../../assets/images/deadline.png';
 import error from '../../assets/images/error.png';
 import { Tabs, Tab } from "react-bootstrap";
-import UploadedPoliciesTab from "../../components/tabs/admintabs/uploaded-policies-tab";
 import ApproverAllPoliciesTab from "../../components/tabs/approvertabs/approverAllPoliciesTab";
 import { getPolicies } from "../../controllers/policy";
 import { IPolicy } from "../../interfaces/policy";
@@ -15,12 +14,12 @@ import { toast } from "react-toastify";
 import { loginUser } from "../../controllers/auth";
 import CreatePolicyModal from "../../components/modals/createPolicyModal";
 import { useNavigate } from "react-router-dom";
-// import AdminApprovedPoliciesTab from "./adminApprovedPoliciesTab";
-import AdminPoliciesPendingApprovalTab from "../../components/tabs/admintabs/adminPoliciesPendingApprovalTab";
-import AdminRejectedApprovalsTab from "../../components/tabs/admintabs/adminRejectedApprovalsTab";
+// import AdminApprovedPoliciesTab from "./admnApprovedPoliciesTab";
+import ApproverPendingPolicyTab from "../../components/tabs/approvertabs/approverPendingPolicyTab";
+import ApproverRejectedPoliciesTab from "../../components/tabs/approvertabs/approverRejectedPoliciesTab";
 import api from "../../config/api";
 import { IUserDashboard } from "../../interfaces/user";
-import AdminApprovedPoliciesTab from "../../components/tabs/admintabs/adminApprovedPoliciesTab";
+import ApproverApprovedPoliciesTab from "../../components/tabs/approvertabs/approverApprovedPoliciesTab";
 
 
 const ApproverDashboardPage = () => {
@@ -43,10 +42,10 @@ const ApproverDashboardPage = () => {
 
     const dashCardInfo = [
         {
-            title: 'All Uploaded Policies',
+            title: 'Uploaded Policies',
             img: openBook,
             color : 'primary',
-            count: userDBInfo?.totalUploadedPolicy,
+            count: userDBInfo?.totalUploadedPolicyByInitiator,
             icon: '',
 
         },
@@ -83,14 +82,10 @@ const ApproverDashboardPage = () => {
     
     
     
-
-
-
-
-    const getAuthorizerDashboard = async () => {
+    const getInitiatorDashboard = async () => {
         setLoading(true)
         try {
-            const res = await api.get(`Dashboard/authorizer?userName=${userName}`, `${data?.access_token}`);
+            const res = await api.get(`Dashboard/initiator?userName=${userName}`, `${data?.access_token}`);
             setUserDBInfo(res?.data);
             console.log({here:res})
             if (res?.data) {
@@ -115,7 +110,7 @@ const ApproverDashboardPage = () => {
     
     
     useEffect(()=>{
-        getAuthorizerDashboard(); 
+        getInitiatorDashboard(); 
     },[refreshComponent])
     return (
         <div className="w-100">
@@ -134,25 +129,25 @@ const ApproverDashboardPage = () => {
                     defaultActiveKey="uploaded"
                     id="uncontrolled-tab-example"
                     variant="underline"
-                    className="mb-3"
+                    className="mb-3 gap-5"
                 >
+
+                    
                     <Tab eventKey="uploaded" title="All Policies"
-                    tabClassName="px-3"
+                    tabClassName=""
                     >
-                        <ApproverAllPoliciesTab handleCreatePolicy={()=>navigate('/admin/create-policy')} />
-                    </Tab>
-
-                    <Tab eventKey="pending" title="Policies Pending Approval">
-                    <AdminPoliciesPendingApprovalTab handleCreatePolicy={()=>navigate('/admin/create-policy')} />
-                    </Tab>
-
-                    <Tab eventKey="approved" title="Approved Policies">
-                    <AdminApprovedPoliciesTab handleCreatePolicy={()=>navigate('/admin/create-policy')} />
+                        <ApproverAllPoliciesTab handleCreatePolicy={()=>navigate('/admn/create-policy')} />
                     </Tab>
                     
+                    <Tab eventKey="approved" title="Approved Policies">
+                    < ApproverApprovedPoliciesTab handleCreatePolicy={()=>navigate('/admn/create-policy')} />
+                    </Tab>
+                    <Tab eventKey="pending" title="Pending Policies">
+                    <ApproverPendingPolicyTab handleCreatePolicy={()=>navigate('/admn/create-policy')} />
+                    </Tab>
 
                     <Tab eventKey="rejected" title="Rejected Policies">
-                    <AdminRejectedApprovalsTab handleCreatePolicy={()=>navigate('/admin/create-policy')} />
+                    <ApproverRejectedPoliciesTab handleCreatePolicy={()=>navigate('/admn/create-policy')} />
                     </Tab>
                 </Tabs>
                 

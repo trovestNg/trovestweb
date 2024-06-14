@@ -10,10 +10,13 @@ import { getAllDepartments } from "../../../controllers/department";
 import {toast} from 'react-toastify';
 import { getUserInfo, loginUser } from "../../../controllers/auth";
 import api from "../../../config/api";
+import SureToDeletePolicyModal from "../../modals/sureToDeletePolicyModal";
+import UpdatePolicyModal from "../../modals/updatePolicyModal";
 
-const AdminDeletedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
+const ApproverRejectedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
     const userDat = localStorage.getItem('loggedInUser') || '';
     const data = JSON.parse(userDat);
+    const userName = data?.profile?.sub.split('\\').pop();
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
     const [policies, setPolicies] = useState<IPolicy[]>([]);
@@ -24,6 +27,16 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
     const [selectedDept, setSelectedDept] = useState('');
     const [userSearch, setUserSearch] = useState('')
 
+    const [policy, setPolicy] = useState<IPolicy>();
+
+    const [policyId, setPolicyId] = useState<number>(0)
+    const [deletePolicyModal, setDeteletPolicyModal] = useState<boolean>(false);
+
+    const [updatePolicyModal, setUpdatePolicyModal] = useState<boolean>(false);
+
+    const [query, setQuery] = useState<string>('');
+    const [sortCriteria, setSortCriteria] = useState<string>('name');
+
 
     const getUploadedPolicies = async () => {
         setLoading(true)
@@ -31,9 +44,11 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
             let userInfo = await getUserInfo();
             console.log({gotten: userInfo})
             if(userInfo){
-                const res = await api.get(`Policy/rejected`, `${userInfo.access_token}`);
+                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
+                
                 if (res?.data) {
-                    setPolicies(res?.data);
+                    let rejectedPolicies =  res?.data.filter((policy:IPolicy)=>policy.isRejected && !policy.markedForDeletion)
+                    setPolicies(rejectedPolicies);
                     setLoading(false)
                 } else {
                     loginUser()
@@ -72,48 +87,35 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
 
     }
 
-    const getBySearch = async () => {
+    const handleSearchByPolicyNameOrDept = async () => {
+        // toast.error('Searching by name of dept or title!')
         setLoading(true)
         try {
-            const res = await getPolicies(`Policy/searchByWord?searchWord=${userSearch}`, `${data?.access_token}`);
-            if (res?.data) {
-                // let searched = res?.data.filter((data:IPolicy)=>data.fileName.includes(userSearch));
-                setPolicies(res?.data);
-                // if(allAttested.length >= res?.data.length){
-                //     setPolicies([]);
-                // } else{
+            let userInfo = await getUserInfo();
+            console.log({ gotten: userInfo })
+            if (userInfo) {
+                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
+                if (res?.data) {
 
-                // }
+                    setLoading(false)
 
-                setLoading(false)
-            } else {
-                toast.error('Search failed!');
-                setBySearch(false);
-                setLoading(false);
+                    let filtered = res?.data.filter((policy: IPolicy) =>
+                        policy.fileName.toLowerCase().includes(query.toLowerCase()) && !policy.isAuthorized && !policy.markedForDeletion
+                    );
+                    setPolicies(filtered.reverse());
+
+                } else {
+                    // loginUser()
+                    // toast.error('Session expired!, You have been logged out!!')
+                }
+                console.log({ response: res })
             }
-            console.log({ response: res })
+
         } catch (error) {
 
         }
-    }
 
-    const getBySort = async () => {
-        setLoading(true)
-        try {
-            const res = await getPolicies(`filterByDepartment?departmentName=${selectedDept}`, `${data?.access_token}`);
-            if (res?.data) {
-                setPolicies(res?.data);
-                setLoading(false);
-            } else {
-                toast.error('Fail to sort!')
-                setLoading(false);
-                setSortByDept(false);
-            }
-            console.log({ response: res })
-        } catch (error) {
-
-        }
-    }
+    };
 
     const handleDeptSelection = (val: string) => {
         setSelectedDept(val);
@@ -129,9 +131,9 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
 
     const fetchData = () => {
         if (sortByDept) {
-            getBySort();
-        } else if(bySearch) {
-            getBySearch();
+            // getBySort();
+        } else if (bySearch) {
+            handleSearchByPolicyNameOrDept();
         } else {
             getUploadedPolicies();
         }
@@ -143,35 +145,120 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
         handleGetDepts();
     }, [refreshData])
 
+    const handleEdit = (e: any, policy: IPolicy) => {
+        e.stopPropagation();
+        navigate(`/admin/edit-policy/${policy.id}`)
+    }
+
+    const handleClear = () => {
+        setBySearch(false);
+        setQuery('')
+        setRefreshData(!refreshData)
+    }
+
+    const handleUpdate = (e: any, policy: IPolicy) => {
+        e.stopPropagation();
+        setPolicy(policy);
+        setUpdatePolicyModal(true);
+        // navigate(`/admin/edit-policy/${policy.id}`)
+    }
+
+    const handlePolicyDelete = async (e: any) => {
+        e.stopPropagation();
+        const res = await api.post(`Policy/delete/request`, { "id": policyId, "username": userName }, data?.access_token);
+        if (res?.status == 200) {
+            toast.success('Delete request sent for approval!');
+            setDeteletPolicyModal(false);
+            setRefreshData(!refreshData)
+        } else {
+            toast.error('Failed to delete policy')
+        }
+    }
+
+    const handleSendAuthorizationReminder = async (e: any, policy: IPolicy) => {
+        e.stopPropagation();
+        const res = await api.post(`Policy/nudge-authorizer?policyId=${policy.id}`, { "policyId": policy.id }, data?.access_token);
+        if (res?.status == 200) {
+            toast.success('Reminder sent!');
+            setRefreshData(!refreshData)
+        } else {
+            toast.error('Error sending reminder')
+        }
+    }
+
+    const handleDelete = async (e: any, policy: any) => {
+        e.stopPropagation();
+        setPolicyId(policy.id)
+        setDeteletPolicyModal(true);
+    }
+
+
+    const handleGetAttestersList = (e: any, pol: IPolicy) => {
+        e.stopPropagation();
+        navigate(`/admin/attesters-list/${pol.id}`);
+    }
+
+    const handleGetDefaultersList = (e: any, pol: IPolicy) => {
+        e.stopPropagation();
+        navigate(`/admin/defaulters-list/${pol.id}`);
+    }
+
+    const handleDownloadPolicy = (e: any, pol: IPolicy) => {
+        e.stopPropagation();
+        toast.success('Downloading file')
+
+    }
+
     return (
         <div className="w-100">
+            <SureToDeletePolicyModal
+                action={(e: any) => handlePolicyDelete(e)}
+                show={deletePolicyModal}
+                off={() => setDeteletPolicyModal(false)} />
+
+            <UpdatePolicyModal
+                show={updatePolicyModal}
+                pol={policy}
+                off={() => {
+                    setUpdatePolicyModal(false);
+                    setRefreshData(!refreshData)
+                }}
+            />
+
             <div className="d-flex w-100 justify-content-between">
                 <div className="d-flex gap-4">
-                    <div className="d-flex">
+                    <div className="d-flex align-items-center" style={{ position: 'relative' }}>
                         <FormControl
-                            onChange={(e) => setUserSearch(e.target.value)}
+                            onChange={(e) => setQuery(e.target.value)}
                             placeholder="Search by Name, Department..."
+                            value={query}
                             className="py-2" style={{ minWidth: '350px' }} />
-                        <Button 
-                        disabled={userSearch==''}
-                        onClick={()=>handleSearch()}
-                       
-                        variant="primary" style={{ minWidth: '100px', marginLeft: '-5px' }}>Search</Button>
+                        <i
+                            className="bi bi-x-lg"
+                            onClick={handleClear}
+                            style={{ marginLeft: '310px', display: query == '' ? 'none' : 'flex', cursor: 'pointer', float: 'right', position: 'absolute' }}></i>
+
+                        <Button
+                            disabled={query == ''}
+                            onClick={() => handleSearch()}
+
+                            variant="primary" style={{ minWidth: '100px', marginLeft: '-5px' }}>Search</Button>
                     </div>
-                    <Form.Select onChange={(e) => handleDeptSelection(e.currentTarget.value)} className="custom-select" style={{ maxWidth: '170px' }}>
-                        <option>Select Department</option>
+                    {/* <Form.Select onChange={(e) => handleDeptSelection(e.currentTarget.value)} className="custom-select"
+                        style={{ maxWidth: '170px' }}>
+                        <option value={'all'}>Select Department</option>
                         {
                             depts.map((dept) => <option key={dept.id} value={dept.name}>{dept.name}</option>)
                         }
-                    </Form.Select>
+                    </Form.Select> */}
 
                 </div>
                 <div className="">
-                    <Button
+                    {/* <Button
                         variant="primary"
                         style={{ minWidth: '100px' }}
-                        onClick={()=>handleCreatePolicy()}
-                    >Create New Policy</Button>
+                        onClick={() => handleCreatePolicy()}
+                    >Create New Policy</Button> */}
                 </div>
             </div>
 
@@ -182,8 +269,7 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
                             <tr >
                                 <th scope="col" className="bg-primary text-light">#</th>
                                 <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                <th scope="col" className="bg-primary text-light">Authorizer</th>
-                                <th scope="col" className="bg-primary text-light">Department</th>
+                                <th scope="col" className="bg-primary text-light">Reason for Rejection</th>
                                 <th scope="col" className="bg-primary text-light">Date Rejected</th>
                                 <th scope="col" className="bg-primary text-light">Action</th>
                             </tr>
@@ -194,14 +280,13 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
                     </table> :
                         <table className="table w-100">
                             <thead className="thead-dark">
-                            <tr >
-                                <th scope="col" className="bg-primary text-light">#</th>
-                                <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                <th scope="col" className="bg-primary text-light">Authorizer</th>
-                                <th scope="col" className="bg-primary text-light">Department</th>
-                                <th scope="col" className="bg-primary text-light">Date Rejected</th>
-                                <th scope="col" className="bg-primary text-light">Action</th>
-                            </tr>
+                                <tr >
+                                    <th scope="col" className="bg-primary text-light">#</th>
+                                    <th scope="col" className="bg-primary text-light">Policy Title</th>
+                                    <th scope="col" className="bg-primary text-light">Reason for Rejection</th>
+                                    <th scope="col" className="bg-primary text-light">Date Rejected</th>
+                                    <th scope="col" className="bg-primary text-light">Action</th>
+                                </tr>
                             </thead>
                             <tbody>
                                 {policies.length <= 0?<tr><td className="text-center" colSpan={5}>No Data Available</td></tr> :
@@ -241,7 +326,9 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
                                                                         }}
                                                                     >
                                                                         <ListGroup>
-                                                                            <ListGroupItem>
+                                                                            <ListGroupItem
+                                                                            onClick={(e:any)=>handleGetAttestersList(e,policy)}
+                                                                            >
                                                                                 <span className="w-100 d-flex justify-content-between">
                                                                                     <div className="d-flex gap-2">
                                                                                         <i className="bi bi-file-text"></i>
@@ -329,45 +416,55 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
                                                     {
                                                         !policy.isAuthorized &&
                                                         <Card className="p-2  shadow-sm rounded border-0"
-                                                        style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
-                                                        <ListGroup>
-                                                            <ListGroupItem>
-                                                            <span className="w-100 d-flex justify-content-between">
-                                                                    <div className="d-flex gap-2">
-                                                                        <i className="bi bi-file-text"></i>
-                                                                        Edit Policy
-                                                                    </div>
-                                                                </span>
-                                                            </ListGroupItem>
+                                                            style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
+                                                            <ListGroup>
+                                                                <ListGroupItem
+                                                                    onClick={(e) => handleEdit(e, policy)}
+                                                                >
+                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                        <div className="d-flex gap-2">
+                                                                            <i className="bi bi-file-text"></i>
+                                                                            Edit Policy
+                                                                        </div>
+                                                                    </span>
+                                                                </ListGroupItem>
 
-                                                            <ListGroupItem>
-                                                            <span className="w-100 d-flex justify-content-between">
-                                                                    <div className="d-flex gap-2">
-                                                                    <i className="bi bi-download"></i>
-                                                                        Download Policy
-                                                                    </div>
-                                                                </span>
-                                                            </ListGroupItem>
+                                                                <ListGroupItem
+                                                                    onClick={(e) => handleDownloadPolicy(e, policy)}
 
-                                                            <ListGroupItem>
-                                                                <span className="w-100 d-flex justify-content-between">
-                                                                    <div className="d-flex gap-2">
-                                                                        <i className="bi bi-file-text"></i>
-                                                                        Send Reminder
-                                                                    </div>
-                                                                </span>
-                                                            </ListGroupItem>
+                                                                >
+                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                        <div className="d-flex gap-2">
+                                                                            <i className="bi bi-download"></i>
+                                                                            Download Policy
+                                                                        </div>
+                                                                    </span>
+                                                                </ListGroupItem>
 
-                                                            <ListGroupItem>
-                                                                <span className="w-100 d-flex justify-content-between">
-                                                                    <div className="d-flex gap-2">
-                                                                        <i className="bi bi-file-text"></i>
-                                                                        Delete
-                                                                    </div>
-                                                                </span>
-                                                            </ListGroupItem>
-                                                        </ListGroup>
-                                                    </Card>}
+                                                                <ListGroupItem
+                                                                    onClick={(e) => handleSendAuthorizationReminder(e, policy)}
+                                                                >
+                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                        <div className="d-flex gap-2">
+                                                                            <i className="bi bi-file-text"></i>
+                                                                            Send Reminder
+                                                                        </div>
+                                                                    </span>
+                                                                </ListGroupItem>
+
+                                                                <ListGroupItem
+                                                                    disabled={policy?.markedForDeletion}
+                                                                    onClick={(e) => handleDelete(e, policy)}
+                                                                >
+                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                        <div className="d-flex gap-2">
+                                                                            <i className="bi bi-file-text"></i>
+                                                                            Delete
+                                                                        </div>
+                                                                    </span>
+                                                                </ListGroupItem>
+                                                            </ListGroup>
+                                                        </Card>}
 
                                                 </div>
 
@@ -403,4 +500,4 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
     )
 
 }
-export default AdminDeletedPoliciesTab;
+export default ApproverRejectedPoliciesTab;

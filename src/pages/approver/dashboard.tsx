@@ -5,6 +5,7 @@ import TopBar from "../../components/bars/topbar";
 import { Outlet } from "react-router-dom";
 import UserSideBar from "../../components/bars/userSidebar";
 import { loginUser } from "../../controllers/auth";
+import AdminSideBar from "../../components/bars/adminsidebar";
 import ApproverSideBar from "../../components/bars/approversidebar";
 import AdminDashboardPage from "./dashboardpage";
 import { IUserDashboard } from "../../interfaces/user";
@@ -32,10 +33,10 @@ const [userDBInfo,setUserDBInfo]  = useState<IUserDashboard>()
 
 
 
-const getAuthorizerDashboard = async () => {
+const getInitiatorDashboard = async () => {
     setLoading(true)
     try {
-        const res = await api.get(`Dashboard/authorizer?userName=${userName}`, `${data?.access_token}`);
+        const res = await api.get(`Dashboard/initiator?userName=${userName}`, `${data?.access_token}`);
         setUserDBInfo(res?.data);
         console.log({here:res})
         if (res?.data) {
@@ -60,7 +61,7 @@ const getAuthorizerDashboard = async () => {
 
 
 useEffect(()=>{
-    getAuthorizerDashboard(); 
+    getInitiatorDashboard(); 
 },[refreshComponent])
 
     return (
