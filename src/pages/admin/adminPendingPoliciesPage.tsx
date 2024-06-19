@@ -21,10 +21,9 @@ import AdminPoliciesPendingApprovalTab from "../../components/tabs/admintabs/adm
 
 
 const AdminPendingPoliciesPage = () => {
-    const userDat = localStorage.getItem('loggedInUser') || '';
-    const data = JSON.parse(userDat);
+    
     const [userDBInfo,setUserDBInfo]  = useState<IUserDashboard>()
-    const userName = data?.profile?.sub.split('\\').pop();
+   
     const [policies, setPolicies] = useState<IPolicy[]>([]);
     const [depts, setDepts] = useState<IDept[]>([]);
     // const [regUsers, setRegUsers] = useState<User[]>([]);
@@ -39,7 +38,9 @@ const AdminPendingPoliciesPage = () => {
     const getInitiatorDashboard = async () => {
         setLoading(true)
         try {
-            const res = await api.get(`Dashboard/initiator?userName=${userName}`, `${data?.access_token}`);
+            let userInfo = await getUserInfo();
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.get(`Dashboard/initiator?userName=${userName}`, `${userInfo?.access_token}`);
             setUserDBInfo(res?.data);
             console.log({here:res})
             if (res?.data) {

@@ -14,9 +14,7 @@ import successElipse from '../../../assets/images/Ellipse-success.png';
 
 
 const UserAttestedPoliciesTab: React.FC<any> = () => {
-    const userDat = localStorage.getItem('loggedInUser') || '';
-    const data = JSON.parse(userDat);
-    const userName = data?.profile?.sub.split('\\').pop();
+    
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
     const [policies, setPolicies] = useState<IUserPolicy[]>([]);
@@ -30,90 +28,82 @@ const UserAttestedPoliciesTab: React.FC<any> = () => {
     const [query, setQuery] = useState<string>('');
     const [sortCriteria, setSortCriteria] = useState<string>('name');
 
+
     const getAllPolicies = async () => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
-            if (userInfo) {
-                const res = await api.get(`Policy/user-policy?userName=${userName}`, `${userInfo.access_token}`);
-                if (res?.data) {
-                    let attested = res?.data.filter((policy: IUserPolicy) => policy.isAttested
-                    );
-                    setPolicies(attested);
-                    setLoading(false)
-                } else {
-                    // loginUser()
-                    // toast.error('Session expired!, You have been logged out!!')
-                }
-                console.log({ response: res })
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.get(`Policy/user-policy?userName=${userName}`, `${userInfo?.access_token}`);
+            if (res?.data) {
+                let attested = res?.data.filter((policy: IUserPolicy) => policy.isAttested
+                );
+                setPolicies(attested);
+                setLoading(false)
             }
 
         } catch (error) {
-
+            console.log(error)
         }
+
+
     }
 
     const handleSearchByPolicyNameOrDept = async () => {
-        // toast.error('Searching by name of dept or title!')
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
-            if (userInfo) {
-                const res = await api.get(`Policy/user-policy?userName=${userName}`, `${userInfo.access_token}`);
-                if (res?.data) {
-                    let unAttested = res?.data.filter((policy: IUserPolicy) => policy.isAttested);
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.get(`Policy/user-policy?userName=${userName}`, `${userInfo?.access_token}`);
+            if (res?.data) {
+                let attested = res?.data.filter((policy: IUserPolicy) => policy.isAttested);
 
-                    let filtered = unAttested.filter((policy: IUserPolicy) =>
-                        policy.fileName.toLowerCase().includes(query.toLowerCase()) ||
-                        policy.policyDepartment.toLowerCase().includes(query.toLowerCase())
-                    );
-                    setPolicies(filtered);
-                    setLoading(false)
-
-                } else {
-                    // loginUser()
-                    // toast.error('Session expired!, You have been logged out!!')
-                }
-                console.log({ response: res })
+                let filtered = attested.filter((policy: IUserPolicy) =>
+                    policy.fileName.toLowerCase().includes(query.toLowerCase()) ||
+                    policy.policyDepartment.toLowerCase().includes(query.toLowerCase())
+                );
+                setPolicies(filtered);
+                setLoading(false)
             }
 
         } catch (error) {
-
+            console.log(error)
         }
 
-    };
 
-    const handleSortByDepartment = async () => {
-        // toast.error('Sorting by name of dept! :'+sortCriteria.toLowerCase())
-        setLoading(true)
-        try {
-            let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
-            if (userInfo) {
-                const res = await api.get(`Policy/user-policy?userName=${userName}`, `${userInfo.access_token}`);
-                if (res?.data) {
+    }
 
-                    setLoading(false)
+   
 
-                    let filtered = res?.data.filter((policy: IUserPolicy) =>
-                        policy.policyDepartment.toLowerCase().includes(sortCriteria.toLowerCase())
-                    );
-                    setPolicies(filtered);
+    // const handleSortByDepartment = async () => {
+    //     // toast.error('Sorting by name of dept! :'+sortCriteria.toLowerCase())
+    //     setLoading(true)
+    //     try {
+    //         let userInfo = await getUserInfo();
+    //         console.log({ gotten: userInfo })
+    //         if (userInfo) {
+    //             const res = await api.get(`Policy/user-policy?userName=${userName}`, `${userInfo.access_token}`);
+    //             if (res?.data) {
 
-                } else {
-                    // loginUser()
-                    // toast.error('Session expired!, You have been logged out!!')
-                }
-                console.log({ response: res })
-            }
+    //                 setLoading(false)
 
-        } catch (error) {
+    //                 let filtered = res?.data.filter((policy: IUserPolicy) =>
+    //                     policy.policyDepartment.toLowerCase().includes(sortCriteria.toLowerCase())
+    //                 );
+    //                 setPolicies(filtered);
 
-        }
+    //             } else {
+    //                 // loginUser()
+    //                 // toast.error('Session expired!, You have been logged out!!')
+    //             }
+    //             console.log({ response: res })
+    //         }
 
-    };
+    //     } catch (error) {
+
+    //     }
+
+    // };
 
     const handleSearch = () => {
         setBySearch(true);
@@ -166,7 +156,7 @@ const UserAttestedPoliciesTab: React.FC<any> = () => {
         if (searchByName) {
             handleSearchByPolicyNameOrDept()
         } else if (sortByDept) {
-            handleSortByDepartment()
+            // handleSortByDepartment()
         } else {
             getAllPolicies();
         }
@@ -183,21 +173,21 @@ const UserAttestedPoliciesTab: React.FC<any> = () => {
         <div className="w-100">
             <div className="d-flex w-100 justify-content-between">
                 <div className="d-flex gap-4">
-                <div className="d-flex align-items-center" style={{position:'relative'}}>
-                    <FormControl
+                <div className="d-flex align-items-center gap-2" style={{ position: 'relative' }}>
+                        <FormControl
                             onChange={(e) => setQuery(e.target.value)}
                             placeholder="Search by Name, Department..."
                             value={query}
                             className="py-2" style={{ minWidth: '350px' }} />
-                                <i 
-                                className="bi bi-x-lg" 
-                                onClick={handleClear}
-                                style={{marginLeft:'310px', display:query==''?'none':'flex',cursor:'pointer', float:'right', position:'absolute'}}></i>
+                        <i
+                            className="bi bi-x-lg"
+                            onClick={handleClear}
+                            style={{ marginLeft: '310px', display: query == '' ? 'none' : 'flex', cursor: 'pointer', float: 'right', position: 'absolute' }}></i>
+
                         <Button
                             disabled={query == ''}
                             onClick={() => handleSearch()}
-
-                            variant="primary" style={{ minWidth: '100px', marginLeft: '-5px' }}>Search</Button>
+                            variant="primary" style={{ minWidth: '100px', marginRight: '-5px', minHeight:'2.4em' }}>Search</Button>
                     </div>
                     {/* <Form.Select onChange={(e) => handleDeptSelection(e.currentTarget.value)} className="custom-select" style={{ maxWidth: '170px' }}>
                     <option value={'all'}>Select Department</option>
@@ -228,7 +218,7 @@ const UserAttestedPoliciesTab: React.FC<any> = () => {
                             <tr className=""><td className="text-center" colSpan={5}><Spinner className="spinner-grow text-primary" /></td></tr>
                         </tbody>
                     </table> :
-                        <table className="table w-100">
+                        <table className="table table-striped border border-1 w-100">
                             <thead className="thead-dark">
                                 <tr >
                                     <th scope="col" className="bg-primary text-light">#</th>

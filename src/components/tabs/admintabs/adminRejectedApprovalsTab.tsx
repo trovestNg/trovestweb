@@ -205,7 +205,8 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
 
     const handleDownloadPolicy = (e: any, pol: IPolicy) => {
         e.stopPropagation();
-        toast.success('Downloading file')
+        // toast.success('Downloading file')
+        window.open(pol.url, '_blank');
 
     }
 
@@ -227,7 +228,7 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
 
             <div className="d-flex w-100 justify-content-between">
                 <div className="d-flex gap-4">
-                    <div className="d-flex align-items-center" style={{ position: 'relative' }}>
+                <div className="d-flex align-items-center gap-2" style={{ position: 'relative' }}>
                         <FormControl
                             onChange={(e) => setQuery(e.target.value)}
                             placeholder="Search by Name, Department..."
@@ -241,8 +242,7 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
                         <Button
                             disabled={query == ''}
                             onClick={() => handleSearch()}
-
-                            variant="primary" style={{ minWidth: '100px', marginLeft: '-5px' }}>Search</Button>
+                            variant="primary" style={{ minWidth: '100px', marginRight: '-5px', minHeight:'2.4em' }}>Search</Button>
                     </div>
                     {/* <Form.Select onChange={(e) => handleDeptSelection(e.currentTarget.value)} className="custom-select"
                         style={{ maxWidth: '170px' }}>
@@ -436,12 +436,12 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
                                                                             <i className="bi bi-download"></i>
-                                                                            Download Policy
+                                                                           Download
                                                                         </div>
                                                                     </span>
                                                                 </ListGroupItem>
 
-                                                                <ListGroupItem
+                                                                {/* <ListGroupItem
                                                                     onClick={(e) => handleSendAuthorizationReminder(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
@@ -450,7 +450,7 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
                                                                             Send Reminder
                                                                         </div>
                                                                     </span>
-                                                                </ListGroupItem>
+                                                                </ListGroupItem> */}
 
                                                                 <ListGroupItem
                                                                     disabled={policy?.markedForDeletion}

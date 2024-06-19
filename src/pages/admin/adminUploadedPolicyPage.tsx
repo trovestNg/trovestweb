@@ -23,25 +23,26 @@ import { useNavigate } from "react-router-dom";
 
 
 const AdminUploadedPoliciesPage = () => {
-    const userDat = localStorage.getItem('loggedInUser') || '';
-    const data = JSON.parse(userDat);
     const [policies, setPolicies] = useState<IPolicy[]>([]);
     const [depts, setDepts] = useState<IDept[]>([]);
     // const [regUsers, setRegUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
     const [refreshComponent,setRefreshComponent] = useState(false)
-    const userName = data?.profile?.sub.split('\\').pop();
+    
     const [userDBInfo,setUserDBInfo]  = useState<IUserDashboard>();
     const navigate = useNavigate();
 
     const [totalPolicyCount,setTotalPolicyCount] =useState(0);
     const [totalAttested,setTotalAttested] =useState(0);
     const [totalNotAttested,setTotalNotAttested] =useState(0);
-    
+
     const getInitiatorDashboard = async () => {
         setLoading(true)
         try {
-            const res = await api.get(`Dashboard/initiator?userName=${userName}`, `${data?.access_token}`);
+            let userInfo = await getUserInfo();
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            // const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo?.access_token}`);
+            const res = await api.get(`Dashboard/initiator?userName=${userName}`, `${userInfo?.access_token}`);
             setUserDBInfo(res?.data);
             console.log({here:res})
             if (res?.data) {
@@ -58,10 +59,12 @@ const AdminUploadedPoliciesPage = () => {
                 // loginUser()
                 // toast.error('Session expired!, You have been logged out!!')
             }
-            console.log({ response: res })
+
         } catch (error) {
-    
+            console.log(error)
         }
+
+
     }
 
    

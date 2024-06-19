@@ -6,18 +6,30 @@ import { Document, Page, pdfjs } from "react-pdf";
 import { IPolicy } from "../../interfaces/policy";
 import { getAPolicy } from "../../controllers/policy";
 import { toast } from "react-toastify";
-import { loginUser } from "../../controllers/auth";
+import { getUserInfo, loginUser } from "../../controllers/auth";
 import moment from "moment";
+import api from "../../config/api";
+import RejectReasonModal from "../../components/modals/rejectReasonModal";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-const AdminPolicyviewpage = () => {
+const ApproverPolicyviewpage = () => {
     const userDat = localStorage.getItem('loggedInUser') || '';
     const data = JSON.parse(userDat);
     const navigate = useNavigate();
     const { id } = useParams();
     const [attestedSuccesmodal, setAttestedSuccessModal] = useState(false);
+
+    const [rejectModal, setRejectModal] = useState(false);
+    const [rejReas, setRejReas] = useState('');
+
+
+
+    const [sureToApproveModal, setSureToApproveModal] = useState(false);
+
     const [policy, setPolicy] = useState<IPolicy>();
+    const [loading, setLoading] = useState(false);
+    const [refreshData, setRefreshData] = useState(false);
 
 
 
@@ -43,7 +55,7 @@ const AdminPolicyviewpage = () => {
 
     useEffect(() => {
         getPolicy();
-    }, [])
+    }, [refreshData])
 
     const onDocumentLoadSuccess = (numPages: number) => {
         setNumPages(numPages);
@@ -58,6 +70,68 @@ const AdminPolicyviewpage = () => {
             setPageNumber(pageNumber + 1);
         }
     };
+
+    const handleApprovePolicy = ()=>{
+        setSureToApproveModal(true)
+    }
+
+    const approvePolicy = async () => {
+        setLoading(true)
+        try {
+            let userInfo = await getUserInfo();
+            console.log({ gotten: userInfo })
+            if (userInfo) {
+                const res = await api.post(`Policy/authorize?policyId=${id}`,
+                {"id" :id, authorizerName:`${userInfo.profile.given_name} ${userInfo.profile.family_name}`}, userInfo?.access_token);
+                if (res?.status == 200) {
+                    setLoading(false)
+                    toast.success('Policy approved!');
+                    setRefreshData(!refreshData)
+                } else {
+                    toast.error('Error approving policy')
+                }
+            } else{
+                toast.error('Network error!')
+            }
+            
+        } catch (error) {
+            
+        }
+        
+    }
+
+    const handleRejectPolicy = ()=>{
+        setRejectModal(true)
+    }
+    const rejectPolicy  = async () => {
+        setLoading(true)
+        try {
+            let userInfo = await getUserInfo();
+            console.log({ gotten: userInfo })
+            if (userInfo) {
+                const res = await api.post(`Policy/reject`,{
+                    "ids": [
+                        id
+                    ],
+                    "authorizerUsername": `${userInfo.profile.given_name} ${userInfo.profile.family_name}`,"comment":rejReas},userInfo?.access_token)
+                if (res?.status == 200) {
+                    setLoading(false)
+                    toast.success('Policy rejected!');
+                    setRejectModal(false)
+                    setRefreshData(!refreshData);
+                    navigate(-1)
+                } else {
+                    toast.error('Error rejecting policy')
+                }
+            } else{
+                toast.error('Network error!')
+            }
+            
+        } catch (error) {
+            
+        }
+        
+    }
 
     return (
         <div className="">
@@ -158,37 +232,74 @@ const AdminPolicyviewpage = () => {
                         </div>
                     </div>
                     {
-                        !policy?.isAuthorized &&
+                        policy && policy.comment !==''?
+                        <>
+                        Reason for rejection
+                        <div className="bg-primary text-light rounded rounded-3 p-3">
+
+                            <p>
+                                {policy.comment}
+                            </p>
+                        </div>
+                        </> : ''
+                    }
+                    {
+                        !policy?.isAuthorized  &&
                         <div className="d-flex mt-4 gap-3">
                     <Button 
-                    variant="border border-primary text-primary outline"
-                    onClick={()=>navigate(`/admin/edit-policy/${id}`)}
+                    variant="success  outline"
+                    onClick={handleApprovePolicy}
                     
-                    >Edit Policy</Button>
+                    >Approve Policy</Button>
                     <Button
                     variant="border border-danger text-danger outline"
-                    onClick={()=>navigate(-1)}
-                    >Cancel Request</Button>
+                    onClick={handleRejectPolicy}
+                    >Reject Policy</Button>
                     
                     </div>}
                 </div>
 
             </div>
 
-            <Modal show={attestedSuccesmodal} centered>
-                <Modal.Header className="">
-                    <i className="bi bi-x-circle text-end w-100" style={{ cursor: 'pointer' }} onClick={() => setAttestedSuccessModal(false)}></i>
+            <Modal  show={rejectModal} centered>
+                <Modal.Header className="d-flex justify-content-between"
+                    style={{ fontFamily: 'title' }}>
+                        <div></div>
+                    <i className="bi bi-x-circle" onClick={() => setRejectModal(false)}></i>
                 </Modal.Header>
-                <Modal.Body>
-                    <div className="p-3 d-flex justify-content-center align-items-center flex-column">
-                        <img src={successIcon} height={'134px'} />
-                        <p className="text-primary" style={{ fontFamily: 'title' }}>Policy Attested Successfully </p>
-                        <p className="text-center">Thanks for attesting! Please check your list for any policies not yet attested. Your commitment is valued.</p>
-                        <Link to={''} onClick={() => navigate(-1)}>Return to the list of policies</Link>
+                <Modal.Body className="" >
+                    <div className="d-flex justify-content-center flex-column align-items-center text-danger" style={{fontSize:'1.2em'}}>
+                    <i className="bi bi-x-circle" ></i>
+                <p>Reject</p>
                     </div>
+
+                    <p className="text-center w-100 px-5">
+                    Please share the reason for rejecting this policy so that adjustments can be made by the Initiator.
+                    </p>
+
+              
+               <div className="w-100 mt-5 d-flex justify-content-center">
+               <textarea
+                                   
+                                    onChange={(e)=>setRejReas(e.currentTarget.value)}
+                                    className="p-2 border rounded border-1 " placeholder="Reason :"
+                                    style={{
+                                        marginTop: '5px',
+                                        minWidth: '450px',
+                                        minHeight: '10em',
+                                        boxSizing:'border-box',
+                                        lineHeight:'1.5',
+                                        overflow:'auto',
+                                        outline:'0px'
+                                    }} />
+               </div>
+               <div className="d-flex justify-content-end gap-2 mt-3">
+                <Button variant="outline border border-1">Cancel</Button>
+                <Button variant="danger" onClick={rejectPolicy}>Reject</Button>
+               </div>
                 </Modal.Body>
             </Modal>
         </div>
     )
 }
-export default AdminPolicyviewpage;
+export default ApproverPolicyviewpage;

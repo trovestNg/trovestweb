@@ -6,20 +6,20 @@ import { Document, Page, pdfjs } from "react-pdf";
 import { IPolicy } from "../../interfaces/policy";
 import { getAPolicy } from "../../controllers/policy";
 import { toast } from "react-toastify";
-import { getUserInfo, loginUser } from "../../controllers/auth";
+import { getUserInfo, loginUser} from "../../controllers/auth";
 import moment from "moment";
 import api from "../../config/api";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 const PolicyViewPage = () => {
-    const userDat = localStorage.getItem('loggedInUser') || '';
-    const data = JSON.parse(userDat);
     const navigate = useNavigate();
     const { attestationStatus,id } = useParams();
     const [attestedSuccesmodal, setAttestedSuccessModal] = useState(false);
     const [policy, setPolicy] = useState<IPolicy>();
-    const [attesting, setAttesting] = useState(false)
+    const [attesting, setAttesting] = useState(false);
+    const [refresh,setRefresh] = useState(false);
+    const[attested,setAttested] = useState(attestationStatus)
 
 
 
@@ -28,24 +28,31 @@ const PolicyViewPage = () => {
 
 
     const getPolicy = async () => {
-        try {
-            const res = await getAPolicy(`policy/${id}`, `${data?.access_token}`);
-            if (res?.data) {
-                setPolicy(res?.data);
-            } else {
-                // toast.error('Session expired!, You have been logged out!!');
-                // loginUser();
+        let userInfo = await getUserInfo();
+            if(userInfo){
+                try {
+                    const res = await getAPolicy(`policy/${id}`, `${userInfo.access_token}`);
+                    if (res?.data) {
+                        setPolicy(res?.data);
+                    } else {
+                        // toast.error('Session expired!, You have been logged out!!');
+                        // loginUser();
+        
+                    }
+                    console.log({ response: res })
+                } catch (error) {
+        
+                }
 
+            } else{
+                loginUser()
             }
-            console.log({ response: res })
-        } catch (error) {
-
-        }
+       
     }
 
     useEffect(() => {
         getPolicy();
-    }, [])
+    }, [refresh])
 
     const onDocumentLoadSuccess = (numPages: number) => {
         setNumPages(numPages);
@@ -74,10 +81,12 @@ const PolicyViewPage = () => {
                     username : `${userInfo.profile?.given_name} ${userInfo.profile?.family_name}`,
                     department : userInfo.profile?.department
                 }
-                const res = await api.post('Attest', body, data.access_token);
+                const res = await api.post('Attest', body, userInfo.access_token);
                 console.log({ attested: res })
                 if(res){
-                    toast.success('Attestation Succe');
+                    // toast.success('Attestation Succe');
+                    setRefresh(!refresh);
+                    setAttested('true')
                     setAttestedSuccessModal(true);
                     setAttesting(false)
                 } else {
@@ -96,7 +105,7 @@ const PolicyViewPage = () => {
             <div className="w-100 d-flex justify-content-between gap-4">
                 <div className="" style={{ minWidth: '70%' }}>
                     <div className="bg-dark mt-2 d-flex justify-content-between px-4 py-2 text-light ">
-                        <div>zoom</div>
+                        <div></div>
                         <div className="gap-3 d-flex w-25 align-items-center justify-content-between">
                             <Button onClick={goToPreviousPage} disabled={pageNumber <= 1} variant="outline text-light" className="p-0 m-0" style={{ cursor: 'pointer' }}><i className="bi bi-chevron-bar-left"></i></Button>
                             <p className="p-0 m-0">{pageNumber}/{numPages}</p>
@@ -199,7 +208,7 @@ const PolicyViewPage = () => {
                     </div>
 
                     {
-                        attestationStatus == 'false'?
+                        attested == 'false'?
                         <>
                             <Button disabled={pageNumber !== numPages || attesting} onClick={() =>handlyPolicyAttest()} className="W-100 mt-3">
                                {

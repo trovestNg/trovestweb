@@ -19,9 +19,9 @@ import { shortenString } from "../../../util";
 import RejectReasonModal from "../../modals/rejectReasonModal";
 
 const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
-    const userDat = localStorage.getItem('loggedInUser') || '';
-    const data = JSON.parse(userDat);
-    const userName = data?.profile?.sub.split('\\').pop();
+    // const userDat = localStorage.getItem('loggedInUser') || '';
+    // const data = JSON.parse(userDat);
+    // const userName = data?.profile?.sub.split('\\').pop();
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
 
@@ -49,25 +49,31 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     const getInitiatorPolicies = async () => {
         setLoading(true)
-        try {
-            let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
-            if (userInfo) {
-                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
-                if (res?.data) {
-                    let allPolicy = res?.data.filter((pol: IPolicy) => !pol.markedForDeletion)
-                    setPolicies(allPolicy.reverse());
-                    setLoading(false)
-                } else {
-                    // loginUser()
-                    // toast.error('Session expired!, You have been logged out!!')
+
+        let userInfo = await getUserInfo();
+
+        if (userInfo) {
+            try {
+                let userInfo = await getUserInfo();
+                console.log({ gotten: userInfo })
+                if (userInfo) {
+                    const res = await api.get(`Dashboard/initiator-policy?userName=${'majadi'}`, `${userInfo.access_token}`);
+                    if (res?.data) {
+                        let allPolicy = res?.data.filter((pol: IPolicy) => !pol.markedForDeletion)
+                        setPolicies(allPolicy.reverse());
+                        setLoading(false)
+                    } else {
+                        // loginUser()
+                        // toast.error('Session expired!, You have been logged out!!')
+                    }
+                    console.log({ response: res })
                 }
-                console.log({ response: res })
+    
+            } catch (error) {
+    
             }
-
-        } catch (error) {
-
         }
+        
     }
 
 
@@ -81,7 +87,7 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
             let userInfo = await getUserInfo();
             console.log({ gotten: userInfo })
             if (userInfo) {
-                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
+                const res = await api.get(`Dashboard/initiator-policy?userName=${"majadi"}`, `${userInfo.access_token}`);
                 if (res?.data) {
 
                     setLoading(false)
@@ -112,7 +118,7 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
             let userInfo = await getUserInfo();
             console.log({ gotten: userInfo })
             if (userInfo) {
-                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
+                const res = await api.get(`Dashboard/initiator-policy?userName=${"majadi"}`, `${userInfo.access_token}`);
                 if (res?.data) {
 
                     setLoading(false)
@@ -153,19 +159,24 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     const handleGetAllDepts = async () => {
         // setLoading(true)
-        try {
-            const res = await getAllDepartments(`filter?subsidiaryName=FSDH+Merchant+Bank`, `${data?.access_token}`);
-            console.log({ dataHere: res })
-
-            if (res?.data) {
-                setDepts(res?.data)
-            } else {
-
+        let userInfo = await getUserInfo();
+            console.log({ gotten: userInfo })
+            if (userInfo) {
+                try {
+                    const res = await getAllDepartments(`filter?subsidiaryName=FSDH+Merchant+Bank`, `${userInfo?.access_token}`);
+                    console.log({ dataHere: res })
+        
+                    if (res?.data) {
+                        setDepts(res?.data)
+                    } else {
+        
+                    }
+                    console.log({ response: res })
+                } catch (error) {
+        
+                }
             }
-            console.log({ response: res })
-        } catch (error) {
-
-        }
+        
 
     }
 
@@ -230,25 +241,34 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     const handlePolicyDelete = async (e: any) => {
         e.stopPropagation();
-        const res = await api.post(`Policy/delete/request`, { "id": policyId, "username": userName }, data?.access_token);
-        if (res?.status == 200) {
-            toast.success('Delete request sent for approval!');
-            setDeteletPolicyModal(false);
-            setRefreshData(!refreshData)
-        } else {
-            toast.error('Failed to delete policy')
-        }
+        let userInfo = await getUserInfo();
+            if (userInfo) {
+                const res = await api.post(`Policy/delete/request`, { "id": policyId, "username": "majadi" }, userInfo?.access_token);
+                if (res?.status == 200) {
+                    toast.success('Delete request sent for approval!');
+                    setDeteletPolicyModal(false);
+                    setRefreshData(!refreshData)
+                } else {
+                    toast.error('Failed to delete policy')
+                }
+            }
+       
     }
 
     const handleSendAuthorizationReminder = async (e: any, policy: IPolicy) => {
         e.stopPropagation();
-        const res = await api.post(`Policy/nudge-authorizer?policyId=${policy.id}`, { "policyId": policy.id }, data?.access_token);
+        let userInfo = await getUserInfo();
+            if (userInfo) {
+                const res = await api.post(`Policy/nudge-authorizer?policyId=${policy.id}`, { "policyId": policy.id }, userInfo?.access_token);
         if (res?.status == 200) {
             toast.success('Reminder sent!');
             setRefreshData(!refreshData)
         } else {
             toast.error('Error sending reminder')
         }
+            }
+
+        
     }
 
     const handleDelete = async (e: any, policy: any) => {
@@ -555,16 +575,18 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                     </span>
                                                                 </ListGroupItem>
 
-                                                                <ListGroupItem
+                                                                {
+                                                                    !policy.isRejected &&
+                                                                    <ListGroupItem
                                                                     onClick={(e) => handleSendAuthorizationReminder(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
                                                                             <i className="bi bi-file-text"></i>
-                                                                            Send Reminder
+                                                                            Nudge Authorizer
                                                                         </div>
                                                                     </span>
-                                                                </ListGroupItem>
+                                                                </ListGroupItem>}
 
                                                                 <ListGroupItem
                                                                     disabled={policy?.markedForDeletion}

@@ -7,16 +7,16 @@ import PromptModal from "../modals/promptModal";
 import { IPolicy } from "../../interfaces/policy";
 
 import api from "../../config/api";
-import { getUserInfo} from "../../controllers/auth";
+import { getUserInfo, logoutUser} from "../../controllers/auth";
 
 const AdminSideBar: React.FC<any> = ({ payload }) => {
     const navigate = useNavigate()
     const currentPath = useLocation().pathname;
     const [showPromt,setShowPromt] = useState(false);
 
-    const userDat = localStorage.getItem('loggedInUser') || '';
-    const data = JSON.parse(userDat);
-    const userName = data?.profile?.sub.split('\\').pop();
+    // const userDat = localStorage.getItem('loggedInUser') || '';
+    // const data = JSON.parse(userDat);
+    // const userName = data?.profile?.sub.split('\\').pop();
 
     const [policies, setPolicies] = useState<IPolicy[]>([]);
 
@@ -24,6 +24,27 @@ const AdminSideBar: React.FC<any> = ({ payload }) => {
     const handleSwitch = ()=>{
         window.history.replaceState(null,'',window.location.href)
        navigate('/', {replace:true})
+    }
+
+    const handleUserLogout = async () => {
+        // navigate('/logout', {replace:true});
+        // console.log(JSON.stringify(localStorage))
+        // localStorage.clear()
+        const res = await logoutUser();
+
+        // window.history.pushState(null, '', window.location.href);
+        // window.onpopstate = function(event) {
+        //   window.history.go(1);
+
+        // };
+
+        // window.history.replaceState(null,'',window.location.href)
+
+
+
+
+        // // console.log(res);
+
     }
 
     console.log(currentPath)
@@ -77,18 +98,17 @@ const AdminSideBar: React.FC<any> = ({ payload }) => {
     const getInitiatorPolicies = async () => {
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
+            // console.log({ gotten: userInfo })
             if (userInfo) {
-                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
+                const res = await api.get(`Dashboard/initiator-policy?userName=${"majadi"}`, `${userInfo.access_token}`);
                 if (res?.data) {
                     let allPolicy = res?.data.filter((pol: IPolicy) => pol.markedForDeletion)
                     setPolicies(allPolicy.reverse());
                     // setLoading(false)
-                } else {
-                    // loginUser()
-                    // toast.error('Session expired!, You have been logged out!!')
+                } else if(userInfo.expired) {
+                    logoutUser()
                 }
-                console.log({ response: res })
+                // console.log({ response: res })
             }
 
         } catch (error) {
@@ -120,7 +140,7 @@ const AdminSideBar: React.FC<any> = ({ payload }) => {
                                 currentPath === nav.path &&
                                 <span className="bg-light px-0 h-100 py-2" style={{ minHeight: '3.5em' }}>|</span>}
                             <i className={`$ px-2 ${nav.icon}`}></i>
-                            <p className="py-2 m-0">{`${nav.title} ${nav?.count}`}</p>
+                            <p className="py-2 m-0">{`${nav.title} ${nav?.count &&`(${nav?.count})`}`}</p>
                         </li>
                     ))
                 }
@@ -140,6 +160,7 @@ const AdminSideBar: React.FC<any> = ({ payload }) => {
                 <li
                     className="d-flex text-light  align-items-center gap-3 p-0 m-0"
                     style={{ cursor: 'pointer' }}
+                    onClick={handleUserLogout}
                 >
                     <span className="bg-light px-0 h-100 py-2" style={{ minHeight: '3.5em' }}></span>
                     <i className="bi bi-box-arrow-left"></i>

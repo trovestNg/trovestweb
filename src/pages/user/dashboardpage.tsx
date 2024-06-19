@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Container, Modal, Card, Button } from "react-bootstrap";
+import { Container, Modal, Card, Button, Spinner } from "react-bootstrap";
 import DashboardCard from "../../components/cards/dashboard-card";
 import openBook from '../../assets/images/open-book.png'
 import checked from '../../assets/images/check.png';
@@ -15,7 +15,7 @@ import { IPolicy } from "../../interfaces/policy";
 import { IUserDashboard } from "../../interfaces/user";
 import { IDept } from "../../interfaces/dept";
 import { toast } from "react-toastify";
-import { getUserInfo, loginUser } from "../../controllers/auth";
+import { getUserInfo, loginUser, logoutUser } from "../../controllers/auth";
 import api from "../../config/api";
 
 
@@ -27,12 +27,12 @@ const UserDashboardPage = () => {
     const [depts, setDepts] = useState<IDept[]>([]);
     // const [regUsers, setRegUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
-    const [refreshComponent,setRefreshComponent] = useState(false)
+    const [refreshComponent, setRefreshComponent] = useState(false)
 
-    const [totalPolicyCount,setTotalPolicyCount] =useState(0);
-    const [totalAttested,setTotalAttested] =useState(0);
-    const [totalNotAttested,setTotalNotAttested] =useState(0);
-    const [userDBInfo,setUserDBInfo]  = useState<IUserDashboard>()
+    const [totalPolicyCount, setTotalPolicyCount] = useState(0);
+    const [totalAttested, setTotalAttested] = useState(0);
+    const [totalNotAttested, setTotalNotAttested] = useState(0);
+    const [userDBInfo, setUserDBInfo] = useState<IUserDashboard>()
 
     const dashCardInfo = [
         {
@@ -56,7 +56,7 @@ const UserDashboardPage = () => {
             icon: '',
 
         }
-       
+
     ]
 
 
@@ -64,66 +64,72 @@ const UserDashboardPage = () => {
     const getUserDashboard = async () => {
         setLoading(true)
         try {
-            const res = await getPolicies(`Dashboard/user?userName=${userName}`, `${data?.access_token}`);
-            setUserDBInfo(res?.data);
-            console.log({here:res})
+            let userInfo = await getUserInfo();
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await getPolicies(`Dashboard/user?userName=${userName}`, `${userInfo?.access_token}`);
+            console.log({ hereIsMe: res });
             if (res?.data) {
-                let allAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>data.isAuthorized);
-                let unAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>!data.isAuthorized);
-                
                 setUserDBInfo(res?.data);
-                // setTotalAttested(allAttested.length);
-                // setTotalNotAttested(unAttested.length)
-                setPolicies([]);
                 setLoading(false);
             } else {
-                setLoading(false);
-                // loginUser()
-                // toast.error('Session expired!, You have been logged out!!')
+                // setLoading(false);
+                toast.error('Network error!');
             }
-            console.log({ response: res })
-        } catch (error) {
 
+
+        } catch (error) {
+            console.log(error)
         }
     }
 
-   
-    useEffect(()=>{
-        getUserDashboard(); 
-    },[refreshComponent])
+
+    useEffect(() => {
+        getUserDashboard();
+    }, [refreshComponent])
     return (
         <div className="w-100">
             <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Dashboard</h5>
-            <div className="d-flex gap-5">
-                {
-                    dashCardInfo.map((info, index) => (
-                    <DashboardCard key={index} count={info.count} 
-                    imgSrc={info.img} 
-                    title={info.title} />))
-                }
-            </div>
+            {
+                loading ?
+                    <div className="d-flex justify-content-center flex-column align-items-center">
+                        <Spinner className="spinner-grow text-primary" />
+                        <p>Loading</p>
+                    </div>
+                    :
+                    <div className="d-flex gap-5">
+                        {
+                            dashCardInfo.map((info, index) => (
+                                <DashboardCard key={index} count={info.count}
+                                    imgSrc={info.img}
+                                    title={info.title} />))
+                        }
+                    </div>
+
+            }
+
 
             <div className="w-100 mt-5">
                 <Tabs
-                    defaultActiveKey="all-policies"
+                    defaultActiveKey="not-attested"
                     id="uncontrolled-tab-example"
                     variant="underline"
                     className="mb-3 gap-5"
                 >
-                   
+
+
+                    <Tab eventKey="not-attested" title="Not Attested Policy">
+                        <UserNotAttestedPoliciesTab />
+                    </Tab>
+                    <Tab eventKey="pending" title="Attested Policy">
+                        <UserAttestedPoliciesTab />
+                    </Tab>
                     <Tab eventKey="all-policies" title="All Policies"
-                    tabClassName=""
+                        tabClassName=""
                     >
                         <UserAllPoliciesTab />
                     </Tab>
-                    <Tab eventKey="not-attested" title="Not Attested Policy">
-                    <UserNotAttestedPoliciesTab />
-                    </Tab>
-                    <Tab eventKey="pending" title="Attested Policy">
-                        <UserAttestedPoliciesTab/>
-                    </Tab>
                 </Tabs>
-                
+
             </div>
         </div>
     )

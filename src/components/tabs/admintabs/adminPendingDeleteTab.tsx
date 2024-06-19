@@ -230,9 +230,9 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
         }
     }
 
-    const handleSendAuthorizationReminder = async (e: any,policy:IPolicy) => {
+    const handleSendAuthorizationReminder = async (e: any, policy: IPolicy) => {
         e.stopPropagation();
-        const res = await api.post(`Policy/nudge-authorizer?policyId=${policy.id}`,{"policyId" :policy.id}, data?.access_token);
+        const res = await api.post(`Policy/nudge-authorizer?policyId=${policy.id}`, { "policyId": policy.id }, data?.access_token);
         if (res?.status == 200) {
             toast.success('Reminder sent!');
             setRefreshData(!refreshData)
@@ -245,6 +245,12 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
         e.stopPropagation();
         setPolicyId(policy.id)
         setDeteletPolicyModal(true);
+    }
+
+    const handleGroupClick = async (e: any, policy: any) => {
+        e.stopPropagation();
+        // setPolicyId(policy.id)
+        // setDeteletPolicyModal(true);
     }
 
 
@@ -261,10 +267,10 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const handleDownloadPolicy = (e: any, pol: IPolicy) => {
         e.stopPropagation();
         toast.success('Downloading file')
-        
+
     }
 
-    
+
 
 
     useEffect(() => {
@@ -274,18 +280,18 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     return (
         <div className="w-100">
-            <SureToDeletePolicyModal 
-            action={(e:any)=>handlePolicyDelete(e)} 
-            show={deletePolicyModal} 
-            off={()=>setDeteletPolicyModal(false)}/>
+            <SureToDeletePolicyModal
+                action={(e: any) => handlePolicyDelete(e)}
+                show={deletePolicyModal}
+                off={() => setDeteletPolicyModal(false)} />
 
-            <UpdatePolicyModal 
-            show={updatePolicyModal} 
-            pol={policy}
-            off={()=>{
-                setUpdatePolicyModal(false);
-                setRefreshData(!refreshData)
-            }}
+            <UpdatePolicyModal
+                show={updatePolicyModal}
+                pol={policy}
+                off={() => {
+                    setUpdatePolicyModal(false);
+                    setRefreshData(!refreshData)
+                }}
             />
             <div className="d-flex w-100 justify-content-between">
                 <div className="d-flex gap-4">
@@ -343,15 +349,15 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     </table> :
                         <table className="table table-striped w-100">
                             <thead className="thead-dark">
-                            <tr >
-                                <th scope="col" className="bg-primary text-light">#</th>
-                                <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                <th scope="col" className="bg-primary text-light">Initiator</th>
-                                <th scope="col" className="bg-primary text-light">Department</th>
-                                <th scope="col" className="bg-primary text-light">Date Deleted</th>
-                                <th scope="col" className="bg-primary text-light">Action</th>
-                            </tr>
-                        </thead>
+                                <tr >
+                                    <th scope="col" className="bg-primary text-light">#</th>
+                                    <th scope="col" className="bg-primary text-light">Policy Title</th>
+                                    <th scope="col" className="bg-primary text-light">Initiator</th>
+                                    <th scope="col" className="bg-primary text-light">Department</th>
+                                    <th scope="col" className="bg-primary text-light">Date Deleted</th>
+                                    <th scope="col" className="bg-primary text-light">Action</th>
+                                </tr>
+                            </thead>
                             <tbody>
                                 {policies.length <= 0 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
                                     policies.map((policy, index) => (
@@ -376,9 +382,11 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                         policy.isAuthorized &&
                                                         <Card className="p-2  shadow-sm rounded border-0"
                                                             style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
-                                                            <ListGroup>
+                                                            <ListGroup
+                                                                onClick={(e) => handleGroupClick(e, policy)}
+                                                            >
                                                                 <ListGroupItem className="multi-layer"
-                                                                   onClick={(e) => handleGetAttestersList(e, policy)}
+                                                                    onClick={(e) => handleGetAttestersList(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
@@ -424,7 +432,7 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                 </ListGroupItem>
 
                                                                 <ListGroupItem className="multi-layer"
-                                                                onClick={(e) => handleGetDefaultersList(e, policy)}
+                                                                    onClick={(e) => handleGetDefaultersList(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
@@ -446,8 +454,8 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                         >
                                                                             <ListGroup>
                                                                                 <ListGroupItem
-                                                                                
-                                                                                onClick={(e) => handleGetDefaultersList(e, policy)}
+
+                                                                                    onClick={(e) => handleGetDefaultersList(e, policy)}
                                                                                 >
                                                                                     <span className="w-100 d-flex justify-content-between">
                                                                                         <div className="d-flex gap-2">
@@ -470,13 +478,24 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                     </div>
                                                                 </ListGroupItem>
 
-                                                                <ListGroupItem
+                                                                {/* <ListGroupItem
                                                                 onClick={(e) => handleUpdate(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
                                                                             <i className="bi bi-calendar-event"></i>
                                                                             Update Deadline
+                                                                        </div>
+                                                                    </span>
+                                                                </ListGroupItem> */}
+
+                                                                <ListGroupItem
+                                                                    onClick={(e) => handleSendAuthorizationReminder(e, policy)}
+                                                                >
+                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                        <div className="d-flex gap-2">
+                                                                            <i className="bi bi-file-text"></i>
+                                                                            Send Reminder
                                                                         </div>
                                                                     </span>
                                                                 </ListGroupItem>
@@ -500,7 +519,9 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                         !policy.isAuthorized &&
                                                         <Card className="p-2  shadow-sm rounded border-0"
                                                             style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
-                                                            <ListGroup>
+                                                            <ListGroup
+                                                                onClick={(e) => handleGroupClick(e, policy)}
+                                                            >
                                                                 <ListGroupItem
                                                                     onClick={(e) => handleEdit(e, policy)}
                                                                 >
@@ -513,8 +534,8 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                 </ListGroupItem>
 
                                                                 <ListGroupItem
-                                                                onClick={(e) => handleDownloadPolicy(e, policy)}
-                                                               
+                                                                    onClick={(e) => handleDownloadPolicy(e, policy)}
+
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
@@ -525,7 +546,7 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                 </ListGroupItem>
 
                                                                 <ListGroupItem
-                                                                onClick={(e)=>handleSendAuthorizationReminder(e,policy)}
+                                                                    onClick={(e) => handleSendAuthorizationReminder(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">

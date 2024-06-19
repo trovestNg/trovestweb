@@ -36,7 +36,7 @@ const AdminDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
             let userInfo = await getUserInfo();
             console.log({ gotten: userInfo })
             if (userInfo) {
-                const res = await api.get(`Policy/defaulters/${id}`, `${userInfo.access_token}`);
+                const res = await api.get(`Policy/defaulters?policyId=${id}`, `${userInfo.access_token}`);
                 
                 if (res?.data) {
                     let approvedPolicies =  res?.data.filter((policy:IPolicy)=>policy.isAuthorized)

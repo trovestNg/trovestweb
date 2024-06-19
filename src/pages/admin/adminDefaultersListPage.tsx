@@ -14,11 +14,9 @@ import AdminDefaultersListTab from "../../components/tabs/admintabs/adminDefault
 
 
 const AdminDefaultersListPage = () => {
-    const userDat = localStorage.getItem('loggedInUser') || '';
-    const data = JSON.parse(userDat);
     const [policies, setPolicies] = useState<IPolicy[]>([]);
     const [depts, setDepts] = useState<IDept[]>([]);
-    const userName = data?.profile?.sub.split('\\').pop();
+    
     
     // const [regUsers, setRegUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
@@ -30,7 +28,9 @@ const AdminDefaultersListPage = () => {
     const getInitiatorDashboard = async () => {
         setLoading(true)
         try {
-            const res = await api.get(`Dashboard/initiator?userName=${userName}`, `${data?.access_token}`);
+            let userInfo = await getUserInfo();
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.get(`Dashboard/initiator?userName=${userName}`, `${userInfo?.access_token}`);
             setUserDBInfo(res?.data);
             console.log({here:res})
             if (res?.data) {

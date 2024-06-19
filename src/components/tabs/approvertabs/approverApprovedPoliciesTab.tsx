@@ -463,17 +463,29 @@ const ApproverApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                 </ListGroupItem>
 
                                                                 <ListGroupItem
-                                                                onClick={(e) => handleUpdate(e, policy)}
+                                                                    
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
-                                                                            <i className="bi bi-calendar-event"></i>
-                                                                            Update Deadline
+                                                                            <i className="bi bi-trash"></i>
+                                                                            View Policy
                                                                         </div>
                                                                     </span>
                                                                 </ListGroupItem>
 
                                                                 <ListGroupItem
+                                                                    onClick={(e) => handleDownloadPolicy(e, policy)}
+
+                                                                >
+                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                        <div className="d-flex gap-2">
+                                                                            <i className="bi bi-download"></i>
+                                                                            Download Policy
+                                                                        </div>
+                                                                    </span>
+                                                                </ListGroupItem>
+
+                                                                {/* <ListGroupItem
                                                                     disabled={policy?.markedForDeletion}
                                                                     onClick={(e) => handleDelete(e, policy)}
                                                                 >
@@ -483,7 +495,7 @@ const ApproverApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                             Delete
                                                                         </div>
                                                                     </span>
-                                                                </ListGroupItem>
+                                                                </ListGroupItem> */}
                                                             </ListGroup>
                                                         </Card>}
 
@@ -520,14 +532,14 @@ const ApproverApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                 </span>
                                                             </ListGroupItem>
 
-                                                            <ListGroupItem>
+                                                            {/* <ListGroupItem>
                                                                 <span className="w-100 d-flex justify-content-between">
                                                                     <div className="d-flex gap-2">
                                                                         <i className="bi bi-file-text"></i>
                                                                         Delete
                                                                     </div>
                                                                 </span>
-                                                            </ListGroupItem>
+                                                            </ListGroupItem> */}
                                                         </ListGroup>
                                                     </Card>}
 

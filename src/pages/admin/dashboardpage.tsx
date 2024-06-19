@@ -12,7 +12,7 @@ import { getPolicies } from "../../controllers/policy";
 import { IPolicy } from "../../interfaces/policy";
 import { IDept } from "../../interfaces/dept";
 import { toast } from "react-toastify";
-import { loginUser } from "../../controllers/auth";
+import { getUserInfo, loginUser } from "../../controllers/auth";
 import CreatePolicyModal from "../../components/modals/createPolicyModal";
 import { useNavigate } from "react-router-dom";
 // import AdminApprovedPoliciesTab from "./adminApprovedPoliciesTab";
@@ -25,34 +25,26 @@ import AdminApprovedPoliciesTab from "../../components/tabs/admintabs/adminAppro
 
 const AdminDashboardPage = () => {
     const navigate = useNavigate()
-
-    const userDat = localStorage.getItem('loggedInUser') || '';
-    const data = JSON.parse(userDat);
-    const userName = data?.profile?.sub.split('\\').pop();
     const [policies, setPolicies] = useState<IPolicy[]>([]);
     const [depts, setDepts] = useState<IDept[]>([]);
     // const [regUsers, setRegUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
-    const [refreshComponent,setRefreshComponent] = useState(false)
-    const [userDBInfo,setUserDBInfo]  = useState<IUserDashboard>()
-
-    const [totalPolicyCount,setTotalPolicyCount] =useState(0);
-    const [totalAttested,setTotalAttested] =useState(0);
-    const [totalNotAttested,setTotalNotAttested] =useState(0);
-    const [createPolicy,setCreatePolicy] =useState(false);
+    const [refreshComponent, setRefreshComponent] = useState(false)
+    const [userDBInfo, setUserDBInfo] = useState<IUserDashboard>()
+    const [createPolicy, setCreatePolicy] = useState(false);
 
     const dashCardInfo = [
         {
             title: 'Uploaded Policies',
             img: openBook,
-            color : 'primary',
+            color: 'primary',
             count: userDBInfo?.totalUploadedPolicyByInitiator,
             icon: '',
 
         },
         {
             title: 'Approved Policies',
-            color : 'primary',
+            color: 'primary',
             img: checked,
             count: userDBInfo?.totalApprovedPolicy,
             icon: '',
@@ -60,7 +52,7 @@ const AdminDashboardPage = () => {
         },
         {
             title: 'Pending Policies',
-            color : 'primary',
+            color: 'primary',
             img: timer,
             count: userDBInfo?.totalPendingPolicy,
             icon: '',
@@ -68,7 +60,7 @@ const AdminDashboardPage = () => {
         },
         {
             title: 'Rejected Policies',
-            color : 'danger',
+            color: 'danger',
             img: error,
             count: userDBInfo?.totalRejectedPolicy,
             icon: '',
@@ -76,81 +68,72 @@ const AdminDashboardPage = () => {
         },
     ]
 
-
-
-    
-    
-    
-    
-    
     const getInitiatorDashboard = async () => {
         setLoading(true)
         try {
-            const res = await api.get(`Dashboard/initiator?userName=${userName}`, `${data?.access_token}`);
-            setUserDBInfo(res?.data);
-            console.log({here:res})
+            let userInfo = await getUserInfo();
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await getPolicies(`Dashboard/initiator?userName=${userName}`, `${userInfo?.access_token}`);
+
             if (res?.data) {
-                let allAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>data.isAuthorized);
-                let unAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>!data.isAuthorized);
-                
                 setUserDBInfo(res?.data);
-                // setTotalAttested(allAttested.length);
-                // setTotalNotAttested(unAttested.length)
-                setPolicies([]);
                 setLoading(false);
             } else {
-                setLoading(false);
-                // loginUser()
-                // toast.error('Session expired!, You have been logged out!!')
+                // setLoading(false);
+                toast.error('Network error!');
             }
-            console.log({ response: res })
+
+
         } catch (error) {
-    
+            console.log(error)
         }
     }
-    
-    
-    useEffect(()=>{
-        getInitiatorDashboard(); 
-    },[refreshComponent])
+
+    useEffect(() => {
+        getInitiatorDashboard();
+    }, [refreshComponent])
+
     return (
         <div className="w-100">
             <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Dashboard</h5>
             <div className="d-flex gap-5">
                 {
                     dashCardInfo.map((info, index) => (
-                    <DashboardCard key={index} titleColor={info.color} count={info.count} 
-                    imgSrc={info.img} 
-                    title={info.title} />))
+                        <DashboardCard key={index} titleColor={info.color} count={info.count}
+                            imgSrc={info.img}
+                            title={info.title} />))
                 }
             </div>
 
-            <div className="w-100 mt-5" style={{display:'relative'}}>
+            <div className="w-100 mt-5" style={{ display: 'relative' }}>
                 <Tabs
-                    defaultActiveKey="uploaded"
+                    defaultActiveKey="pending"
                     id="uncontrolled-tab-example"
                     variant="underline"
                     className="mb-3 gap-5"
                 >
-                    <Tab eventKey="uploaded" title="Uploaded Policies"
-                    tabClassName=""
-                    >
-                        <AdminUploadedPoliciesTab handleCreatePolicy={()=>navigate('/admin/create-policy')} />
-                    </Tab>
-                    <Tab eventKey="approved" title="Approved Policies">
-                    <AdminApprovedPoliciesTab handleCreatePolicy={()=>navigate('/admin/create-policy')} />
-                    </Tab>
+
                     <Tab eventKey="pending" title="Policies Pending Approval">
-                    <AdminPoliciesPendingApprovalTab handleCreatePolicy={()=>navigate('/admin/create-policy')} />
+                        <AdminPoliciesPendingApprovalTab handleCreatePolicy={() => navigate('/admin/create-policy')} />
+                    </Tab>
+
+                    <Tab eventKey="approved" title="Approved Policies">
+                        <AdminApprovedPoliciesTab handleCreatePolicy={() => navigate('/admin/create-policy')} />
                     </Tab>
 
                     <Tab eventKey="rejected" title="Rejected Policies">
-                    <AdminRejectedApprovalsTab handleCreatePolicy={()=>navigate('/admin/create-policy')} />
+                        <AdminRejectedApprovalsTab handleCreatePolicy={() => navigate('/admin/create-policy')} />
+                    </Tab>
+
+                    <Tab eventKey="uploaded" title="Uploaded Policies"
+                        tabClassName=""
+                    >
+                        <AdminUploadedPoliciesTab handleCreatePolicy={() => navigate('/admin/create-policy')} />
                     </Tab>
                 </Tabs>
-                
+
             </div>
-            <CreatePolicyModal show={createPolicy} off={()=>setCreatePolicy(false)}/>
+            <CreatePolicyModal show={createPolicy} off={() => setCreatePolicy(false)} />
         </div>
     )
 

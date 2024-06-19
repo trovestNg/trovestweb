@@ -14,13 +14,10 @@ import { getUserInfo, loginUser } from "../../controllers/auth";
 import api from "../../config/api";
 import { IPolicy } from "../../interfaces/policy";
 import { IDept } from "../../interfaces/dept";
+import { toast } from "react-toastify";
 
 
 const UserUnAttestedPolicyPage = () => {
-    // const [regUsers, setRegUsers] = useState<User[]>([]);
-    const userType = 'user';
-    const userDat = localStorage.getItem('loggedInUser') || '';
-    const data = JSON.parse(userDat);
     const [policies, setPolicies] = useState<IPolicy[]>([]);
     const [depts, setDepts] = useState<IDept[]>([]);
     // const [regUsers, setRegUsers] = useState<User[]>([]);
@@ -57,30 +54,28 @@ const UserUnAttestedPolicyPage = () => {
     ]
 
 
-    const getUnattestedPolicies = async () => {
+    const getUserDashboard = async () => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            // console.log({gotten: userInfo})
-            if(userInfo){
-                const res = await api.get(`attest/unattested?userName=majadi`, `${userInfo.access_token}`);
-                if (res?.data) {
-                    setTotalNotAttested(res?.data.length);
-                    setLoading(false)
-                } else {
-                    // loginUser()
-                    // toast.error('Session expired!, You have been logged out!!')
-                }
-                // console.log({ response: res })
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.get(`Dashboard/user?userName=${userName}`, `${userInfo?.access_token}`);
+            if (res?.data) {
+                setTotalNotAttested(res?.data?.totalNotAttested);
+                setLoading(false);
+            } else {
+                // setLoading(false);
+                toast.error('Network error!');
             }
-           
-        } catch (error) {
 
+
+        } catch (error) {
+            console.log(error)
         }
     }
 
     useEffect(()=>{
-        getUnattestedPolicies (); 
+        getUserDashboard(); 
     },[refreshComponent])
 
    

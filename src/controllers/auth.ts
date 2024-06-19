@@ -33,11 +33,13 @@ export const handleCallback = async () => {
 export const getUserInfo = async () => {
   try {
     const user = await userManager.getUser();
+    return user
     if (user){
       return user
     }
     else{
       toast.error('Unable to get user!')
+      return user
     }
     console.log('User information:', user);
     let role = 'Infosec';
@@ -88,7 +90,6 @@ export const getUserInfo = async () => {
 export const logoutUser = async () => {
   try {
     await userManager.signoutRedirect();
-    // Clear token from local storage
     localStorage.removeItem('access_token');
     localStorage.clear()
   } catch (error) {

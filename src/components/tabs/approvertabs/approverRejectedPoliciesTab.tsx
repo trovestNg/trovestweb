@@ -418,7 +418,7 @@ const ApproverRejectedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
                                                         <Card className="p-2  shadow-sm rounded border-0"
                                                             style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
                                                             <ListGroup>
-                                                                <ListGroupItem
+                                                                {/* <ListGroupItem
                                                                     onClick={(e) => handleEdit(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
@@ -427,7 +427,7 @@ const ApproverRejectedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
                                                                             Edit Policy
                                                                         </div>
                                                                     </span>
-                                                                </ListGroupItem>
+                                                                </ListGroupItem> */}
 
                                                                 <ListGroupItem
                                                                     onClick={(e) => handleDownloadPolicy(e, policy)}
@@ -441,7 +441,7 @@ const ApproverRejectedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
                                                                     </span>
                                                                 </ListGroupItem>
 
-                                                                <ListGroupItem
+                                                                {/* <ListGroupItem
                                                                     onClick={(e) => handleSendAuthorizationReminder(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
@@ -450,7 +450,7 @@ const ApproverRejectedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
                                                                             Send Reminder
                                                                         </div>
                                                                     </span>
-                                                                </ListGroupItem>
+                                                                </ListGroupItem> */}
 
                                                                 <ListGroupItem
                                                                     disabled={policy?.markedForDeletion}

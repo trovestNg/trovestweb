@@ -18,6 +18,7 @@ import { toast } from "react-toastify";
 import api from "../../config/api";
 import { IUserDashboard } from "../../interfaces/user";
 import AdminPoliciesPendingApprovalTab from "../../components/tabs/admintabs/adminPoliciesPendingApprovalTab";
+import ApproverPendingPolicyTab from "../../components/tabs/approvertabs/approverPendingPolicyTab";
 
 
 const ApproverPendingPoliciesPage = () => {
@@ -78,7 +79,7 @@ const ApproverPendingPoliciesPage = () => {
             </div> */}
 
             <div className="w-100 mt-5">
-                <AdminPoliciesPendingApprovalTab/>
+                <ApproverPendingPolicyTab/>
             </div>
         </div>
     )

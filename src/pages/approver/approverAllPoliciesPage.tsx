@@ -20,6 +20,7 @@ import api from "../../config/api";
 import { IUserDashboard } from "../../interfaces/user";
 import AdminUploadedPoliciesTab from "../../components/tabs/admintabs/adminUploadedPoliciesTab";
 import { useNavigate } from "react-router-dom";
+import ApproverAllPoliciesTab from "../../components/tabs/approvertabs/approverAllPoliciesTab";
 
 
 const ApproverAllPoliciesPage = () => {
@@ -80,7 +81,7 @@ const ApproverAllPoliciesPage = () => {
             </div> */}
 
             <div className="w-100 mt-5">
-                <AdminUploadedPoliciesTab handleCreatePolicy={ ()=>navigate('/admin/create-policy')}/>
+                <ApproverAllPoliciesTab handleCreatePolicy={ ()=>navigate('/admin/create-policy')}/>
             </div>
         </div>
     )

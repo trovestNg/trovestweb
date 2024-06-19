@@ -7,114 +7,99 @@ import moment from "moment";
 import { getPolicies } from "../../../controllers/policy";
 import receiptImg from '../../../assets/images/receipt.png';
 import { getAllDepartments } from "../../../controllers/department";
-import {toast} from 'react-toastify';
+import { toast } from 'react-toastify';
 import { getUserInfo, loginUser } from "../../../controllers/auth";
 import api from "../../../config/api";
 import successElipse from '../../../assets/images/Ellipse-success.png';
 import warningElipse from '../../../assets/images/Ellipse-warning.png';
 
 const UserNotAttestedPoliciesTab: React.FC<any> = () => {
-    const userDat = localStorage.getItem('loggedInUser') || '';
-    const data = JSON.parse(userDat);
-    const userName = data?.profile?.sub.split('\\').pop();
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
     const [policies, setPolicies] = useState<IUserPolicy[]>([]);
     const [depts, setDepts] = useState<IDept[]>([]);
     const [loading, setLoading] = useState(false);
-    const [selectedDept, setSelectedDept] = useState('');
-    const [userSearch, setUserSearch] = useState('')
 
     const [sortByDept, setSortByDept] = useState(false);
     const [searchByName, setBySearch] = useState(false);
     const [query, setQuery] = useState<string>('');
     const [sortCriteria, setSortCriteria] = useState<string>('name');
 
+
     const getAllPolicies = async () => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
-            if (userInfo) {
-                const res = await api.get(`Policy/user-policy?userName=${userName}`, `${userInfo.access_token}`);
-                if (res?.data) {
-
-                    let unAttested = res?.data.filter((policy: IUserPolicy) => !policy.isAttested
-                    );
-                    setPolicies(unAttested);
-                    setLoading(false)
-                } else {
-                    // loginUser()
-                    // toast.error('Session expired!, You have been logged out!!')
-                }
-                console.log({ response: res })
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.get(`Policy/user-policy?userName=${userName}`, `${userInfo?.access_token}`);
+            if (res?.data) {
+                let unAttested = res?.data.filter((policy: IUserPolicy) => !policy.isAttested);
+                setPolicies(unAttested);
+                setLoading(false)
             }
 
         } catch (error) {
-
+            console.log(error)
         }
+
+
     }
 
     const handleSearchByPolicyNameOrDept = async () => {
-        // toast.error('Searching by name of dept or title!')
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
-            if (userInfo) {
-                const res = await api.get(`Policy/user-policy?userName=${userName}`, `${userInfo.access_token}`);
-                if (res?.data) {
-                    let unAttested = res?.data.filter((policy: IUserPolicy) => !policy.isAttested );
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.get(`Policy/user-policy?userName=${userName}`, `${userInfo?.access_token}`);
+            if (res?.data) {
+                let unAttested = res?.data.filter((policy: IUserPolicy) => !policy.isAttested);
 
-                    let filtered = unAttested.filter((policy: IUserPolicy) =>
-                        policy.fileName.toLowerCase().includes(query.toLowerCase()) ||
-                        policy.policyDepartment.toLowerCase().includes(query.toLowerCase())
-                    );
-                    setPolicies(filtered);
-                    setLoading(false)  
-
-                } else {
-                    // loginUser()
-                    // toast.error('Session expired!, You have been logged out!!')
-                }
-                console.log({ response: res })
+                let filtered = unAttested.filter((policy: IUserPolicy) =>
+                    policy.fileName.toLowerCase().includes(query.toLowerCase()) ||
+                    policy.policyDepartment.toLowerCase().includes(query.toLowerCase())
+                );
+                setPolicies(filtered);
+                setLoading(false)
             }
 
         } catch (error) {
-
+            console.log(error)
         }
 
-    };
 
-    const handleSortByDepartment = async () => {
-        // toast.error('Sorting by name of dept! :'+sortCriteria.toLowerCase())
-        setLoading(true)
-        try {
-            let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
-            if (userInfo) {
-                const res = await api.get(`Policy/user-policy?userName=${userName}`, `${userInfo.access_token}`);
-                if (res?.data) {
+    }
 
-                    setLoading(false)
 
-                    let filtered = res?.data.filter((policy: IUserPolicy) =>
-                        policy.policyDepartment.toLowerCase().includes(sortCriteria.toLowerCase())
-                    );
-                    setPolicies(filtered);
 
-                } else {
-                    // loginUser()
-                    // toast.error('Session expired!, You have been logged out!!')
-                }
-                console.log({ response: res })
-            }
+    // const handleSortByDepartment = async () => {
+    //     // toast.error('Sorting by name of dept! :'+sortCriteria.toLowerCase())
+    //     setLoading(true)
+    //     try {
+    //         let userInfo = await getUserInfo();
+    //         console.log({ gotten: userInfo })
+    //         if (userInfo) {
+    //             const res = await api.get(`Policy/user-policy?userName=${userName}`, `${userInfo.access_token}`);
+    //             if (res?.data) {
 
-        } catch (error) {
+    //                 setLoading(false)
 
-        }
+    //                 let filtered = res?.data.filter((policy: IUserPolicy) =>
+    //                     policy.policyDepartment.toLowerCase().includes(sortCriteria.toLowerCase())
+    //                 );
+    //                 setPolicies(filtered);
 
-    };
+    //             } else {
+    //                 // loginUser()
+    //                 // toast.error('Session expired!, You have been logged out!!')
+    //             }
+    //             console.log({ response: res })
+    //         }
+
+    //     } catch (error) {
+
+    //     }
+
+    // };
 
     const handleSearch = () => {
         setBySearch(true);
@@ -127,7 +112,7 @@ const UserNotAttestedPoliciesTab: React.FC<any> = () => {
         setRefreshData(!refreshData)
     }
 
-   
+
 
 
     // const handleGetAllDepts = async () => {
@@ -139,7 +124,7 @@ const UserNotAttestedPoliciesTab: React.FC<any> = () => {
     //         if (res?.data) {
     //             setDepts(res?.data)
     //         } else {
-                
+
     //         }
     //         console.log({ response: res })
     //     } catch (error) {
@@ -149,7 +134,7 @@ const UserNotAttestedPoliciesTab: React.FC<any> = () => {
     // }
 
     const handleDeptSelection = (val: string) => {
-        if(val == 'all'){
+        if (val == 'all') {
             setBySearch(false)
             setSortByDept(false)
             setRefreshData(!refreshData)
@@ -159,7 +144,7 @@ const UserNotAttestedPoliciesTab: React.FC<any> = () => {
             setSortByDept(true)
             setRefreshData(!refreshData)
         }
-        
+
     }
 
 
@@ -167,7 +152,7 @@ const UserNotAttestedPoliciesTab: React.FC<any> = () => {
         if (searchByName) {
             handleSearchByPolicyNameOrDept()
         } else if (sortByDept) {
-            handleSortByDepartment()
+            // handleSortByDepartment()
         } else {
             getAllPolicies();
         }
@@ -184,21 +169,21 @@ const UserNotAttestedPoliciesTab: React.FC<any> = () => {
         <div className="w-100">
             <div className="d-flex w-100 justify-content-between">
                 <div className="d-flex gap-4">
-                <div className="d-flex align-items-center" style={{position:'relative'}}>
-                    <FormControl
+                    <div className="d-flex align-items-center gap-2" style={{ position: 'relative' }}>
+                        <FormControl
                             onChange={(e) => setQuery(e.target.value)}
                             placeholder="Search by Name, Department..."
                             value={query}
                             className="py-2" style={{ minWidth: '350px' }} />
-                                <i 
-                                className="bi bi-x-lg" 
-                                onClick={handleClear}
-                                style={{marginLeft:'310px', display:query==''?'none':'flex',cursor:'pointer', float:'right', position:'absolute'}}></i>
+                        <i
+                            className="bi bi-x-lg"
+                            onClick={handleClear}
+                            style={{ marginLeft: '310px', display: query == '' ? 'none' : 'flex', cursor: 'pointer', float: 'right', position: 'absolute' }}></i>
+
                         <Button
                             disabled={query == ''}
                             onClick={() => handleSearch()}
-
-                            variant="primary" style={{ minWidth: '100px', marginLeft: '-5px' }}>Search</Button>
+                            variant="primary" style={{ minWidth: '100px', marginRight: '-5px', minHeight: '2.4em' }}>Search</Button>
                     </div>
                     {/* <Form.Select onChange={(e) => handleDeptSelection(e.currentTarget.value)} className="custom-select" style={{ maxWidth: '170px' }}>
                     <option value={'all'}>Select Department</option>
@@ -229,7 +214,7 @@ const UserNotAttestedPoliciesTab: React.FC<any> = () => {
                             <tr className=""><td className="text-center" colSpan={5}><Spinner className="spinner-grow text-primary" /></td></tr>
                         </tbody>
                     </table> :
-                        <table className="table w-100">
+                        <table className="table table-striped border border-1 w-100">
                             <thead className="thead-dark">
                                 <tr >
                                     <th scope="col" className="bg-primary text-light">#</th>
@@ -240,34 +225,34 @@ const UserNotAttestedPoliciesTab: React.FC<any> = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {policies.length <= 0?<tr>
+                                {policies.length <= 0 ? <tr>
                                     <td className="text-center" colSpan={5}>
-                                        <img src={receiptImg} height={85}/>
-                                        <p className="p-0 m-0 text-primary" style={{fontFamily:'title'}}>
-                                            {sortByDept || searchByName? '' : 'You have attested all policies'}
-                                            </p>
+                                        <img src={receiptImg} height={85} />
+                                        <p className="p-0 m-0 text-primary" style={{ fontFamily: 'title' }}>
+                                            {sortByDept || searchByName ? '' : 'You have attested all policies'}
+                                        </p>
                                         <p >
                                             {
-                                                sortByDept || searchByName? 'No Data available' :' You are up to date all all polices please check back from time to time to stay updated on these polices'
+                                                sortByDept || searchByName ? 'No Data available' : ' You are up to date all all polices please check back from time to time to stay updated on these polices'
                                             }
-                                        
+
                                         </p>
                                     </td></tr> :
-                                policies.map((policy, index) => (
-                                    <tr key={index} style={{ cursor: 'pointer' }}
-                                    onClick={() => navigate(`/policy-portal/policy/false/${policy.id}`)}
-                                    >
-                                        <th scope="row">{index + 1}</th>
-                                        <td><i className="bi bi-file-earmark-pdf text-danger"></i> {policy.fileName}</td>
-                                        <td>{policy.policyDepartment}</td>
-                                        <td>{moment(policy.deadlineDate).format('MMM DD YYYY')}</td>
-                                        <td className={`text-${policy.isAttested ? 'success' : 'warning'}`}>
+                                    policies.map((policy, index) => (
+                                        <tr key={index} style={{ cursor: 'pointer' }}
+                                            onClick={() => navigate(`/policy-portal/policy/false/${policy.id}`)}
+                                        >
+                                            <th scope="row">{index + 1}</th>
+                                            <td><i className="bi bi-file-earmark-pdf text-danger"></i> {policy.fileName}</td>
+                                            <td>{policy.policyDepartment}</td>
+                                            <td>{moment(policy.deadlineDate).format('MMM DD YYYY')}</td>
+                                            <td className={`text-${policy.isAttested ? 'success' : 'warning'}`}>
                                                 <img src={policy.isAttested ? successElipse : warningElipse} height={'10px'} />
                                                 {'  '}
                                                 <span >{policy.isAttested ? 'Attested' : 'Not attested'}</span>
-                                        </td>
-                                    </tr>
-                                ))
+                                            </td>
+                                        </tr>
+                                    ))
                                 }
                             </tbody>
                         </table>

@@ -14,9 +14,6 @@ import SureToDeletePolicyModal from "../../modals/sureToDeletePolicyModal";
 import UpdatePolicyModal from "../../modals/updatePolicyModal";
 
 const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) => {
-    const userDat = localStorage.getItem('loggedInUser') || '';
-    const data = JSON.parse(userDat);
-    const userName = data?.profile?.sub.split('\\').pop();
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
     const [policies, setPolicies] = useState<IPolicy[]>([]);
@@ -42,43 +39,63 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
-            if (userInfo) {
-                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
-
-                if (res?.data) {
-                    let unApprovedPolicies = res?.data.filter((policy: IPolicy) => !policy.isAuthorized && !policy.markedForDeletion)
-                    setPolicies(unApprovedPolicies);
-                    setLoading(false)
-                } else {
-                    loginUser()
-                    // toast.error('Session expired!, You have been logged out!!')
-                }
-                console.log({ response: res })
-            }
-
-        } catch (error) {
-
-        }
-    }
-
-    const handleGetDepts = async () => {
-        // setLoading(true)
-        try {
-            const res = await getAllDepartments(`filter?subsidiaryName=FSDH+Merchant+Bank`, `${data?.access_token}`);
-            console.log({ dataHere: res })
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo?.access_token}`);
 
             if (res?.data) {
-                setDepts(res?.data)
-            } else {
-
+                let unApprovedPolicies = res?.data.filter((policy: IPolicy) => !policy.isAuthorized && !policy.markedForDeletion)
+                setPolicies(unApprovedPolicies);
+                setLoading(false)
             }
-            console.log({ response: res })
-        } catch (error) {
 
+        } catch (error) {
+            console.log(error)
         }
 
+
     }
+    const handleSearchByPolicyNameOrDept = async () => {
+        setLoading(true)
+        try {
+            let userInfo = await getUserInfo();
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo?.access_token}`);
+            if (res?.data) {
+
+                setLoading(false)
+
+                let filtered = res?.data.filter((policy: IPolicy) =>
+                    policy.fileName.toLowerCase().includes(query.toLowerCase()) && !policy.isAuthorized && !policy.markedForDeletion
+                );
+                setPolicies(filtered.reverse());
+
+
+
+            }
+        } catch (error) {
+            console.log(error)
+        }
+
+
+    }
+
+    // const handleGetDepts = async () => {
+    //     // setLoading(true)
+    //     try {
+    //         const res = await getAllDepartments(`filter?subsidiaryName=FSDH+Merchant+Bank`, `${data?.access_token}`);
+    //         console.log({ dataHere: res })
+
+    //         if (res?.data) {
+    //             setDepts(res?.data)
+    //         } else {
+
+    //         }
+    //         console.log({ response: res })
+    //     } catch (error) {
+
+    //     }
+
+    // }
 
     const handleSearch = () => {
 
@@ -92,53 +109,26 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
         toast.error('hii')
     }
 
-    const handleSearchByPolicyNameOrDept = async () => {
-        // toast.error('Searching by name of dept or title!')
-        setLoading(true)
-        try {
-            let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
-            if (userInfo) {
-                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
-                if (res?.data) {
 
-                    setLoading(false)
 
-                    let filtered = res?.data.filter((policy: IPolicy) =>
-                        policy.fileName.toLowerCase().includes(query.toLowerCase()) && !policy.isAuthorized && !policy.markedForDeletion
-                    );
-                    setPolicies(filtered.reverse());
 
-                } else {
-                    // loginUser()
-                    // toast.error('Session expired!, You have been logged out!!')
-                }
-                console.log({ response: res })
-            }
+    // const getBySort = async () => {
+    //     setLoading(true)
+    //     try {
+    //         const res = await getPolicies(`filterByDepartment?departmentName=${selectedDept}`, `${data?.access_token}`);
+    //         if (res?.data) {
+    //             setPolicies(res?.data);
+    //             setLoading(false);
+    //         } else {
+    //             toast.error('Fail to sort!')
+    //             setLoading(false);
+    //             setSortByDept(false);
+    //         }
+    //         console.log({ response: res })
+    //     } catch (error) {
 
-        } catch (error) {
-
-        }
-
-    };
-
-    const getBySort = async () => {
-        setLoading(true)
-        try {
-            const res = await getPolicies(`filterByDepartment?departmentName=${selectedDept}`, `${data?.access_token}`);
-            if (res?.data) {
-                setPolicies(res?.data);
-                setLoading(false);
-            } else {
-                toast.error('Fail to sort!')
-                setLoading(false);
-                setSortByDept(false);
-            }
-            console.log({ response: res })
-        } catch (error) {
-
-        }
-    }
+    //     }
+    // }
 
     const handleDeptSelection = (val: string) => {
         setSelectedDept(val);
@@ -149,7 +139,7 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
 
     const fetchData = () => {
         if (sortByDept) {
-            getBySort();
+            // getBySort();
         } else if (bySearch) {
             handleSearchByPolicyNameOrDept();
         } else {
@@ -160,7 +150,7 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
 
     useEffect(() => {
         fetchData();
-        handleGetDepts();
+        // handleGetDepts();
     }, [refreshData])
 
     const handleEdit = (e: any, policy: IPolicy) => {
@@ -181,26 +171,50 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
         // navigate(`/admin/edit-policy/${policy.id}`)
     }
 
+    const handlePolicyDeleste = async (e: any) => {
+        e.stopPropagation();
+
+
+    }
+
     const handlePolicyDelete = async (e: any) => {
         e.stopPropagation();
-        const res = await api.post(`Policy/delete/request`, { "id": policyId, "username": userName }, data?.access_token);
-        if (res?.status == 200) {
-            toast.success('Delete request sent for approval!');
-            setDeteletPolicyModal(false);
-            setRefreshData(!refreshData)
-        } else {
-            toast.error('Failed to delete policy')
+        try {
+            let userInfo = await getUserInfo();
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            if (userInfo) {
+                const res = await api.post(`Policy/delete/request`, { "id": policyId, "username": userName }, userInfo.access_token);
+                if (res?.status == 200) {
+                    toast.success('Delete request sent for approval!');
+                    setDeteletPolicyModal(false);
+                    setRefreshData(!refreshData)
+                } else {
+                    toast.error('Failed to delete policy')
+                }
+            }
+
+        } catch (error) {
+
         }
     }
 
     const handleSendAuthorizationReminder = async (e: any, policy: IPolicy) => {
         e.stopPropagation();
-        const res = await api.post(`Policy/nudge-authorizer?policyId=${policy.id}`, { "policyId": policy.id }, data?.access_token);
-        if (res?.status == 200) {
-            toast.success('Reminder sent!');
-            setRefreshData(!refreshData)
-        } else {
-            toast.error('Error sending reminder')
+        try {
+            let userInfo = await getUserInfo();
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            if (userInfo) {
+                const res = await api.post(`Policy/nudge-authorizer?policyId=${policy.id}`, { "policyId": policy.id }, userInfo?.access_token);
+                if (res?.status == 200) {
+                    toast.success('Reminder sent!');
+                    setRefreshData(!refreshData)
+                } else {
+                    toast.error('Error sending reminder')
+                }
+            }
+
+        } catch (error) {
+
         }
     }
 
@@ -223,12 +237,14 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
 
     const handleDownloadPolicy = (e: any, pol: IPolicy) => {
         e.stopPropagation();
-        toast.success('Downloading file')
+        // toast.success('Downloading file')
+        window.open(pol.url, '_blank');
 
     }
 
     return (
         <div className="w-100">
+
             <SureToDeletePolicyModal
                 action={(e: any) => handlePolicyDelete(e)}
                 show={deletePolicyModal}
@@ -242,10 +258,11 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
                     setRefreshData(!refreshData)
                 }}
             />
-
+            {/* <hr/> */}
             <div className="d-flex w-100 justify-content-between">
+
                 <div className="d-flex gap-4">
-                    <div className="d-flex align-items-center" style={{ position: 'relative' }}>
+                    <div className="d-flex align-items-center gap-2" style={{ position: 'relative' }}>
                         <FormControl
                             onChange={(e) => setQuery(e.target.value)}
                             placeholder="Search by Name, Department..."
@@ -259,8 +276,7 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
                         <Button
                             disabled={query == ''}
                             onClick={() => handleSearch()}
-
-                            variant="primary" style={{ minWidth: '100px', marginLeft: '-5px' }}>Search</Button>
+                            variant="primary" style={{ minWidth: '100px', marginRight: '-5px', minHeight: '2.4em' }}>Search</Button>
                     </div>
                     {/* <Form.Select onChange={(e) => handleDeptSelection(e.currentTarget.value)} className="custom-select"
                         style={{ maxWidth: '170px' }}>
@@ -448,24 +464,24 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
                                                                 </ListGroupItem>
 
                                                                 <ListGroupItem
+                                                                    onClick={(e) => handleSendAuthorizationReminder(e, policy)}
+                                                                >
+                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                        <div className="d-flex gap-2">
+                                                                            <i className="bi bi-file-text"></i>
+                                                                            Nudge Authorizer
+                                                                        </div>
+                                                                    </span>
+                                                                </ListGroupItem>
+
+                                                                <ListGroupItem
                                                                     onClick={(e) => handleDownloadPolicy(e, policy)}
 
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
                                                                             <i className="bi bi-download"></i>
-                                                                            Download Policy
-                                                                        </div>
-                                                                    </span>
-                                                                </ListGroupItem>
-
-                                                                <ListGroupItem
-                                                                    onClick={(e) => handleSendAuthorizationReminder(e, policy)}
-                                                                >
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-file-text"></i>
-                                                                            Send Reminder
+                                                                            Download
                                                                         </div>
                                                                     </span>
                                                                 </ListGroupItem>

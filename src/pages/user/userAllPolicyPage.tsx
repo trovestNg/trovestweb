@@ -19,8 +19,7 @@ import api from "../../config/api";
 
 
 const UserAllPolicyPage = () => {
-    const userDat = localStorage.getItem('loggedInUser') || '';
-    const data = JSON.parse(userDat);
+    
     const [policies, setPolicies] = useState<IPolicy[]>([]);
     const [depts, setDepts] = useState<IDept[]>([]);
     // const [regUsers, setRegUsers] = useState<User[]>([]);
@@ -30,37 +29,35 @@ const UserAllPolicyPage = () => {
     const [totalPolicyCount,setTotalPolicyCount] =useState(0);
     const [totalAttested,setTotalAttested] =useState(0);
     const [totalNotAttested,setTotalNotAttested] =useState(0);
-    
-    const getAllPolicies = async () => {
+
+    const getUserDashboard = async () => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({gotten: userInfo})
-            if(userInfo){
-                const res = await api.get(`Policy?subsidiaryName=FSDH Merchant Bank`, `${userInfo.access_token}`);
-                if (res?.data) {
-                    setPolicies(res?.data);
-                    setLoading(false)
-                } else {
-                    // loginUser()
-                    // toast.error('Session expired!, You have been logged out!!')
-                }
-                console.log({ response: res })
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.get(`Dashboard/user?userName=${userName}`, `${userInfo?.access_token}`);
+            if (res?.data) {
+                setTotalPolicyCount(res?.data?.totalPolicy);
+                setLoading(false);
+            } else {
+                // setLoading(false);
+                toast.error('Network error!');
             }
-           
-        } catch (error) {
 
+
+        } catch (error) {
+            console.log(error)
         }
     }
 
    
     useEffect(()=>{
-        getAllPolicies(); 
+        getUserDashboard(); 
     },[refreshComponent])
 
     return (
         <div className="w-100">
-            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>All Policies {policies.length} </h5>
+            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>All Policies {totalPolicyCount} </h5>
             <p>Discover all policies and their respective statuses here.</p>
             {/* <div className="d-flex gap-5">
                 {

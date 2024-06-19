@@ -7,14 +7,12 @@ import PromptModal from "../modals/promptModal";
 
 const UserSideBar: React.FC<any> = ({ payload }) => {
     const currentPath = useLocation().pathname;
-    const user = localStorage.getItem('loggedInUser') || '';
-    const userInfo = JSON.parse(user);
     const navigate = useNavigate();
     const [showPromt, setShowPromt] = useState(false);
     const [showApproverPrompt, setApproverPrompt] = useState(false);
     const [userType, setUserType] = useState('');
 
-    console.log(currentPath)
+    // console.log(currentPath)
 
 
     const handleSwitch = () => {
@@ -28,24 +26,7 @@ const UserSideBar: React.FC<any> = ({ payload }) => {
     }
 
     const handleUserLogout = async () => {
-        // navigate('/logout', {replace:true});
-        // console.log(JSON.stringify(localStorage))
-        // localStorage.clear()
         const res = await logoutUser();
-
-        // window.history.pushState(null, '', window.location.href);
-        // window.onpopstate = function(event) {
-        //   window.history.go(1);
-
-        // };
-
-        // window.history.replaceState(null,'',window.location.href)
-
-
-
-
-        // // console.log(res);
-
     }
     const navlinksUser = [
         {
@@ -73,7 +54,6 @@ const UserSideBar: React.FC<any> = ({ payload }) => {
     const getUserType = async () => {
         try {
             let userInfo = await getUserInfo();
-            // console.log({ gotten: userInfo })
             if (userInfo?.profile.role?.includes("DOMAIN1\\GROUP_POLICY_INIT")) {
                 setUserType('initiator')
             }

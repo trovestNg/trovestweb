@@ -18,8 +18,6 @@ import api from "../../config/api";
 
 
 const UserAttestedPolicyPage = () => {
-    const userDat = localStorage.getItem('loggedInUser') || '';
-    const data = JSON.parse(userDat);
     const [policies, setPolicies] = useState<IPolicy[]>([]);
     const [depts, setDepts] = useState<IDept[]>([]);
     // const [regUsers, setRegUsers] = useState<User[]>([]);
@@ -30,64 +28,29 @@ const UserAttestedPolicyPage = () => {
     const [totalAttested,setTotalAttested] =useState(0);
     const [totalNotAttested,setTotalNotAttested] =useState(0);
     
-    // const getAttestedPolicies = async () => {
-    //     setLoading(true)
-    //     try {
-
-    //         const user = getUserInfo();
-    //         const res = await api.get(`Attest/unattested?subsidiaryName=FSDH Merchant Bank`, `${data?.access_token}`);
-    //         if (res?.data) {
-    //             setPolicies(res?.data)
-    //             let allAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>data.isAuthorized);
-    //             let unAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>!data.isAuthorized);
-                
-    //             setTotalPolicyCount(res?.data.length);
-    //             setTotalAttested(allAttested.length);
-    //             setTotalNotAttested(unAttested.length)
-    //             setPolicies([]);
-    //             setLoading(false);
-    //         } else {
-    //             setLoading(false);
-    //             loginUser()
-    //             toast.error('Session expired!, You have been logged out!!')
-    //         }
-    //         console.log({ response: res })
-    //     } catch (error) {
-
-    //     }
-    // }
-
-
-    const getAttestedPolicies = async () => {
+    const getUserDashboard = async () => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({gotten: userInfo})
-            if(userInfo){
-                const res = await api.get(`attest?userName=majadi`, `${userInfo.access_token}`);
-                if (res?.data) {
-                    // setPolicies(res?.data)
-                    let allAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>data.isAuthorized);
-                    let unAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>!data.isAuthorized);
-                    
-                    setTotalPolicyCount(res?.data.length);
-                    setTotalAttested(res?.data.length);
-                    setTotalNotAttested(unAttested.length)
-                } else {
-                    loginUser()
-                    // toast.error('Session expired!, You have been logged out!!')
-                }
-                console.log({ response: res })
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await getPolicies(`Dashboard/user?userName=${userName}`, `${userInfo?.access_token}`);
+            if (res?.data) {
+                setTotalAttested(res?.data?.totalAttested);
+                setLoading(false);
+            } else {
+                // setLoading(false);
+                toast.error('Network error!');
             }
-           
-        } catch (error) {
 
+
+        } catch (error) {
+            console.log(error)
         }
     }
 
    
     useEffect(()=>{
-        getAttestedPolicies (); 
+        getUserDashboard(); 
     },[refreshComponent])
 
     return (

@@ -27,9 +27,6 @@ const CreateNewPolicyPage: React.FC<any> = () => {
     const [policyDoc, setPolicyDoc] = useState('');
     const [subSidiaries, setSubSidiaries] = useState<IDept[]>();
     const [authorizers, setAuthorizers] = useState<IAuthorizers[]>();
-    const userDat = localStorage.getItem('loggedInUser') || '';
-    const data = JSON.parse(userDat);
-    const userName = data?.profile?.sub.split('\\').pop();
     const navigate = useNavigate();
 
     const [showCreatePrompt, setShowCreatePrompt] = useState(false)
@@ -86,7 +83,9 @@ const CreateNewPolicyPage: React.FC<any> = () => {
     const handleGetDepts = async () => {
         // setLoading(true)
         try {
-            const res = await api.get(`Subsidiaries`, `${data?.access_token}`);
+            let userInfo = await getUserInfo();
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.get(`Subsidiaries`, `${userInfo?.access_token}`);
             console.log({ dataHere: res })
 
             if (res?.data) {
@@ -104,7 +103,9 @@ const CreateNewPolicyPage: React.FC<any> = () => {
     const handleGetAuthorizers = async () => {
         // setLoading(true)
         try {
-            const res = await api.get(`Policy/authorizer`, `${data?.access_token}`);
+            let userInfo = await getUserInfo();
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.get(`Policy/authorizer`, `${userInfo?.access_token}`);
             // console.log({ dataHere: res })
 
             if (res?.data) {
@@ -147,8 +148,9 @@ const CreateNewPolicyPage: React.FC<any> = () => {
         let userInfo = await getUserInfo();
 
         if (userInfo) {
-
-            const res = await api.post(`policy/upload?userName=majadi`, formData, `${userInfo?.access_token}`)
+            let userInfo = await getUserInfo();
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.post(`policy/upload?userName=${userName}`, formData, `${userInfo?.access_token}`)
             console.log(res)
             if (res?.statusText == "Created") {
                 setShowCreatePrompt(false)

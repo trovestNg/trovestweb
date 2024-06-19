@@ -14,7 +14,7 @@ import { getPolicies } from "../../controllers/policy";
 import { IPolicy } from "../../interfaces/policy";
 import { IDept } from "../../interfaces/dept";
 import { toast } from "react-toastify";
-import { loginUser } from "../../controllers/auth";
+import { getUserInfo, loginUser } from "../../controllers/auth";
 import CreatePolicyModal from "../../components/modals/createPolicyModal";
 import AdminPendingDeleteTab from "../../components/tabs/admintabs/adminPendingDeleteTab";
 import AdminDeletedPoliciesTab from "../../components/tabs/admintabs/adminDeletedPoliciesTab";
@@ -22,9 +22,6 @@ import { useNavigate } from "react-router-dom";
 
 
 const AdminDeletedPoliciesPage = () => {
-
-    const userDat = localStorage.getItem('loggedInUser') || '';
-    const data = JSON.parse(userDat);
     const [policies, setPolicies] = useState<IPolicy[]>([]);
     const [depts, setDepts] = useState<IDept[]>([]);
     // const [regUsers, setRegUsers] = useState<User[]>([]);
@@ -77,7 +74,9 @@ const AdminDeletedPoliciesPage = () => {
     const getAllPolicies = async () => {
         setLoading(true)
         try {
-            const res = await getPolicies(`policy?subsidiaryName=FSDH Merchant Bank`, `${data?.access_token}`);
+            let userInfo = await getUserInfo();
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await getPolicies(`policy?subsidiaryName=FSDH Merchant Bank`, `${userInfo?.access_token}`);
             if (res?.data) {
                 let allAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>data.isAuthorized);
                 let unAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>!data.isAuthorized);
