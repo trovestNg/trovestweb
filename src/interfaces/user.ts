@@ -17,11 +17,11 @@ export interface IUserDashboard {
     userEmail: string,
     userSubsidiary: string,
     username: string,
-    totalUploadedPolicyByInitiator:number,
-    totalApprovedPolicy:number,
-    totalPendingPolicy:number,
-    totalRejectedPolicy:number,
-    totalUploadedPolicy : number
+    totalUploadedPolicyByInitiator: number,
+    totalApprovedPolicy: number,
+    totalPendingPolicy: number,
+    totalRejectedPolicy: number,
+    totalUploadedPolicy: number
 
 }
 
@@ -49,7 +49,31 @@ export interface IUserPolicy {
     uploadTime: string,
     uploadedBy: string,
     url: string,
-    department:string
-    policyId:number
-    policyName:string
+    department: string
+    policyId: number
+    policyName: string
+}
+
+export interface IUser {
+    attestationTime
+    :
+    string,
+    deadlineTime
+    : string,
+    department
+    : string,
+    email
+    : string,
+    policyDepartment
+    : string,
+    policyId
+    : number,
+    policyName
+    : string,
+    subsidiary
+    : string,
+    url
+    : string,
+    userName
+    : string
 }

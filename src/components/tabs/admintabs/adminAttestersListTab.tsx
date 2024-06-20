@@ -13,14 +13,15 @@ import api from "../../../config/api";
 import successElipse from '../../../assets/images/Ellipse-success.png';
 import warningElipse from '../../../assets/images/Ellipse-warning.png';
 import { shortenString } from "../../../util";
+import { IUser } from "../../../interfaces/user";
 
 const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
-    const userDat = localStorage.getItem('loggedInUser') || '';
-    const data = JSON.parse(userDat);
-    const userName = data?.profile?.sub.split('\\').pop();
+    // const userDat = localStorage.getItem('loggedInUser') || '';
+    // const data = JSON.parse(userDat);
+    // const userName = data?.profile?.sub.split('\\').pop();
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
-    const [policies, setPolicies] = useState<IPolicy[]>([]);
+    const [policies, setPolicies] = useState<IUser[]>([]);
     const [depts, setDepts] = useState<IDept[]>([]);
     const [loading, setLoading] = useState(false);
     const [sortByDept, setSortByDept] = useState(false);
@@ -28,22 +29,24 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const [selectedDept, setSelectedDept] = useState('');
     const [userSearch, setUserSearch] = useState('');
     const { id } = useParams();
+    const [query, setQuery] = useState<string>('');
+    const [policyName,setPolicyName] = useState<string>('')
 
 
     const getUploadedPolicies = async () => {
-        setLoading(true)
+        // setLoading(true)
         try {
             let userInfo = await getUserInfo();
             console.log({ gotten: userInfo })
             if (userInfo) {
                 const res = await api.get(`Attest/${id}`, `${userInfo.access_token}`);
-                
+                console.log({listHere:res?.data})
                 if (res?.data) {
-                    let approvedPolicies =  res?.data.filter((policy:IPolicy)=>policy.isAuthorized)
-                    setPolicies(approvedPolicies);
+                    setPolicies(res?.data)
+                    setPolicyName(res?.data[0]?.policyName)
                     setLoading(false)
                 } else {
-                    // loginUser()
+                   
                     toast.error('Network error!')
                     setLoading(false)
                 }
@@ -57,23 +60,23 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
   
 
-    const handleGetDepts = async () => {
-        // setLoading(true)
-        try {
-            const res = await getAllDepartments(`filter?subsidiaryName=FSDH+Merchant+Bank`, `${data?.access_token}`);
-            console.log({ dataHere: res })
+    // const handleGetDepts = async () => {
+    //     // setLoading(true)
+    //     try {
+    //         const res = await getAllDepartments(`filter?subsidiaryName=FSDH+Merchant+Bank`, `${data?.access_token}`);
+    //         console.log({ dataHere: res })
 
-            if (res?.data) {
-                setDepts(res?.data)
-            } else {
+    //         if (res?.data) {
+    //             setDepts(res?.data)
+    //         } else {
 
-            }
-            console.log({ response: res })
-        } catch (error) {
+    //         }
+    //         console.log({ response: res })
+    //     } catch (error) {
 
-        }
+    //     }
 
-    }
+    // }
 
     const handleSearch = () => {
 
@@ -82,48 +85,48 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     }
 
-    const getBySearch = async () => {
-        setLoading(true)
+    const handleSearchByPolicyNameOrDept = async () => {
+        // setLoading(true)
         try {
-            const res = await getPolicies(`Policy/searchByWord?searchWord=${userSearch}`, `${data?.access_token}`);
+            let userInfo = await getUserInfo();
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo?.access_token}`);
             if (res?.data) {
-                // let searched = res?.data.filter((data:IPolicy)=>data.fileName.includes(userSearch));
-                setPolicies(res?.data);
-                // if(allAttested.length >= res?.data.length){
-                //     setPolicies([]);
-                // } else{
-
-                // }
 
                 setLoading(false)
-            } else {
-                toast.error('Search failed!');
-                setBySearch(false);
-                setLoading(false);
-            }
-            console.log({ response: res })
-        } catch (error) {
 
+                let filtered = res?.data.filter((policy: IPolicy) =>
+                    policy.fileName.toLowerCase().includes(query.toLowerCase()) && !policy.isAuthorized && !policy.markedForDeletion
+                );
+                setPolicies(filtered.reverse());
+
+
+
+            }
+        } catch (error) {
+            console.log(error)
         }
+
+
     }
 
-    const getBySort = async () => {
-        setLoading(true)
-        try {
-            const res = await getPolicies(`filterByDepartment?departmentName=${selectedDept}`, `${data?.access_token}`);
-            if (res?.data) {
-                setPolicies(res?.data);
-                setLoading(false);
-            } else {
-                toast.error('Fail to sort!')
-                setLoading(false);
-                setSortByDept(false);
-            }
-            console.log({ response: res })
-        } catch (error) {
+    // const getBySort = async () => {
+    //     setLoading(true)
+    //     try {
+    //         const res = await getPolicies(`filterByDepartment?departmentName=${selectedDept}`, `${data?.access_token}`);
+    //         if (res?.data) {
+    //             setPolicies(res?.data);
+    //             setLoading(false);
+    //         } else {
+    //             toast.error('Fail to sort!')
+    //             setLoading(false);
+    //             setSortByDept(false);
+    //         }
+    //         console.log({ response: res })
+    //     } catch (error) {
 
-        }
-    }
+    //     }
+    // }
 
     const handleDeptSelection = (val: string) => {
         setSelectedDept(val);
@@ -134,9 +137,9 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     const fetchData = () => {
         if (sortByDept) {
-            getBySort();
+            // getBySort();
         } else if (bySearch) {
-            getBySearch();
+            handleSearchByPolicyNameOrDept();
         } else {
             getUploadedPolicies();
         }
@@ -155,7 +158,7 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     useEffect(() => {
         fetchData();
-        handleGetDepts();
+        // handleGetDepts();
     }, [refreshData])
 
     return (
@@ -173,12 +176,12 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
                             variant="primary" style={{ minWidth: '100px', marginLeft: '-5px' }}>Search</Button>
                     </div>
-                    <Form.Select onChange={(e) => handleDeptSelection(e.currentTarget.value)} className="custom-select" style={{ maxWidth: '170px' }}>
+                    {/* <Form.Select onChange={(e) => handleDeptSelection(e.currentTarget.value)} className="custom-select" style={{ maxWidth: '170px' }}>
                         <option>Select Department</option>
                         {
                             depts.map((dept) => <option key={dept.id} value={dept.name}>{dept.name}</option>)
                         }
-                    </Form.Select>
+                    </Form.Select> */}
 
                 </div>
                 <div className="">
@@ -196,11 +199,11 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
                         <thead className="thead-dark">
                             <tr >
                                 <th scope="col" className="bg-primary text-light">#</th>
-                                <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                <th scope="col" className="bg-primary text-light">Initiator</th>
-                                <th scope="col" className="bg-primary text-light">Authorizer</th>
+                                <th scope="col" className="bg-primary text-light">Staff Name</th>
+                                <th scope="col" className="bg-primary text-light">Emails</th>
+                                <th scope="col" className="bg-primary text-light">Department</th>
+                                <th scope="col" className="bg-primary text-light">Date Attested</th>
                                 <th scope="col" className="bg-primary text-light">Deadline Date</th>
-                                <th scope="col" className="bg-primary text-light">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -211,190 +214,25 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
                             <thead className="thead-dark">
                             <tr >
                                 <th scope="col" className="bg-primary text-light">#</th>
-                                <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                <th scope="col" className="bg-primary text-light">Initiator</th>
-                                <th scope="col" className="bg-primary text-light">Authorizer</th>
+                                <th scope="col" className="bg-primary text-light">Staff Name</th>
+                                <th scope="col" className="bg-primary text-light">Emails</th>
+                                <th scope="col" className="bg-primary text-light">Department</th>
+                                <th scope="col" className="bg-primary text-light">Date Attested</th>
                                 <th scope="col" className="bg-primary text-light">Deadline Date</th>
-                                <th scope="col" className="bg-primary text-light">Action</th>
                             </tr>
-                            </thead>
+                        </thead>
                             <tbody className="">
-                                {policies.length <= 0 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
-                                    policies.map((policy, index) => (
+                                { policies.length <= 0 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
+                                   policies.map((policy, index) => (
                                         <tr key={index} style={{ cursor: 'pointer' }}
-                                        onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
+                                        // onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
                                         >
                                             <th scope="row">{index + 1}</th>
-                                            <td><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.fileName,40)}`}</td>
-                                            <td>{policy.uploadedBy}</td>
-                                            <td>{policy.authorizedBy}</td>
-                                            <td>{moment(policy.deadlineDate).format('MMM DD YYYY')}</td>
-                                            {/* <td className={`text-${policy.isAuthorized ? 'success' : 'warning'}`}>
-                                                <img src={policy.isAuthorized ? successElipse : warningElipse} height={'10px'} />
-                                                {'  '}
-                                                <span >{policy.isAuthorized ? 'Approved' : 'Pending'}</span></td> */}
-                                            <td className="table-icon">
-                                                <i className=" bi bi-three-dots"></i>
-                                                <div className="content ml-5" style={{ position: 'relative' }}>
-                                                    {
-                                                        policy.isAuthorized &&
-                                                        <Card className="p-2  shadow-sm rounded border-0"
-                                                        style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
-                                                        <ListGroup>
-                                                            <ListGroupItem className="multi-layer">
-                                                                <span className="w-100 d-flex justify-content-between">
-                                                                    <div className="d-flex gap-2">
-                                                                    <i className="bi bi-clipboard-check"></i>
-                                                                        Attesters List
-                                                                    </div>
-
-                                                                    <i className="bi bi-chevron-right"></i>
-                                                                </span>
-                                                                <div className="container">
-                                                                    <Card
-                                                                        className="p-2  shadow-sm rounded border-0"
-                                                                        style={{
-                                                                            minWidth: '15em',
-                                                                            marginLeft: '-16.5em',
-                                                                            marginTop: '-2.5em',
-                                                                            position: 'absolute'
-                                                                        }}
-                                                                    >
-                                                                        <ListGroup>
-                                                                            <ListGroupItem
-                                                                            onClick={(e) => handleGetAttestersList(e,policy)}
-                                                                            >
-                                                                                <span className="w-100 d-flex justify-content-between">
-                                                                                    <div className="d-flex gap-2">
-                                                                                        <i className="bi bi-file-text"></i>
-                                                                                        View List
-                                                                                    </div>
-                                                                                </span>
-                                                                            </ListGroupItem>
-
-                                                                            <ListGroupItem>
-                                                                                <span className="w-100 d-flex justify-content-between">
-                                                                                    <div className="d-flex gap-2">
-                                                                                    <i className="bi bi-download"></i>
-                                                                                        Download List
-                                                                                    </div>
-                                                                                </span>
-                                                                            </ListGroupItem>
-                                                                        </ListGroup>
-                                                                    </Card>
-                                                                </div>
-                                                            </ListGroupItem>
-
-                                                            <ListGroupItem className="multi-layer">
-                                                                <span className="w-100 d-flex justify-content-between">
-                                                                    <div className="d-flex gap-2">
-                                                                    <i className="bi bi-clipboard-x"></i>
-                                                                       Defaulters List
-                                                                    </div>
-
-                                                                    <i className="bi bi-chevron-right"></i>
-                                                                </span>
-                                                                <div className="container">
-                                                                    <Card
-                                                                        className="p-2  shadow-sm rounded border-0"
-                                                                        style={{
-                                                                            minWidth: '15em',
-                                                                            marginLeft: '-16.5em',
-                                                                            marginTop: '-2.5em',
-                                                                            position: 'absolute'
-                                                                        }}
-                                                                    >
-                                                                        <ListGroup>
-                                                                            <ListGroupItem>
-                                                                                <span className="w-100 d-flex justify-content-between">
-                                                                                    <div className="d-flex gap-2">
-                                                                                        <i className="bi bi-file-text"></i>
-                                                                                        View List
-                                                                                    </div>
-                                                                                </span>
-                                                                            </ListGroupItem>
-
-                                                                            <ListGroupItem>
-                                                                                <span className="w-100 d-flex justify-content-between">
-                                                                                    <div className="d-flex gap-2">
-                                                                                    <i className="bi bi-download"></i>
-                                                                                        Download List
-                                                                                    </div>
-                                                                                </span>
-                                                                            </ListGroupItem>
-                                                                        </ListGroup>
-                                                                    </Card>
-                                                                </div>
-                                                            </ListGroupItem>
-
-                                                            <ListGroupItem>
-                                                                <span className="w-100 d-flex justify-content-between">
-                                                                    <div className="d-flex gap-2">
-                                                                    <i className="bi bi-calendar-event"></i>
-                                                                        Update Deadline
-                                                                    </div>
-                                                                </span>
-                                                            </ListGroupItem>
-
-                                                            <ListGroupItem>
-                                                                <span className="w-100 d-flex justify-content-between">
-                                                                    <div className="d-flex gap-2">
-                                                                    <i className="bi bi-trash"></i>
-                                                                        Delete
-                                                                    </div>
-                                                                </span>
-                                                            </ListGroupItem>
-                                                        </ListGroup>
-                                                    </Card>}
-
-
-                                                    {
-                                                        !policy.isAuthorized &&
-                                                        <Card className="p-2  shadow-sm rounded border-0"
-                                                        style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
-                                                        <ListGroup>
-                                                            <ListGroupItem>
-                                                            <span className="w-100 d-flex justify-content-between">
-                                                                    <div className="d-flex gap-2">
-                                                                        <i className="bi bi-file-text"></i>
-                                                                        Edit Policy
-                                                                    </div>
-                                                                </span>
-                                                            </ListGroupItem>
-
-                                                            <ListGroupItem>
-                                                            <span className="w-100 d-flex justify-content-between">
-                                                                    <div className="d-flex gap-2">
-                                                                    <i className="bi bi-download"></i>
-                                                                        Download Policy
-                                                                    </div>
-                                                                </span>
-                                                            </ListGroupItem>
-
-                                                            <ListGroupItem>
-                                                                <span className="w-100 d-flex justify-content-between">
-                                                                    <div className="d-flex gap-2">
-                                                                        <i className="bi bi-file-text"></i>
-                                                                        Send Reminder
-                                                                    </div>
-                                                                </span>
-                                                            </ListGroupItem>
-
-                                                            <ListGroupItem>
-                                                                <span className="w-100 d-flex justify-content-between">
-                                                                    <div className="d-flex gap-2">
-                                                                        <i className="bi bi-file-text"></i>
-                                                                        Delete
-                                                                    </div>
-                                                                </span>
-                                                            </ListGroupItem>
-                                                        </ListGroup>
-                                                    </Card>}
-
-                                                </div>
-
-                                            </td>
-
+                                            <td><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.userName,40)}`}</td>
+                                            <td>{policy.email}</td>
+                                            <td>{policy.department}</td>
+                                            <td>{moment(policy.attestationTime).format('MMM DD YYYY')}</td>
+                                            <td>{moment(policy.deadlineTime).format('MMM DD YYYY')}</td>
                                         </tr>
                                     ))
                                 }
@@ -402,8 +240,8 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
                         </table>
                 }
             </div>
-            {
-                policies.length <= 0 ? '' :
+            {/* {
+               policies && policies.length <= 0 ? '' :
                     <div className="d-flex justify-content-between align-items-center">
                         <p className="p-0 m-0">Showing 1 to 10 of 100 entries</p>
                         <nav aria-label="...">
@@ -421,7 +259,7 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                 </li>
                             </ul>
                         </nav>
-                    </div>}
+                    </div>} */}
         </div>
     )
 
