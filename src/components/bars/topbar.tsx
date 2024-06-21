@@ -1,15 +1,42 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import notificationIcon from "../../assets/icons/notification-icon.png";
 import { Card, ListGroup, ListGroupItem } from "react-bootstrap";
+import { getUserInfo } from "../../controllers/auth";
+
+
+
 
 const TopBar: React.FC<any> = ({ payload }) => {
+    const [userType, setUserType] = useState('');
+    const getUserType = async () => {
+        try {
+            let userInfo = await getUserInfo();
+            if (userInfo?.profile.role?.includes("DOMAIN1\\GROUP_POLICY_INIT")) {
+                setUserType('Initiator')
+            }
+            else if (userInfo?.profile.role?.includes("DOMAIN1\\GROUP_POLICY_AUTH")) {
+                setUserType('Authorizer')
+            } else {
+                setUserType('User')
+            }
+
+        } catch (error) {
+
+        }
+
+    }
+
+    useEffect(() => {
+        getUserType();
+    },[])
     return (
         <div
             className="d-flex align-items-center justify-content-between bg-light shadow-sm w-100 px-4 py-3" style={{ fontFamily: 'title' }}>
             <p className="p-0 m-0 text-primary">Policy Portal</p>
 
-            <div className="px-4 d-flex align-items-center gap-3">
-                <div className="table-icon" >
+            <div className="px-1">
+                <div className="d-flex gap-2">
+                <div className="table-icon m-0" >
                 {/* <img src={notificationIcon} height={'40px'} /> */}
                 <i className="bi bi-person-circle text-primary" style={{fontSize:'1.2em'}}></i>
                 {/* <div className="content ml-5" style={{ position: 'relative' }}>
@@ -32,8 +59,13 @@ const TopBar: React.FC<any> = ({ payload }) => {
                 </div> */}
                 </div>
                 <p className="p-0 m-0">{payload?.fullname}</p>
+                </div>
+                <div>
+                <p className="p-0 m-0 px-5" style={{fontFamily:'primary'}}>{userType}</p>
+                </div>
                 
             </div>
+            
         </div>
     )
 }
