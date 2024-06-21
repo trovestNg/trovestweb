@@ -62,7 +62,7 @@ const ApproverAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     setLoading(false)
                 } else {
 
-                    toast.error('Network error!')
+                    
                     setLoading(false)
                 }
                
@@ -101,7 +101,7 @@ const ApproverAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     setLoading(false)
                 } else {
 
-                    toast.error('Network error!')
+                    
                     setLoading(false)
                 }
 

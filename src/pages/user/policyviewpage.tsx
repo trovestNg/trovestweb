@@ -111,7 +111,7 @@ const PolicyViewPage = () => {
                 <div className="" style={{ minWidth: '70%' }}>
                     <div className="bg-dark mt-2 d-flex justify-content-between px-4 py-2 text-light ">
                        
-                        <div className="d-flex gap-3">S
+                        <div className="d-flex gap-3">
                         zoom
                         <i className="bi bi-zoom-out" onClick={handleZoomOut}></i>
                         <i className="bi bi-zoom-in" onClick={handleZoomIn}></i>

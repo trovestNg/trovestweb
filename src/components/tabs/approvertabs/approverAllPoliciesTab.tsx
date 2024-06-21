@@ -254,7 +254,7 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     setLoading(false)
                 }
             } else {
-                toast.error('Network error!')
+                
             }
 
         } catch (error) {
@@ -291,7 +291,7 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     toast.error('Error rejecting policy')
                 }
             } else {
-                toast.error('Network error!')
+                
             }
 
         } catch (error) {
@@ -375,13 +375,13 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     </Form.Select> */}
 
                 </div>
-                <div className="">
+                {/* <div className="">
                     <Button
                         variant="primary"
                         style={{ minWidth: '100px' }}
                         onClick={() => handleCreatePolicy()}
                     >Create New Policy</Button>
-                </div>
+                </div> */}
             </div>
 
             <div className="mt-4" >

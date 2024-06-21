@@ -23,16 +23,16 @@ const AdminSideBar: React.FC<any> = ({ payload }) => {
     }
 
     const handleUserLogout = async () => {
-        
-        const res = await logoutUser();
-
-        // window.history.pushState(null, '', window.location.href);
+         // window.history.pushState(null, '', window.location.href);
         // window.onpopstate = function(event) {
         //   window.history.go(1);
 
         // };
 
         // window.history.replaceState(null,'',window.location.href)
+        const res = await logoutUser();
+
+       
 
 
     }

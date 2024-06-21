@@ -63,7 +63,7 @@ const UserUnAttestedPolicyPage = () => {
                 setLoading(false);
             } else {
                 // setLoading(false);
-                toast.error('Network error!');
+                ;
             }
 
 

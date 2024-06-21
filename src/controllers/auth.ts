@@ -89,6 +89,7 @@ export const getUserInfo = async () => {
 // Function to sign out
 export const logoutUser = async () => {
   try {
+    
     await userManager.signoutRedirect();
     localStorage.removeItem('access_token');
     localStorage.clear()

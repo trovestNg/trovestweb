@@ -50,7 +50,7 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
                     setPolicies(rejectedPolicies);
                     setLoading(false)
                 } else {
-                    loginUser()
+                    // loginUser()
                     // toast.error('Session expired!, You have been logged out!!')
                 }
                 

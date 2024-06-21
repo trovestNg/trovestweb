@@ -99,7 +99,7 @@ const ApproverPolicyviewpage = () => {
                     toast.error('Error approving policy')
                 }
             } else {
-                toast.error('Network error!')
+                
             }
 
         } catch (error) {
@@ -133,7 +133,7 @@ const ApproverPolicyviewpage = () => {
                     toast.error('Error rejecting policy')
                 }
             } else {
-                toast.error('Network error!')
+                
             }
 
         } catch (error) {

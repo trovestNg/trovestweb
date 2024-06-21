@@ -56,7 +56,7 @@ const UserSideBar: React.FC<any> = ({ payload }) => {
             if (userInfo?.profile.role?.includes("DOMAIN1\\GROUP_POLICY_INIT")) {
                 setUserType('initiator')
             }
-            else if (userInfo?.profile.role?.includes(" DOMAIN1\\GROUP_POLICY_AUTH")) {
+            else if (userInfo?.profile.role?.includes("DOMAIN1\\GROUP_POLICY_AUTH")) {
                 setUserType('authorizer')
             } else {
                 setUserType('user')

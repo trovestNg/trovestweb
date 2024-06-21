@@ -66,7 +66,7 @@ const ApproverDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     setLoading(false)
                 } else {
 
-                    toast.error('Network error!')
+                    
                     setLoading(false)
                 }
               
@@ -94,7 +94,7 @@ const ApproverDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     setLoading(false)
                 } else {
 
-                    toast.error('Network error!')
+                    
                     setLoading(false)
                 }
 

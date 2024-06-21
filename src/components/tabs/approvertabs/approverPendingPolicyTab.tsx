@@ -283,7 +283,7 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     toast.error('Error approving policy')
                 }
             } else {
-                toast.error('Network error!')
+                
             }
 
         } catch (error) {

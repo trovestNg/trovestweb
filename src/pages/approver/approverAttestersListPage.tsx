@@ -41,7 +41,7 @@ const ApproverAttestersListPage = () => {
                     setLoading(false)
                 } else {
                    
-                    toast.error('Network error!')
+                    
                     setLoading(false)
                 }
                 // console.log({ gotten: userInfo })({ response: res })

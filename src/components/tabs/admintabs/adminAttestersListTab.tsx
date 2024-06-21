@@ -61,8 +61,6 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     setPolicyName(res?.data[0]?.policyName)
                     setLoading(false)
                 } else {
-
-                    toast.error('Network error!')
                     setLoading(false)
                 }
                
@@ -101,7 +99,7 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     setLoading(false)
                 } else {
 
-                    toast.error('Network error!')
+                    
                     setLoading(false)
                 }
 

@@ -30,40 +30,36 @@ const [totalNotAttested,setTotalNotAttested] =useState(0);
 const [userDBInfo,setUserDBInfo]  = useState<IUserDashboard>()
 
 
-
-
-const getInitiatorDashboard = async () => {
-    setLoading(true)
+const getAuthorizerDashboard= async () => {
     try {
         let userInfo = await getUserInfo();
-        if(userInfo?.expired){
+        // console.log({userCred:userInfo?.scopes})
+        if(userInfo?.expired) {
+            toast.error('Session timed out!');
             await logoutUser()
-        } else {
-        let userName = userInfo?.profile?.sub.split('\\')[1]
-        const res = await api.get(`Dashboard/authorizer?userName=${userName}`, `${userInfo?.access_token}`);
-        setUserDBInfo(res?.data);
-        // console.log({ gotten: userInfo })({here:res})
-        if (res?.data) {
-            setUserDBInfo(res?.data);
-            // setTotalAttested(allAttested.length);
-            // setTotalNotAttested(unAttested.length)
-            setPolicies([]);
-            setLoading(false);
-        } else {
-            setLoading(false);
-            toast.error('Unauthorised user!')
-        }
-        }
-        
-        // console.log({ gotten: userInfo })({ response: res })
-    } catch (error) {
+        } else if(userInfo?.profile){
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.get(`Dashboard/authorizer?userName=${userName}`, `${userInfo?.access_token}`);
+            if (res?.data) {
+                setUserDBInfo(res?.data);
+                setLoading(false);
+            } else {
+                toast.error('Network error!');
+            }
 
+        } else {
+        //    await loginUser()
+        }
+    } catch (error) {
+       console.log(error) 
     }
 }
 
 
+
+
 useEffect(()=>{
-    getInitiatorDashboard(); 
+    getAuthorizerDashboard(); 
 },[refreshComponent])
 
     return (

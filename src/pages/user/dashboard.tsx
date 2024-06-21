@@ -18,32 +18,28 @@ const UserDashboardContainer = () => {
 
 
     const getUserDashboard = async () => {
-        setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            let userName = userInfo?.profile?.sub.split('\\')[1]
-            // console.log({ gotten: userInfo })({ timer: userInfo?.expired, remaining: userInfo?.expires_in })
-            if (userInfo?.expired) {
-                await logoutUser()
+            // console.log({userCred:userInfo?.scopes})
+            if(userInfo?.expired) {
                 toast.error('Session timed out!');
-            } else {
+                await logoutUser()
+            } else if(userInfo?.profile){
+                let userName = userInfo?.profile?.sub.split('\\')[1]
                 const res = await getPolicies(`Dashboard/user?userName=${userName}`, `${userInfo?.access_token}`);
-                setUserDBInfo(res?.data);
                 if (res?.data) {
                     setUserDBInfo(res?.data);
                     setLoading(false);
                 } else {
-                   await logoutUser()
-                    toast.error('Unauthorised user!');
+                    toast.error('Network error!');
                 }
 
+            } else {
+            //    await loginUser()
             }
-
         } catch (error) {
-            // console.log({ gotten: userInfo })(error)
+           console.log(error) 
         }
-
-
     }
 
     useEffect(() => {
