@@ -12,7 +12,6 @@ const UserSideBar: React.FC<any> = ({ payload }) => {
     const [showApproverPrompt, setApproverPrompt] = useState(false);
     const [userType, setUserType] = useState('');
 
-    // console.log(currentPath)
 
 
     const handleSwitch = () => {

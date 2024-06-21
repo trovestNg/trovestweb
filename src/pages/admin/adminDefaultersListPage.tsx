@@ -11,57 +11,59 @@ import AdminAttestersListTab from "../../components/tabs/admintabs/adminAttester
 import { useNavigate,useParams } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import AdminDefaultersListTab from "../../components/tabs/admintabs/adminDefaultersListTab";
+import { Document, Page, pdfjs } from "react-pdf";
 
 
 const AdminDefaultersListPage = () => {
     const [policies, setPolicies] = useState<IPolicy[]>([]);
     const [depts, setDepts] = useState<IDept[]>([]);
-    
+   
     
     // const [regUsers, setRegUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
     const [refreshComponent,setRefreshComponent] = useState(false);
     const navigate = useNavigate()
 
-    const [userDBInfo,setUserDBInfo]  = useState<IUserDashboard>()
+    const [userDBInfo,setUserDBInfo]  = useState<IUserDashboard>();
+    const [policyName,setPolicyName] = useState<string>('');
+    const { id } = useParams();
     
-    const getInitiatorDashboard = async () => {
-        setLoading(true)
+    const getUploadedPolicies = async () => {
+        // setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            let userName = userInfo?.profile?.sub.split('\\')[1]
-            const res = await api.get(`Dashboard/initiator?userName=${userName}`, `${userInfo?.access_token}`);
-            setUserDBInfo(res?.data);
-            console.log({here:res})
-            if (res?.data) {
-                let allAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>data.isAuthorized);
-                let unAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>!data.isAuthorized);
-                
-                setUserDBInfo(res?.data);
-                // setTotalAttested(allAttested.length);
-                // setTotalNotAttested(unAttested.length)
-                setPolicies([]);
-                setLoading(false);
-            } else {
-                setLoading(false);
-                // loginUser()
-                // toast.error('Session expired!, You have been logged out!!')
+            // console.log({ gotten: userInfo })({ gotten: userInfo })
+            if (userInfo) {
+                const res = await api.get(`Policy/defaulters?policyId=${id}`, `${userInfo.access_token}`);
+                // console.log({ gotten: userInfo })({listHere:res?.data})
+                if (res?.data) {
+                    setPolicies(res?.data)
+                    setPolicyName(res?.data[0]?.policyName)
+                    setLoading(false)
+                } else {
+                   
+                    toast.error('Network error!')
+                    setLoading(false)
+                }
+                // console.log({ gotten: userInfo })({ response: res })
             }
-            console.log({ response: res })
+
         } catch (error) {
-    
+
         }
     }
 
    
     useEffect(()=>{
-        getInitiatorDashboard(); 
+        getUploadedPolicies(); 
     },[refreshComponent])
 
     return (
         <div className="w-100">
             <div><Button variant="outline border border-2" onClick={() => navigate(-1)}>Go Back</Button></div>
-            <h5 className="font-weight-bold text-primary mt-3" style={{ fontFamily: 'title' }}>{`Data Protection Policy & Procedure Attesters List-${userDBInfo?.totalApprovedPolicy}`} </h5>
+            {
+               policyName && 
+            <h5 className="font-weight-bold text-primary mt-3" style={{ fontFamily: 'title' }}>{`${policyName} - (${policies.length})`} </h5>}
            
             {/* <div className="d-flex gap-5">
                 {

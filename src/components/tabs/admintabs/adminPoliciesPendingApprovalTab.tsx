@@ -49,7 +49,7 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
             }
 
         } catch (error) {
-            console.log(error)
+           
         }
 
 
@@ -73,7 +73,7 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
 
             }
         } catch (error) {
-            console.log(error)
+           
         }
 
 
@@ -83,14 +83,14 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
     //     // setLoading(true)
     //     try {
     //         const res = await getAllDepartments(`filter?subsidiaryName=FSDH+Merchant+Bank`, `${data?.access_token}`);
-    //         console.log({ dataHere: res })
+    //         // console.log({ gotten: userInfo })({ dataHere: res })
 
     //         if (res?.data) {
     //             setDepts(res?.data)
     //         } else {
 
     //         }
-    //         console.log({ response: res })
+    //         // console.log({ gotten: userInfo })({ response: res })
     //     } catch (error) {
 
     //     }
@@ -124,7 +124,7 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
     //             setLoading(false);
     //             setSortByDept(false);
     //         }
-    //         console.log({ response: res })
+    //         // console.log({ gotten: userInfo })({ response: res })
     //     } catch (error) {
 
     //     }

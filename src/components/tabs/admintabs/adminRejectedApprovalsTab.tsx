@@ -14,9 +14,7 @@ import SureToDeletePolicyModal from "../../modals/sureToDeletePolicyModal";
 import UpdatePolicyModal from "../../modals/updatePolicyModal";
 
 const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
-    const userDat = localStorage.getItem('loggedInUser') || '';
-    const data = JSON.parse(userDat);
-    const userName = data?.profile?.sub.split('\\').pop();
+    
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
     const [policies, setPolicies] = useState<IPolicy[]>([]);
@@ -42,8 +40,9 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({gotten: userInfo})
+           
             if(userInfo){
+                let userName = userInfo?.profile?.sub.split('\\')[1]
                 const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
                 
                 if (res?.data) {
@@ -54,7 +53,7 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
                     loginUser()
                     // toast.error('Session expired!, You have been logged out!!')
                 }
-                console.log({ response: res })
+                
             }
            
         } catch (error) {
@@ -62,23 +61,23 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
         }
     }
 
-    const handleGetDepts = async () => {
-        // setLoading(true)
-        try {
-            const res = await getAllDepartments(`filter?subsidiaryName=FSDH+Merchant+Bank`, `${data?.access_token}`);
-            console.log({ dataHere: res })
+    // const handleGetDepts = async () => {
+    //     // setLoading(true)
+    //     try {
+    //         const res = await getAllDepartments(`filter?subsidiaryName=FSDH+Merchant+Bank`, `${data?.access_token}`);
+    //         // console.log({ gotten: userInfo })({ dataHere: res })
 
-            if (res?.data) {
-                setDepts(res?.data)
-            } else {
+    //         if (res?.data) {
+    //             setDepts(res?.data)
+    //         } else {
                 
-            }
-            console.log({ response: res })
-        } catch (error) {
+    //         }
+    //         // console.log({ gotten: userInfo })({ response: res })
+    //     } catch (error) {
 
-        }
+    //     }
 
-    }
+    // }
 
     const handleSearch = () => {
         
@@ -92,8 +91,9 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
+            // // console.log({ gotten: userInfo })({ gotten: userInfo })
             if (userInfo) {
+                let userName = userInfo?.profile?.sub.split('\\')[1]
                 const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
                 if (res?.data) {
 
@@ -108,7 +108,7 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
                     // loginUser()
                     // toast.error('Session expired!, You have been logged out!!')
                 }
-                console.log({ response: res })
+                // console.log({ gotten: userInfo })({ response: res })
             }
 
         } catch (error) {
@@ -142,7 +142,7 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
 
     useEffect(() => {
         fetchData();
-        handleGetDepts();
+        // handleGetDepts();
     }, [refreshData])
 
     const handleEdit = (e: any, policy: IPolicy) => {
@@ -165,25 +165,39 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
 
     const handlePolicyDelete = async (e: any) => {
         e.stopPropagation();
-        const res = await api.post(`Policy/delete/request`, { "id": policyId, "username": userName }, data?.access_token);
-        if (res?.status == 200) {
-            toast.success('Delete request sent for approval!');
-            setDeteletPolicyModal(false);
-            setRefreshData(!refreshData)
-        } else {
-            toast.error('Failed to delete policy')
+        let userInfo = await getUserInfo();
+        if(userInfo){
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.post(`Policy/delete/request`, { "id": policyId, "username": userName }, userInfo?.access_token);
+            if (res?.status == 200) {
+                toast.success('Delete request sent for approval!');
+                setDeteletPolicyModal(false);
+                setRefreshData(!refreshData)
+            } else {
+                toast.error('Failed to delete policy')
+            }
         }
+        
     }
 
     const handleSendAuthorizationReminder = async (e: any, policy: IPolicy) => {
         e.stopPropagation();
-        const res = await api.post(`Policy/nudge-authorizer?policyId=${policy.id}`, { "policyId": policy.id }, data?.access_token);
-        if (res?.status == 200) {
-            toast.success('Reminder sent!');
-            setRefreshData(!refreshData)
-        } else {
-            toast.error('Error sending reminder')
+
+        let userInfo = await getUserInfo();
+        if(userInfo){
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+
+            const res = await api.post(`Policy/nudge-authorizer?policyId=${policy.id}`, { "policyId": policy.id }, userInfo?.access_token);
+            if (res?.status == 200) {
+                toast.success('Reminder sent!');
+                setRefreshData(!refreshData)
+            } else {
+                toast.error('Error sending reminder')
+            }
+        
         }
+
+       
     }
 
     const handleDelete = async (e: any, policy: any) => {

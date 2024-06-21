@@ -15,11 +15,10 @@ import warningElipse from '../../../assets/images/Ellipse-warning.png';
 import SureToDeletePolicyModal from "../../modals/sureToDeletePolicyModal";
 import UpdatePolicyModal from "../../modals/updatePolicyModal";
 import { shortenString } from "../../../util";
+import dangerElipse from '../../../assets/images/Ellipse-danger.png';
 
 const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
-    const userDat = localStorage.getItem('loggedInUser') || '';
-    const data = JSON.parse(userDat);
-    const userName = data?.profile?.sub.split('\\').pop();
+    
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
 
@@ -48,9 +47,10 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
+            // console.log({ gotten: userInfo })({ gotten: userInfo })
             if (userInfo) {
-                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
+                let userName = userInfo?.profile?.sub.split('\\')[1]
+                const res = await api.get(`Dashboard/authorizer-policy?userName=${userName}`, `${userInfo.access_token}`);
                 if (res?.data) {
                     let allPolicy = res?.data.filter((pol: IPolicy) => !pol.markedForDeletion)
                     setPolicies(allPolicy.reverse());
@@ -59,7 +59,7 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     // loginUser()
                     // toast.error('Session expired!, You have been logged out!!')
                 }
-                console.log({ response: res })
+                // console.log({ gotten: userInfo })({ response: res })
             }
 
         } catch (error) {
@@ -76,9 +76,10 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
+            // console.log({ gotten: userInfo })({ gotten: userInfo })
             if (userInfo) {
-                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
+                let userName = userInfo?.profile?.sub.split('\\')[1]
+                const res = await api.get(`Dashboard/authorizer-policy?userName=${userName}`, `${userInfo.access_token}`);
                 if (res?.data) {
 
                     setLoading(false)
@@ -93,7 +94,7 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     // loginUser()
                     // toast.error('Session expired!, You have been logged out!!')
                 }
-                console.log({ response: res })
+                // console.log({ gotten: userInfo })({ response: res })
             }
 
         } catch (error) {
@@ -107,9 +108,10 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
+            // console.log({ gotten: userInfo })({ gotten: userInfo })
             if (userInfo) {
-                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
+                let userName = userInfo?.profile?.sub.split('\\')[1]
+                const res = await api.get(`Dashboard/authorizer-policy?userName=${userName}`, `${userInfo.access_token}`);
                 if (res?.data) {
 
                     setLoading(false)
@@ -124,7 +126,7 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     // loginUser()
                     // toast.error('Session expired!, You have been logged out!!')
                 }
-                console.log({ response: res })
+                // console.log({ gotten: userInfo })({ response: res })
             }
 
         } catch (error) {
@@ -148,23 +150,23 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
 
 
-    const handleGetAllDepts = async () => {
-        // setLoading(true)
-        try {
-            const res = await getAllDepartments(`filter?subsidiaryName=FSDH+Merchant+Bank`, `${data?.access_token}`);
-            console.log({ dataHere: res })
+    // const handleGetAllDepts = async () => {
+    //     // setLoading(true)
+    //     try {
+    //         const res = await getAllDepartments(`filter?subsidiaryName=FSDH+Merchant+Bank`, `${data?.access_token}`);
+    //         // console.log({ gotten: userInfo })({ dataHere: res })
 
-            if (res?.data) {
-                setDepts(res?.data)
-            } else {
+    //         if (res?.data) {
+    //             setDepts(res?.data)
+    //         } else {
 
-            }
-            console.log({ response: res })
-        } catch (error) {
+    //         }
+    //         // console.log({ gotten: userInfo })({ response: res })
+    //     } catch (error) {
 
-        }
+    //     }
 
-    }
+    // }
 
     const handleDeptSelection = (val: string) => {
         if (val == 'all') {
@@ -195,7 +197,7 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     useEffect(() => {
         fetchData();
-        handleGetAllDepts();
+        // handleGetAllDepts();
     }, [refreshData])
 
 
@@ -220,31 +222,36 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     const handlePolicyDelete = async (e: any) => {
         e.stopPropagation();
-        const res = await api.post(`Policy/delete/request`, { "id": policyId, "username": userName }, data?.access_token);
-        if (res?.status == 200) {
-            toast.success('Delete request sent for approval!');
-            setDeteletPolicyModal(false);
-            setRefreshData(!refreshData)
-        } else {
-            toast.error('Failed to delete policy')
+        let userInfo = await getUserInfo();
+        if(userInfo){
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.post(`Policy/delete/request`, { "id": policyId, "username": userName }, userInfo?.access_token);
+            if (res?.status == 200) {
+                toast.success('Delete request sent for approval!');
+                setDeteletPolicyModal(false);
+                setRefreshData(!refreshData)
+            } else {
+                toast.error('Failed to delete policy')
+            }
         }
+        
     }
 
-    const handleApprovePolicy = async (e: any, policy: IPolicy) => {
+    const handleSendReminder = async (e: any, policy: IPolicy) => {
         setLoading(true)
         e.stopPropagation();
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
             if (userInfo) {
-                const res = await api.post(`Policy/authorize?policyId=${policy.id}`,
-                    { "id": policy.id, authorizerName: `${userInfo.profile.given_name} ${userInfo.profile.family_name}` }, data?.access_token);
+                const res = await api.post(`Policy/reminder?policyId=${policy.id}`,
+                    { "id": policy.id, authorizerName: `${userInfo.profile.given_name} ${userInfo.profile.family_name}` }, userInfo?.access_token);
                 if (res?.status == 200) {
                     setLoading(false)
-                    toast.success('Policy approved!');
+                    toast.success('Reminder Sent!');
                     setRefreshData(!refreshData)
                 } else {
-                    toast.error('Error approving policy')
+                    toast.error('Error sending reminder!')
+                    setLoading(false)
                 }
             } else {
                 toast.error('Network error!')
@@ -268,14 +275,14 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
         e.stopPropagation();
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
+            // console.log({ gotten: userInfo })({ gotten: userInfo })
             if (userInfo) {
                 const res = await api.post(`Policy/reject`, {
                     "ids": [
                         policy.id
                     ],
                     "authorizerUsername": `${userInfo.profile.given_name} ${userInfo.profile.family_name}`, "comment": 'wrong docs'
-                }, data?.access_token)
+                }, userInfo?.access_token)
                 if (res?.status == 200) {
                     setLoading(false)
                     toast.success('Policy rejected!');
@@ -315,7 +322,7 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     useEffect(() => {
         fetchData();
-        handleGetAllDepts();
+        // handleGetAllDepts();
     }, [refreshData])
 
     return (
@@ -333,9 +340,17 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     setRefreshData(!refreshData)
                 }}
             />
+
+            {/* <RejectReasonModal
+                show={rejReasonModal}
+                pol={policy}
+                off={() => {
+                    setRejReasonModal(false);
+                }}
+            /> */}
             <div className="d-flex w-100 justify-content-between">
                 <div className="d-flex gap-4">
-                    <div className="d-flex align-items-center" style={{ position: 'relative' }}>
+                    <div className="d-flex align-items-center gap-2" style={{ position: 'relative' }}>
                         <FormControl
                             onChange={(e) => setQuery(e.target.value)}
                             placeholder="Search by Name, Department..."
@@ -349,8 +364,7 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                         <Button
                             disabled={query == ''}
                             onClick={() => handleSearch()}
-
-                            variant="primary" style={{ minWidth: '100px', marginLeft: '-5px' }}>Search</Button>
+                            variant="primary" style={{ minWidth: '100px', marginRight: '-5px', minHeight:'2.4em' }}>Search</Button>
                     </div>
                     {/* <Form.Select onChange={(e) => handleDeptSelection(e.currentTarget.value)} className="custom-select"
                         style={{ maxWidth: '170px' }}>
@@ -362,11 +376,11 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
                 </div>
                 <div className="">
-                    {/* <Button
+                    <Button
                         variant="primary"
                         style={{ minWidth: '100px' }}
                         onClick={() => handleCreatePolicy()}
-                    >Create New Policy</Button> */}
+                    >Create New Policy</Button>
                 </div>
             </div>
 
@@ -392,7 +406,7 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                 <tr >
                                     <th scope="col" className="bg-primary text-light">#</th>
                                     <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                    <th scope="col" className="bg-primary text-light">Authorizer</th>
+                                    <th scope="col" className="bg-primary text-light">Initiator</th>
                                     <th scope="col" className="bg-primary text-light">Date Uploaded</th>
                                     <th scope="col" className="bg-primary text-light">Status</th>
                                     <th scope="col" className="bg-primary text-light">Action</th>
@@ -409,11 +423,12 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
                                             <td>{policy.authorizedBy}</td>
                                             <td>{moment(policy.uploadTime).format('MMM DD YYYY')}</td>
-                                            <td className={`text-${policy.isAuthorized ? 'success' : 'warning'}`}>
-                                                <img src={policy.isAuthorized ? successElipse : warningElipse} height={'10px'} />
+                                            <td className={`text-${policy.isAuthorized?'success':!policy.isAuthorized  && !policy.isRejected?'warning':!policy.isAuthorized  && policy.isRejected?'danger':'primary'}`}>
+                                                <img src={policy.isAuthorized?successElipse:!policy.isAuthorized  && !policy.isRejected?warningElipse:!policy.isAuthorized  && policy.isRejected?dangerElipse:''} height={'10px'} />
                                                 {'  '}
-                                                <span >{policy.isAuthorized ? 'Approved' : 'Pending'}</span>
-
+                                                <span >{policy.isAuthorized &&'Approved'}{!policy.isAuthorized  && !policy.isRejected &&'Pending'} {!policy.isAuthorized  && policy.isRejected &&'Rejected'}</span>
+                                                {/* : !policy.isAuthorized && ? 'Pending ' : policy.isAuthorized && policy.isRejected?'Rejected':'' */}
+                                                {/* <span onClick={(e) => handleShowReasonForRej(e, policy)}>{policy.isRejected && <i className="bi bi-file-earmark-excel text-danger"></i>}</span> */}
                                             </td>
                                             <td className="table-icon">
                                                 <i className=" bi bi-three-dots"></i>
@@ -516,24 +531,13 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                     </div>
                                                                 </ListGroupItem>
 
-                                                                {/* <ListGroupItem
-                                                                onClick={(e) => handleUpdate(e, policy)}
+                                                                <ListGroupItem
+                                                                    onClick={(e) =>  handleSendReminder(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
                                                                             <i className="bi bi-calendar-event"></i>
-                                                                            Update Deadline
-                                                                        </div>
-                                                                    </span>
-                                                                </ListGroupItem> */}
-
-                                                                <ListGroupItem
-                                                                    
-                                                                >
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-trash"></i>
-                                                                            View Policy
+                                                                            Send Reminder
                                                                         </div>
                                                                     </span>
                                                                 </ListGroupItem>
@@ -545,7 +549,7 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
                                                                             <i className="bi bi-download"></i>
-                                                                            Download Policy
+                                                                           Download
                                                                         </div>
                                                                     </span>
                                                                 </ListGroupItem>
@@ -571,37 +575,15 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                             style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
                                                             <ListGroup>
                                                                 <ListGroupItem
-
+                                                                    onClick={(e) => handleEdit(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
                                                                             <i className="bi bi-file-text"></i>
-                                                                            View Policy
+                                                                            Edit Policy
                                                                         </div>
                                                                     </span>
                                                                 </ListGroupItem>
-
-                                                                <ListGroupItem
-                                                                    onClick={(e) => handleApprovePolicy(e, policy)}
-                                                                >
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-file-text"></i>
-                                                                            Approve Policy
-                                                                        </div>
-                                                                    </span>
-                                                                </ListGroupItem>
-
-                                                                {/* <ListGroupItem
-                                                                    onClick={(e) => handleRejectPolicy(e, policy)}
-                                                                >
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-file-text"></i>
-                                                                            Reject Policy
-                                                                        </div>
-                                                                    </span>
-                                                                </ListGroupItem> */}
 
                                                                 <ListGroupItem
                                                                     onClick={(e) => handleDownloadPolicy(e, policy)}
@@ -610,21 +592,12 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
                                                                             <i className="bi bi-download"></i>
-                                                                            Download Policy
+                                                                           Download
                                                                         </div>
                                                                     </span>
                                                                 </ListGroupItem>
 
-                                                                {/* <ListGroupItem
-                                                                onClick={(e)=>handleSendAuthorizationReminder(e,policy)}
-                                                                >
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-file-text"></i>
-                                                                            Send Reminder
-                                                                        </div>
-                                                                    </span>
-                                                                </ListGroupItem> */}
+                                                                
 
                                                                 {/* <ListGroupItem
                                                                     disabled={policy?.markedForDeletion}

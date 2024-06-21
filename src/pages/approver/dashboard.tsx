@@ -4,7 +4,7 @@ import SideBar from "../../components/bars/sidebar";
 import TopBar from "../../components/bars/topbar";
 import { Outlet } from "react-router-dom";
 import UserSideBar from "../../components/bars/userSidebar";
-import { loginUser } from "../../controllers/auth";
+import { getUserInfo, loginUser, logoutUser } from "../../controllers/auth";
 import AdminSideBar from "../../components/bars/adminsidebar";
 import ApproverSideBar from "../../components/bars/approversidebar";
 import AdminDashboardPage from "./dashboardpage";
@@ -13,12 +13,11 @@ import { IPolicy } from "../../interfaces/policy";
 import { IDept } from "../../interfaces/dept";
 import { getPolicies } from "../../controllers/policy";
 import api from "../../config/api";
+import { toast } from "react-toastify";
 
 
 
-const ApproverDashboardContainer = () => {const userDat = localStorage.getItem('loggedInUser') || '';
-const data = JSON.parse(userDat);
-const userName = data?.profile?.sub.split('\\').pop();
+const ApproverDashboardContainer = () => {
 const [policies, setPolicies] = useState<IPolicy[]>([]);
 const [depts, setDepts] = useState<IDept[]>([]);
 // const [regUsers, setRegUsers] = useState<User[]>([]);
@@ -36,13 +35,15 @@ const [userDBInfo,setUserDBInfo]  = useState<IUserDashboard>()
 const getInitiatorDashboard = async () => {
     setLoading(true)
     try {
-        const res = await api.get(`Dashboard/initiator?userName=${userName}`, `${data?.access_token}`);
+        let userInfo = await getUserInfo();
+        if(userInfo?.expired){
+            await logoutUser()
+        } else {
+        let userName = userInfo?.profile?.sub.split('\\')[1]
+        const res = await api.get(`Dashboard/authorizer?userName=${userName}`, `${userInfo?.access_token}`);
         setUserDBInfo(res?.data);
-        console.log({here:res})
+        // console.log({ gotten: userInfo })({here:res})
         if (res?.data) {
-            let allAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>data.isAuthorized);
-            let unAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>!data.isAuthorized);
-            
             setUserDBInfo(res?.data);
             // setTotalAttested(allAttested.length);
             // setTotalNotAttested(unAttested.length)
@@ -50,10 +51,11 @@ const getInitiatorDashboard = async () => {
             setLoading(false);
         } else {
             setLoading(false);
-            // loginUser()
-            // toast.error('Session expired!, You have been logged out!!')
+            toast.error('Unauthorised user!')
         }
-        console.log({ response: res })
+        }
+        
+        // console.log({ gotten: userInfo })({ response: res })
     } catch (error) {
 
     }

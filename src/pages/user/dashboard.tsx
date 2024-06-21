@@ -22,9 +22,10 @@ const UserDashboardContainer = () => {
         try {
             let userInfo = await getUserInfo();
             let userName = userInfo?.profile?.sub.split('\\')[1]
-            console.log({ timer: userInfo?.expired, remaining: userInfo?.expires_in })
+            // console.log({ gotten: userInfo })({ timer: userInfo?.expired, remaining: userInfo?.expires_in })
             if (userInfo?.expired) {
-              await  loginUser()
+                await logoutUser()
+                toast.error('Session timed out!');
             } else {
                 const res = await getPolicies(`Dashboard/user?userName=${userName}`, `${userInfo?.access_token}`);
                 setUserDBInfo(res?.data);
@@ -32,14 +33,14 @@ const UserDashboardContainer = () => {
                     setUserDBInfo(res?.data);
                     setLoading(false);
                 } else {
-                    loginUser()
-                    toast.error('Network error!');
+                   await logoutUser()
+                    toast.error('Unauthorised user!');
                 }
 
             }
 
         } catch (error) {
-            console.log(error)
+            // console.log({ gotten: userInfo })(error)
         }
 
 

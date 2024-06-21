@@ -17,9 +17,7 @@ import UpdatePolicyModal from "../../modals/updatePolicyModal";
 import { shortenString } from "../../../util";
 
 const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
-    // const userDat = localStorage.getItem('loggedInUser') || '';
-    // const data = JSON.parse(userDat);
-    // const userName = data?.profile?.sub.split('\\').pop();
+    
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
 
@@ -48,7 +46,7 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
+            
             if (userInfo) {
                 let userInfo = await getUserInfo();
             let userName = userInfo?.profile?.sub.split('\\')[1]
@@ -61,7 +59,7 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     // loginUser()
                     // toast.error('Session expired!, You have been logged out!!')
                 }
-                console.log({ response: res })
+                
             }
 
         } catch (error) {
@@ -78,7 +76,7 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
+           
             if (userInfo) {
                 let userInfo = await getUserInfo();
             let userName = userInfo?.profile?.sub.split('\\')[1]
@@ -97,7 +95,7 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     // loginUser()
                     // toast.error('Session expired!, You have been logged out!!')
                 }
-                console.log({ response: res })
+                
             }
 
         } catch (error) {
@@ -111,7 +109,6 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
             if (userInfo) {
                 let userInfo = await getUserInfo();
             let userName = userInfo?.profile?.sub.split('\\')[1]
@@ -130,7 +127,7 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     // loginUser()
                     // toast.error('Session expired!, You have been logged out!!')
                 }
-                console.log({ response: res })
+               
             }
 
         } catch (error) {
@@ -160,14 +157,14 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
     //         let userInfo = await getUserInfo();
     //         let userName = userInfo?.profile?.sub.split('\\')[1]
     //         const res = await getAllDepartments(`filter?subsidiaryName=FSDH+Merchant+Bank`, `${userInfo?.access_token}`);
-    //         console.log({ dataHere: res })
+    //         // console.log({ gotten: userInfo })({ dataHere: res })
 
     //         if (res?.data) {
     //             setDepts(res?.data)
     //         } else {
 
     //         }
-    //         console.log({ response: res })
+    //         // console.log({ gotten: userInfo })({ response: res })
     //     } catch (error) {
 
     //     }
@@ -230,7 +227,8 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
         e.stopPropagation();
         let userInfo = await getUserInfo();
             if (userInfo) {
-                const res = await api.post(`Policy/delete/request`, { "id": policyId, "username": "majadi" }, userInfo?.access_token);
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+                const res = await api.post(`Policy/delete/request`, { "id": policyId, "username": userName }, userInfo?.access_token);
                 if (res?.status == 200) {
                     toast.success('Delete request sent for approval!');
                     setDeteletPolicyModal(false);

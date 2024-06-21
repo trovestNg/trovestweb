@@ -14,10 +14,6 @@ const AdminSideBar: React.FC<any> = ({ payload }) => {
     const currentPath = useLocation().pathname;
     const [showPromt,setShowPromt] = useState(false);
 
-    // const userDat = localStorage.getItem('loggedInUser') || '';
-    // const data = JSON.parse(userDat);
-    // const userName = data?.profile?.sub.split('\\').pop();
-
     const [policies, setPolicies] = useState<IPolicy[]>([]);
 
     
@@ -27,9 +23,7 @@ const AdminSideBar: React.FC<any> = ({ payload }) => {
     }
 
     const handleUserLogout = async () => {
-        // navigate('/logout', {replace:true});
-        // console.log(JSON.stringify(localStorage))
-        // localStorage.clear()
+        
         const res = await logoutUser();
 
         // window.history.pushState(null, '', window.location.href);
@@ -41,13 +35,8 @@ const AdminSideBar: React.FC<any> = ({ payload }) => {
         // window.history.replaceState(null,'',window.location.href)
 
 
-
-
-        // // console.log(res);
-
     }
 
-    console.log(currentPath)
 
     const navlinksAdmin = [
         {
@@ -98,17 +87,17 @@ const AdminSideBar: React.FC<any> = ({ payload }) => {
     const getInitiatorPolicies = async () => {
         try {
             let userInfo = await getUserInfo();
-            // console.log({ gotten: userInfo })
+            
             if (userInfo) {
-                const res = await api.get(`Dashboard/initiator-policy?userName=${"majadi"}`, `${userInfo.access_token}`);
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo?.access_token}`);
                 if (res?.data) {
                     let allPolicy = res?.data.filter((pol: IPolicy) => pol.markedForDeletion)
                     setPolicies(allPolicy.reverse());
                     // setLoading(false)
-                } else if(userInfo.expired) {
+                } else if(userInfo?.expired) {
                     logoutUser()
                 }
-                // console.log({ response: res })
             }
 
         } catch (error) {

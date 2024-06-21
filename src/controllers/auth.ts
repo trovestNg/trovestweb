@@ -19,9 +19,9 @@ export const loginUser = async () => {
 export const handleCallback = async () => {
   try {
     const user = await userManager.signinRedirectCallback();
-    console.log('User signed in:', user);
+    // console.log({ gotten: userInfo })('User signed in:', user);
     // Save access token to local storage
-    localStorage.setItem('loggedInUser', JSON.stringify(user));
+    // localStorage.setItem('loggedInUser', JSON.stringify(user));
     return user;
     
   } catch (error) {
@@ -41,7 +41,7 @@ export const getUserInfo = async () => {
       toast.error('Unable to get user!')
       return user
     }
-    console.log('User information:', user);
+    // console.log({ gotten: userInfo })('User information:', user);
     let role = 'Infosec';
 
     // PROD

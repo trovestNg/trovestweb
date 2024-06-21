@@ -6,15 +6,11 @@ import checked from '../../assets/images/check.png';
 import timer from '../../assets/images/deadline.png';
 import error from '../../assets/images/error.png';
 import { Tabs, Tab } from "react-bootstrap";
-import UploadedPoliciesTab from "../../components/tabs/admintabs/uploaded-policies-tab";
-import UserAllPoliciesTab from "../../components/tabs/userTabs/user-all-policies-tab";
-import UserNotAttestedPoliciesTab from "../../components/tabs/userTabs/user-not-attested-policies-tab";
-import UserAttestedPoliciesTab from "../../components/tabs/userTabs/attested-policies-tab";
 import { getPolicies } from "../../controllers/policy";
 import { IPolicy } from "../../interfaces/policy";
 import { IDept } from "../../interfaces/dept";
 import { toast } from "react-toastify";
-import { loginUser } from "../../controllers/auth";
+import { getUserInfo, loginUser } from "../../controllers/auth";
 import CreatePolicyModal from "../../components/modals/createPolicyModal";
 import AdminPendingDeleteTab from "../../components/tabs/admintabs/adminPendingDeleteTab";
 import AdminDeletedPoliciesTab from "../../components/tabs/admintabs/adminDeletedPoliciesTab";
@@ -25,8 +21,7 @@ import ApproverDeletedPoliciesTab from "../../components/tabs/approvertabs/appro
 
 const ApproverDeletedPoliciesPage = () => {
 
-    const userDat = localStorage.getItem('loggedInUser') || '';
-    const data = JSON.parse(userDat);
+    
     const [policies, setPolicies] = useState<IPolicy[]>([]);
     const [depts, setDepts] = useState<IDept[]>([]);
     // const [regUsers, setRegUsers] = useState<User[]>([]);
@@ -79,7 +74,9 @@ const ApproverDeletedPoliciesPage = () => {
     const getAllPolicies = async () => {
         setLoading(true)
         try {
-            const res = await getPolicies(`policy?subsidiaryName=FSDH Merchant Bank`, `${data?.access_token}`);
+            let userInfo = await getUserInfo();
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await getPolicies(`policy?subsidiaryName=FSDH Merchant Bank`, `${userInfo?.access_token}`);
             if (res?.data) {
                 let allAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>data.isAuthorized);
                 let unAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>!data.isAuthorized);
@@ -94,7 +91,7 @@ const ApproverDeletedPoliciesPage = () => {
                 // loginUser()
                 toast.error('Session expired!, You have been logged out!!')
             }
-            console.log({ response: res })
+            // console.log({ gotten: userInfo })({ response: res })
         } catch (error) {
 
         }
@@ -127,10 +124,10 @@ const ApproverDeletedPoliciesPage = () => {
                     <Tab eventKey="uploaded" title="Policies Pending Deletion"
                     tabClassName="px-3"
                     >
-                        <ApproverPendingDeleteTab handleCreatePolicy={ ()=>navigate('/admin/create-policy')} />
+                        <ApproverPendingDeleteTab />
                     </Tab>
                     <Tab eventKey="approved" title="Deleted Policies">
-                    <ApproverDeletedPoliciesTab handleCreatePolicy={ ()=>navigate('/admin/create-policy')} />
+                    <ApproverDeletedPoliciesTab  />
                     </Tab>
                     
                 </Tabs>

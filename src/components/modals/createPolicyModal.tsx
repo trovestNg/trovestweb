@@ -44,7 +44,7 @@ const CreatePolicyModal: React.FC<any> = ({ show, off }) => {
         if(userInfo){
            
             const res = await api.post(`policy/upload?UploaderName=${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,newBody, `${userInfo?.access_token}`)
-            console.log(res)
+        
         }
         
 

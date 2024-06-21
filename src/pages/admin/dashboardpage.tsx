@@ -6,7 +6,6 @@ import checked from '../../assets/images/check.png';
 import timer from '../../assets/images/deadline.png';
 import error from '../../assets/images/error.png';
 import { Tabs, Tab } from "react-bootstrap";
-import UploadedPoliciesTab from "../../components/tabs/admintabs/uploaded-policies-tab";
 import AdminUploadedPoliciesTab from "../../components/tabs/admintabs/adminUploadedPoliciesTab";
 import { getPolicies } from "../../controllers/policy";
 import { IPolicy } from "../../interfaces/policy";
@@ -85,7 +84,7 @@ const AdminDashboardPage = () => {
 
 
         } catch (error) {
-            console.log(error)
+            // console.log({ gotten: userInfo })(error)
         }
     }
 

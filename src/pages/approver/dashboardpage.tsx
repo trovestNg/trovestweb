@@ -11,7 +11,7 @@ import { getPolicies } from "../../controllers/policy";
 import { IPolicy } from "../../interfaces/policy";
 import { IDept } from "../../interfaces/dept";
 import { toast } from "react-toastify";
-import { loginUser } from "../../controllers/auth";
+import { getUserInfo, loginUser } from "../../controllers/auth";
 import CreatePolicyModal from "../../components/modals/createPolicyModal";
 import { useNavigate } from "react-router-dom";
 // import AdminApprovedPoliciesTab from "./admnApprovedPoliciesTab";
@@ -25,9 +25,6 @@ import ApproverApprovedPoliciesTab from "../../components/tabs/approvertabs/appr
 const ApproverDashboardPage = () => {
     const navigate = useNavigate()
 
-    const userDat = localStorage.getItem('loggedInUser') || '';
-    const data = JSON.parse(userDat);
-    const userName = data?.profile?.sub.split('\\').pop();
     const [policies, setPolicies] = useState<IPolicy[]>([]);
     const [depts, setDepts] = useState<IDept[]>([]);
     // const [regUsers, setRegUsers] = useState<User[]>([]);
@@ -42,10 +39,10 @@ const ApproverDashboardPage = () => {
 
     const dashCardInfo = [
         {
-            title: 'Uploaded Policies',
+            title: 'All Uploaded Policies',
             img: openBook,
             color : 'primary',
-            count: userDBInfo?.totalUploadedPolicyByInitiator,
+            count: userDBInfo?.totalUploadedPolicy,
             icon: '',
 
         },
@@ -85,16 +82,13 @@ const ApproverDashboardPage = () => {
     const getInitiatorDashboard = async () => {
         setLoading(true)
         try {
-            const res = await api.get(`Dashboard/initiator?userName=${userName}`, `${data?.access_token}`);
+            let userInfo = await getUserInfo();
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.get(`Dashboard/authorizer?userName=${userName}`, `${userInfo?.access_token}`);
             setUserDBInfo(res?.data);
-            console.log({here:res})
+            // console.log({ gotten: userInfo })({here:res})
             if (res?.data) {
-                let allAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>data.isAuthorized);
-                let unAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>!data.isAuthorized);
-                
                 setUserDBInfo(res?.data);
-                // setTotalAttested(allAttested.length);
-                // setTotalNotAttested(unAttested.length)
                 setPolicies([]);
                 setLoading(false);
             } else {
@@ -102,7 +96,7 @@ const ApproverDashboardPage = () => {
                 // loginUser()
                 // toast.error('Session expired!, You have been logged out!!')
             }
-            console.log({ response: res })
+            // console.log({ gotten: userInfo })({ response: res })
         } catch (error) {
     
         }
@@ -142,7 +136,7 @@ const ApproverDashboardPage = () => {
                     <Tab eventKey="approved" title="Approved Policies">
                     < ApproverApprovedPoliciesTab handleCreatePolicy={()=>navigate('/admn/create-policy')} />
                     </Tab>
-                    <Tab eventKey="pending" title="Pending Policies">
+                    <Tab eventKey="pending" title="Policies Pending Approval">
                     <ApproverPendingPolicyTab handleCreatePolicy={()=>navigate('/admn/create-policy')} />
                     </Tab>
 

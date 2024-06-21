@@ -15,9 +15,6 @@ import PolicyCreatedSuccessModal from "../../components/modals/policyCreatedSucc
 const EditPolicyPage: React.FC<any> = () => {
     const [policyDoc, setPolicyDoc] = useState('');
     const [subSidiaries, setSubSidiaries] = useState<IDept[]>();
-    const userDat = localStorage.getItem('loggedInUser') || '';
-    const data = JSON.parse(userDat);
-    const userName = data?.profile?.sub.split('\\').pop();
     const navigate = useNavigate();
 
     const [showCreatePrompt, setShowCreatePrompt] =useState(false)
@@ -114,15 +111,17 @@ const EditPolicyPage: React.FC<any> = () => {
     const handleGetDepts = async () => {
         // setLoading(true)
         try {
-            const res = await api.get(`Subsidiaries`, `${data?.access_token}`);
-            console.log({ dataHere: res })
+            let userInfo = await getUserInfo();
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.get(`Subsidiaries`, `${userInfo?.access_token}`);
+            // console.log({ gotten: userInfo })({ dataHere: res })
 
             if (res?.data) {
                 setSubSidiaries(res?.data)
             } else {
                 
             }
-            console.log({ response: res })
+            // console.log({ gotten: userInfo })({ response: res })
         } catch (error) {
 
         }
@@ -130,7 +129,7 @@ const EditPolicyPage: React.FC<any> = () => {
     }
 
     const createNewPolicy = async (body: any) => {
-        console.log({ bodyHere: body });
+        // console.log({ gotten: userInfo })({ bodyHere: body });
         setCreateLoading(true)
   let formData = new FormData()
         
@@ -145,9 +144,9 @@ const EditPolicyPage: React.FC<any> = () => {
         let userInfo = await getUserInfo();
 
         if (userInfo) {
-
-            const res = await api.post(`policy/upload?userName=majadi`, formData, `${userInfo?.access_token}`)
-            console.log(res)
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.post(`policy/upload?userName=${userName}`, formData, `${userInfo?.access_token}`)
+            // console.log({ gotten: userInfo })(res)
             if(res?.statusText=="Created"){
                 setShowCreatePrompt(false)
                 setpolicyCreatedSucc(true)

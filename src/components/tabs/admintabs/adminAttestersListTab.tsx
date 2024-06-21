@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Badge, Button, Card, Form, FormControl, FormSelect, ListGroup, ListGroupItem, Spinner, Table } from "react-bootstrap";
-import { useNavigate,useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { IPolicy } from "../../../interfaces/policy";
 import { IDept } from "../../../interfaces/dept";
 import moment from "moment";
@@ -14,11 +14,26 @@ import successElipse from '../../../assets/images/Ellipse-success.png';
 import warningElipse from '../../../assets/images/Ellipse-warning.png';
 import { shortenString } from "../../../util";
 import { IUser } from "../../../interfaces/user";
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
-    // const userDat = localStorage.getItem('loggedInUser') || '';
-    // const data = JSON.parse(userDat);
-    // const userName = data?.profile?.sub.split('\\').pop();
+
+    type TPolicy = {
+        attestationTime: string,
+        deadlineTime: string
+        department: string
+        email: string
+        userName: string
+        serialNumber:number
+    }
+
+
+    type Column = {
+        header: string;
+        dataKey: keyof TPolicy;
+    };
+
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
     const [policies, setPolicies] = useState<IUser[]>([]);
@@ -30,27 +45,27 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const [userSearch, setUserSearch] = useState('');
     const { id } = useParams();
     const [query, setQuery] = useState<string>('');
-    const [policyName,setPolicyName] = useState<string>('')
+    const [policyName, setPolicyName] = useState<string>('')
 
 
     const getUploadedPolicies = async () => {
         // setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
+            
             if (userInfo) {
                 const res = await api.get(`Attest/${id}`, `${userInfo.access_token}`);
-                console.log({listHere:res?.data})
+                
                 if (res?.data) {
                     setPolicies(res?.data)
                     setPolicyName(res?.data[0]?.policyName)
                     setLoading(false)
                 } else {
-                   
+
                     toast.error('Network error!')
                     setLoading(false)
                 }
-                console.log({ response: res })
+               
             }
 
         } catch (error) {
@@ -58,75 +73,79 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
         }
     }
 
-  
+    const handleDownloadPolicy = (pol: any) => {
+        // toast.success('Downloading file')
+        window.open(pol, '_blank');
 
-    // const handleGetDepts = async () => {
-    //     // setLoading(true)
-    //     try {
-    //         const res = await getAllDepartments(`filter?subsidiaryName=FSDH+Merchant+Bank`, `${data?.access_token}`);
-    //         console.log({ dataHere: res })
-
-    //         if (res?.data) {
-    //             setDepts(res?.data)
-    //         } else {
-
-    //         }
-    //         console.log({ response: res })
-    //     } catch (error) {
-
-    //     }
-
-    // }
+    }
 
     const handleSearch = () => {
-
         setBySearch(true);
         setRefreshData(!refreshData)
-
     }
 
     const handleSearchByPolicyNameOrDept = async () => {
-        // setLoading(true)
+
         try {
+            setLoading(true)
             let userInfo = await getUserInfo();
-            let userName = userInfo?.profile?.sub.split('\\')[1]
-            const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo?.access_token}`);
-            if (res?.data) {
+            // // console.log({ gotten: userInfo })({ gotten: userInfo })
+            if (userInfo) {
+                const res = await api.get(`Policy/defaulters?policyId=${id}`, `${userInfo.access_token}`);
+                // // console.log({ gotten: userInfo })({ listHere: res?.data })
+                if (res?.data) {
+                    let filtered = res?.data.filter((policy: IUser) => policy.userName.toLowerCase().includes(userSearch.toLowerCase())
+                    );
+                    setPolicies(filtered.reverse());
+                    setPolicyName(res?.data[0]?.policyName)
+                    setLoading(false)
+                } else {
 
-                setLoading(false)
-
-                let filtered = res?.data.filter((policy: IPolicy) =>
-                    policy.fileName.toLowerCase().includes(query.toLowerCase()) && !policy.isAuthorized && !policy.markedForDeletion
-                );
-                setPolicies(filtered.reverse());
-
-
+                    toast.error('Network error!')
+                    setLoading(false)
+                }
 
             }
+
         } catch (error) {
-            console.log(error)
+
         }
-
-
     }
 
-    // const getBySort = async () => {
-    //     setLoading(true)
-    //     try {
-    //         const res = await getPolicies(`filterByDepartment?departmentName=${selectedDept}`, `${data?.access_token}`);
-    //         if (res?.data) {
-    //             setPolicies(res?.data);
-    //             setLoading(false);
-    //         } else {
-    //             toast.error('Fail to sort!')
-    //             setLoading(false);
-    //             setSortByDept(false);
-    //         }
-    //         console.log({ response: res })
-    //     } catch (error) {
 
-    //     }
-    // }
+
+    const downloadPdf = () => {
+        const doc = new jsPDF();
+        // Define the columns
+        const columns: Column[] = [
+            { header: 'S/N', dataKey: 'serialNumber' },
+            { header: 'Staff Name', dataKey: 'userName' },
+            { header: 'Emails', dataKey: 'email' },
+            { header: 'Department', dataKey: 'department' },
+            { header: 'Date Attested', dataKey: 'attestationTime' },
+            { header: 'Deadline Date', dataKey: 'deadlineTime' }
+        ];
+
+        // Create rows from the policies array
+        const rows = policies.map((policy,index) => ({
+            userName: policy.userName,
+            email: policy.email,
+            department: policy.department,
+            attestationTime: moment(policy.attestationTime).format('YYYY-MM-DD') || 'N/A',
+            deadlineTime: moment(policy.deadlineTime).format('YYYY-MM-DD') || 'N/A',
+            serialNumber :index +1
+        }));
+
+        autoTable(doc, {
+            head: [columns.map(col => col.header)],
+            body: rows.map(row => columns.map(col => row[col.dataKey] as string)),
+            startY: 20,
+        });
+
+        doc.save(`${policies[0].policyName}.pdf`);
+    };
+
+
 
     const handleDeptSelection = (val: string) => {
         setSelectedDept(val);
@@ -145,14 +164,10 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
         }
     }
 
-    const handleClick = (e: any) => {
-        e.stopPropagation();
-        toast.error('hii')
-    }
-
-    const handleGetAttestersList = (e: any,pol:IPolicy) => {
-        e.stopPropagation();
-        navigate(`/admin/attesters-list/${pol.id}`);
+    const handleClear = () => {
+        setBySearch(false);
+        setUserSearch('')
+        setRefreshData(!refreshData)
     }
 
 
@@ -165,32 +180,34 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
         <div className="w-100">
             <div className="d-flex w-100 justify-content-between">
                 <div className="d-flex gap-4">
-                    <div className="d-flex">
-                        <FormControl
+                <div className="d-flex align-items-center gap-3" style={{ position: 'relative' }}>
+                    <FormControl
                             onChange={(e) => setUserSearch(e.target.value)}
-                            placeholder="Search by Name, Department..."
+                            placeholder="Search by name of user"
+                            value={userSearch}
                             className="py-2" style={{ minWidth: '350px' }} />
+                        <i
+                            className="bi bi-x-lg"
+                            onClick={handleClear}
+                            style={{ marginLeft: '310px', display: userSearch == '' ? 'none' : 'flex', cursor: 'pointer', float: 'right', position: 'absolute' }}></i>
+
                         <Button
                             disabled={userSearch == ''}
                             onClick={() => handleSearch()}
-
-                            variant="primary" style={{ minWidth: '100px', marginLeft: '-5px' }}>Search</Button>
+                            variant="primary" style={{ minWidth: '100px', marginRight: '-5px', minHeight: '2.4em' }}>Search</Button>
                     </div>
-                    {/* <Form.Select onChange={(e) => handleDeptSelection(e.currentTarget.value)} className="custom-select" style={{ maxWidth: '170px' }}>
-                        <option>Select Department</option>
-                        {
-                            depts.map((dept) => <option key={dept.id} value={dept.name}>{dept.name}</option>)
-                        }
-                    </Form.Select> */}
+                    
 
                 </div>
-                <div className="">
-                    <Button
-                        variant="primary"
-                        style={{ minWidth: '100px' }}
-                        onClick={() => handleCreatePolicy()}
-                    >Download List</Button>
-                </div>
+                {
+                    policies.length >= 1 &&
+                    <div className="">
+                        <Button
+                            variant="primary"
+                            style={{ minWidth: '100px' }}
+                            onClick={downloadPdf}
+                        >Download List</Button>
+                    </div>}
             </div>
 
             <div className="mt-4" >
@@ -212,23 +229,23 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     </table> :
                         <table className="table table-striped w-100">
                             <thead className="thead-dark">
-                            <tr >
-                                <th scope="col" className="bg-primary text-light">#</th>
-                                <th scope="col" className="bg-primary text-light">Staff Name</th>
-                                <th scope="col" className="bg-primary text-light">Emails</th>
-                                <th scope="col" className="bg-primary text-light">Department</th>
-                                <th scope="col" className="bg-primary text-light">Date Attested</th>
-                                <th scope="col" className="bg-primary text-light">Deadline Date</th>
-                            </tr>
-                        </thead>
+                                <tr >
+                                    <th scope="col" className="bg-primary text-light">#</th>
+                                    <th scope="col" className="bg-primary text-light">Staff Name</th>
+                                    <th scope="col" className="bg-primary text-light">Emails</th>
+                                    <th scope="col" className="bg-primary text-light">Department</th>
+                                    <th scope="col" className="bg-primary text-light">Date Attested</th>
+                                    <th scope="col" className="bg-primary text-light">Deadline Date</th>
+                                </tr>
+                            </thead>
                             <tbody className="">
-                                { policies.length <= 0 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
-                                   policies.map((policy, index) => (
+                                {policies.length <= 0 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
+                                    policies.map((policy, index) => (
                                         <tr key={index} style={{ cursor: 'pointer' }}
                                         // onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
                                         >
                                             <th scope="row">{index + 1}</th>
-                                            <td><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.userName,40)}`}</td>
+                                            <td><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.userName, 40)}`}</td>
                                             <td>{policy.email}</td>
                                             <td>{policy.department}</td>
                                             <td>{moment(policy.attestationTime).format('MMM DD YYYY')}</td>

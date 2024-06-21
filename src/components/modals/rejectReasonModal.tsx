@@ -25,9 +25,7 @@ const RejectReasonModal: React.FC<any> = ({ show, off, pol }) => {
     });
 
     const createNewPolicy = async (body: any) => {
-        // console.log({
-        //     sending : body
-        // })
+       
         let userInfo = await getUserInfo();
         if (userInfo) {
             const res = await api.post(`Policy/adjust/deadline`, body, `${userInfo?.access_token}`)

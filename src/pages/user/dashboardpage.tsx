@@ -6,7 +6,6 @@ import checked from '../../assets/images/check.png';
 import timer from '../../assets/images/deadline.png';
 import error from '../../assets/images/error.png';
 import { Tabs, Tab } from "react-bootstrap";
-import UploadedPoliciesTab from "../../components/tabs/admintabs/uploaded-policies-tab";
 import UserAllPoliciesTab from "../../components/tabs/userTabs/user-all-policies-tab";
 import UserNotAttestedPoliciesTab from "../../components/tabs/userTabs/user-not-attested-policies-tab";
 import UserAttestedPoliciesTab from "../../components/tabs/userTabs/attested-policies-tab";
@@ -20,9 +19,6 @@ import api from "../../config/api";
 
 
 const UserDashboardPage = () => {
-    const userDat = localStorage.getItem('loggedInUser') || '';
-    const data = JSON.parse(userDat);
-    const userName = data?.profile?.sub.split('\\').pop();
     const [policies, setPolicies] = useState<IPolicy[]>([]);
     const [depts, setDepts] = useState<IDept[]>([]);
     // const [regUsers, setRegUsers] = useState<User[]>([]);
@@ -67,7 +63,7 @@ const UserDashboardPage = () => {
             let userInfo = await getUserInfo();
             let userName = userInfo?.profile?.sub.split('\\')[1]
             const res = await getPolicies(`Dashboard/user?userName=${userName}`, `${userInfo?.access_token}`);
-            console.log({ hereIsMe: res });
+            // console.log({ gotten: userInfo })({ hereIsMe: res });
             if (res?.data) {
                 setUserDBInfo(res?.data);
                 setLoading(false);
@@ -78,7 +74,7 @@ const UserDashboardPage = () => {
 
 
         } catch (error) {
-            console.log(error)
+            // console.log({ gotten: userInfo })(error)
         }
     }
 

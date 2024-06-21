@@ -20,10 +20,11 @@ const AdminPolicyviewpage = () => {
     const [attestedSuccesmodal, setAttestedSuccessModal] = useState(false);
     const [policy, setPolicy] = useState<IPolicy>();
 
-    const [updateDeadlineModal,setUpdateDeadlineModal] = useState(false);
-    const [confDelModal,setConfDelModal] = useState(false);
+    const [updateDeadlineModal, setUpdateDeadlineModal] = useState(false);
+    const [confDelModal, setConfDelModal] = useState(false);
+    const [scale, setScale] = useState(1.0);
 
-    const [ref,setRef] = useState(false);
+    const [ref, setRef] = useState(false);
 
 
 
@@ -43,7 +44,7 @@ const AdminPolicyviewpage = () => {
                     // loginUser();
 
                 }
-                // console.log({ response: res })
+                // // console.log({ gotten: userInfo })({ response: res })
             } catch (error) {
 
             }
@@ -72,15 +73,15 @@ const AdminPolicyviewpage = () => {
         }
     };
 
-    const handleUpdateDeadline = ()=>{
+    const handleUpdateDeadline = () => {
         setUpdateDeadlineModal(true)
     }
 
-    const offUpdateDeadline = ()=>{
+    const offUpdateDeadline = () => {
         setUpdateDeadlineModal(false)
         setRef(!ref)
     }
-    
+
 
     const handlePolicyDelete = async (e: any) => {
         e.stopPropagation();
@@ -103,24 +104,32 @@ const AdminPolicyviewpage = () => {
         }
     }
 
+    const handleZoomIn = () => setScale(scale + 0.1);
+  const handleZoomOut = () => setScale(scale - 0.1);
+  const handleResetZoom = () => setScale(1.0);
+
     return (
         <div className="">
-            <UpdatePolicyModal 
-            show={updateDeadlineModal}
-            pol={policy}
-            off={offUpdateDeadline}
+            <UpdatePolicyModal
+                show={updateDeadlineModal}
+                pol={policy}
+                off={offUpdateDeadline}
             />
 
             <SureToDeletePolicyModal
-            show={confDelModal}
-            action={handlePolicyDelete}
-            off={()=>setConfDelModal(false)}
+                show={confDelModal}
+                action={handlePolicyDelete}
+                off={() => setConfDelModal(false)}
             />
             <div><Button variant="outline border border-2" onClick={() => navigate(-1)}>Go Back</Button></div>
             <div className="w-100 d-flex justify-content-between gap-4">
                 <div className="" style={{ minWidth: '70%' }}>
                     <div className="bg-dark mt-2 d-flex justify-content-between px-4 py-2 text-light ">
-                        <div></div>
+                        <div className="d-flex gap-3">
+                        zoom
+                        <i className="bi bi-zoom-out" onClick={handleZoomOut}></i>
+                        <i className="bi bi-zoom-in" onClick={handleZoomIn}></i>
+                        </div>
                         <div className="gap-3 d-flex w-25 align-items-center justify-content-between">
                             <Button onClick={goToPreviousPage} disabled={pageNumber <= 1} variant="outline text-light" className="p-0 m-0" style={{ cursor: 'pointer' }}><i className="bi bi-chevron-bar-left"></i></Button>
                             <p className="p-0 m-0">{pageNumber}/{numPages}</p>
@@ -140,7 +149,7 @@ const AdminPolicyviewpage = () => {
                     <div className="border border-3 p-3" style={{ height: '80vh', overflow: 'scroll' }}>
 
                         <Document file={policy?.url} onLoadSuccess={(doc) => onDocumentLoadSuccess(doc.numPages)}>
-                            <Page pageNumber={pageNumber} />
+                            <Page pageNumber={pageNumber} scale={scale} />
                         </Document>
 
 
@@ -212,10 +221,10 @@ const AdminPolicyviewpage = () => {
                             </div>
                         </div>
                     </div>
-                    {policy?.isRejected &&<p className="m-0 p-0 mt-3">Reason for Rejection</p>}
+                    {policy?.isRejected && <p className="m-0 p-0 mt-3">Reason for Rejection</p>}
                     {
                         policy && policy.isRejected &&
-                        <div className="bg-primary text-light rounded rounded-3 p-3" style={{minHeight:'10em'}}>
+                        <div className="bg-primary text-light rounded rounded-3 p-3" style={{ minHeight: '10em' }}>
 
                             <p>
                                 {policy.comment}
@@ -237,7 +246,7 @@ const AdminPolicyviewpage = () => {
 
                         </div>}
 
-                        {
+                    {
                         policy?.isAuthorized &&
                         <div className="d-flex mt-4 gap-3">
                             <Button
@@ -246,6 +255,7 @@ const AdminPolicyviewpage = () => {
 
                             >Update Deadline</Button>
                             <Button
+                                disabled={policy.markedForDeletion}
                                 variant="border border-danger text-danger outline"
                                 onClick={() => setConfDelModal(true)}
                             >Delete Policy</Button>

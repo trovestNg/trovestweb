@@ -15,11 +15,11 @@ import warningElipse from '../../../assets/images/Ellipse-warning.png';
 import SureToDeletePolicyModal from "../../modals/sureToDeletePolicyModal";
 import UpdatePolicyModal from "../../modals/updatePolicyModal";
 import { shortenString } from "../../../util";
+import { userInfo } from "os";
+import DeletePolicyConfModal from "../../modals/deletePolicyConfModal";
 
 const ApproverPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
-    const userDat = localStorage.getItem('loggedInUser') || '';
-    const data = JSON.parse(userDat);
-    const userName = data?.profile?.sub.split('\\').pop();
+    
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
 
@@ -48,9 +48,9 @@ const ApproverPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
             if (userInfo) {
-                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+                const res = await api.get(`Dashboard/authorizer-policy?userName=${userName}`, `${userInfo.access_token}`);
                 if (res?.data) {
                     let allPolicy = res?.data.filter((pol: IPolicy) => pol.markedForDeletion)
                     setPolicies(allPolicy.reverse());
@@ -59,7 +59,7 @@ const ApproverPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     // loginUser()
                     // toast.error('Session expired!, You have been logged out!!')
                 }
-                console.log({ response: res })
+                // console.log({ gotten: userInfo })({ response: res })
             }
 
         } catch (error) {
@@ -76,9 +76,10 @@ const ApproverPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
+            // console.log({ gotten: userInfo })({ gotten: userInfo })
             if (userInfo) {
-                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+                const res = await api.get(`Dashboard/authorizer-policy?userName=${userName}`, `${userInfo.access_token}`);
                 if (res?.data) {
 
                     setLoading(false)
@@ -93,7 +94,7 @@ const ApproverPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     // loginUser()
                     // toast.error('Session expired!, You have been logged out!!')
                 }
-                console.log({ response: res })
+                // console.log({ gotten: userInfo })({ response: res })
             }
 
         } catch (error) {
@@ -107,9 +108,10 @@ const ApproverPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
+            // console.log({ gotten: userInfo })({ gotten: userInfo })
             if (userInfo) {
-                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+                const res = await api.get(`Dashboard/authorizer-policy?userName=${userName}`, `${userInfo.access_token}`);
                 if (res?.data) {
 
                     setLoading(false)
@@ -124,7 +126,7 @@ const ApproverPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     // loginUser()
                     // toast.error('Session expired!, You have been logged out!!')
                 }
-                console.log({ response: res })
+                // console.log({ gotten: userInfo })({ response: res })
             }
 
         } catch (error) {
@@ -148,23 +150,23 @@ const ApproverPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
 
 
-    const handleGetAllDepts = async () => {
-        // setLoading(true)
-        try {
-            const res = await getAllDepartments(`filter?subsidiaryName=FSDH+Merchant+Bank`, `${data?.access_token}`);
-            console.log({ dataHere: res })
+    // const handleGetAllDepts = async () => {
+    //     // setLoading(true)
+    //     try {
+    //         const res = await getAllDepartments(`filter?subsidiaryName=FSDH+Merchant+Bank`, `${data?.access_token}`);
+    //         // console.log({ gotten: userInfo })({ dataHere: res })
 
-            if (res?.data) {
-                setDepts(res?.data)
-            } else {
+    //         if (res?.data) {
+    //             setDepts(res?.data)
+    //         } else {
 
-            }
-            console.log({ response: res })
-        } catch (error) {
+    //         }
+    //         // console.log({ gotten: userInfo })({ response: res })
+    //     } catch (error) {
 
-        }
+    //     }
 
-    }
+    // }
 
     const handleDeptSelection = (val: string) => {
         if (val == 'all') {
@@ -195,7 +197,7 @@ const ApproverPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     useEffect(() => {
         fetchData();
-        handleGetAllDepts();
+        // handleGetAllDepts();
     }, [refreshData])
 
 
@@ -220,25 +222,35 @@ const ApproverPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     const handlePolicyDelete = async (e: any) => {
         e.stopPropagation();
-        const res = await api.post(`Policy/delete/request`, { "id": policyId, "username": userName }, data?.access_token);
-        if (res?.status == 200) {
-            toast.success('Delete request sent for approval!');
-            setDeteletPolicyModal(false);
-            setRefreshData(!refreshData)
-        } else {
-            toast.error('Failed to delete policy')
+        let userInfo = await getUserInfo();
+        if (userInfo) {
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.post(`Policy/delete/approve`, { "ids": [policyId], "username": userName }, userInfo?.access_token);
+            if (res?.status == 200) {
+                toast.success('Policy deleted succesfully!');
+                setDeteletPolicyModal(false);
+                setRefreshData(!refreshData)
+            } else {
+                toast.error('Failed to delete policy')
+            }
         }
+        
     }
 
     const handleSendAuthorizationReminder = async (e: any,policy:IPolicy) => {
         e.stopPropagation();
-        const res = await api.post(`Policy/nudge-authorizer?policyId=${policy.id}`,{"policyId" :policy.id}, data?.access_token);
+        let userInfo = await getUserInfo();
+        if (userInfo) {
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.post(`Policy/nudge-authorizer?policyId=${policy.id}`,{"policyId" :policy.id}, userInfo?.access_token);
         if (res?.status == 200) {
             toast.success('Reminder sent!');
             setRefreshData(!refreshData)
         } else {
             toast.error('Error sending reminder')
         }
+        }
+        
     }
 
     const handleDelete = async (e: any, policy: any) => {
@@ -269,12 +281,12 @@ const ApproverPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     useEffect(() => {
         fetchData();
-        handleGetAllDepts();
+        // handleGetAllDepts();
     }, [refreshData])
 
     return (
         <div className="w-100">
-            <SureToDeletePolicyModal 
+            <DeletePolicyConfModal 
             action={(e:any)=>handlePolicyDelete(e)} 
             show={deletePolicyModal} 
             off={()=>setDeteletPolicyModal(false)}/>
@@ -482,7 +494,7 @@ const ApproverPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                 </ListGroupItem>
 
                                                                 <ListGroupItem
-                                                                    disabled={policy?.markedForDeletion}
+                                                                    // disabled={policy?.markedForDeletion}
                                                                     onClick={(e) => handleDelete(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
@@ -536,7 +548,7 @@ const ApproverPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                 </ListGroupItem>
 
                                                                 <ListGroupItem
-                                                                    disabled={policy?.markedForDeletion}
+                                                                    // disabled={policy?.markedForDeletion}
                                                                     onClick={(e) => handleDelete(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">

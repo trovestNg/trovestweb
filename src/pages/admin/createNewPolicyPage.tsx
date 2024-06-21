@@ -86,14 +86,14 @@ const CreateNewPolicyPage: React.FC<any> = () => {
             let userInfo = await getUserInfo();
             let userName = userInfo?.profile?.sub.split('\\')[1]
             const res = await api.get(`Subsidiaries`, `${userInfo?.access_token}`);
-            console.log({ dataHere: res })
+            // console.log({ gotten: userInfo })({ dataHere: res })
 
             if (res?.data) {
                 setSubSidiaries(res?.data)
             } else {
 
             }
-            console.log({ response: res })
+            // console.log({ gotten: userInfo })({ response: res })
         } catch (error) {
 
         }
@@ -106,14 +106,14 @@ const CreateNewPolicyPage: React.FC<any> = () => {
             let userInfo = await getUserInfo();
             let userName = userInfo?.profile?.sub.split('\\')[1]
             const res = await api.get(`Policy/authorizer`, `${userInfo?.access_token}`);
-            // console.log({ dataHere: res })
+            // // console.log({ gotten: userInfo })({ dataHere: res })
 
             if (res?.data) {
                 setAuthorizers(res?.data)
             } else {
 
             }
-            console.log({ response: res })
+            // console.log({ gotten: userInfo })({ response: res })
         } catch (error) {
 
         }
@@ -129,7 +129,7 @@ const CreateNewPolicyPage: React.FC<any> = () => {
       };
 
     const createNewPolicy = async (body: any) => {
-        console.log({ bodyHere: body });
+        // console.log({ gotten: userInfo })({ bodyHere: body });
         setCreateLoading(true)
         let convertedToInt = body?.Department.map((id: any) => +id)
         let formData = new FormData()
@@ -151,7 +151,7 @@ const CreateNewPolicyPage: React.FC<any> = () => {
             let userInfo = await getUserInfo();
             let userName = userInfo?.profile?.sub.split('\\')[1]
             const res = await api.post(`policy/upload?userName=${userName}`, formData, `${userInfo?.access_token}`)
-            console.log(res)
+            // console.log({ gotten: userInfo })(res)
             if (res?.statusText == "Created") {
                 setShowCreatePrompt(false)
                 setpolicyCreatedSucc(true)

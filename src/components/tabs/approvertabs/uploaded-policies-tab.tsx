@@ -12,8 +12,7 @@ import { getUserInfo, loginUser } from "../../../controllers/auth";
 import api from "../../../config/api";
 
 const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
-    const userDat = localStorage.getItem('loggedInUser') || '';
-    const data = JSON.parse(userDat);
+    
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
     const [policies, setPolicies] = useState<IPolicy[]>([]);
@@ -28,17 +27,17 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
+            // console.log({ gotten: userInfo })({ gotten: userInfo })
             if (userInfo) {
                 const res = await api.get(`Policy/uploaded`, `${userInfo.access_token}`);
                 if (res?.data) {
                     setPolicies(res?.data);
                     setLoading(false)
                 } else {
-                    loginUser()
-                    toast.error('Session expired!, You have been logged out!!')
+                    // loginUser()
+                    // toast.error('Session expired!, You have been logged out!!')
                 }
-                console.log({ response: res })
+                // console.log({ gotten: userInfo })({ response: res })
             }
 
         } catch (error) {
@@ -46,23 +45,23 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
         }
     }
 
-    const handleGetDepts = async () => {
-        // setLoading(true)
-        try {
-            const res = await getAllDepartments(`filter?subsidiaryName=FSDH+Merchant+Bank`, `${data?.access_token}`);
-            console.log({ dataHere: res })
+    // const handleGetDepts = async () => {
+    //     // setLoading(true)
+    //     try {
+    //         const res = await getAllDepartments(`filter?subsidiaryName=FSDH+Merchant+Bank`, `${data?.access_token}`);
+    //         // console.log({ gotten: userInfo })({ dataHere: res })
 
-            if (res?.data) {
-                setDepts(res?.data)
-            } else {
+    //         if (res?.data) {
+    //             setDepts(res?.data)
+    //         } else {
 
-            }
-            console.log({ response: res })
-        } catch (error) {
+    //         }
+    //         // console.log({ gotten: userInfo })({ response: res })
+    //     } catch (error) {
 
-        }
+    //     }
 
-    }
+    // }
 
     const handleSearch = () => {
 
@@ -71,48 +70,39 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     }
 
-    const getBySearch = async () => {
+    const handleSearchByPolicyNameOrDept = async () => {
+        // toast.error('Searching by name of dept or title!')
         setLoading(true)
         try {
-            const res = await getPolicies(`Policy/searchByWord?searchWord=${userSearch}`, `${data?.access_token}`);
-            if (res?.data) {
-                // let searched = res?.data.filter((data:IPolicy)=>data.fileName.includes(userSearch));
-                setPolicies(res?.data);
-                // if(allAttested.length >= res?.data.length){
-                //     setPolicies([]);
-                // } else{
+            let userInfo = await getUserInfo();
+            // console.log({ gotten: userInfo })({ gotten: userInfo })
+            if (userInfo) {
+                let userName = userInfo?.profile?.sub.split('\\')[1]
+                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
+                if (res?.data) {
 
-                // }
+                    setLoading(false)
 
-                setLoading(false)
-            } else {
-                toast.error('Search failed!');
-                setBySearch(false);
-                setLoading(false);
+                    let filtered = res?.data.filter((policy: IPolicy) =>
+                        policy.fileName.toLowerCase().includes(userSearch.toLowerCase()) && !policy.markedForDeletion ||
+                        policy.policyDepartment.toLowerCase().includes(userSearch.toLowerCase()) && !policy.markedForDeletion
+                    );
+                    setPolicies(filtered.reverse());
+
+                } else {
+                    // loginUser()
+                    // toast.error('Session expired!, You have been logged out!!')
+                }
+                // console.log({ gotten: userInfo })({ response: res })
             }
-            console.log({ response: res })
+
         } catch (error) {
 
         }
-    }
 
-    const getBySort = async () => {
-        setLoading(true)
-        try {
-            const res = await getPolicies(`filterByDepartment?departmentName=${selectedDept}`, `${data?.access_token}`);
-            if (res?.data) {
-                setPolicies(res?.data);
-                setLoading(false);
-            } else {
-                toast.error('Fail to sort!')
-                setLoading(false);
-                setSortByDept(false);
-            }
-            console.log({ response: res })
-        } catch (error) {
+    };
 
-        }
-    }
+   
 
     const handleDeptSelection = (val: string) => {
         setSelectedDept(val);
@@ -123,9 +113,9 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     const fetchData = () => {
         if (sortByDept) {
-            getBySort();
+            // getBySort();
         } else if (bySearch) {
-            getBySearch();
+            handleSearchByPolicyNameOrDept()
         } else {
             getUploadedPolicies();
         }
@@ -134,7 +124,7 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     useEffect(() => {
         fetchData();
-        handleGetDepts();
+        // handleGetDepts();
     }, [refreshData])
 
     return (

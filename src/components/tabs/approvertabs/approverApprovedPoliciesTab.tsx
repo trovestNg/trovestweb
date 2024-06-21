@@ -31,9 +31,7 @@ import UpdatePolicyModal from "../../modals/updatePolicyModal";
             }} */}
 
 const ApproverApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
-    const userDat = localStorage.getItem('loggedInUser') || '';
-    const data = JSON.parse(userDat);
-    const userName = data?.profile?.sub.split('\\').pop();
+    
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
     const [policies, setPolicies] = useState<IPolicy[]>([]);
@@ -61,9 +59,10 @@ const ApproverApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
+            // console.log({ gotten: userInfo })({ gotten: userInfo })
             if (userInfo) {
-                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
+                let userName = userInfo?.profile?.sub.split('\\')[1]
+                const res = await api.get(`Dashboard/authorizer-policy?userName=${userName}`, `${userInfo.access_token}`);
                 
                 if (res?.data) {
                     let approvedPolicies =  res?.data.filter((policy:IPolicy)=>policy.isAuthorized && !policy.markedForDeletion)
@@ -73,7 +72,7 @@ const ApproverApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     // loginUser()
                     // toast.error('Session expired!, You have been logged out!!')
                 }
-                console.log({ response: res })
+                // console.log({ gotten: userInfo })({ response: res })
             }
 
         } catch (error) {
@@ -85,9 +84,10 @@ const ApproverApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
+            // console.log({ gotten: userInfo })({ gotten: userInfo })
             if (userInfo) {
-                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
+                let userName = userInfo?.profile?.sub.split('\\')[1]
+                const res = await api.get(`Dashboard/authorizer-policy?userName=${userName}`, `${userInfo.access_token}`);
                 if (res?.data) {
 
                     setLoading(false)
@@ -102,7 +102,7 @@ const ApproverApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     // loginUser()
                     // toast.error('Session expired!, You have been logged out!!')
                 }
-                console.log({ response: res })
+                // console.log({ gotten: userInfo })({ response: res })
             }
 
         } catch (error) {
@@ -116,9 +116,10 @@ const ApproverApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
+            // console.log({ gotten: userInfo })({ gotten: userInfo })
             if (userInfo) {
-                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
+                let userName = userInfo?.profile?.sub.split('\\')[1]
+                const res = await api.get(`Dashboard/authorizer-policy?userName=${userName}`, `${userInfo.access_token}`);
                 if (res?.data) {
 
                     setLoading(false)
@@ -133,7 +134,7 @@ const ApproverApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     // loginUser()
                     // toast.error('Session expired!, You have been logged out!!')
                 }
-                console.log({ response: res })
+                // console.log({ gotten: userInfo })({ response: res })
             }
 
         } catch (error) {
@@ -161,15 +162,17 @@ const ApproverApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const handleGetAllDepts = async () => {
         // setLoading(true)
         try {
-            const res = await getAllDepartments(`filter?subsidiaryName=FSDH+Merchant+Bank`, `${data?.access_token}`);
-            console.log({ dataHere: res })
+            let userInfo = await getUserInfo();
+            if(userInfo){
+                const res = await getAllDepartments(`filter?subsidiaryName=FSDH+Merchant+Bank`, `${userInfo?.access_token}`);
+            // console.log({ gotten: userInfo })({ dataHere: res })
 
             if (res?.data) {
                 setDepts(res?.data)
             } else {
 
             }
-            console.log({ response: res })
+            }
         } catch (error) {
 
         }
@@ -210,19 +213,22 @@ const ApproverApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     const handleEdit = (e: any, policy: IPolicy) => {
         e.stopPropagation();
-        navigate(`/admin/edit-policy/${policy.id}`)
+        navigate(`/admn/edit-policy/${policy.id}`)
     }
 
     const handleUpdate = (e: any, policy: IPolicy) => {
         e.stopPropagation();
         setPolicy(policy);
         setUpdatePolicyModal(true);
-        // navigate(`/admin/edit-policy/${policy.id}`)
+        // navigate(`/admn/edit-policy/${policy.id}`)
     }
 
     const handlePolicyDelete = async (e: any) => {
         e.stopPropagation();
-        const res = await api.post(`Policy/delete/request`, { "id": policyId, "username": userName }, data?.access_token);
+        let userInfo = await getUserInfo();
+        if(userInfo){
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.post(`Policy/delete/request`, { "id": policyId, "username": userName }, userInfo?.access_token);
         if (res?.status == 200) {
             toast.success('Delete request sent for approval!');
             setDeteletPolicyModal(false);
@@ -230,18 +236,21 @@ const ApproverApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
         } else {
             toast.error('Failed to delete policy')
         }
+        }
+
+        
     }
 
-    const handleSendAuthorizationReminder = async (e: any,policy:IPolicy) => {
-        e.stopPropagation();
-        const res = await api.post(`Policy/nudge-authorizer?policyId=${policy.id}`,{"policyId" :policy.id}, data?.access_token);
-        if (res?.status == 200) {
-            toast.success('Reminder sent!');
-            setRefreshData(!refreshData)
-        } else {
-            toast.error('Error sending reminder')
-        }
-    }
+    // const handleSendAuthorizationReminder = async (e: any,policy:IPolicy) => {
+    //     e.stopPropagation();
+    //     const res = await api.post(`Policy/nudge-authorizer?policyId=${policy.id}`,{"policyId" :policy.id}, data?.access_token);
+    //     if (res?.status == 200) {
+    //         toast.success('Reminder sent!');
+    //         setRefreshData(!refreshData)
+    //     } else {
+    //         toast.error('Error sending reminder')
+    //     }
+    // }
 
     const handleDelete = async (e: any, policy: any) => {
         e.stopPropagation();
@@ -252,12 +261,12 @@ const ApproverApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     const handleGetAttestersList = (e: any, pol: IPolicy) => {
         e.stopPropagation();
-        navigate(`/admin/attesters-list/${pol.id}`);
+        navigate(`/admn/attesters-list/${pol.id}`);
     }
 
     const handleGetDefaultersList = (e: any, pol: IPolicy) => {
         e.stopPropagation();
-        navigate(`/admin/defaulters-list/${pol.id}`);
+        navigate(`/admn/defaulters-list/${pol.id}`);
     }
 
     const handleDownloadPolicy = (e: any, pol: IPolicy) => {
@@ -350,7 +359,7 @@ const ApproverApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                 {policies.length <= 0 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
                                     policies.map((policy, index) => (
                                         <tr key={index} style={{ cursor: 'pointer' }}
-                                        onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
+                                        onClick={() => navigate(`/admn/policy/${policy.id}/${policy.isAuthorized}`)}
                                         >
                                             <th scope="row">{index + 1}</th>
                                             <td><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.fileName,40)}`}</td>

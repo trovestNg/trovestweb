@@ -1,15 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Container, Modal, Card, Button } from "react-bootstrap";
-import DashboardCard from "../../components/cards/dashboard-card";
-import openBook from '../../assets/images/open-book.png'
-import checked from '../../assets/images/check.png';
-import timer from '../../assets/images/deadline.png';
-import error from '../../assets/images/error.png';
-import { Tabs, Tab } from "react-bootstrap";
-import UploadedPoliciesTab from "../../components/tabs/admintabs/uploaded-policies-tab";
+
 import UserAllPoliciesTab from "../../components/tabs/userTabs/user-all-policies-tab";
-import UserNotAttestedPoliciesTab from "../../components/tabs/userTabs/user-not-attested-policies-tab";
-import UserAttestedPoliciesTab from "../../components/tabs/userTabs/attested-policies-tab";
 import { IPolicy } from "../../interfaces/policy";
 import { IDept } from "../../interfaces/dept";
 import { getPolicies } from "../../controllers/policy";
@@ -46,7 +37,7 @@ const UserAllPolicyPage = () => {
 
 
         } catch (error) {
-            console.log(error)
+            // console.log({ gotten: userInfo })(error)
         }
     }
 

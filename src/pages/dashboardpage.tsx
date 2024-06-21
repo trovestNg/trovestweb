@@ -8,7 +8,6 @@ import checked from '../assets/images/check.png';
 import timer from '../assets/images/deadline.png';
 import error from '../assets/images/error.png';
 import { Tabs, Tab } from "react-bootstrap";
-import UploadedPoliciesTab from "../components/tabs/admintabs/uploaded-policies-tab";
 
 
 
@@ -69,7 +68,7 @@ const DashboardPage = () => {
                     <Tab eventKey="uploaded" title="Uploaded Policies"
                     tabClassName="px-3"
                     >
-                        <UploadedPoliciesTab />
+                       
                     </Tab>
                     <Tab eventKey="approved" title="Approved Policies">
                         Tab content for Profile

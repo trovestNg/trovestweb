@@ -55,23 +55,14 @@ export interface IUserPolicy {
 }
 
 export interface IUser {
-    attestationTime
-    :
-    string,
-    deadlineTime
-    : string,
-    department
-    : string,
-    email
-    : string,
-    policyDepartment
-    : string,
-    policyId
-    : number,
-    policyName
-    : string,
-    subsidiary
-    : string,
+    attestationTime:string,
+    deadlineTime: string,
+    department: string,
+    email: string,
+    policyDepartment: string,
+    policyId: number,
+    policyName: string,
+    subsidiary: string,
     url
     : string,
     userName

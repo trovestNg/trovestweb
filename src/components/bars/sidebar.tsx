@@ -14,7 +14,6 @@ const SideBar: React.FC<any> = ({ payload }) => {
        navigate('/', {replace:true})
     }
 
-    console.log(currentPath)
 
     const navlinksAdmin = [
         {

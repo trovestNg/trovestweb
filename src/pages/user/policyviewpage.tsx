@@ -21,7 +21,7 @@ const PolicyViewPage = () => {
     const [refresh,setRefresh] = useState(false);
     const[attested,setAttested] = useState(attestationStatus)
 
-
+    const [scale, setScale] = useState(1.0);
 
     const [numPages, setNumPages] = useState<number>(0);
     const [pageNumber, setPageNumber] = useState(1);
@@ -39,13 +39,13 @@ const PolicyViewPage = () => {
                         // loginUser();
         
                     }
-                    console.log({ response: res })
+                    // console.log({ gotten: userInfo })({ response: res })
                 } catch (error) {
         
                 }
 
             } else{
-                loginUser()
+                // loginUser()
             }
        
     }
@@ -68,21 +68,26 @@ const PolicyViewPage = () => {
         }
     };
 
+    const handleZoomIn = () => setScale(scale + 0.1);
+    const handleZoomOut = () => setScale(scale - 0.1);
+    const handleResetZoom = () => setScale(1.0);
+
     const handlyPolicyAttest = async () => {
         setAttesting(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({gotten: userInfo})
+            // console.log({ gotten: userInfo })({gotten: userInfo})
             if(userInfo){
+                let userName = userInfo?.profile?.sub.split('\\')[1]
                 let body = {
                     subsidiary: userInfo.profile?.subsidiary,
                     policyId : policy?.id,
-                    userID : "majadi",
+                    userID : userName,
                     username : `${userInfo.profile?.given_name} ${userInfo.profile?.family_name}`,
                     department : userInfo.profile?.department
                 }
                 const res = await api.post('Attest', body, userInfo.access_token);
-                console.log({ attested: res })
+                // console.log({ gotten: userInfo })({ attested: res })
                 if(res){
                     // toast.success('Attestation Succe');
                     setRefresh(!refresh);
@@ -105,7 +110,13 @@ const PolicyViewPage = () => {
             <div className="w-100 d-flex justify-content-between gap-4">
                 <div className="" style={{ minWidth: '70%' }}>
                     <div className="bg-dark mt-2 d-flex justify-content-between px-4 py-2 text-light ">
-                        <div></div>
+                       
+                        <div className="d-flex gap-3">S
+                        zoom
+                        <i className="bi bi-zoom-out" onClick={handleZoomOut}></i>
+                        <i className="bi bi-zoom-in" onClick={handleZoomIn}></i>
+                        </div>
+                        
                         <div className="gap-3 d-flex w-25 align-items-center justify-content-between">
                             <Button onClick={goToPreviousPage} disabled={pageNumber <= 1} variant="outline text-light" className="p-0 m-0" style={{ cursor: 'pointer' }}><i className="bi bi-chevron-bar-left"></i></Button>
                             <p className="p-0 m-0">{pageNumber}/{numPages}</p>
@@ -123,9 +134,12 @@ const PolicyViewPage = () => {
 
 
                     <div className="border border-3 p-3" style={{ height: '80vh', overflow: 'scroll' }}>
-
-                        <Document file={policy?.url} onLoadSuccess={(doc) => onDocumentLoadSuccess(doc.numPages)}>
-                            <Page pageNumber={pageNumber} />
+                    
+                        <Document 
+                        file={policy?.url} 
+                        onLoadSuccess={(doc) => onDocumentLoadSuccess(doc.numPages)}
+                        >
+                            <Page pageNumber={pageNumber} scale={scale}/>
                         </Document>
 
 

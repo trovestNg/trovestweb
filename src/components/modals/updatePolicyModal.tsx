@@ -25,7 +25,7 @@ const UpdatePolicyModal: React.FC<any> = ({ show, off, pol }) => {
     });
 
     const createNewPolicy = async (body: any) => {
-        // console.log({
+        // // console.log({ gotten: userInfo })({
         //     sending : body
         // })
         let userInfo = await getUserInfo();

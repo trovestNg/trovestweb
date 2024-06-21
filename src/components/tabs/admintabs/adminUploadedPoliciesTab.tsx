@@ -19,9 +19,6 @@ import { shortenString } from "../../../util";
 import RejectReasonModal from "../../modals/rejectReasonModal";
 
 const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
-    // const userDat = localStorage.getItem('loggedInUser') || '';
-    // const data = JSON.parse(userDat);
-    // const userName = data?.profile?.sub.split('\\').pop();
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
 
@@ -50,14 +47,12 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const getInitiatorPolicies = async () => {
         setLoading(true)
 
-        let userInfo = await getUserInfo();
-
-        if (userInfo) {
+       
             try {
                 let userInfo = await getUserInfo();
-                console.log({ gotten: userInfo })
                 if (userInfo) {
-                    const res = await api.get(`Dashboard/initiator-policy?userName=${'majadi'}`, `${userInfo.access_token}`);
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+                    const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
                     if (res?.data) {
                         let allPolicy = res?.data.filter((pol: IPolicy) => !pol.markedForDeletion)
                         setPolicies(allPolicy.reverse());
@@ -66,13 +61,13 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                         // loginUser()
                         // toast.error('Session expired!, You have been logged out!!')
                     }
-                    console.log({ response: res })
+                    // console.log({ gotten: userInfo })({ response: res })
                 }
     
             } catch (error) {
     
             }
-        }
+        
         
     }
 
@@ -85,9 +80,10 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
+            // console.log({ gotten: userInfo })({ gotten: userInfo })
             if (userInfo) {
-                const res = await api.get(`Dashboard/initiator-policy?userName=${"majadi"}`, `${userInfo.access_token}`);
+                let userName = userInfo?.profile?.sub.split('\\')[1]
+                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
                 if (res?.data) {
 
                     setLoading(false)
@@ -102,7 +98,7 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     // loginUser()
                     // toast.error('Session expired!, You have been logged out!!')
                 }
-                console.log({ response: res })
+                // console.log({ gotten: userInfo })({ response: res })
             }
 
         } catch (error) {
@@ -116,9 +112,10 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
+            // console.log({ gotten: userInfo })({ gotten: userInfo })
             if (userInfo) {
-                const res = await api.get(`Dashboard/initiator-policy?userName=${"majadi"}`, `${userInfo.access_token}`);
+                let userName = userInfo?.profile?.sub.split('\\')[1]
+                const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
                 if (res?.data) {
 
                     setLoading(false)
@@ -133,7 +130,7 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     // loginUser()
                     // toast.error('Session expired!, You have been logged out!!')
                 }
-                console.log({ response: res })
+                // console.log({ gotten: userInfo })({ response: res })
             }
 
         } catch (error) {
@@ -160,18 +157,18 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const handleGetAllDepts = async () => {
         // setLoading(true)
         let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
+            // console.log({ gotten: userInfo })({ gotten: userInfo })
             if (userInfo) {
                 try {
                     const res = await getAllDepartments(`filter?subsidiaryName=FSDH+Merchant+Bank`, `${userInfo?.access_token}`);
-                    console.log({ dataHere: res })
+                    // console.log({ gotten: userInfo })({ dataHere: res })
         
                     if (res?.data) {
                         setDepts(res?.data)
                     } else {
         
                     }
-                    console.log({ response: res })
+                    // console.log({ gotten: userInfo })({ response: res })
                 } catch (error) {
         
                 }
@@ -243,7 +240,8 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
         e.stopPropagation();
         let userInfo = await getUserInfo();
             if (userInfo) {
-                const res = await api.post(`Policy/delete/request`, { "id": policyId, "username": "majadi" }, userInfo?.access_token);
+                let userName = userInfo?.profile?.sub.split('\\')[1]
+                const res = await api.post(`Policy/delete/request`, { "id": policyId, "username": userName }, userInfo?.access_token);
                 if (res?.status == 200) {
                     toast.success('Delete request sent for approval!');
                     setDeteletPolicyModal(false);

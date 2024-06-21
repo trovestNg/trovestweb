@@ -36,14 +36,14 @@ const UserAttestedPoliciesTab: React.FC<any> = () => {
             let userName = userInfo?.profile?.sub.split('\\')[1]
             const res = await api.get(`Policy/user-policy?userName=${userName}`, `${userInfo?.access_token}`);
             if (res?.data) {
-                let attested = res?.data.filter((policy: IUserPolicy) => policy.isAttested
+                let attested = res?.data.filter((policy: IUserPolicy) => policy.isAttested && !policy.isDeleted
                 );
                 setPolicies(attested);
                 setLoading(false)
             }
 
         } catch (error) {
-            console.log(error)
+            // console.log({ gotten: userInfo })(error)
         }
 
 
@@ -56,7 +56,7 @@ const UserAttestedPoliciesTab: React.FC<any> = () => {
             let userName = userInfo?.profile?.sub.split('\\')[1]
             const res = await api.get(`Policy/user-policy?userName=${userName}`, `${userInfo?.access_token}`);
             if (res?.data) {
-                let attested = res?.data.filter((policy: IUserPolicy) => policy.isAttested);
+                let attested = res?.data.filter((policy: IUserPolicy) => policy.isAttested && !policy.isDeleted);
 
                 let filtered = attested.filter((policy: IUserPolicy) =>
                     policy.fileName.toLowerCase().includes(query.toLowerCase()) ||
@@ -67,7 +67,7 @@ const UserAttestedPoliciesTab: React.FC<any> = () => {
             }
 
         } catch (error) {
-            console.log(error)
+            // console.log({ gotten: userInfo })(error)
         }
 
 
@@ -80,7 +80,7 @@ const UserAttestedPoliciesTab: React.FC<any> = () => {
     //     setLoading(true)
     //     try {
     //         let userInfo = await getUserInfo();
-    //         console.log({ gotten: userInfo })
+    //         // console.log({ gotten: userInfo })({ gotten: userInfo })
     //         if (userInfo) {
     //             const res = await api.get(`Policy/user-policy?userName=${userName}`, `${userInfo.access_token}`);
     //             if (res?.data) {
@@ -96,7 +96,7 @@ const UserAttestedPoliciesTab: React.FC<any> = () => {
     //                 // loginUser()
     //                 // toast.error('Session expired!, You have been logged out!!')
     //             }
-    //             console.log({ response: res })
+    //             // console.log({ gotten: userInfo })({ response: res })
     //         }
 
     //     } catch (error) {
@@ -123,14 +123,14 @@ const UserAttestedPoliciesTab: React.FC<any> = () => {
     //     // setLoading(true)
     //     try {
     //         const res = await getAllDepartments(`filter?subsidiaryName=FSDH+Merchant+Bank`, `${data?.access_token}`);
-    //         console.log({ dataHere: res })
+    //         // console.log({ gotten: userInfo })({ dataHere: res })
 
     //         if (res?.data) {
     //             setDepts(res?.data)
     //         } else {
 
     //         }
-    //         console.log({ response: res })
+    //         // console.log({ gotten: userInfo })({ response: res })
     //     } catch (error) {
 
     //     }

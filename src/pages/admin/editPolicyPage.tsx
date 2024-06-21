@@ -86,14 +86,14 @@ const EditPolicyPage: React.FC<any> = () => {
         if (userInfo) {
             try {
                 const res = await api.get(`Subsidiaries`, `${userInfo?.access_token}`);
-                console.log({ dataHere: res })
+                // console.log({ gotten: userInfo })({ dataHere: res })
     
                 if (res?.data) {
                     setSubSidiaries(res?.data)
                 } else {
     
                 }
-                console.log({ response: res })
+                // console.log({ gotten: userInfo })({ response: res })
             } catch (error) {
     
             }
@@ -111,14 +111,14 @@ const EditPolicyPage: React.FC<any> = () => {
         if (userInfo) {
             try {
                 const res = await api.get(`Policy/authorizer`, `${userInfo?.access_token}`);
-                // console.log({ dataHere: res })
+                // // console.log({ gotten: userInfo })({ dataHere: res })
     
                 if (res?.data) {
                     setAuthorizers(res?.data)
                 } else {
     
                 }
-                console.log({ response: res })
+                // console.log({ gotten: userInfo })({ response: res })
             } catch (error) {
     
             }
@@ -137,7 +137,7 @@ const EditPolicyPage: React.FC<any> = () => {
     };
 
     const createNewPolicy = async (body: any) => {
-        // console.log({ bodyHere: body });
+        // // console.log({ gotten: userInfo })({ bodyHere: body });
 
         // let editObj = {
         //     policyDocument: body?.policyDocument,
@@ -173,7 +173,7 @@ const EditPolicyPage: React.FC<any> = () => {
             let userName = userInfo?.profile?.sub.split('\\')[1]
 
             const res = await api.post(`policy/edit?userName=${userName}`, formData, `${userInfo?.access_token}`)
-            console.log({updated:res})
+            // console.log({ gotten: userInfo })({updated:res})
             if (res?.status == 200) {
                 setShowCreatePrompt(false)
                 // setpolicyCreatedSucc(true)
@@ -202,7 +202,7 @@ const EditPolicyPage: React.FC<any> = () => {
                     // loginUser();
 
                 }
-                console.log({ response: res })
+                // console.log({ gotten: userInfo })({ response: res })
             } catch (error) {
 
             }

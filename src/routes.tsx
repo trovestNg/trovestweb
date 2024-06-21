@@ -32,6 +32,9 @@ import ApproverApprovedPoliciesPage from "./pages/approver/approverApprovedPolic
 import ApproverRejectedPoliciesPage from "./pages/approver/approverRejectedPoliciesPage";
 import ErrorPage from "./pages/errorPage";
 import ApproverPolicyviewpage from "./pages/approver/approverPolicyviewpage";
+import ApproverAttestersListPage from "./pages/approver/approverAttestersListPage";
+import ApproverDefaultersListPage from "./pages/approver/approverDefaultersListPage";
+import ApproverDeletedPoliciesPage from "./pages/approver/approverDeletedPoliciesPage";
 
 // const UserDBC = React.lazy(() => import("./pages/user/dashboard"));
 
@@ -42,12 +45,12 @@ export default function () {
 
         <Routes>
             <Route path="/" element={<Landingpage />} />
-           <Route path="callback" element={<SigninCallBackPage />} />
+            <Route path="callback" element={<SigninCallBackPage />} />
             <Route path="/logout" element={<LoggedOutPage />} />
 
-            <Route path="policy-portal" element={< UserDashboardContainer/>}>
-                <Route index element={<UserDashboardPage/>}/>
-                <Route path="policy/:attestationStatus/:id" element={<PolicyViewPage />}/>
+            <Route path="policy-portal" element={< UserDashboardContainer />}>
+                <Route index element={<UserDashboardPage />} />
+                <Route path="policy/:attestationStatus/:id" element={<PolicyViewPage />} />
                 <Route path="all-policy" element={<UserAllPolicyPage />} />
                 <Route path="attested-policy" element={<UserAttestedPolicyPage />} />
                 <Route path="unattested-policy" element={<UserUnAttestedPolicyPage />} />
@@ -55,27 +58,32 @@ export default function () {
 
             <Route path="/admin" element={<AdminDashboardContainer />}>
                 <Route index element={<AdminDashboardPage />} />
-                <Route path="create-policy" element={<CreateNewPolicyPage />}/>
-                <Route path="edit-policy/:id" element={<EditPolicyPage/>}/>
-                <Route path="attesters-list/:id" element={<AdminAttestersListPage/>}/>
-                <Route path="defaulters-list/:id" element={<AdminDefaultersListPage/>}/>
-                <Route path="uploaded-policies" element={<AdminUploadedPoliciesPage/>}/>
-                <Route path="approved-policies" element={<AdminApprovedPoliciesPage/>}/>
-                <Route path="pending-policies" element={<AdminPendingPoliciesPage/>}/>
-                <Route path="rejected-policies" element={<AdminRejectedPoliciesPage/>}/>
-                <Route path="deleted-policies" element={<AdminDeletedPoliciesPage/>}/>
-                <Route path="policy/:id/:attestationStatus" element={<AdminPolicyviewpage/>} />
+                <Route path="create-policy" element={<CreateNewPolicyPage />} />
+                <Route path="edit-policy/:id" element={<EditPolicyPage />} />
+                <Route path="attesters-list/:id" element={<AdminAttestersListPage />} />
+                <Route path="defaulters-list/:id" element={<AdminDefaultersListPage />} />
+                <Route path="uploaded-policies" element={<AdminUploadedPoliciesPage />} />
+                <Route path="approved-policies" element={<AdminApprovedPoliciesPage />} />
+                <Route path="pending-policies" element={<AdminPendingPoliciesPage />} />
+                <Route path="rejected-policies" element={<AdminRejectedPoliciesPage />} />
+                <Route path="deleted-policies" element={<AdminDeletedPoliciesPage />} />
+                <Route path="policy/:id/:attestationStatus" element={<AdminPolicyviewpage />} />
             </Route>
-            <Route path="/admn" element={<ApproverDashboardContainer/>}>
-                <Route index element={<ApproverDashboardPage/>} />
-                <Route path="all-policies" element={< ApproverAllPoliciesPage/>}/>
-                <Route path="approved-policies" element={<ApproverApprovedPoliciesPage/>}/>
-                <Route path="pending-policies" element={<ApproverPendingPoliciesPage/>}/>
-                <Route path="rejected-policies" element={<ApproverRejectedPoliciesPage/>}/>
-                <Route path="deleted-policies" element={<AdminDeletedPoliciesPage/>}/>
-                <Route path="policy/:id/:attestationStatus" element={<ApproverPolicyviewpage/>} />
+            <Route path="/admn" element={<ApproverDashboardContainer />}>
+                <Route index element={<ApproverDashboardPage />} />
+                <Route path="all-policies" element={< ApproverAllPoliciesPage />} />
+                <Route path="approved-policies" element={<ApproverApprovedPoliciesPage />} />
+                <Route path="pending-policies" element={<ApproverPendingPoliciesPage />} />
+                <Route path="rejected-policies" element={<ApproverRejectedPoliciesPage />} />
+                <Route path="deleted-policies" element={<ApproverDeletedPoliciesPage />} />
+                <Route path="attesters-list/:id" element={<ApproverAttestersListPage />} />
+                <Route path="defaulters-list/:id" element={<ApproverDefaultersListPage />}/>
+                <Route path="policy/:id/:attestationStatus" element={<ApproverPolicyviewpage />} />
+
+                <Route path="attesters-list/:id" element={<ApproverAttestersListPage />} />
+                <Route path="defaulters-list/:id" element={<ApproverDefaultersListPage />} />
             </Route>
-<Route path="*" element={<ErrorPage/>}/>
+            <Route path="*" element={<ErrorPage />} />
         </Routes>
 
 

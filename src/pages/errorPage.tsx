@@ -8,12 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 const ErrorPage : React.FC<any> = () => {
     const navigate = useNavigate()
-    useEffect(()=>{
-        window.history.pushState(null, '', window.location.href);
-        window.onpopstate = function(event) {
-          window.history.go(1);
-        };
-    })
+   
     
     // loginUser();
 
@@ -21,7 +16,7 @@ const ErrorPage : React.FC<any> = () => {
         <div className="min-vh-100 w-100 d-flex flex-column justify-content-center align-items-center" style={{fontFamily:'primary'}}>
            
             <h4>Page Not Found</h4>
-            <Button onClick={()=>navigate('/')}>Go Back</Button>
+            <Button onClick={()=>navigate(-1)}>Go Back</Button>
             {/* <a className="mt-3" href="/">Click here to go back </a> */}
         </div>
     )

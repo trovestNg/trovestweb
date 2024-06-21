@@ -31,7 +31,7 @@ const AdminDashboardContainer = () => {
         try {
             let userInfo = await getUserInfo();
             let userName = userInfo?.profile?.sub.split('\\')[1]
-            console.log({ timer: userInfo?.expired, remaining: userInfo?.expires_in })
+            // console.log({ gotten: userInfo })({ timer: userInfo?.expired, remaining: userInfo?.expires_in })
             if (userInfo?.expired) {
               await  loginUser()
             } else {
@@ -48,7 +48,7 @@ const AdminDashboardContainer = () => {
             }
 
         } catch (error) {
-            console.log(error)
+            // console.log({ gotten: userInfo })(error)
         }
 
 

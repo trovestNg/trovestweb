@@ -17,9 +17,7 @@ import UpdatePolicyModal from "../../modals/updatePolicyModal";
 import { shortenString } from "../../../util";
 
 const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
-    const userDat = localStorage.getItem('loggedInUser') || '';
-    const data = JSON.parse(userDat);
-    const userName = data?.profile?.sub.split('\\').pop();
+    
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
 
@@ -48,8 +46,9 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
+           
             if (userInfo) {
+                let userName = userInfo?.profile?.sub.split('\\')[1]
                 const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
                 if (res?.data) {
                     let allPolicy = res?.data.filter((pol: IPolicy) => pol.markedForDeletion)
@@ -59,7 +58,7 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     // loginUser()
                     // toast.error('Session expired!, You have been logged out!!')
                 }
-                console.log({ response: res })
+                
             }
 
         } catch (error) {
@@ -76,8 +75,9 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
+            
             if (userInfo) {
+                let userName = userInfo?.profile?.sub.split('\\')[1]
                 const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
                 if (res?.data) {
 
@@ -93,7 +93,7 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     // loginUser()
                     // toast.error('Session expired!, You have been logged out!!')
                 }
-                console.log({ response: res })
+               
             }
 
         } catch (error) {
@@ -107,8 +107,9 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            console.log({ gotten: userInfo })
+            
             if (userInfo) {
+                let userName = userInfo?.profile?.sub.split('\\')[1]
                 const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
                 if (res?.data) {
 
@@ -124,7 +125,7 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     // loginUser()
                     // toast.error('Session expired!, You have been logged out!!')
                 }
-                console.log({ response: res })
+               
             }
 
         } catch (error) {
@@ -148,23 +149,23 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
 
 
-    const handleGetAllDepts = async () => {
-        // setLoading(true)
-        try {
-            const res = await getAllDepartments(`filter?subsidiaryName=FSDH+Merchant+Bank`, `${data?.access_token}`);
-            console.log({ dataHere: res })
+    // const handleGetAllDepts = async () => {
+    //     // setLoading(true)
+    //     try {
+    //         const res = await getAllDepartments(`filter?subsidiaryName=FSDH+Merchant+Bank`, `${data?.access_token}`);
+    //         // console.log({ gotten: userInfo })({ dataHere: res })
 
-            if (res?.data) {
-                setDepts(res?.data)
-            } else {
+    //         if (res?.data) {
+    //             setDepts(res?.data)
+    //         } else {
 
-            }
-            console.log({ response: res })
-        } catch (error) {
+    //         }
+    //         // console.log({ gotten: userInfo })({ response: res })
+    //     } catch (error) {
 
-        }
+    //     }
 
-    }
+    // }
 
     const handleDeptSelection = (val: string) => {
         if (val == 'all') {
@@ -195,7 +196,7 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     useEffect(() => {
         fetchData();
-        handleGetAllDepts();
+        // handleGetAllDepts();
     }, [refreshData])
 
 
@@ -220,24 +221,42 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     const handlePolicyDelete = async (e: any) => {
         e.stopPropagation();
-        const res = await api.post(`Policy/delete/request`, { "id": policyId, "username": userName }, data?.access_token);
-        if (res?.status == 200) {
-            toast.success('Delete request sent for approval!');
-            setDeteletPolicyModal(false);
-            setRefreshData(!refreshData)
-        } else {
-            toast.error('Failed to delete policy')
+        try {
+            let userInfo = await getUserInfo();
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            if (userInfo) {
+                const res = await api.post(`Policy/delete/request`, { "id": policyId, "username": userName }, userInfo.access_token);
+                if (res?.status == 200) {
+                    toast.success('Delete request sent for approval!');
+                    setDeteletPolicyModal(false);
+                    setRefreshData(!refreshData)
+                } else {
+                    toast.error('Failed to delete policy')
+                }
+            }
+
+        } catch (error) {
+
         }
     }
 
     const handleSendAuthorizationReminder = async (e: any, policy: IPolicy) => {
         e.stopPropagation();
-        const res = await api.post(`Policy/nudge-authorizer?policyId=${policy.id}`, { "policyId": policy.id }, data?.access_token);
-        if (res?.status == 200) {
-            toast.success('Reminder sent!');
-            setRefreshData(!refreshData)
-        } else {
-            toast.error('Error sending reminder')
+        try {
+            let userInfo = await getUserInfo();
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            if (userInfo) {
+                const res = await api.post(`Policy/nudge-authorizer?policyId=${policy.id}`, { "policyId": policy.id }, userInfo?.access_token);
+                if (res?.status == 200) {
+                    toast.success('Reminder sent!');
+                    setRefreshData(!refreshData)
+                } else {
+                    toast.error('Error sending reminder')
+                }
+            }
+
+        } catch (error) {
+
         }
     }
 
@@ -275,7 +294,7 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     useEffect(() => {
         fetchData();
-        handleGetAllDepts();
+        // handleGetAllDepts();
     }, [refreshData])
 
     return (
