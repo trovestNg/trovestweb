@@ -22,22 +22,28 @@ const UserAllPolicyPage = () => {
     const [totalNotAttested,setTotalNotAttested] =useState(0);
 
     const getUserDashboard = async () => {
-        setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            let userName = userInfo?.profile?.sub.split('\\')[1]
-            const res = await api.get(`Dashboard/user?userName=${userName}`, `${userInfo?.access_token}`);
-            if (res?.data) {
-                setTotalPolicyCount(res?.data?.totalPolicy);
-                setLoading(false);
+            // console.log({userCred:userInfo?.scopes})
+            if(userInfo?.expired) {
+                toast.error('Session timed out!');
+                await loginUser()
+            } else if(userInfo?.profile){
+                let userName = userInfo?.profile?.sub.split('\\')[1]
+                const res = await getPolicies(`Dashboard/user?userName=${userName}`, `${userInfo?.access_token}`);
+                if (res?.data) {
+                    setTotalPolicyCount(res?.data.totalPolicy);
+                    setLoading(false);
+                } else {
+                    toast.error('Network error!');
+                    setLoading(false);
+                }
+
             } else {
-                // setLoading(false);
-                ;
+            //    await loginUser()
             }
-
-
         } catch (error) {
-            // console.log({ gotten: userInfo })(error)
+           console.log(error) 
         }
     }
 

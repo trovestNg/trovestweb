@@ -18,7 +18,7 @@ import { shortenString } from "../../../util";
 import dangerElipse from '../../../assets/images/Ellipse-danger.png';
 
 const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
-    
+
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
 
@@ -223,7 +223,7 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const handlePolicyDelete = async (e: any) => {
         e.stopPropagation();
         let userInfo = await getUserInfo();
-        if(userInfo){
+        if (userInfo) {
             let userName = userInfo?.profile?.sub.split('\\')[1]
             const res = await api.post(`Policy/delete/request`, { "id": policyId, "username": userName }, userInfo?.access_token);
             if (res?.status == 200) {
@@ -234,7 +234,7 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                 toast.error('Failed to delete policy')
             }
         }
-        
+
     }
 
     const handleSendReminder = async (e: any, policy: IPolicy) => {
@@ -254,7 +254,7 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     setLoading(false)
                 }
             } else {
-                
+
             }
 
         } catch (error) {
@@ -291,7 +291,7 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     toast.error('Error rejecting policy')
                 }
             } else {
-                
+
             }
 
         } catch (error) {
@@ -364,7 +364,7 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                         <Button
                             disabled={query == ''}
                             onClick={() => handleSearch()}
-                            variant="primary" style={{ minWidth: '100px', marginRight: '-5px', minHeight:'2.4em' }}>Search</Button>
+                            variant="primary" style={{ minWidth: '100px', marginRight: '-5px', minHeight: '2.4em' }}>Search</Button>
                     </div>
                     {/* <Form.Select onChange={(e) => handleDeptSelection(e.currentTarget.value)} className="custom-select"
                         style={{ maxWidth: '170px' }}>
@@ -423,10 +423,10 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
                                             <td>{policy.authorizedBy}</td>
                                             <td>{moment(policy.uploadTime).format('MMM DD YYYY')}</td>
-                                            <td className={`text-${policy.isAuthorized?'success':!policy.isAuthorized  && !policy.isRejected?'warning':!policy.isAuthorized  && policy.isRejected?'danger':'primary'}`}>
-                                                <img src={policy.isAuthorized?successElipse:!policy.isAuthorized  && !policy.isRejected?warningElipse:!policy.isAuthorized  && policy.isRejected?dangerElipse:''} height={'10px'} />
+                                            <td className={`text-${policy.isAuthorized ? 'success' : !policy.isAuthorized && !policy.isRejected ? 'warning' : !policy.isAuthorized && policy.isRejected ? 'danger' : 'primary'}`}>
+                                                <img src={policy.isAuthorized ? successElipse : !policy.isAuthorized && !policy.isRejected ? warningElipse : !policy.isAuthorized && policy.isRejected ? dangerElipse : ''} height={'10px'} />
                                                 {'  '}
-                                                <span >{policy.isAuthorized &&'Approved'}{!policy.isAuthorized  && !policy.isRejected &&'Pending'} {!policy.isAuthorized  && policy.isRejected &&'Rejected'}</span>
+                                                <span >{policy.isAuthorized && 'Approved'}{!policy.isAuthorized && !policy.isRejected && 'Pending'} {!policy.isAuthorized && policy.isRejected && 'Rejected'}</span>
                                                 {/* : !policy.isAuthorized && ? 'Pending ' : policy.isAuthorized && policy.isRejected?'Rejected':'' */}
                                                 {/* <span onClick={(e) => handleShowReasonForRej(e, policy)}>{policy.isRejected && <i className="bi bi-file-earmark-excel text-danger"></i>}</span> */}
                                             </td>
@@ -532,7 +532,7 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                 </ListGroupItem>
 
                                                                 <ListGroupItem
-                                                                    onClick={(e) =>  handleSendReminder(e, policy)}
+                                                                    onClick={(e) => handleSendReminder(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
@@ -549,7 +549,7 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
                                                                             <i className="bi bi-download"></i>
-                                                                           Download
+                                                                            Download
                                                                         </div>
                                                                     </span>
                                                                 </ListGroupItem>
@@ -574,13 +574,23 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                         <Card className="p-2  shadow-sm rounded border-0"
                                                             style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
                                                             <ListGroup>
-                                                                <ListGroupItem
+                                                                {/* <ListGroupItem
                                                                     onClick={(e) => handleEdit(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
                                                                             <i className="bi bi-file-text"></i>
                                                                             Edit Policy
+                                                                        </div>
+                                                                    </span>
+                                                                </ListGroupItem> */}
+
+                                                                <ListGroupItem
+                                                                >
+                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                        <div className="d-flex gap-2">
+                                                                            {/* <i className="bi bi-download"></i> */}
+                                                                            View Policy
                                                                         </div>
                                                                     </span>
                                                                 </ListGroupItem>
@@ -592,12 +602,14 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
                                                                             <i className="bi bi-download"></i>
-                                                                           Download
+                                                                            Download Policy
                                                                         </div>
                                                                     </span>
                                                                 </ListGroupItem>
 
-                                                                
+
+
+
 
                                                                 {/* <ListGroupItem
                                                                     disabled={policy?.markedForDeletion}

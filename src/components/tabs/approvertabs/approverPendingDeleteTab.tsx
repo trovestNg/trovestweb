@@ -52,7 +52,7 @@ const ApproverPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
             let userName = userInfo?.profile?.sub.split('\\')[1]
                 const res = await api.get(`Dashboard/authorizer-policy?userName=${userName}`, `${userInfo.access_token}`);
                 if (res?.data) {
-                    let allPolicy = res?.data.filter((pol: IPolicy) => pol.markedForDeletion)
+                    let allPolicy = res?.data.filter((pol: IPolicy) => pol.markedForDeletion && !pol.isDeleted)
                     setPolicies(allPolicy.reverse());
                     setLoading(false)
                 } else {
@@ -85,8 +85,8 @@ const ApproverPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     setLoading(false)
 
                     let filtered = res?.data.filter((policy: IPolicy) =>
-                        policy.fileName.toLowerCase().includes(query.toLowerCase()) && policy.markedForDeletion ||
-                        policy.policyDepartment.toLowerCase().includes(query.toLowerCase()) && policy.markedForDeletion
+                        policy.fileName.toLowerCase().includes(query.toLowerCase()) && policy.markedForDeletion && !policy.isDeleted ||
+                        policy.policyDepartment.toLowerCase().includes(query.toLowerCase()) && policy.markedForDeletion  && !policy.isDeleted
                     );
                     setPolicies(filtered.reverse());
 
@@ -229,7 +229,8 @@ const ApproverPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
             if (res?.status == 200) {
                 toast.success('Policy deleted succesfully!');
                 setDeteletPolicyModal(false);
-                setRefreshData(!refreshData)
+                setRefreshData(!refreshData);
+                window.location.reload();
             } else {
                 toast.error('Failed to delete policy')
             }
@@ -328,11 +329,11 @@ const ApproverPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
                 </div>
                 <div className="">
-                    <Button
+                    {/* <Button
                         variant="primary"
                         style={{ minWidth: '100px' }}
                         onClick={() => handleCreatePolicy()}
-                    >Create New Policy</Button>
+                    >Create New Policy</Button> */}
                 </div>
             </div>
 
@@ -482,7 +483,7 @@ const ApproverPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                     </div>
                                                                 </ListGroupItem>
 
-                                                                <ListGroupItem
+                                                                {/* <ListGroupItem
                                                                 onClick={(e) => handleUpdate(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
@@ -491,7 +492,7 @@ const ApproverPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                             Update Deadline
                                                                         </div>
                                                                     </span>
-                                                                </ListGroupItem>
+                                                                </ListGroupItem> */}
 
                                                                 <ListGroupItem
                                                                     // disabled={policy?.markedForDeletion}
@@ -500,7 +501,7 @@ const ApproverPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
                                                                             <i className="bi bi-trash"></i>
-                                                                            Delete
+                                                                           Approve Delete
                                                                         </div>
                                                                     </span>
                                                                 </ListGroupItem>
@@ -513,13 +514,14 @@ const ApproverPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                         <Card className="p-2  shadow-sm rounded border-0"
                                                             style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
                                                             <ListGroup>
-                                                                <ListGroupItem
-                                                                    onClick={(e) => handleEdit(e, policy)}
+                                                            <ListGroupItem
+                                                               
+                                                               
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
-                                                                            <i className="bi bi-file-text"></i>
-                                                                            Edit Policy
+                                                                            <i className="bi bi-eye"></i>
+                                                                            View Policy
                                                                         </div>
                                                                     </span>
                                                                 </ListGroupItem>
@@ -536,7 +538,7 @@ const ApproverPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                     </span>
                                                                 </ListGroupItem>
 
-                                                                <ListGroupItem
+                                                                {/* <ListGroupItem
                                                                 onClick={(e)=>handleSendAuthorizationReminder(e,policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
@@ -545,7 +547,7 @@ const ApproverPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                             Send Reminder
                                                                         </div>
                                                                     </span>
-                                                                </ListGroupItem>
+                                                                </ListGroupItem> */}
 
                                                                 <ListGroupItem
                                                                     // disabled={policy?.markedForDeletion}
@@ -554,7 +556,7 @@ const ApproverPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
                                                                             <i className="bi bi-file-text"></i>
-                                                                            Delete
+                                                                          Approve  Delete
                                                                         </div>
                                                                     </span>
                                                                 </ListGroupItem>

@@ -8,9 +8,13 @@ import { getUserInfo } from "../../controllers/auth";
 
 const TopBar: React.FC<any> = ({ payload }) => {
     const [userType, setUserType] = useState('');
+    const [userName,setUserName] = useState('');
     const getUserType = async () => {
         try {
             let userInfo = await getUserInfo();
+            if(userInfo){
+                setUserName(`${userInfo?.profile?.given_name} ${userInfo?.profile?.family_name}`)
+            }
             if (userInfo?.profile.role?.includes("DOMAIN1\\GROUP_POLICY_INIT")) {
                 setUserType('Initiator')
             }
@@ -58,7 +62,7 @@ const TopBar: React.FC<any> = ({ payload }) => {
                     </Card>
                 </div> */}
                 </div>
-                <p className="p-0 m-0">{payload?.fullname}</p>
+                <p className="p-0 m-0">{userName}</p>
                 </div>
                 <div>
                 <p className="p-0 m-0 px-5" style={{fontFamily:'primary'}}>{userType}</p>

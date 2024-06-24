@@ -51,7 +51,7 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                 let userName = userInfo?.profile?.sub.split('\\')[1]
                 const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
                 if (res?.data) {
-                    let allPolicy = res?.data.filter((pol: IPolicy) => pol.markedForDeletion)
+                    let allPolicy = res?.data.filter((pol: IPolicy) => pol.markedForDeletion && !pol.isDeleted)
                     setPolicies(allPolicy.reverse());
                     setLoading(false)
                 } else {
@@ -356,7 +356,7 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                             <tr >
                                 <th scope="col" className="bg-primary text-light">#</th>
                                 <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                <th scope="col" className="bg-primary text-light">Initiator</th>
+                                <th scope="col" className="bg-primary text-light">Authorizer</th>
                                 <th scope="col" className="bg-primary text-light">Department</th>
                                 <th scope="col" className="bg-primary text-light">Date Deleted</th>
                                 <th scope="col" className="bg-primary text-light">Action</th>
@@ -371,7 +371,7 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                 <tr >
                                     <th scope="col" className="bg-primary text-light">#</th>
                                     <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                    <th scope="col" className="bg-primary text-light">Initiator</th>
+                                    <th scope="col" className="bg-primary text-light">Authorizer</th>
                                     <th scope="col" className="bg-primary text-light">Department</th>
                                     <th scope="col" className="bg-primary text-light">Date Deleted</th>
                                     <th scope="col" className="bg-primary text-light">Action</th>
@@ -386,7 +386,7 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                             <th scope="row">{index + 1}</th>
                                             <td><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.fileName, 40)}`}</td>
 
-                                            <td>{policy.uploadedBy}</td>
+                                            <td>{policy.authorizedBy}</td>
                                             <td>{policy.policyDepartment}</td>
                                             <td>{moment(policy.deleteRequestedTime).format('MMM DD YYYY')}</td>
                                             {/* <td className={`text-${policy.isAuthorized ? 'success' : 'warning'}`}>

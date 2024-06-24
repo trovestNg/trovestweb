@@ -10,6 +10,8 @@ import { getUserInfo, loginUser } from "../../controllers/auth";
 import moment from "moment";
 import api from "../../config/api";
 import RejectReasonModal from "../../components/modals/rejectReasonModal";
+import SureToDeletePolicyModal from "../../components/modals/sureToDeletePolicyModal";
+import SureToApprovePolicyModal from "../../components/modals/sureToApprovePolicyModal";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -83,6 +85,7 @@ const ApproverPolicyviewpage = () => {
         setSureToApproveModal(true)
     }
 
+
     const approvePolicy = async () => {
         setLoading(true)
         try {
@@ -128,7 +131,7 @@ const ApproverPolicyviewpage = () => {
                     toast.success('Policy rejected!');
                     setRejectModal(false)
                     setRefreshData(!refreshData);
-                    navigate(-1)
+                    navigate(-1);
                 } else {
                     toast.error('Error rejecting policy')
                 }
@@ -144,6 +147,11 @@ const ApproverPolicyviewpage = () => {
 
     return (
         <div className="">
+            <SureToApprovePolicyModal 
+            off={()=>setSureToApproveModal(false)}
+            show = {sureToApproveModal}
+            action={()=>approvePolicy()}
+            />
             <div><Button variant="outline border border-2" onClick={() => navigate(-1)}>Go Back</Button></div>
             <div className="w-100 d-flex justify-content-between gap-4">
                 <div className="" style={{ minWidth: '70%' }}>
@@ -247,7 +255,7 @@ const ApproverPolicyviewpage = () => {
                         </div>
                     </div>
                     {
-                        policy && policy.comment !== '' ?
+                        policy && policy.comment &&
                             <>
                                 Reason for rejection
                                 <div className="bg-primary text-light rounded rounded-3 p-3">
@@ -256,10 +264,10 @@ const ApproverPolicyviewpage = () => {
                                         {policy.comment}
                                     </p>
                                 </div>
-                            </> : ''
+                            </> 
                     }
                     {
-                        !policy?.isAuthorized &&
+                        !policy?.isAuthorized || policy.comment  &&
                         <div className="d-flex mt-4 gap-3">
                             <Button
                                 variant="success  outline"
@@ -271,7 +279,24 @@ const ApproverPolicyviewpage = () => {
                                 onClick={handleRejectPolicy}
                             >Reject Policy</Button>
 
-                        </div>}
+                        </div>
+                    }
+
+{
+                        policy?.markedForDeletion && !policy.comment  &&
+                        <div className="d-flex mt-4 gap-3">
+                            <Button
+                                variant="success  outline"
+                                onClick={handleApprovePolicy}
+
+                            >Delete Policy</Button>
+                            <Button
+                                variant="border border-danger text-danger outline"
+                                onClick={handleRejectPolicy}
+                            >Reject Policy</Button>
+
+                        </div>
+                    }
                 </div>
 
             </div>

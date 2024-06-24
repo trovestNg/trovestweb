@@ -104,7 +104,7 @@ const AdminDashboardPage = () => {
                 }
             </div>
 
-            <div className="w-100 mt-5" style={{ display: 'relative' }}>
+            <div className="mt-5" style={{ display: 'relative' }}>
                 <Tabs
                     defaultActiveKey="pending"
                     id="uncontrolled-tab-example"

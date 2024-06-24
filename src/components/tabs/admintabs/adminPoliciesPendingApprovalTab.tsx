@@ -43,7 +43,7 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
             const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo?.access_token}`);
 
             if (res?.data) {
-                let unApprovedPolicies = res?.data.filter((policy: IPolicy) => !policy.isAuthorized && !policy.markedForDeletion)
+                let unApprovedPolicies = res?.data.filter((policy: IPolicy) => !policy.isAuthorized && !policy.markedForDeletion && !policy.isDeleted)
                 setPolicies(unApprovedPolicies);
                 setLoading(false)
             }
@@ -65,7 +65,7 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
                 setLoading(false)
 
                 let filtered = res?.data.filter((policy: IPolicy) =>
-                    policy.fileName.toLowerCase().includes(query.toLowerCase()) && !policy.isAuthorized && !policy.markedForDeletion
+                    policy.fileName.toLowerCase().includes(query.toLowerCase()) && !policy.isAuthorized && !policy.markedForDeletion && !policy.isDeleted
                 );
                 setPolicies(filtered.reverse());
 

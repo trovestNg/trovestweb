@@ -7,13 +7,13 @@ import moment from "moment";
 import { getPolicies } from "../../../controllers/policy";
 import receiptImg from '../../../assets/images/receipt.png';
 import { getAllDepartments } from "../../../controllers/department";
-import {toast} from 'react-toastify';
+import { toast } from 'react-toastify';
 import { getUserInfo, loginUser } from "../../../controllers/auth";
 import api from "../../../config/api";
 import SureToDeletePolicyModal from "../../modals/sureToDeletePolicyModal";
 import UpdatePolicyModal from "../../modals/updatePolicyModal";
 
-const ApproverRejectedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
+const ApproverRejectedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
     const [policies, setPolicies] = useState<IPolicy[]>([]);
@@ -40,12 +40,12 @@ const ApproverRejectedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
         try {
             let userInfo = await getUserInfo();
             // console.log({ gotten: userInfo })({gotten: userInfo})
-            if(userInfo){
+            if (userInfo) {
                 let userName = userInfo?.profile?.sub.split('\\')[1]
                 const res = await api.get(`Dashboard/authorizer-policy?userName=${userName}`, `${userInfo.access_token}`);
-                
+
                 if (res?.data) {
-                    let rejectedPolicies =  res?.data.filter((policy:IPolicy)=>policy.isRejected && !policy.markedForDeletion)
+                    let rejectedPolicies = res?.data.filter((policy: IPolicy) => policy.isRejected && !policy.isDeleted)
                     setPolicies(rejectedPolicies);
                     setLoading(false)
                 } else {
@@ -54,7 +54,7 @@ const ApproverRejectedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
                 }
                 // console.log({ gotten: userInfo })({ response: res })
             }
-           
+
         } catch (error) {
 
         }
@@ -69,7 +69,7 @@ const ApproverRejectedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
     //         if (res?.data) {
     //             setDepts(res?.data)
     //         } else {
-                
+
     //         }
     //         // console.log({ gotten: userInfo })({ response: res })
     //     } catch (error) {
@@ -79,7 +79,7 @@ const ApproverRejectedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
     // }
 
     const handleSearch = () => {
-        
+
         setBySearch(true);
         setRefreshData(!refreshData)
 
@@ -99,7 +99,7 @@ const ApproverRejectedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
                     setLoading(false)
 
                     let filtered = res?.data.filter((policy: IPolicy) =>
-                        policy.fileName.toLowerCase().includes(query.toLowerCase()) && !policy.isAuthorized && !policy.markedForDeletion
+                        policy.fileName.toLowerCase().includes(query.toLowerCase()) && !policy.isDeleted && policy.isRejected
                     );
                     setPolicies(filtered.reverse());
 
@@ -176,23 +176,23 @@ const ApproverRejectedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
                 toast.error('Failed to delete policy')
             }
         }
-        
+
     }
 
-    const handleSendAuthorizationReminder = async (e: any,policy:IPolicy) => {
+    const handleSendAuthorizationReminder = async (e: any, policy: IPolicy) => {
         e.stopPropagation();
         let userInfo = await getUserInfo();
         if (userInfo) {
             let userName = userInfo?.profile?.sub.split('\\')[1]
-            const res = await api.post(`Policy/nudge-authorizer?policyId=${policy.id}`,{"policyId" :policy.id}, userInfo?.access_token);
-        if (res?.status == 200) {
-            toast.success('Reminder sent!');
-            setRefreshData(!refreshData)
-        } else {
-            toast.error('Error sending reminder')
+            const res = await api.post(`Policy/nudge-authorizer?policyId=${policy.id}`, { "policyId": policy.id }, userInfo?.access_token);
+            if (res?.status == 200) {
+                toast.success('Reminder sent!');
+                setRefreshData(!refreshData)
+            } else {
+                toast.error('Error sending reminder')
+            }
         }
-        }
-        
+
     }
 
     const handleDelete = async (e: any, policy: any) => {
@@ -214,7 +214,8 @@ const ApproverRejectedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
 
     const handleDownloadPolicy = (e: any, pol: IPolicy) => {
         e.stopPropagation();
-        toast.success('Downloading file')
+        // toast.success('Downloading file')
+        window.open(pol.url, '_blank');
 
     }
 
@@ -298,24 +299,24 @@ const ApproverRejectedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {policies.length <= 0?<tr><td className="text-center" colSpan={5}>No Data Available</td></tr> :
-                                policies.map((policy, index) => (
-                                    <tr key={index} style={{ cursor: 'pointer' }}
-                                    onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
-                                    >
-                                        <th scope="row">{index + 1}</th>
-                                        <td><i className="bi bi-file-earmark-pdf text-danger"></i> {policy.fileName}</td>
-                                        <td>{policy.comment}</td>
-                                        <td>{moment(policy.deadlineDate).format('MMM DD YYYY')}</td>
-                                        <td className="table-icon" onClick={(e) => handleClick(e)}>
+                                {policies.length <= 0 ? <tr><td className="text-center" colSpan={5}>No Data Available</td></tr> :
+                                    policies.map((policy, index) => (
+                                        <tr key={index} style={{ cursor: 'pointer' }}
+                                            onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
+                                        >
+                                            <th scope="row">{index + 1}</th>
+                                            <td><i className="bi bi-file-earmark-pdf text-danger"></i> {policy.fileName}</td>
+                                            <td>{policy.comment}</td>
+                                            <td>{moment(policy.deadlineDate).format('MMM DD YYYY')}</td>
+                                            <td className="table-icon">
                                                 <i className=" bi bi-three-dots"></i>
                                                 <div className="content ml-5" style={{ position: 'relative' }}>
                                                     {
                                                         policy.isAuthorized &&
                                                         <Card className="p-2  shadow-sm rounded border-0"
-                                                        style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
-                                                        <ListGroup>
-                                                            <ListGroupItem className="multi-layer">
+                                                            style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
+                                                            <ListGroup>
+                                                                {/* <ListGroupItem className="multi-layer">
                                                                 <span className="w-100 d-flex justify-content-between">
                                                                     <div className="d-flex gap-2">
                                                                     <i className="bi bi-clipboard-check"></i>
@@ -357,9 +358,9 @@ const ApproverRejectedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
                                                                         </ListGroup>
                                                                     </Card>
                                                                 </div>
-                                                            </ListGroupItem>
+                                                            </ListGroupItem> */}
 
-                                                            <ListGroupItem className="multi-layer">
+                                                                {/* <ListGroupItem className="multi-layer">
                                                                 <span className="w-100 d-flex justify-content-between">
                                                                     <div className="d-flex gap-2">
                                                                     <i className="bi bi-clipboard-x"></i>
@@ -399,27 +400,30 @@ const ApproverRejectedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
                                                                         </ListGroup>
                                                                     </Card>
                                                                 </div>
-                                                            </ListGroupItem>
+                                                            </ListGroupItem> */}
 
-                                                            <ListGroupItem>
-                                                                <span className="w-100 d-flex justify-content-between">
-                                                                    <div className="d-flex gap-2">
-                                                                    <i className="bi bi-calendar-event"></i>
-                                                                        Update Deadline
-                                                                    </div>
-                                                                </span>
-                                                            </ListGroupItem>
+                                                                <ListGroupItem>
+                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                        <div className="d-flex gap-2">
+                                                                            <i className="bi bi-calendar-event"></i>
+                                                                            View Policy
+                                                                        </div>
+                                                                    </span>
+                                                                </ListGroupItem>
 
-                                                            <ListGroupItem>
-                                                                <span className="w-100 d-flex justify-content-between">
-                                                                    <div className="d-flex gap-2">
-                                                                    <i className="bi bi-trash"></i>
-                                                                        Delete
-                                                                    </div>
-                                                                </span>
-                                                            </ListGroupItem>
-                                                        </ListGroup>
-                                                    </Card>}
+                                                                <ListGroupItem
+                                                                    onClick={(e) => handleDownloadPolicy(e, policy)}
+
+                                                                >
+                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                        <div className="d-flex gap-2">
+                                                                            <i className="bi bi-download"></i>
+                                                                            Download Policy
+                                                                        </div>
+                                                                    </span>
+                                                                </ListGroupItem>
+                                                            </ListGroup>
+                                                        </Card>}
 
 
                                                     {
@@ -438,14 +442,11 @@ const ApproverRejectedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
                                                                     </span>
                                                                 </ListGroupItem> */}
 
-                                                                <ListGroupItem
-                                                                    onClick={(e) => handleDownloadPolicy(e, policy)}
-
-                                                                >
+                                                                <ListGroupItem>
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
-                                                                            <i className="bi bi-download"></i>
-                                                                            Download Policy
+                                                                            <i className="bi bi-calendar-event"></i>
+                                                                            View Policy
                                                                         </div>
                                                                     </span>
                                                                 </ListGroupItem>
@@ -462,13 +463,13 @@ const ApproverRejectedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
                                                                 </ListGroupItem> */}
 
                                                                 <ListGroupItem
-                                                                    disabled={policy?.markedForDeletion}
-                                                                    onClick={(e) => handleDelete(e, policy)}
+                                                                    onClick={(e) => handleDownloadPolicy(e, policy)}
+
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
-                                                                            <i className="bi bi-file-text"></i>
-                                                                            Delete
+                                                                            <i className="bi bi-download"></i>
+                                                                            Download Policy
                                                                         </div>
                                                                     </span>
                                                                 </ListGroupItem>
@@ -478,8 +479,8 @@ const ApproverRejectedPoliciesTab: React.FC<any> = ({handleCreatePolicy}) => {
                                                 </div>
 
                                             </td>
-                                    </tr>
-                                ))
+                                        </tr>
+                                    ))
                                 }
                             </tbody>
                         </table>

@@ -36,7 +36,7 @@ const getAuthorizerDashboard= async () => {
         // console.log({userCred:userInfo?.scopes})
         if(userInfo?.expired) {
             toast.error('Session timed out!');
-            await logoutUser()
+            await loginUser()
         } else if(userInfo?.profile){
             let userName = userInfo?.profile?.sub.split('\\')[1]
             const res = await api.get(`Dashboard/authorizer?userName=${userName}`, `${userInfo?.access_token}`);
@@ -45,6 +45,7 @@ const getAuthorizerDashboard= async () => {
                 setLoading(false);
             } else {
                 toast.error('Network error!');
+                await loginUser()
             }
 
         } else {

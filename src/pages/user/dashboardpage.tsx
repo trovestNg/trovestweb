@@ -68,8 +68,7 @@ const UserDashboardPage = () => {
                 setUserDBInfo(res?.data);
                 setLoading(false);
             } else {
-                // setLoading(false);
-                ;
+                setLoading(false);
             }
 
 
@@ -104,7 +103,7 @@ const UserDashboardPage = () => {
             }
 
 
-            <div className="w-100 mt-5">
+            <div className="mt-5">
                 <Tabs
                     defaultActiveKey="not-attested"
                     id="uncontrolled-tab-example"

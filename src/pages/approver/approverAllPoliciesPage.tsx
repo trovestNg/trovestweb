@@ -60,7 +60,7 @@ const ApproverAllPoliciesPage = () => {
 
     return (
         <div className="w-100">
-            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Uploaded Policies {userDBInfo?.totalUploadedPolicyByInitiator} </h5>
+            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>All Policies {userDBInfo?.totalUploadedPolicy} </h5>
             <p>Here, you'll find all policies you have uploaded.</p>
             {/* <div className="d-flex gap-5">
                 {

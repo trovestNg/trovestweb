@@ -52,7 +52,7 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
                 let userName = userInfo?.profile?.sub.split('\\')[1]
                 const res = await api.get(`Dashboard/authorizer-policy?userName=${userName}`, `${userInfo.access_token}`);
                 if (res?.data) {
-                    let allPolicy = res?.data.filter((pol: IPolicy) => !pol.isAuthorized && !pol.markedForDeletion && !policy?.isDeleted)
+                    let allPolicy = res?.data.filter((pol: IPolicy) => !pol.isAuthorized && !policy?.isDeleted)
                     setPolicies(allPolicy.reverse());
                     setLoading(false)
                 } else {
@@ -87,8 +87,8 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     setLoading(false)
 
                     let filtered = res?.data.filter((policy: IPolicy) =>
-                        policy.fileName.toLowerCase().includes(query.toLowerCase()) &&  !policy.markedForDeletion && !policy?.isDeleted ||
-                        policy.policyDepartment.toLowerCase().includes(query.toLowerCase()) && !policy.markedForDeletion
+                        policy.fileName.toLowerCase().includes(query.toLowerCase()) &&  !policy.markedForDeletion && !policy?.isDeleted && !policy?.isRejected ||
+                        policy.policyDepartment.toLowerCase().includes(query.toLowerCase()) && !policy.markedForDeletion && !policy?.isRejected
                     );
                     setPolicies(filtered.reverse());
 
@@ -261,8 +261,9 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     const handleDownloadPolicy = (e: any, pol: IPolicy) => {
         e.stopPropagation();
-        toast.success('Downloading file')
-        
+        // toast.success('Downloading file')
+        window.open(pol.url, '_blank');
+
     }
 
     const handleApprovePolicy = async (e: any, policy: IPolicy) => {
@@ -375,8 +376,8 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                 <th scope="col" className="bg-primary text-light">#</th>
                                 <th scope="col" className="bg-primary text-light">Policy Title</th>
                                 <th scope="col" className="bg-primary text-light">Initiator</th>
-                                <th scope="col" className="bg-primary text-light">Department</th>
-                                <th scope="col" className="bg-primary text-light">Date Deleted</th>
+                                {/* <th scope="col" className="bg-primary text-light">Department</th> */}
+                                <th scope="col" className="bg-primary text-light">Date Uploaded</th>
                                 <th scope="col" className="bg-primary text-light">Action</th>
                             </tr>
                         </thead>
@@ -390,7 +391,7 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                             <td><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.fileName, 40)}`}</td>
 
                                             <td>{policy.uploadedBy}</td>
-                                            <td>{policy.policyDepartment}</td>
+                                            {/* <td>{policy.policyDepartment}</td> */}
                                             <td>{moment(policy.deleteRequestedTime).format('MMM DD YYYY')}</td>
                                             {/* <td className={`text-${policy.isAuthorized ? 'success' : 'warning'}`}>
                                                 <img src={policy.isAuthorized ? successElipse : warningElipse} height={'10px'} />
@@ -540,7 +541,7 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                     </span>
                                                                 </ListGroupItem>
 
-                                                                <ListGroupItem
+                                                                {/* <ListGroupItem
                                                                     onClick={(e) => handleApprovePolicy(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
@@ -549,7 +550,7 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                             Approve Policy
                                                                         </div>
                                                                     </span>
-                                                                </ListGroupItem>
+                                                                </ListGroupItem> */}
 
                                                                 <ListGroupItem
                                                                 onClick={(e) => handleDownloadPolicy(e, policy)}

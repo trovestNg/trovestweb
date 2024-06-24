@@ -23,7 +23,7 @@ const UserDashboardContainer = () => {
             // console.log({userCred:userInfo?.scopes})
             if(userInfo?.expired) {
                 toast.error('Session timed out!');
-                await logoutUser()
+                await loginUser()
             } else if(userInfo?.profile){
                 let userName = userInfo?.profile?.sub.split('\\')[1]
                 const res = await getPolicies(`Dashboard/user?userName=${userName}`, `${userInfo?.access_token}`);
@@ -32,6 +32,8 @@ const UserDashboardContainer = () => {
                     setLoading(false);
                 } else {
                     toast.error('Network error!');
+                    setLoading(false);
+                    await loginUser()
                 }
 
             } else {
