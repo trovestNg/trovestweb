@@ -371,7 +371,7 @@ const ApproverDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                 {policies.length <= 0 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
                                     policies.map((policy, index) => (
                                         <tr key={index} style={{ cursor: 'pointer' }}
-                                            onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
+                                            // onClick={() => navigate(`/admn/policy/${policy.id}/${policy.isAuthorized}`)}
                                         >
                                             <th scope="row">{index + 1}</th>
                                             <td><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.fileName, 40)}`}</td>
@@ -392,7 +392,7 @@ const ApproverDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                         <Card className="p-2  shadow-sm rounded border-0"
                                                             style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
                                                             <ListGroup>
-                                                                <ListGroupItem
+                                                                {/* <ListGroupItem
                                                                     onClick={(e) => handleEdit(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
@@ -401,7 +401,7 @@ const ApproverDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                             View Policy
                                                                         </div>
                                                                     </span>
-                                                                </ListGroupItem>
+                                                                </ListGroupItem> */}
 
                                                                 <ListGroupItem
                                                                 onClick={(e) => handleDownloadPolicy(e, policy)}
@@ -423,7 +423,7 @@ const ApproverDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                         <Card className="p-2  shadow-sm rounded border-0"
                                                             style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
                                                             <ListGroup>
-                                                                <ListGroupItem
+                                                                {/* <ListGroupItem
                                                                     onClick={(e) => handleEdit(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
@@ -432,7 +432,7 @@ const ApproverDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                             View Policy
                                                                         </div>
                                                                     </span>
-                                                                </ListGroupItem>
+                                                                </ListGroupItem> */}
 
                                                                 <ListGroupItem
                                                                 onClick={(e) => handleDownloadPolicy(e, policy)}

@@ -43,7 +43,7 @@ const UpdatePolicyModal: React.FC<any> = ({ show, off, pol }) => {
     }
     return (
         <div>
-            <Modal size="lg" show={show} centered>
+            <Modal show={show} centered>
                 <Modal.Header className="d-flex justify-content-between text-light bg-primary"
                     style={{ fontFamily: 'title' }}>
                     <p className="p-0 m-0">Update Deadline</p>
@@ -60,25 +60,26 @@ const UpdatePolicyModal: React.FC<any> = ({ show, off, pol }) => {
                             ({ handleChange, handleSubmit, errors,values, touched, handleBlur }) => (
 
                                 <form onSubmit={handleSubmit} className="px-2">
-                                    <div className="d-flex">
-                                        <div className="w-50">
-                                            <h6>File name</h6>
+                                    <div className="">
+                                    <h6>File name</h6>
                                             <div className="d-flex">
                                                 {' '}
                                                 <i className="bi bi-file-earmark-pdf text-danger"></i>
                                                 <h5>{pol?.fileName}</h5>
                                             </div>
+                                        <div className="w-50">
+                                            
                                             <div>
                                                 <h6 className="mt-3">File Description</h6>
                                                 <p>{pol?.fileDescription}</p>
                                             </div>
                                         </div>
-                                        <div className="w-50">
+                                        <div className="">
                                             <p className="text-danger p-0 m-0"> Deadline date</p>
                                             <p>{moment(pol?.deadlineDate).format('MMM DD YYYY')}</p>
 
-                                            <div className="p-2">
-                                                <p className="p-0 m-0">New Deadline Date</p>
+                                            <div className="">
+                                                <p className="p-0 m-0">Select New Deadline Date</p>
                                                 <FormControl
                                                     onChange={handleChange}
                                                     id="deadlineDate"
@@ -88,9 +89,11 @@ const UpdatePolicyModal: React.FC<any> = ({ show, off, pol }) => {
 
 
                                     </div>
-                                    <div className="w-100 d-flex gap-4 mt-4 justify-content-center">
-                                        <Button type="submit" variant="primary">Update</Button>
+                                    <div className="w-100 d-flex gap-4 mt-4 justify-content-end">
                                         <Button onClick={()=>off()}  variant="outline border py-1">Cancel</Button>
+                                        <Button type="submit" variant="primary">
+                                        Update Deadline
+                                        </Button>
                                     </div>
 
                                 </form>)

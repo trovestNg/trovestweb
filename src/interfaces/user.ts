@@ -66,5 +66,9 @@ export interface IUser {
     url
     : string,
     userName
-    : string
+    : string,
+    displayName : string,
+    firstName: string,
+    lastName:string
+
 }

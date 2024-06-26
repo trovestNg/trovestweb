@@ -283,6 +283,7 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
                             <tr >
                                 <th scope="col" className="bg-primary text-light">#</th>
                                 <th scope="col" className="bg-primary text-light">Policy Title</th>
+                                <th scope="col" className="bg-primary text-light">Rejected By</th>
                                 <th scope="col" className="bg-primary text-light">Reason for Rejection</th>
                                 <th scope="col" className="bg-primary text-light">Date Rejected</th>
                                 <th scope="col" className="bg-primary text-light">Action</th>
@@ -297,6 +298,7 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
                                 <tr >
                                     <th scope="col" className="bg-primary text-light">#</th>
                                     <th scope="col" className="bg-primary text-light">Policy Title</th>
+                                    <th scope="col" className="bg-primary text-light">Rejected By</th>
                                     <th scope="col" className="bg-primary text-light">Reason for Rejection</th>
                                     <th scope="col" className="bg-primary text-light">Date Rejected</th>
                                     <th scope="col" className="bg-primary text-light">Action</th>
@@ -310,6 +312,7 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
                                     >
                                         <th scope="row">{index + 1}</th>
                                         <td><i className="bi bi-file-earmark-pdf text-danger"></i> {policy.fileName}</td>
+                                        <td>{policy.authorizedBy}</td>
                                         <td>{policy.comment}</td>
                                         <td>{moment(policy.deadlineDate).format('MMM DD YYYY')}</td>
                                         <td className="table-icon" onClick={(e) => handleClick(e)}>

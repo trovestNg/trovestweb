@@ -44,7 +44,7 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
 
             if (res?.data) {
                 let unApprovedPolicies = res?.data.filter((policy: IPolicy) => !policy.isAuthorized && !policy.markedForDeletion && !policy.isDeleted)
-                setPolicies(unApprovedPolicies);
+                setPolicies(unApprovedPolicies.reverse());
                 setLoading(false)
             }
 

@@ -237,7 +237,7 @@ const ApproverRejectedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
             <div className="d-flex w-100 justify-content-between">
                 <div className="d-flex gap-4">
-                    <div className="d-flex align-items-center" style={{ position: 'relative' }}>
+                    <div className="d-flex align-items-center gap-2" style={{ position: 'relative' }}>
                         <FormControl
                             onChange={(e) => setQuery(e.target.value)}
                             placeholder="Search by Name, Department..."
@@ -251,25 +251,11 @@ const ApproverRejectedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                         <Button
                             disabled={query == ''}
                             onClick={() => handleSearch()}
-
-                            variant="primary" style={{ minWidth: '100px', marginLeft: '-5px' }}>Search</Button>
+                            variant="primary" style={{ minWidth: '100px', marginRight: '-5px', minHeight: '2.4em' }}>Search</Button>
                     </div>
-                    {/* <Form.Select onChange={(e) => handleDeptSelection(e.currentTarget.value)} className="custom-select"
-                        style={{ maxWidth: '170px' }}>
-                        <option value={'all'}>Select Department</option>
-                        {
-                            depts.map((dept) => <option key={dept.id} value={dept.name}>{dept.name}</option>)
-                        }
-                    </Form.Select> */}
 
                 </div>
-                <div className="">
-                    {/* <Button
-                        variant="primary"
-                        style={{ minWidth: '100px' }}
-                        onClick={() => handleCreatePolicy()}
-                    >Create New Policy</Button> */}
-                </div>
+
             </div>
 
             <div className="mt-4" >
@@ -302,7 +288,7 @@ const ApproverRejectedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                 {policies.length <= 0 ? <tr><td className="text-center" colSpan={5}>No Data Available</td></tr> :
                                     policies.map((policy, index) => (
                                         <tr key={index} style={{ cursor: 'pointer' }}
-                                            onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
+                                            onClick={() => navigate(`/admn/policy/${policy.id}/${policy.isAuthorized}`)}
                                         >
                                             <th scope="row">{index + 1}</th>
                                             <td><i className="bi bi-file-earmark-pdf text-danger"></i> {policy.fileName}</td>

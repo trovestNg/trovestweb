@@ -17,7 +17,7 @@ import UpdatePolicyModal from "../../modals/updatePolicyModal";
 import { shortenString } from "../../../util";
 
 const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
-    
+
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
 
@@ -44,7 +44,6 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     const getInitiatorPolicies = async () => {
         setLoading(true)
-
         try {
             let userInfo = await getUserInfo();
             // console.log({ gotten: userInfo })({ gotten: userInfo })
@@ -52,7 +51,8 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
                 let userName = userInfo?.profile?.sub.split('\\')[1]
                 const res = await api.get(`Dashboard/authorizer-policy?userName=${userName}`, `${userInfo.access_token}`);
                 if (res?.data) {
-                    let allPolicy = res?.data.filter((pol: IPolicy) => !pol.isAuthorized && !policy?.isDeleted)
+                    let allPolicy = res?.data.filter(
+                        (pol: IPolicy) => !pol.markedForDeletion && !pol.isAuthorized && !pol.isDeleted && !pol.isRejected )
                     setPolicies(allPolicy.reverse());
                     setLoading(false)
                 } else {
@@ -87,8 +87,8 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     setLoading(false)
 
                     let filtered = res?.data.filter((policy: IPolicy) =>
-                        policy.fileName.toLowerCase().includes(query.toLowerCase()) &&  !policy.markedForDeletion && !policy?.isDeleted && !policy?.isRejected ||
-                        policy.policyDepartment.toLowerCase().includes(query.toLowerCase()) && !policy.markedForDeletion && !policy?.isRejected
+                        policy.fileName.toLowerCase().includes(query.toLowerCase()) && !policy.markedForDeletion && !policy.isAuthorized && !policy.isDeleted ||
+                        policy.policyDepartment.toLowerCase().includes(query.toLowerCase()) && !policy.markedForDeletion && !policy.isAuthorized && !policy.isDeleted
                     );
                     setPolicies(filtered.reverse());
 
@@ -113,7 +113,7 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
             // console.log({ gotten: userInfo })({ gotten: userInfo })
             if (userInfo) {
 
- let userName = userInfo?.profile?.sub.split('\\')[1]
+                let userName = userInfo?.profile?.sub.split('\\')[1]
                 const res = await api.get(`Dashboard/authorizer-policy?userName=${userName}`, `${userInfo.access_token}`);
                 if (res?.data) {
 
@@ -153,7 +153,7 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
 
 
-    
+
 
     const handleDeptSelection = (val: string) => {
         if (val == 'all') {
@@ -184,7 +184,7 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     useEffect(() => {
         fetchData();
-     
+
     }, [refreshData])
 
 
@@ -222,16 +222,16 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
             } else {
                 toast.error('Failed to delete policy')
             }
-        
+
         }
     }
 
-    const handleSendAuthorizationReminder = async (e: any,policy:IPolicy) => {
+    const handleSendAuthorizationReminder = async (e: any, policy: IPolicy) => {
         e.stopPropagation();
         let userInfo = await getUserInfo();
         if (userInfo) {
             let userName = userInfo?.profile?.sub.split('\\')[1]
-            const res = await api.post(`Policy/nudge-authorizer?policyId=${policy.id}`,{"policyId" :policy.id}, userInfo?.access_token);
+            const res = await api.post(`Policy/nudge-authorizer?policyId=${policy.id}`, { "policyId": policy.id }, userInfo?.access_token);
             if (res?.status == 200) {
                 toast.success('Reminder sent!');
                 setRefreshData(!refreshData)
@@ -239,7 +239,7 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
                 toast.error('Error sending reminder')
             }
         }
-       
+
     }
 
     const handleDelete = async (e: any, policy: any) => {
@@ -284,7 +284,7 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     toast.error('Error approving policy')
                 }
             } else {
-                
+
             }
 
         } catch (error) {
@@ -293,32 +293,32 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     }
 
-    
+
 
 
     useEffect(() => {
         fetchData();
-      
+
     }, [refreshData])
 
     return (
         <div className="w-100">
-            <SureToDeletePolicyModal 
-            action={(e:any)=>handlePolicyDelete(e)} 
-            show={deletePolicyModal} 
-            off={()=>setDeteletPolicyModal(false)}/>
+            <SureToDeletePolicyModal
+                action={(e: any) => handlePolicyDelete(e)}
+                show={deletePolicyModal}
+                off={() => setDeteletPolicyModal(false)} />
 
-            <UpdatePolicyModal 
-            show={updatePolicyModal} 
-            pol={policy}
-            off={()=>{
-                setUpdatePolicyModal(false);
-                setRefreshData(!refreshData)
-            }}
+            <UpdatePolicyModal
+                show={updatePolicyModal}
+                pol={policy}
+                off={() => {
+                    setUpdatePolicyModal(false);
+                    setRefreshData(!refreshData)
+                }}
             />
             <div className="d-flex w-100 justify-content-between">
                 <div className="d-flex gap-4">
-                    <div className="d-flex align-items-center" style={{ position: 'relative' }}>
+                    <div className="d-flex align-items-center gap-2" style={{ position: 'relative' }}>
                         <FormControl
                             onChange={(e) => setQuery(e.target.value)}
                             placeholder="Search by Name, Department..."
@@ -332,25 +332,11 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
                         <Button
                             disabled={query == ''}
                             onClick={() => handleSearch()}
-
-                            variant="primary" style={{ minWidth: '100px', marginLeft: '-5px' }}>Search</Button>
+                            variant="primary" style={{ minWidth: '100px', marginRight: '-5px', minHeight: '2.4em' }}>Search</Button>
                     </div>
-                    {/* <Form.Select onChange={(e) => handleDeptSelection(e.currentTarget.value)} className="custom-select"
-                        style={{ maxWidth: '170px' }}>
-                        <option value={'all'}>Select Department</option>
-                        {
-                            depts.map((dept) => <option key={dept.id} value={dept.name}>{dept.name}</option>)
-                        }
-                    </Form.Select> */}
 
                 </div>
-                <div className="">
-                    {/* <Button
-                        variant="primary"
-                        style={{ minWidth: '100px' }}
-                        onClick={() => handleCreatePolicy()}
-                    >Create New Policy</Button> */}
-                </div>
+                
             </div>
 
             <div className="mt-4" >
@@ -370,17 +356,17 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
                             <tr className=""><td className="text-center" colSpan={7}><Spinner className="spinner-grow text-primary" /></td></tr>
                         </tbody>
                     </table> :
-                        <table className="table table-striped w-100">
+                        <table className="table table-striped w-100 ">
                             <thead className="thead-dark">
-                            <tr >
-                                <th scope="col" className="bg-primary text-light">#</th>
-                                <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                <th scope="col" className="bg-primary text-light">Initiator</th>
-                                {/* <th scope="col" className="bg-primary text-light">Department</th> */}
-                                <th scope="col" className="bg-primary text-light">Date Uploaded</th>
-                                <th scope="col" className="bg-primary text-light">Action</th>
-                            </tr>
-                        </thead>
+                                <tr >
+                                    <th scope="col" className="bg-primary text-light">#</th>
+                                    <th scope="col" className="bg-primary text-light">Policy Title</th>
+                                    <th scope="col" className="bg-primary text-light">Initiator</th>
+                                    {/* <th scope="col" className="bg-primary text-light">Department</th> */}
+                                    <th scope="col" className="bg-primary text-light">Date Uploaded</th>
+                                    <th scope="col" className="bg-primary text-light">Action</th>
+                                </tr>
+                            </thead>
                             <tbody>
                                 {policies.length <= 0 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
                                     policies.map((policy, index) => (
@@ -392,7 +378,7 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
                                             <td>{policy.uploadedBy}</td>
                                             {/* <td>{policy.policyDepartment}</td> */}
-                                            <td>{moment(policy.deleteRequestedTime).format('MMM DD YYYY')}</td>
+                                            <td>{moment(policy.uploadTime).format('MMM DD YYYY')}</td>
                                             {/* <td className={`text-${policy.isAuthorized ? 'success' : 'warning'}`}>
                                                 <img src={policy.isAuthorized ? successElipse : warningElipse} height={'10px'} />
                                                 {'  '}
@@ -407,7 +393,7 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                             style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
                                                             <ListGroup>
                                                                 <ListGroupItem className="multi-layer"
-                                                                   onClick={(e) => handleGetAttestersList(e, policy)}
+                                                                    onClick={(e) => handleGetAttestersList(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
@@ -453,7 +439,7 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                 </ListGroupItem>
 
                                                                 <ListGroupItem className="multi-layer"
-                                                                onClick={(e) => handleGetDefaultersList(e, policy)}
+                                                                    onClick={(e) => handleGetDefaultersList(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
@@ -475,8 +461,8 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                         >
                                                                             <ListGroup>
                                                                                 <ListGroupItem
-                                                                                
-                                                                                onClick={(e) => handleGetDefaultersList(e, policy)}
+
+                                                                                    onClick={(e) => handleGetDefaultersList(e, policy)}
                                                                                 >
                                                                                     <span className="w-100 d-flex justify-content-between">
                                                                                         <div className="d-flex gap-2">
@@ -500,7 +486,7 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                 </ListGroupItem>
 
                                                                 <ListGroupItem
-                                                                onClick={(e) => handleUpdate(e, policy)}
+                                                                    onClick={(e) => handleUpdate(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
@@ -531,7 +517,7 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                             style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
                                                             <ListGroup>
                                                                 <ListGroupItem
-                                                                    // onClick={(e) => handleEdit(e, policy)}
+                                                                // onClick={(e) => handleEdit(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
@@ -553,8 +539,8 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                 </ListGroupItem> */}
 
                                                                 <ListGroupItem
-                                                                onClick={(e) => handleDownloadPolicy(e, policy)}
-                                                               
+                                                                    onClick={(e) => handleDownloadPolicy(e, policy)}
+
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">

@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { getUserInfo, loginUser} from "../../controllers/auth";
 import moment from "moment";
 import api from "../../config/api";
+import { shortenString } from "../../util";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -133,7 +134,7 @@ const PolicyViewPage = () => {
 
 
 
-                    <div className="border border-3 p-3" style={{ height: '80vh', overflow: 'scroll' }}>
+                    <div className="border border-3 p-3" style={{ height: '65vh', overflow: 'scroll' }}>
                     
                         <Document 
                         file={policy?.url} 
@@ -145,30 +146,50 @@ const PolicyViewPage = () => {
 
                     </div>
 
+                    {
+                    <div className="d-flex justify-content-end px-4 py-2 text-primary ">
+                       
+                       {/* <div className="d-flex gap-3">
+                       zoom
+                       <i className="bi bi-zoom-out" onClick={handleZoomOut}></i>
+                       <i className="bi bi-zoom-in" onClick={handleZoomIn}></i>
+                       </div> */}
+                       
+                       <div className="gap-3 d-flex w-25 align-items-center justify-content-between">
+                           <Button onClick={goToPreviousPage} disabled={pageNumber <= 1} variant="outline border-0" className="p-0 m-0" style={{ cursor: 'pointer' }}>
+                            {/* <i className="bi bi-chevron-bar-left"></i> */}
+                            Prev
+                            </Button>
+                           <p className="p-0 m-0">{pageNumber}/{numPages}</p>
+                           <Button onClick={goToNextPage} disabled={pageNumber >= numPages} variant="outline border-0" className="p-0 m-0" style={{ cursor: 'pointer' }}>
+                            {/* <i className="bi bi-chevron-bar-right"></i> */}
+                            Next
+                           </Button></div>
 
+                   </div>}
 
                 </div>
 
                 <div className="d-flex flex-column gap-2" style={{ minWidth: '20%' }}>
                    { 
                    attestationStatus == 'false'?
-                   <div className="bg-primary text-light rounded rounded-3 p-3">
-                        <p className="d-flex gap-2">
+                   <div className="bg-primary text-light rounded rounded-3 p-3 py-1">
+                        <p className="d-flex gap-2 p-0 m-0 py-1">
                             <i className="bi bi-info-circle"></i>
                             Note :</p>
-                        <p>
+                        <p className="py-1 m-0" style={{fontSize:'12px'}}>
                             Kindly review this policy until the final page and proceed to the bottom to confirm.
                         </p>
                     </div> : ''
                     }
 
                     <div className=" shadow shadow-sm border rounded rounded-3 p-3">
-                        <p className=" d-flex gap-2 text-primary">
+                        <p className=" d-flex gap-2 text-primary" >
                             <i className="bi bi-file-earmark"></i>
                             File Details
                         </p>
 
-                        <p className=" d-flex gap-2 text-gray p-0 m-0">
+                        <p className=" d-flex gap-2 text-gray p-0 m-0" style={{fontSize:'12px'}}>
                             {/* <i className="bi bi-file-earmark"></i> */}
                             File Name
                         </p>
@@ -179,16 +200,20 @@ const PolicyViewPage = () => {
                             }
                         </p>
 
-                        <p className=" d-flex gap-2 text-grey p-0 m-0">
+                        <p className=" d-flex gap-2 text-grey p-0 m-0"
+                        style={{fontSize:'13px'}}
+                        >
                             {/* <i className="bi bi-file-earmark"></i> */}
                             Description
                         </p>
-                        <p className=" d-flex gap-2" style={{ fontSize: '0.8em' }}>
+                        <p className=" d-flex gap-2" style={{ fontSize: '0.9em' }}>
                             {/* <i className="bi bi-file-earmark"></i> */}
-                            {policy?.fileDescription}
+                            {shortenString(policy?policy?.fileDescription:'', 120)}
                         </p>
 
-                        <p className=" d-flex gap-2 text-grey p-0 m-0">
+                        <p className=" d-flex gap-2 text-grey p-0 m-0"
+                        style={{fontSize:'12px'}}
+                        >
                             {/* <i className="bi bi-file-earmark"></i> */}
                             Department
                         </p>
@@ -231,7 +256,7 @@ const PolicyViewPage = () => {
                             </Button>
                             {/* <i className="bi bi-caret-up-fill text-center text-primary"></i> */}
                             <p className="text-center m-0 py-0">
-                                Please click the button above to confirm your agreement with the policy
+                                Please click the button above to confirm your agreement with the policy.
                             </p>
                         </>
                     

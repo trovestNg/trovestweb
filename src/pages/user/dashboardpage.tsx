@@ -35,6 +35,7 @@ const UserDashboardPage = () => {
             title: 'Total Policies',
             img: openBook,
             count: userDBInfo?.totalPolicy,
+            path : '/policy-portal/all-policy',
             icon: '',
 
         },
@@ -42,6 +43,7 @@ const UserDashboardPage = () => {
             title: 'Attested Policies',
             img: checked,
             count: userDBInfo?.totalAttested,
+            path : '/policy-portal/attested-policy',
             icon: '',
 
         },
@@ -49,6 +51,7 @@ const UserDashboardPage = () => {
             title: 'Not Attested Policies',
             img: timer,
             count: userDBInfo?.totalNotAttested,
+            path : '/policy-portal/unattested-policy',
             icon: '',
 
         }
@@ -96,7 +99,9 @@ const UserDashboardPage = () => {
                             dashCardInfo.map((info, index) => (
                                 <DashboardCard key={index} count={info.count}
                                     imgSrc={info.img}
-                                    title={info.title} />))
+                                    title={info.title}
+                                    url ={info.path}
+                                    />))
                         }
                     </div>
 

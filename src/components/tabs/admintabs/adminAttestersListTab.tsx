@@ -54,7 +54,7 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
             let userInfo = await getUserInfo();
             
             if (userInfo) {
-                const res = await api.get(`Attest/${id}`, `${userInfo.access_token}`);
+                const res = await api.get(`Attest?policyId=${id}`, `${userInfo.access_token}`);
                 
                 if (res?.data) {
                     setPolicies(res?.data)
@@ -143,12 +143,33 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
         doc.save(`${policies[0].policyName}.pdf`);
     };
 
+    const handleListDownload = (val: string) => {
+        if (val == 'pdf') {
+            downloadPdf()
+        } else {
+// toast.error('downloading')
+        }
+    }
 
+    const handleSendReminder = async () => {
+        setLoading(true)
+        try {
+            let userInfo = await getUserInfo();
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            if (userInfo) {
+                const res = await api.post(`Policy/nudge-authorizer?policyId=${id}`, { "policyId":id }, userInfo?.access_token);
+                if (res?.status == 200) {
+                    toast.success('Reminder sent!');
+                    setRefreshData(!refreshData)
+                    setLoading(false)
+                } else {
+                    toast.error('Error sending reminder')
+                }
+            }
 
-    const handleDeptSelection = (val: string) => {
-        setSelectedDept(val);
-        setSortByDept(true)
-        setRefreshData(!refreshData)
+        } catch (error) {
+
+        }
     }
 
 
@@ -198,14 +219,22 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
                 </div>
                 {
-                    policies.length >= 1 &&
-                    <div className="">
-                        <Button
-                            variant="primary"
-                            style={{ minWidth: '100px' }}
-                            onClick={downloadPdf}
-                        >Download List</Button>
-                    </div>}
+                //    policies && policies.length >= 1 &&
+                //     <div className="d-flex gap-2">
+                //         {/* <Button
+                //         disabled={loading}
+                //             variant="primary"
+                //             style={{ minWidth: '10em' }}
+                //             onClick={handleSendReminder}
+                //         >Send Reminder</Button> */}
+
+                //         <FormSelect onChange={(e) => handleListDownload(e.currentTarget.value)}>
+                //             <option>Download List</option>
+                //             <option value={'csv'}>CSV</option>
+                //             <option value={'pdf'}>PDf</option>
+                //         </FormSelect>
+                //     </div>
+                    }
             </div>
 
             <div className="mt-4" >
@@ -237,13 +266,14 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                 </tr>
                             </thead>
                             <tbody className="">
-                                {policies.length <= 0 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
+                                {
+                                policies &&policies.length <= 0 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
                                     policies.map((policy, index) => (
                                         <tr key={index} style={{ cursor: 'pointer' }}
                                         // onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
                                         >
                                             <th scope="row">{index + 1}</th>
-                                            <td><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.userName, 40)}`}</td>
+                                            <td>{`${shortenString(policy?.displayName, 40)}`}</td>
                                             <td>{policy.email}</td>
                                             <td>{policy.department}</td>
                                             <td>{moment(policy.attestationTime).format('MMM DD YYYY')}</td>

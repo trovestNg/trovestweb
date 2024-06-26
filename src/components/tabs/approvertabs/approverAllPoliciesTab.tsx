@@ -43,7 +43,7 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const [sortCriteria, setSortCriteria] = useState<string>('name');
 
 
-    const getInitiatorPolicies = async () => {
+    const getApproverPolicies = async () => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
@@ -52,7 +52,7 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                 let userName = userInfo?.profile?.sub.split('\\')[1]
                 const res = await api.get(`Dashboard/authorizer-policy?userName=${userName}`, `${userInfo.access_token}`);
                 if (res?.data) {
-                    let allPolicy = res?.data.filter((pol: IPolicy) => !pol.markedForDeletion)
+                    let allPolicy = res?.data.filter((pol: IPolicy) => !pol.markedForDeletion&&!pol.isDeleted)
                     setPolicies(allPolicy.reverse());
                     setLoading(false)
                 } else {
@@ -85,8 +85,8 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     setLoading(false)
 
                     let filtered = res?.data.filter((policy: IPolicy) =>
-                        policy.fileName.toLowerCase().includes(query.toLowerCase()) && !policy.markedForDeletion ||
-                        policy.policyDepartment.toLowerCase().includes(query.toLowerCase()) && !policy.markedForDeletion
+                        policy.fileName.toLowerCase().includes(query.toLowerCase()) && !policy.markedForDeletion&&!policy.isDeleted ||
+                        policy.policyDepartment.toLowerCase().includes(query.toLowerCase())&& !policy.markedForDeletion&&!policy.isDeleted
                     );
                     setPolicies(filtered.reverse());
 
@@ -189,7 +189,7 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
         } else if (sortByDept) {
             handleSortByDepartment()
         } else {
-            getInitiatorPolicies();
+            getApproverPolicies();
         }
 
     }
@@ -366,22 +366,9 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                             onClick={() => handleSearch()}
                             variant="primary" style={{ minWidth: '100px', marginRight: '-5px', minHeight: '2.4em' }}>Search</Button>
                     </div>
-                    {/* <Form.Select onChange={(e) => handleDeptSelection(e.currentTarget.value)} className="custom-select"
-                        style={{ maxWidth: '170px' }}>
-                        <option value={'all'}>Select Department</option>
-                        {
-                            depts.map((dept) => <option key={dept.id} value={dept.name}>{dept.name}</option>)
-                        }
-                    </Form.Select> */}
+                    
 
                 </div>
-                {/* <div className="">
-                    <Button
-                        variant="primary"
-                        style={{ minWidth: '100px' }}
-                        onClick={() => handleCreatePolicy()}
-                    >Create New Policy</Button>
-                </div> */}
             </div>
 
             <div className="mt-4" >
@@ -421,12 +408,12 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                             <th scope="row">{index + 1}</th>
                                             <td><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.fileName, 40)}`}</td>
 
-                                            <td>{policy.authorizedBy}</td>
+                                            <td>{policy.uploadedBy}</td>
                                             <td>{moment(policy.uploadTime).format('MMM DD YYYY')}</td>
-                                            <td className={`text-${policy.isAuthorized ? 'success' : !policy.isAuthorized && !policy.isRejected ? 'warning' : !policy.isAuthorized && policy.isRejected ? 'danger' : 'primary'}`}>
-                                                <img src={policy.isAuthorized ? successElipse : !policy.isAuthorized && !policy.isRejected ? warningElipse : !policy.isAuthorized && policy.isRejected ? dangerElipse : ''} height={'10px'} />
+                                            <td className={`text-${policy.isAuthorized?'success':!policy.isAuthorized  && !policy.isRejected?'warning':!policy.isAuthorized  && policy.isRejected?'danger':'primary'}`}>
+                                                <img src={policy.isAuthorized?successElipse:!policy.isAuthorized  && !policy.isRejected?warningElipse:!policy.isAuthorized  && policy.isRejected?dangerElipse:''} height={'10px'} />
                                                 {'  '}
-                                                <span >{policy.isAuthorized && 'Approved'}{!policy.isAuthorized && !policy.isRejected && 'Pending'} {!policy.isAuthorized && policy.isRejected && 'Rejected'}</span>
+                                                <span >{policy.isAuthorized &&'Approved'}{!policy.isAuthorized  && !policy.isRejected &&'Pending'} {!policy.isAuthorized  && policy.isRejected &&'Rejected'}</span>
                                                 {/* : !policy.isAuthorized && ? 'Pending ' : policy.isAuthorized && policy.isRejected?'Rejected':'' */}
                                                 {/* <span onClick={(e) => handleShowReasonForRej(e, policy)}>{policy.isRejected && <i className="bi bi-file-earmark-excel text-danger"></i>}</span> */}
                                             </td>
@@ -449,39 +436,6 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
                                                                         <i className="bi bi-chevron-right"></i>
                                                                     </span>
-                                                                    <div className="container">
-                                                                        <Card
-                                                                            className="p-2  shadow-sm rounded border-0"
-                                                                            style={{
-                                                                                minWidth: '15em',
-                                                                                marginLeft: '-16.5em',
-                                                                                marginTop: '-2.5em',
-                                                                                position: 'absolute'
-                                                                            }}
-                                                                        >
-                                                                            <ListGroup>
-                                                                                <ListGroupItem
-                                                                                    onClick={(e) => handleGetAttestersList(e, policy)}
-                                                                                >
-                                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                                        <div className="d-flex gap-2">
-                                                                                            <i className="bi bi-file-text"></i>
-                                                                                            View List
-                                                                                        </div>
-                                                                                    </span>
-                                                                                </ListGroupItem>
-
-                                                                                {/* <ListGroupItem>
-                                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                                        <div className="d-flex gap-2">
-                                                                                            <i className="bi bi-download"></i>
-                                                                                            Download List
-                                                                                        </div>
-                                                                                    </span>
-                                                                                </ListGroupItem> */}
-                                                                            </ListGroup>
-                                                                        </Card>
-                                                                    </div>
                                                                 </ListGroupItem>
 
                                                                 <ListGroupItem className="multi-layer"
@@ -495,52 +449,22 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
                                                                         <i className="bi bi-chevron-right"></i>
                                                                     </span>
-                                                                    <div className="container">
-                                                                        <Card
-                                                                            className="p-2  shadow-sm rounded border-0"
-                                                                            style={{
-                                                                                minWidth: '15em',
-                                                                                marginLeft: '-16.5em',
-                                                                                marginTop: '-2.5em',
-                                                                                position: 'absolute'
-                                                                            }}
-                                                                        >
-                                                                            <ListGroup>
-                                                                                <ListGroupItem
-
-                                                                                    onClick={(e) => handleGetDefaultersList(e, policy)}
-                                                                                >
-                                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                                        <div className="d-flex gap-2">
-                                                                                            <i className="bi bi-file-text"></i>
-                                                                                            View List
-                                                                                        </div>
-                                                                                    </span>
-                                                                                </ListGroupItem>
-
-                                                                                {/* <ListGroupItem>
-                                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                                        <div className="d-flex gap-2">
-                                                                                            <i className="bi bi-download"></i>
-                                                                                            Download List
-                                                                                        </div>
-                                                                                    </span>
-                                                                                </ListGroupItem> */}
-                                                                            </ListGroup>
-                                                                        </Card>
-                                                                    </div>
                                                                 </ListGroupItem>
 
-                                                                <ListGroupItem
-                                                                    onClick={(e) => handleSendReminder(e, policy)}
+                                                                <ListGroupItem className="multi-layer"
+                                                                    
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
-                                                                            <i className="bi bi-calendar-event"></i>
-                                                                            Send Reminder
+                                                                            <i className="bi bi-eye"></i>
+                                                                           View Policy
                                                                         </div>
+
+                                                                        <i className="bi bi-chevron-right"></i>
                                                                     </span>
                                                                 </ListGroupItem>
+
+                                                                
 
                                                                 <ListGroupItem
                                                                     onClick={(e) => handleDownloadPolicy(e, policy)}
@@ -549,22 +473,10 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
                                                                             <i className="bi bi-download"></i>
-                                                                            Download
+                                                                           Download
                                                                         </div>
                                                                     </span>
                                                                 </ListGroupItem>
-
-                                                                {/* <ListGroupItem
-                                                                    disabled={policy?.markedForDeletion}
-                                                                    onClick={(e) => handleDelete(e, policy)}
-                                                                >
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-trash"></i>
-                                                                            Delete
-                                                                        </div>
-                                                                    </span>
-                                                                </ListGroupItem> */}
                                                             </ListGroup>
                                                         </Card>}
 
@@ -574,23 +486,13 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                         <Card className="p-2  shadow-sm rounded border-0"
                                                             style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
                                                             <ListGroup>
-                                                                {/* <ListGroupItem
-                                                                    onClick={(e) => handleEdit(e, policy)}
-                                                                >
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-file-text"></i>
-                                                                            Edit Policy
-                                                                        </div>
-                                                                    </span>
-                                                                </ListGroupItem> */}
-
                                                                 <ListGroupItem
+                                                                    
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
-                                                                            {/* <i className="bi bi-download"></i> */}
-                                                                            View Policy
+                                                                            <i className="bi bi-eye"></i>
+                                                                            View
                                                                         </div>
                                                                     </span>
                                                                 </ListGroupItem>
@@ -602,16 +504,14 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
                                                                             <i className="bi bi-download"></i>
-                                                                            Download Policy
+                                                                           Download
                                                                         </div>
                                                                     </span>
                                                                 </ListGroupItem>
 
+{/*                                                                 
 
-
-
-
-                                                                {/* <ListGroupItem
+                                                                <ListGroupItem
                                                                     disabled={policy?.markedForDeletion}
                                                                     onClick={(e) => handleDelete(e, policy)}
                                                                 >

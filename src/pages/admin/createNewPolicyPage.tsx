@@ -155,7 +155,7 @@ const CreateNewPolicyPage: React.FC<any> = () => {
             if (res?.statusText == "Created") {
                 setShowCreatePrompt(false)
                 setpolicyCreatedSucc(true)
-                setCreateLoading(false)
+                setCreateLoading(false);
             } else {
                 toast.error('Error uploading policy, kindly try again');
                 setCreateLoading(false)
@@ -441,7 +441,10 @@ const CreateNewPolicyPage: React.FC<any> = () => {
                             </div>
                         </div>
                         <SureToCreatePolicyModal loading={createLoading} action={handleSubmit} off={() => setShowCreatePrompt(false)} show={showCreatePrompt} />
-                        <PolicyCreatedSuccessModal off={() => setpolicyCreatedSucc(false)} show={policyCreatedSucc} />
+                        <PolicyCreatedSuccessModal off={() =>{ 
+                            setpolicyCreatedSucc(false)
+                            window.location.reload()
+                            }} show={policyCreatedSucc} />
                     </Form>
                 )}
             </Formik>

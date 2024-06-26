@@ -12,6 +12,8 @@ import api from "../../config/api";
 import RejectReasonModal from "../../components/modals/rejectReasonModal";
 import SureToDeletePolicyModal from "../../components/modals/sureToDeletePolicyModal";
 import SureToApprovePolicyModal from "../../components/modals/sureToApprovePolicyModal";
+import { shortenString } from "../../util";
+import DeletePolicyConfModal from "../../components/modals/deletePolicyConfModal";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -23,6 +25,8 @@ const ApproverPolicyviewpage = () => {
     const [rejectModal, setRejectModal] = useState(false);
     const [rejReas, setRejReas] = useState('');
 
+    const [policyId, setPolicyId] = useState<number>(0)
+    const [deletePolicyModal, setDeteletPolicyModal] = useState<boolean>(false);
 
 
     const [sureToApproveModal, setSureToApproveModal] = useState(false);
@@ -40,6 +44,10 @@ const ApproverPolicyviewpage = () => {
     const handleZoomIn = () => setScale(scale + 0.1);
     const handleZoomOut = () => setScale(scale - 0.1);
     const handleResetZoom = () => setScale(1.0);
+
+    const handleDelete = async () => {
+        setDeteletPolicyModal(true);
+    }
 
     const getPolicy = async () => {
 
@@ -85,6 +93,24 @@ const ApproverPolicyviewpage = () => {
         setSureToApproveModal(true)
     }
 
+    const handlePolicyDelete = async () => {
+       
+        let userInfo = await getUserInfo();
+        if (userInfo) {
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.post(`Policy/delete/approve`, { "ids": [id], "username": userName }, userInfo?.access_token);
+            if (res?.status == 200) {
+                toast.success('Policy deleted succesfully!');
+                setDeteletPolicyModal(false);
+                setRefreshData(!refreshData);
+                navigate(-1)
+            } else {
+                toast.error('Failed to delete policy')
+            }
+        }
+        
+    }
+
 
     const approvePolicy = async () => {
         setLoading(true)
@@ -97,12 +123,12 @@ const ApproverPolicyviewpage = () => {
                 if (res?.status == 200) {
                     setLoading(false)
                     toast.success('Policy approved!');
-                    setRefreshData(!refreshData)
+                    window.location.reload();
                 } else {
                     toast.error('Error approving policy')
                 }
             } else {
-                
+
             }
 
         } catch (error) {
@@ -136,7 +162,7 @@ const ApproverPolicyviewpage = () => {
                     toast.error('Error rejecting policy')
                 }
             } else {
-                
+
             }
 
         } catch (error) {
@@ -147,11 +173,17 @@ const ApproverPolicyviewpage = () => {
 
     return (
         <div className="">
-            <SureToApprovePolicyModal 
-            off={()=>setSureToApproveModal(false)}
-            show = {sureToApproveModal}
-            action={()=>approvePolicy()}
-            />
+            <DeletePolicyConfModal 
+            action={()=>handlePolicyDelete()} 
+            show={deletePolicyModal} 
+            off={()=>setDeteletPolicyModal(false)}/>
+
+<SureToApprovePolicyModal 
+            action={()=>approvePolicy()} 
+            show={sureToApproveModal} 
+            loading={loading}
+            off={()=>setDeteletPolicyModal(false)}/>
+
             <div><Button variant="outline border border-2" onClick={() => navigate(-1)}>Go Back</Button></div>
             <div className="w-100 d-flex justify-content-between gap-4">
                 <div className="" style={{ minWidth: '70%' }}>
@@ -188,7 +220,27 @@ const ApproverPolicyviewpage = () => {
 
                     </div>
 
+                    {
+                    <div className="d-flex justify-content-end px-4 py-2 text-primary ">
+                       
+                       {/* <div className="d-flex gap-3">
+                       zoom
+                       <i className="bi bi-zoom-out" onClick={handleZoomOut}></i>
+                       <i className="bi bi-zoom-in" onClick={handleZoomIn}></i>
+                       </div> */}
+                       
+                       <div className="gap-3 d-flex w-25 align-items-center justify-content-between">
+                           <Button onClick={goToPreviousPage} disabled={pageNumber <= 1} variant="outline border-0" className="p-0 m-0" style={{ cursor: 'pointer' }}>
+                            {/* <i className="bi bi-chevron-bar-left"></i> */}
+                            Prev
+                            </Button>
+                           <p className="p-0 m-0">{pageNumber}/{numPages}</p>
+                           <Button onClick={goToNextPage} disabled={pageNumber >= numPages} variant="outline border-0" className="p-0 m-0" style={{ cursor: 'pointer' }}>
+                            {/* <i className="bi bi-chevron-bar-right"></i> */}
+                            Next
+                           </Button></div>
 
+                   </div>}
 
                 </div>
 
@@ -218,7 +270,9 @@ const ApproverPolicyviewpage = () => {
                         </p>
                         <p className=" d-flex gap-2" style={{ fontSize: '0.8em' }}>
                             {/* <i className="bi bi-file-earmark"></i> */}
-                            {policy?.fileDescription}
+                            {
+                            shortenString(policy?policy?.fileName:'', 40)
+                            }
                         </p>
 
                         <p className=" d-flex gap-2 text-grey p-0 m-0">
@@ -254,46 +308,48 @@ const ApproverPolicyviewpage = () => {
                             </div>
                         </div>
                     </div>
+                    {policy?.isRejected && <p className="m-0 p-0 mt-3">Reason for Rejection</p>}
                     {
-                        policy && policy.comment &&
-                            <>
-                                Reason for rejection
-                                <div className="bg-primary text-light rounded rounded-3 p-3">
+                        policy && policy.isRejected &&
+                        <div className="bg-primary text-light rounded rounded-3 p-3" style={{ minHeight: '10em' }}>
 
-                                    <p>
-                                        {policy.comment}
-                                    </p>
-                                </div>
-                            </> 
+                            <p>
+                                {policy.comment}
+                            </p>
+                        </div>
                     }
                     {
-                        !policy?.isAuthorized || policy.comment  &&
+                        policy && !policy?.isAuthorized && !policy?.markedForDeletion &&
                         <div className="d-flex mt-4 gap-3">
-                            <Button
+                            {
+                                !policy.isAuthorized &&
+                                <Button
+                                disabled ={policy.isRejected}
                                 variant="success  outline"
                                 onClick={handleApprovePolicy}
 
-                            >Approve Policy</Button>
-                            <Button
+                            >Approve Policy</Button>}
+                            {!policy.isRejected &&
+                                <Button
                                 variant="border border-danger text-danger outline"
                                 onClick={handleRejectPolicy}
-                            >Reject Policy</Button>
+                            >Reject Policy</Button>}
 
                         </div>
                     }
 
-{
-                        policy?.markedForDeletion && !policy.comment  &&
+                    {
+                    policy?.markedForDeletion  && !policy.isDeleted &&
                         <div className="d-flex mt-4 gap-3">
                             <Button
                                 variant="success  outline"
-                                onClick={handleApprovePolicy}
+                                onClick={handleDelete}
 
-                            >Delete Policy</Button>
+                            >Approve Deletion</Button>
                             <Button
                                 variant="border border-danger text-danger outline"
-                                onClick={handleRejectPolicy}
-                            >Reject Policy</Button>
+                                onClick={() => navigate(-1)}
+                            >Cancel</Button>
 
                         </div>
                     }

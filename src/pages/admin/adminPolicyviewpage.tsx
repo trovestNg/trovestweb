@@ -146,7 +146,7 @@ const AdminPolicyviewpage = () => {
 
 
 
-                    <div className="border border-3 p-3" style={{ height: '80vh', overflow: 'scroll' }}>
+                    <div className="border border-3 p-3" style={{ height: '65vh', overflow: 'scroll' }}>
 
                         <Document file={policy?.url} onLoadSuccess={(doc) => onDocumentLoadSuccess(doc.numPages)}>
                             <Page pageNumber={pageNumber} scale={scale} />
@@ -155,7 +155,27 @@ const AdminPolicyviewpage = () => {
 
                     </div>
 
+                    {
+                    <div className="d-flex justify-content-end px-4 py-2 text-primary ">
+                       
+                       {/* <div className="d-flex gap-3">
+                       zoom
+                       <i className="bi bi-zoom-out" onClick={handleZoomOut}></i>
+                       <i className="bi bi-zoom-in" onClick={handleZoomIn}></i>
+                       </div> */}
+                       
+                       <div className="gap-3 d-flex w-25 align-items-center justify-content-between">
+                           <Button onClick={goToPreviousPage} disabled={pageNumber <= 1} variant="outline border-0" className="p-0 m-0" style={{ cursor: 'pointer' }}>
+                            {/* <i className="bi bi-chevron-bar-left"></i> */}
+                            Prev
+                            </Button>
+                           <p className="p-0 m-0">{pageNumber}/{numPages}</p>
+                           <Button onClick={goToNextPage} disabled={pageNumber >= numPages} variant="outline border-0" className="p-0 m-0" style={{ cursor: 'pointer' }}>
+                            {/* <i className="bi bi-chevron-bar-right"></i> */}
+                            Next
+                           </Button></div>
 
+                   </div>}
 
                 </div>
 
