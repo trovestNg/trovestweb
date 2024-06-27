@@ -45,7 +45,7 @@ const AdminDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const [bySearch, setBySearch] = useState(false);
     const [selectedDept, setSelectedDept] = useState('');
     const [userSearch, setUserSearch] = useState('');
-    const { id } = useParams();
+    const { id,fileName,deadlineDate } = useParams();
     const [query, setQuery] = useState<string>('');
     const [policyName, setPolicyName] = useState<string>('')
 
@@ -166,7 +166,7 @@ const AdminDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
 
         // Use FileSaver.js to save the file
-        saveAs(blob, 'data.csv');
+        saveAs(blob, `${fileName} Defaulters List`);
     };
 
     const handleSearch = () => {
