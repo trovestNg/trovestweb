@@ -17,6 +17,9 @@ import { IUser } from "../../../interfaces/user";
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
+import Papa from 'papaparse'
+import { saveAs } from 'file-saver';
+
 const ApproverAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     type TPolicy = {
@@ -25,7 +28,7 @@ const ApproverAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
         department: string
         email: string
         userName: string
-        serialNumber:number
+        serialNumber: number
     }
 
 
@@ -43,7 +46,7 @@ const ApproverAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const [bySearch, setBySearch] = useState(false);
     const [selectedDept, setSelectedDept] = useState('');
     const [userSearch, setUserSearch] = useState('');
-    const { id } = useParams();
+    const { id, fileName, deadlineDate } = useParams();
     const [query, setQuery] = useState<string>('');
     const [policyName, setPolicyName] = useState<string>('')
 
@@ -52,20 +55,20 @@ const ApproverAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
         // setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            
+
             if (userInfo) {
                 const res = await api.get(`Attest/${id}`, `${userInfo.access_token}`);
-                
+
                 if (res?.data) {
                     setPolicies(res?.data)
                     setPolicyName(res?.data[0]?.policyName)
                     setLoading(false)
                 } else {
 
-                    
+
                     setLoading(false)
                 }
-               
+
             }
 
         } catch (error) {
@@ -101,7 +104,7 @@ const ApproverAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     setLoading(false)
                 } else {
 
-                    
+
                     setLoading(false)
                 }
 
@@ -127,13 +130,13 @@ const ApproverAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
         ];
 
         // Create rows from the policies array
-        const rows = policies.map((policy,index) => ({
+        const rows = policies.map((policy, index) => ({
             userName: policy.userName,
             email: policy.email,
             department: policy.department,
             attestationTime: moment(policy.attestationTime).format('YYYY-MM-DD') || 'N/A',
             deadlineTime: moment(policy.deadlineTime).format('YYYY-MM-DD') || 'N/A',
-            serialNumber :index +1
+            serialNumber: index + 1
         }));
 
         autoTable(doc, {
@@ -142,8 +145,49 @@ const ApproverAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
             startY: 20,
         });
 
-        doc.save(`${policies[0].policyName}.pdf`);
+        doc.save(`${fileName}-Attesters List.pdf`);
     };
+
+    const headers: any = [
+        { label: 'S/N', key: 'serial' },
+        { label: 'Staff Name', key: 'displayName' },
+        { label: 'Emails', key: 'email' },
+        { label: 'Department', key: 'department' },
+        { label: 'Deadline Date', key: 'deadline' }
+    ];
+
+    const generateCSV = (data: IUser[], headers: { label: string; key: keyof IUser }[]) => {
+        // Map data to match the headers
+        const csvData = data.map((item, index) => ({
+            serial: index + 1,
+            displayName: `${item.firstName} ${item.lastName}`,
+            email: item.email,
+            department: item.department,
+            deadline: moment(item.deadlineTime).format('MMM DD YYYY')
+        }));
+
+        // Convert the data to CSV format with headers
+        const csv = Papa.unparse({
+            fields: headers.map(header => header.label),
+            data: csvData.map((item: any) => headers.map(header => item[header.key]))
+        });
+
+        // Create a Blob from the CSV string
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+
+        // Use FileSaver.js to save the file
+        saveAs(blob, 'data.csv');
+    };
+
+    const handleListDownload = (val: string) => {
+        if (val == 'pdf') {
+            downloadPdf()
+        } else if (val == 'csv') {
+            generateCSV(policies, headers)
+        } else {
+            return
+        }
+    }
 
 
 
@@ -180,8 +224,8 @@ const ApproverAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
         <div className="w-100">
             <div className="d-flex w-100 justify-content-between">
                 <div className="d-flex gap-4">
-                <div className="d-flex align-items-center gap-3" style={{ position: 'relative' }}>
-                    <FormControl
+                    <div className="d-flex align-items-center gap-2" style={{ position: 'relative' }}>
+                        <FormControl
                             onChange={(e) => setUserSearch(e.target.value)}
                             placeholder="Search by name of user"
                             value={userSearch}
@@ -196,17 +240,17 @@ const ApproverAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
                             onClick={() => handleSearch()}
                             variant="primary" style={{ minWidth: '100px', marginRight: '-5px', minHeight: '2.4em' }}>Search</Button>
                     </div>
-                    
+
 
                 </div>
                 {
                     policies.length >= 1 &&
                     <div className="">
-                        <Button
-                            variant="primary"
-                            style={{ minWidth: '100px' }}
-                            onClick={downloadPdf}
-                        >Download List</Button>
+                        <FormSelect onChange={(e) => handleListDownload(e.currentTarget.value)}>
+                            <option>Download List</option>
+                            <option value={'csv'}>CSV</option>
+                            <option value={'pdf'}>PDf</option>
+                        </FormSelect>
                     </div>}
             </div>
 
@@ -245,7 +289,7 @@ const ApproverAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                         // onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
                                         >
                                             <th scope="row">{index + 1}</th>
-                                            <td><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.userName, 40)}`}</td>
+                                            <td className="text-primary"><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.userName, 40)}`}</td>
                                             <td>{policy.email}</td>
                                             <td>{policy.department}</td>
                                             <td>{moment(policy.attestationTime).format('MMM DD YYYY')}</td>

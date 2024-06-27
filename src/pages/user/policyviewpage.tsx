@@ -256,7 +256,7 @@ const PolicyViewPage = () => {
                             </Button>
                             {/* <i className="bi bi-caret-up-fill text-center text-primary"></i> */}
                             <p className="text-center m-0 py-0">
-                                Please click the button above to confirm your agreement with the policy.
+                            When you've finished reading all the policy pages, this button will activate
                             </p>
                         </>
                     

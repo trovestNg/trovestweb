@@ -240,7 +240,7 @@ const UserAllPoliciesTab: React.FC<any> = () => {
                                             onClick={() => navigate(`/policy-portal/policy/${policy.isAttested}/${policy.id}`)}
                                         >
                                             <th scope="row">{index + 1}</th>
-                                            <td><i className="bi bi-file-earmark-pdf text-danger"></i> {shortenString(policy.fileName, 40)}</td>
+                                            <td className="text-primary"><i className="bi bi-file-earmark-pdf text-danger"></i> {shortenString(policy.fileName, 40)}</td>
                                             <td>{policy.policyDepartment}</td>
                                             <td>{moment(policy.deadlineDate).format('MMM DD YYYY')}</td>
                                             <td className={`text-${policy.isAttested ? 'success' : 'warning'}`}>

@@ -294,10 +294,12 @@ const CreateNewPolicyPage: React.FC<any> = () => {
                             } */}
 
                             <div className="p-2" style={{ marginTop: '5px', minWidth: '400px' }}>
-                                <p className="p-0 m-0">Policy Description</p>
+                                <p className="p-0 m-0">Policy Description 
+                                    <span className="text-danger" style={{fontSize:'0.7em'}}> (Max 100)</span></p>
                                 <textarea
                                     onChange={handleChange}
                                     onBlur={handleBlur}
+                                    maxLength={100}
                                     id="fileDescription"
                                     name="fileDescription"
                                     className="p-2 border rounded border-1 " placeholder="Enter Policy Description"
@@ -333,7 +335,7 @@ const CreateNewPolicyPage: React.FC<any> = () => {
                             </div>
 
                             <div className="px-2">
-                                <label className="d-flex justify-content-between rounded border border-1 w-100 py-2 px-2">
+                                <label className="d-flex justify-content-between rounded border border-1 py-2 px-2">
                                     Select Subsidiaries
                                     <i
                                         onClick={() => setShowSub(!showSub)}

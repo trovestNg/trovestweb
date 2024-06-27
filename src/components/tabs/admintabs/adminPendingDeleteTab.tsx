@@ -17,7 +17,7 @@ import UpdatePolicyModal from "../../modals/updatePolicyModal";
 import { shortenString } from "../../../util";
 
 const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
-    
+
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
 
@@ -46,7 +46,7 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-           
+
             if (userInfo) {
                 let userName = userInfo?.profile?.sub.split('\\')[1]
                 const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
@@ -58,7 +58,7 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     // loginUser()
                     // toast.error('Session expired!, You have been logged out!!')
                 }
-                
+
             }
 
         } catch (error) {
@@ -75,7 +75,7 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            
+
             if (userInfo) {
                 let userName = userInfo?.profile?.sub.split('\\')[1]
                 const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
@@ -93,7 +93,7 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     // loginUser()
                     // toast.error('Session expired!, You have been logged out!!')
                 }
-               
+
             }
 
         } catch (error) {
@@ -107,7 +107,7 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            
+
             if (userInfo) {
                 let userName = userInfo?.profile?.sub.split('\\')[1]
                 const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
@@ -125,7 +125,7 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     // loginUser()
                     // toast.error('Session expired!, You have been logged out!!')
                 }
-               
+
             }
 
         } catch (error) {
@@ -314,7 +314,7 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
             />
             <div className="d-flex w-100 justify-content-between">
                 <div className="d-flex gap-4">
-                    <div className="d-flex align-items-center" style={{ position: 'relative' }}>
+                    <div className="d-flex align-items-center gap-2" style={{ position: 'relative' }}>
                         <FormControl
                             onChange={(e) => setQuery(e.target.value)}
                             placeholder="Search by Name, Department..."
@@ -328,8 +328,7 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                         <Button
                             disabled={query == ''}
                             onClick={() => handleSearch()}
-
-                            variant="primary" style={{ minWidth: '100px', marginLeft: '-5px' }}>Search</Button>
+                            variant="primary" style={{ minWidth: '100px', marginRight: '-5px', minHeight: '2.4em' }}>Search</Button>
                     </div>
                     {/* <Form.Select onChange={(e) => handleDeptSelection(e.currentTarget.value)} className="custom-select"
                         style={{ maxWidth: '170px' }}>
@@ -384,7 +383,7 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                             onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
                                         >
                                             <th scope="row">{index + 1}</th>
-                                            <td><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.fileName, 40)}`}</td>
+                                            <td className="text-primary"><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.fileName, 40)}`}</td>
 
                                             <td>{policy.authorizedBy}</td>
                                             <td>{policy.policyDepartment}</td>

@@ -38,6 +38,7 @@ const AdminDashboardPage = () => {
             img: openBook,
             color: 'primary',
             count: userDBInfo?.totalUploadedPolicyByInitiator,
+            path:'/admin/uploaded-policies',
             icon: '',
 
         },
@@ -46,6 +47,7 @@ const AdminDashboardPage = () => {
             color: 'primary',
             img: checked,
             count: userDBInfo?.totalApprovedPolicy,
+            path:'/admin/approved-policies',
             icon: '',
 
         },
@@ -54,6 +56,7 @@ const AdminDashboardPage = () => {
             color: 'primary',
             img: timer,
             count: userDBInfo?.totalPendingPolicy,
+            path:'/admin/pending-policies',
             icon: '',
 
         },
@@ -62,6 +65,7 @@ const AdminDashboardPage = () => {
             color: 'danger',
             img: error,
             count: userDBInfo?.totalRejectedPolicy,
+            path:'/admin/rejected-policies',
             icon: '',
 
         },
@@ -100,17 +104,23 @@ const AdminDashboardPage = () => {
                     dashCardInfo.map((info, index) => (
                         <DashboardCard key={index} titleColor={info.color} count={info.count}
                             imgSrc={info.img}
+                            url={info.path}
                             title={info.title} />))
                 }
             </div>
 
             <div className="mt-5" style={{ display: 'relative' }}>
                 <Tabs
-                    defaultActiveKey="pending"
+                    defaultActiveKey="uploaded"
                     id="uncontrolled-tab-example"
                     variant="underline"
                     className="mb-3 gap-5"
                 >
+                    <Tab eventKey="uploaded" title="Uploaded Policies"
+                        tabClassName=""
+                    >
+                        <AdminUploadedPoliciesTab handleCreatePolicy={() => navigate('/admin/create-policy')} />
+                    </Tab>
 
                     <Tab eventKey="pending" title="Policies Pending Approval">
                         <AdminPoliciesPendingApprovalTab handleCreatePolicy={() => navigate('/admin/create-policy')} />
@@ -124,11 +134,7 @@ const AdminDashboardPage = () => {
                         <AdminRejectedApprovalsTab handleCreatePolicy={() => navigate('/admin/create-policy')} />
                     </Tab>
 
-                    <Tab eventKey="uploaded" title="Uploaded Policies"
-                        tabClassName=""
-                    >
-                        <AdminUploadedPoliciesTab handleCreatePolicy={() => navigate('/admin/create-policy')} />
-                    </Tab>
+                    
                 </Tabs>
 
             </div>

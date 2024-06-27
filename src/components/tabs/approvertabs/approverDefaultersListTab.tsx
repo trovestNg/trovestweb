@@ -172,7 +172,7 @@ const ApproverDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
         <div className="w-100">
             <div className="d-flex w-100 justify-content-between">
                 <div className="d-flex gap-4">
-                    <div className="d-flex align-items-center gap-3" style={{ position: 'relative' }}>
+                    <div className="d-flex align-items-center gap-2" style={{ position: 'relative' }}>
                         <FormControl
                             onChange={(e) => setUserSearch(e.target.value)}
                             placeholder="Search by name of user"
@@ -234,7 +234,7 @@ const ApproverDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                         // onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
                                         >
                                             <th scope="row">{index + 1}</th>
-                                            <td><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.userName, 40)}`}</td>
+                                            <td className="text-primary"><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.userName, 40)}`}</td>
                                             <td>{policy.email}</td>
                                             <td>{policy.department}</td>
                                             <td>{moment(policy.deadlineTime).format('MMM DD YYYY')}</td>

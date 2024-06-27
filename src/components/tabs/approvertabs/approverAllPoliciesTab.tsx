@@ -309,12 +309,12 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     const handleGetAttestersList = (e: any, pol: IPolicy) => {
         e.stopPropagation();
-        navigate(`/admn/attesters-list/${pol.id}`);
+        navigate(`/admn/attesters-list/${pol.id}/${pol.fileName}/${pol.deadlineDate}`);
     }
 
     const handleGetDefaultersList = (e: any, pol: IPolicy) => {
         e.stopPropagation();
-        navigate(`/admn/defaulters-list/${pol.id}`);
+        navigate(`/admn/defaulters-list/${pol.id}/${pol.fileName}/${pol.deadlineDate}`);
     }
 
 
@@ -406,7 +406,7 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                             onClick={() => navigate(`/admn/policy/${policy.id}/${policy.isAuthorized}`)}
                                         >
                                             <th scope="row">{index + 1}</th>
-                                            <td><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.fileName, 40)}`}</td>
+                                            <td className="text-primary"><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.fileName, 40)}`}</td>
 
                                             <td>{policy.uploadedBy}</td>
                                             <td>{moment(policy.uploadTime).format('MMM DD YYYY')}</td>
@@ -434,7 +434,7 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                             Attesters List
                                                                         </div>
 
-                                                                        <i className="bi bi-chevron-right"></i>
+                                                                        {/* <i className="bi bi-chevron-right"></i> */}
                                                                     </span>
                                                                 </ListGroupItem>
 
@@ -447,7 +447,7 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                             Defaulters List
                                                                         </div>
 
-                                                                        <i className="bi bi-chevron-right"></i>
+                                                                        {/* <i className="bi bi-chevron-right"></i> */}
                                                                     </span>
                                                                 </ListGroupItem>
 

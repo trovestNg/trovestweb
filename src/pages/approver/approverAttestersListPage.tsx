@@ -25,7 +25,7 @@ const ApproverAttestersListPage = () => {
 
     const [userDBInfo,setUserDBInfo]  = useState<IUserDashboard>();
     const [policyName,setPolicyName] = useState<string>('');
-    const { id } = useParams();
+    const { id,fileName,deadlineDate } = useParams();
     
     const getUploadedPolicies = async () => {
         // setLoading(true)
@@ -62,7 +62,7 @@ const ApproverAttestersListPage = () => {
             <div><Button variant="outline border border-2" onClick={() => navigate(-1)}>Go Back</Button></div>
             {
                policyName && 
-            <h5 className="font-weight-bold text-primary mt-3" style={{ fontFamily: 'title' }}>{`${policyName} - (${policies.length})`} </h5>}
+            <h5 className="font-weight-bold text-primary mt-3" style={{ fontFamily: 'title' }}>{`${fileName} - (${policies.length})`} </h5>}
            
             {/* <div className="d-flex gap-5">
                 {

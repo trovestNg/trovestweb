@@ -238,7 +238,7 @@ const AdminDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
         <div className="w-100">
             <div className="d-flex w-100 justify-content-between">
                 <div className="d-flex gap-4">
-                    <div className="d-flex align-items-center gap-3" style={{ position: 'relative' }}>
+                    <div className="d-flex align-items-center gap-2" style={{ position: 'relative' }}>
                         <FormControl
                             onChange={(e) => setUserSearch(e.target.value)}
                             placeholder="Search by name of user"

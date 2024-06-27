@@ -110,12 +110,16 @@ const UserDashboardPage = () => {
 
             <div className="mt-5">
                 <Tabs
-                    defaultActiveKey="not-attested"
+                    defaultActiveKey="all-policies"
                     id="uncontrolled-tab-example"
                     variant="underline"
                     className="mb-3 gap-5"
                 >
-
+<Tab eventKey="all-policies" title="All Policies"
+                        tabClassName=""
+                    >
+                        <UserAllPoliciesTab />
+                    </Tab>
 
                     <Tab eventKey="not-attested" title="Not Attested Policy">
                         <UserNotAttestedPoliciesTab />
@@ -123,11 +127,7 @@ const UserDashboardPage = () => {
                     <Tab eventKey="pending" title="Attested Policy">
                         <UserAttestedPoliciesTab />
                     </Tab>
-                    <Tab eventKey="all-policies" title="All Policies"
-                        tabClassName=""
-                    >
-                        <UserAllPoliciesTab />
-                    </Tab>
+                    
                 </Tabs>
 
             </div>

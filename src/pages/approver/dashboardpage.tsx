@@ -43,6 +43,7 @@ const ApproverDashboardPage = () => {
             img: openBook,
             color : 'primary',
             count: userDBInfo?.totalUploadedPolicy,
+            path : '/admn/all-policies',
             icon: '',
 
         },
@@ -51,6 +52,7 @@ const ApproverDashboardPage = () => {
             color : 'primary',
             img: checked,
             count: userDBInfo?.totalApprovedPolicy,
+            path : '/admn/approved-policies',
             icon: '',
 
         },
@@ -59,6 +61,7 @@ const ApproverDashboardPage = () => {
             color : 'primary',
             img: timer,
             count: userDBInfo?.totalPendingPolicy,
+            path : '/admn/pending-policies',
             icon: '',
 
         },
@@ -67,6 +70,7 @@ const ApproverDashboardPage = () => {
             color : 'danger',
             img: error,
             count: userDBInfo?.totalRejectedPolicy,
+            path : '/admn/rejected-policies',
             icon: '',
 
         },
@@ -109,12 +113,12 @@ const ApproverDashboardPage = () => {
     return (
         <div className="w-100">
             <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Dashboard</h5>
-            <div className="d-flex gap-5">
+            <div className="d-flex gap-3 w-100">
                 {
                     dashCardInfo.map((info, index) => (
                     <DashboardCard key={index} titleColor={info.color} count={info.count} 
                     imgSrc={info.img} 
-                    title={info.title} />))
+                    title={info.title} url ={info.path}/>))
                 }
             </div>
 

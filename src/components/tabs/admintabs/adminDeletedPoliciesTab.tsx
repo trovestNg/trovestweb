@@ -304,7 +304,7 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
             />
             <div className="d-flex w-100 justify-content-between">
                 <div className="d-flex gap-4">
-                    <div className="d-flex align-items-center" style={{ position: 'relative' }}>
+                <div className="d-flex align-items-center gap-2" style={{ position: 'relative' }}>
                         <FormControl
                             onChange={(e) => setQuery(e.target.value)}
                             placeholder="Search by Name, Department..."
@@ -318,8 +318,7 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                         <Button
                             disabled={query == ''}
                             onClick={() => handleSearch()}
-
-                            variant="primary" style={{ minWidth: '100px', marginLeft: '-5px' }}>Search</Button>
+                            variant="primary" style={{ minWidth: '100px', marginRight: '-5px', minHeight:'2.4em' }}>Search</Button>
                     </div>
                     {/* <Form.Select onChange={(e) => handleDeptSelection(e.currentTarget.value)} className="custom-select"
                         style={{ maxWidth: '170px' }}>

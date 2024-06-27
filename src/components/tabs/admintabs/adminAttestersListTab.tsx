@@ -17,6 +17,10 @@ import { IUser } from "../../../interfaces/user";
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
+
+import Papa from 'papaparse'
+import { saveAs } from 'file-saver';
+
 const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     type TPolicy = {
@@ -43,7 +47,7 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const [bySearch, setBySearch] = useState(false);
     const [selectedDept, setSelectedDept] = useState('');
     const [userSearch, setUserSearch] = useState('');
-    const { id } = useParams();
+    const { id,fileName,deadlineDate } = useParams();
     const [query, setQuery] = useState<string>('');
     const [policyName, setPolicyName] = useState<string>('')
 
@@ -52,18 +56,20 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
         // setLoading(true)
         try {
             let userInfo = await getUserInfo();
-            
+            // console.log({ gotten: userInfo })({ gotten: userInfo })
             if (userInfo) {
-                const res = await api.get(`Attest?policyId=${id}`, `${userInfo.access_token}`);
-                
+                const res = await api.get(`Attest/${id}`, `${userInfo.access_token}`);
+                // console.log({ gotten: userInfo })({listHere:res?.data})
                 if (res?.data) {
                     setPolicies(res?.data)
                     setPolicyName(res?.data[0]?.policyName)
                     setLoading(false)
                 } else {
+                   
+                    
                     setLoading(false)
                 }
-               
+                // console.log({ gotten: userInfo })({ response: res })
             }
 
         } catch (error) {
@@ -143,11 +149,46 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
         doc.save(`${policies[0].policyName}.pdf`);
     };
 
+    const headers: any = [
+        { label: 'S/N', key: 'serial' },
+        { label: 'Staff Name', key: 'userName' },
+        { label: 'Emails', key: 'email' },
+        { label: 'Department', key: 'department' },
+        { label: 'Date Attested	', key: 'attestation' },
+        { label: 'Deadline Date', key: 'deadline' },
+    ];
+
+    const generateCSV = (data: IUser[], headers: { label: string; key: keyof IUser }[]) => {
+        // Map data to match the headers
+        const csvData = data.map((item,index) => ({
+            serial : index +1,
+            userName: `${item.userName}`,
+            email: item.email,
+            department: item.department,
+            deadline:moment(item.deadlineTime).format('MMM DD YYYY'),
+            attestation:moment(item.attestationTime).format('MMM DD YYYY')
+        }));
+
+        // Convert the data to CSV format with headers
+        const csv = Papa.unparse({
+            fields: headers.map(header => header.label),
+            data: csvData.map((item :any) => headers.map(header => item[header.key]))
+        });
+
+        // Create a Blob from the CSV string
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+
+        // Use FileSaver.js to save the file
+        saveAs(blob, `${fileName}-Attesters List.csv`);
+    };
+
     const handleListDownload = (val: string) => {
         if (val == 'pdf') {
             downloadPdf()
+        } else if (val =='csv') {
+            generateCSV(policies, headers)
         } else {
-// toast.error('downloading')
+            return
         }
     }
 
@@ -219,21 +260,21 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
                 </div>
                 {
-                //    policies && policies.length >= 1 &&
-                //     <div className="d-flex gap-2">
-                //         {/* <Button
-                //         disabled={loading}
-                //             variant="primary"
-                //             style={{ minWidth: '10em' }}
-                //             onClick={handleSendReminder}
-                //         >Send Reminder</Button> */}
+                   policies.length >= 1 &&
+                    <div className="d-flex gap-2">
+                        {/* <Button
+                        disabled={loading}
+                            variant="primary"
+                            style={{ minWidth: '10em' }}
+                            onClick={handleSendReminder}
+                        >Send Reminder</Button> */}
 
-                //         <FormSelect onChange={(e) => handleListDownload(e.currentTarget.value)}>
-                //             <option>Download List</option>
-                //             <option value={'csv'}>CSV</option>
-                //             <option value={'pdf'}>PDf</option>
-                //         </FormSelect>
-                //     </div>
+                        <FormSelect onChange={(e) => handleListDownload(e.currentTarget.value)}>
+                            <option>Download List</option>
+                            <option value={'csv'}>CSV</option>
+                            <option value={'pdf'}>PDf</option>
+                        </FormSelect>
+                    </div>
                     }
             </div>
 
@@ -267,13 +308,13 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
                             </thead>
                             <tbody className="">
                                 {
-                                policies &&policies.length <= 0 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
+                                policies.length <= 0 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
                                     policies.map((policy, index) => (
                                         <tr key={index} style={{ cursor: 'pointer' }}
                                         // onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
                                         >
                                             <th scope="row">{index + 1}</th>
-                                            <td>{`${shortenString(policy?.displayName, 40)}`}</td>
+                                            <td>{policy.userName}</td>
                                             <td>{policy.email}</td>
                                             <td>{policy.department}</td>
                                             <td>{moment(policy.attestationTime).format('MMM DD YYYY')}</td>

@@ -243,7 +243,7 @@ const UserNotAttestedPoliciesTab: React.FC<any> = () => {
                                             onClick={() => navigate(`/policy-portal/policy/false/${policy.id}`)}
                                         >
                                             <th scope="row">{index + 1}</th>
-                                            <td><i className="bi bi-file-earmark-pdf text-danger"></i> {policy.fileName}</td>
+                                            <td className="text-primary"><i className="bi bi-file-earmark-pdf text-danger"></i> {policy.fileName}</td>
                                             <td>{policy.policyDepartment}</td>
                                             <td>{moment(policy.deadlineDate).format('MMM DD YYYY')}</td>
                                             <td className={`text-${policy.isAttested ? 'success' : 'warning'}`}>

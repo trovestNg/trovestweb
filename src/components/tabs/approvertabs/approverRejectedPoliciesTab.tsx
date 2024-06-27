@@ -291,7 +291,7 @@ const ApproverRejectedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                             onClick={() => navigate(`/admn/policy/${policy.id}/${policy.isAuthorized}`)}
                                         >
                                             <th scope="row">{index + 1}</th>
-                                            <td><i className="bi bi-file-earmark-pdf text-danger"></i> {policy.fileName}</td>
+                                            <td className="text-primary"><i className="bi bi-file-earmark-pdf text-danger"></i> {policy.fileName}</td>
                                             <td>{policy.comment}</td>
                                             <td>{moment(policy.deadlineDate).format('MMM DD YYYY')}</td>
                                             <td className="table-icon">

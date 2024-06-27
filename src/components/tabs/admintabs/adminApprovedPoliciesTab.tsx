@@ -263,12 +263,12 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     const handleGetAttestersList = (e: any, pol: IPolicy) => {
         e.stopPropagation();
-        navigate(`/admin/attesters-list/${pol.id}`);
+        navigate(`/admin/attesters-list/${pol.id}/${pol.fileName}/${pol.deadlineDate}`);
     }
 
     const handleGetDefaultersList = (e: any, pol: IPolicy) => {
         e.stopPropagation();
-        navigate(`/admin/defaulters-list/${pol.id}`);
+        navigate(`/admin/defaulters-list/${pol.id}/${pol.fileName}/${pol.deadlineDate}`);
     }
 
     const handleDownloadPolicy = (e: any, pol: IPolicy) => {
@@ -363,7 +363,7 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                         onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
                                         >
                                             <th scope="row">{index + 1}</th>
-                                            <td><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.fileName,40)}`}</td>
+                                            <td className="text-primary"><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.fileName,40)}`}</td>
                                             {/* <td>{policy.uploadedBy}</td> */}
                                             <td>{policy.authorizedBy}</td>
                                             <td>{moment(policy.deadlineDate).format('MMM DD YYYY')}</td>
@@ -388,7 +388,7 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                             Attesters List
                                                                         </div>
 
-                                                                        <i className="bi bi-chevron-right"></i>
+                                                                        {/* <i className="bi bi-chevron-right"></i> */}
                                                                     </span>
                                                                     
                                                                 </ListGroupItem>
@@ -402,7 +402,7 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                             Defaulters List
                                                                         </div>
 
-                                                                        <i className="bi bi-chevron-right"></i>
+                                                                        {/* <i className="bi bi-chevron-right"></i> */}
                                                                     </span>
                                                                     
                                                                 </ListGroupItem>
