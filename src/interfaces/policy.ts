@@ -27,3 +27,33 @@ url: string,
 subsidiaryName:string
 policyDepartment:string
 }
+
+export interface IPolicyEdit {
+authorizedBy:string,
+authorizedTime:string,
+comment:string,
+deadlineDate:string,
+deleteAuthorizedBy:string,
+deleteAuthorizedTime:string,
+deleteRequestedBy:string,
+deleteRequestedTime:string,
+fileDescription:string,
+fileLocation:string,
+fileName:string,
+id:number,
+isAuthorized:boolean,
+isDeleted:boolean,
+isRejected:boolean,
+lastReminderSent:string
+markedForDeletion:boolean,
+policyDepartment:string,
+policyRejectedBy:string
+rejectedTime:string
+reminderFrequency:string,
+subsidiaryId:string,
+uploadTime:string,
+uploadedBy:string,
+url:string,
+policyDocument: null,
+Subsidiary: string
+}

@@ -35,7 +35,7 @@ const UserDashboardPage = () => {
             title: 'Total Policies',
             img: openBook,
             count: userDBInfo?.totalPolicy,
-            path : '/policy-portal/all-policy',
+            path: '/policy-portal/all-policy',
             icon: '',
 
         },
@@ -43,7 +43,7 @@ const UserDashboardPage = () => {
             title: 'Attested Policies',
             img: checked,
             count: userDBInfo?.totalAttested,
-            path : '/policy-portal/attested-policy',
+            path: '/policy-portal/attested-policy',
             icon: '',
 
         },
@@ -51,7 +51,7 @@ const UserDashboardPage = () => {
             title: 'Not Attested Policies',
             img: timer,
             count: userDBInfo?.totalNotAttested,
-            path : '/policy-portal/unattested-policy',
+            path: '/policy-portal/unattested-policy',
             icon: '',
 
         }
@@ -100,8 +100,8 @@ const UserDashboardPage = () => {
                                 <DashboardCard key={index} count={info.count}
                                     imgSrc={info.img}
                                     title={info.title}
-                                    url ={info.path}
-                                    />))
+                                    url={info.path}
+                                />))
                         }
                     </div>
 
@@ -115,19 +115,21 @@ const UserDashboardPage = () => {
                     variant="underline"
                     className="mb-3 gap-5"
                 >
-<Tab eventKey="all-policies" title="All Policies"
+                    <Tab eventKey="all-policies" title="All Policies"
                         tabClassName=""
                     >
                         <UserAllPoliciesTab />
                     </Tab>
 
-                    <Tab eventKey="not-attested" title="Not Attested Policy">
-                        <UserNotAttestedPoliciesTab />
-                    </Tab>
                     <Tab eventKey="pending" title="Attested Policy">
                         <UserAttestedPoliciesTab />
                     </Tab>
+
+                    <Tab eventKey="not-attested" title="Not Attested Policy">
+                        <UserNotAttestedPoliciesTab />
+                    </Tab>
                     
+
                 </Tabs>
 
             </div>

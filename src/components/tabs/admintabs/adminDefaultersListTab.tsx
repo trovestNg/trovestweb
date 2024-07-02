@@ -84,20 +84,22 @@ const AdminDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
         try {
             setLoading(true)
+            // toast.error('okk')
             let userInfo = await getUserInfo();
             // // console.log({ gotten: userInfo })({ gotten: userInfo })
             if (userInfo) {
                 const res = await api.get(`Policy/defaulters?policyId=${id}`, `${userInfo.access_token}`);
                 // // console.log({ gotten: userInfo })({ listHere: res?.data })
                 if (res?.data) {
-                    let filtered = res?.data.filter((policy: IUser) => policy.userName.toLowerCase().includes(userSearch.toLowerCase())
+                    let filtered = res?.data.filter((policy: IUser) => policy.firstName.toLowerCase().includes(userSearch.toLowerCase())
+                    || policy.lastName.toLowerCase().includes(userSearch.toLowerCase())
                     );
                     setPolicies(filtered.reverse());
                     setPolicyName(res?.data[0]?.policyName)
                     setLoading(false)
                 } else {
 
-
+                    
                     setLoading(false)
                 }
 
@@ -134,7 +136,7 @@ const AdminDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
             startY: 20,
         });
 
-        doc.save(`${policies[0].policyName}.pdf`);
+        doc.save(`${fileName}.pdf`);
     };
     // Define headers
     const headers: any = [
@@ -213,7 +215,7 @@ const AdminDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
             let userInfo = await getUserInfo();
             let userName = userInfo?.profile?.sub.split('\\')[1]
             if (userInfo) {
-                const res = await api.post(`Policy/nudge-authorizer?policyId=${id}`, { "policyId": id }, userInfo?.access_token);
+                const res = await api.post(`Policy/reminder?policyId=${id}`, { "policyId": id }, userInfo?.access_token);
                 if (res?.status == 200) {
                     toast.success('Reminder sent!');
                     setRefreshData(!refreshData)

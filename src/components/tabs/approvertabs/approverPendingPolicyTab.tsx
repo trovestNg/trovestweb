@@ -52,7 +52,7 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
                 const res = await api.get(`Dashboard/authorizer-policy?userName=${userName}`, `${userInfo.access_token}`);
                 if (res?.data) {
                     let allPolicy = res?.data.filter(
-                        (pol: IPolicy) => !pol.markedForDeletion && !pol.isAuthorized && !pol.isDeleted && !pol.isRejected )
+                        (pol: IPolicy) => !pol.markedForDeletion && !pol.isAuthorized && !pol.isDeleted )
                     setPolicies(allPolicy.reverse());
                     setLoading(false)
                 } else {
@@ -384,8 +384,8 @@ const ApproverPendingPolicyTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                 {'  '}
                                                 <span >{policy.isAuthorized ? 'Approved' : 'Pending'}</span>
                                             </td> */}
-                                            <td className="table-icon">
-                                                <i className=" bi bi-three-dots"></i>
+                                            <td className="table-icon" >
+                                                <i className=" bi bi-three-dots" onClick={(e)=>e.stopPropagation()}></i>
                                                 <div className="content ml-5" style={{ position: 'relative' }}>
                                                     {
                                                         policy.isAuthorized &&

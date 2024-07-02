@@ -77,12 +77,6 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
         }
     }
 
-    const handleDownloadPolicy = (pol: any) => {
-        // toast.success('Downloading file')
-        window.open(pol, '_blank');
-
-    }
-
     const handleSearch = () => {
         setBySearch(true);
         setRefreshData(!refreshData)
@@ -95,7 +89,7 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
             let userInfo = await getUserInfo();
             // // console.log({ gotten: userInfo })({ gotten: userInfo })
             if (userInfo) {
-                const res = await api.get(`Policy/defaulters?policyId=${id}`, `${userInfo.access_token}`);
+                const res = await api.get(`Attest/${id}`, `${userInfo.access_token}`);
                 // // console.log({ gotten: userInfo })({ listHere: res?.data })
                 if (res?.data) {
                     let filtered = res?.data.filter((policy: IUser) => policy.userName.toLowerCase().includes(userSearch.toLowerCase())

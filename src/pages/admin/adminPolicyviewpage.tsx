@@ -11,6 +11,8 @@ import moment from "moment";
 import api from "../../config/api";
 import UpdatePolicyModal from "../../components/modals/updatePolicyModal";
 import SureToDeletePolicyModal from "../../components/modals/sureToDeletePolicyModal";
+import { shortenString } from "../../util";
+import SureToUnDoDeletePolicyModal from "../../components/modals/sureToUnDoDeletePolicyModal";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -18,10 +20,12 @@ const AdminPolicyviewpage = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     const [attestedSuccesmodal, setAttestedSuccessModal] = useState(false);
+    const [loading,setLoading] = useState(false)
     const [policy, setPolicy] = useState<IPolicy>();
 
     const [updateDeadlineModal, setUpdateDeadlineModal] = useState(false);
     const [confDelModal, setConfDelModal] = useState(false);
+    const [confUndoDelModal, setConUndofDelModal] = useState(false);
     const [scale, setScale] = useState(1.0);
 
     const [ref, setRef] = useState(false);
@@ -84,7 +88,7 @@ const AdminPolicyviewpage = () => {
 
 
     const handlePolicyDelete = async (e: any) => {
-        e.stopPropagation();
+        setLoading(true)
         try {
             let userInfo = await getUserInfo();
             let userName = userInfo?.profile?.sub.split('\\')[1]
@@ -93,9 +97,34 @@ const AdminPolicyviewpage = () => {
                 if (res?.status == 200) {
                     toast.success('Delete request sent for approval!');
                     setConfDelModal(false);
+                    setLoading(false)
                     navigate(-1)
                 } else {
                     toast.error('Failed to delete policy')
+                }
+            }
+
+        } catch (error) {
+
+        }
+    }
+
+    const handleUndoPolicyDelete = async (e: any) => {
+        setLoading(true)
+        try {
+            let userInfo = await getUserInfo();
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            if (userInfo) {
+                const res = await api.post(`Policy/reset-mark-for-deletion`, 
+                    { "id": policy?.id, "username": userName ,"markForDeletion": false}, userInfo.access_token);
+                if (res?.status == 200) {
+                    toast.success('Delete request Canceled for this policy!');
+                    setConfDelModal(false);
+                    setLoading(false)
+                    navigate(-1)
+                } else {
+                    toast.error('Failed to Undo delete')
+                    setLoading(false)
                 }
             }
 
@@ -120,6 +149,12 @@ const AdminPolicyviewpage = () => {
                 show={confDelModal}
                 action={handlePolicyDelete}
                 off={() => setConfDelModal(false)}
+            />
+
+<SureToUnDoDeletePolicyModal
+                show={confUndoDelModal}
+                action={handleUndoPolicyDelete}
+                off={() => setConUndofDelModal(false)}
             />
             <div><Button variant="outline border border-2" onClick={() => navigate(-1)}>Go Back</Button></div>
             <div className="w-100 d-flex justify-content-between gap-4">
@@ -203,9 +238,11 @@ const AdminPolicyviewpage = () => {
                             {/* <i className="bi bi-file-earmark"></i> */}
                             Description
                         </p>
-                        <p className=" d-flex gap-2" style={{ fontSize: '0.8em' }}>
-                            {/* <i className="bi bi-file-earmark"></i> */}
-                            {policy?.fileDescription}
+                        <p className=" d-flex gap-2" 
+                        style={{ fontSize: '0.9em', wordBreak:'break-word' }}>
+                            {
+                                shortenString(policy?policy?.fileDescription:'', 120)
+                           }
                         </p>
 
                         <p className=" d-flex gap-2 text-grey p-0 m-0">
@@ -259,10 +296,19 @@ const AdminPolicyviewpage = () => {
                                 onClick={() => navigate(`/admin/edit-policy/${id}`)}
 
                             >Edit Policy</Button>
-                            <Button
+                            {
+                                policy?.markedForDeletion?
+                                <Button
+                                disabled={loading}
                                 variant="border border-danger text-danger outline"
-                                onClick={() => navigate(-1)}
-                            >Cancel Request</Button>
+                                onClick={() => setConUndofDelModal(true)}
+                            >Cancel Deletion</Button>  :
+                                <Button
+                                disabled={loading}
+                                variant="border border-danger text-danger outline"
+                                onClick={() => setConfDelModal(true)}
+                            >Delete Policy</Button>
+                        }
 
                         </div>}
 

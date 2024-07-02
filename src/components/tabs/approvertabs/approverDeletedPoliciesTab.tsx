@@ -275,8 +275,9 @@ const ApproverDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     const handleDownloadPolicy = (e: any, pol: IPolicy) => {
         e.stopPropagation();
-        toast.success('Downloading file')
-        
+        // toast.success('Downloading file')
+        window.open(pol.url, '_blank');
+
     }
 
     
@@ -385,8 +386,8 @@ const ApproverDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                 {'  '}
                                                 <span >{policy.isAuthorized ? 'Approved' : 'Pending'}</span>
                                             </td> */}
-                                            <td className="table-icon">
-                                                <i className=" bi bi-three-dots"></i>
+                                            <td className="table-icon" >
+                                                <i className=" bi bi-three-dots" onClick={(e)=>e.stopPropagation()}></i>
                                                 <div className="content ml-5" style={{ position: 'relative' }}>
                                                     {
                                                         policy.isAuthorized &&

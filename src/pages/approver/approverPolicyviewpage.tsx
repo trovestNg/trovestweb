@@ -268,11 +268,11 @@ const ApproverPolicyviewpage = () => {
                             {/* <i className="bi bi-file-earmark"></i> */}
                             Description
                         </p>
-                        <p className=" d-flex gap-2" style={{ fontSize: '0.8em' }}>
-                            {/* <i className="bi bi-file-earmark"></i> */}
+                        <p className=" d-flex gap-2" 
+                        style={{ fontSize: '0.9em', wordBreak:'break-word' }}>
                             {
-                            shortenString(policy?policy?.fileName:'', 40)
-                            }
+                                shortenString(policy?policy?.fileDescription:'', 120)
+                           }
                         </p>
 
                         <p className=" d-flex gap-2 text-grey p-0 m-0">

@@ -12,6 +12,7 @@ import { useNavigate,useParams } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import AdminDefaultersListTab from "../../components/tabs/admintabs/adminDefaultersListTab";
 import { Document, Page, pdfjs } from "react-pdf";
+import ApproverDefaultersListTab from "../../components/tabs/approvertabs/approverDefaultersListTab";
 
 
 const ApproverDefaultersListPage = () => {
@@ -26,7 +27,7 @@ const ApproverDefaultersListPage = () => {
 
     const [userDBInfo,setUserDBInfo]  = useState<IUserDashboard>();
     const [policyName,setPolicyName] = useState<string>('');
-    const { id } = useParams();
+    const { id,fileName,deadlineDate } = useParams();
     
     const getUploadedPolicies = async () => {
         // setLoading(true)
@@ -61,18 +62,12 @@ const ApproverDefaultersListPage = () => {
     return (
         <div className="w-100">
             <div><Button variant="outline border border-2" onClick={() => navigate(-1)}>Go Back</Button></div>
-            {
-               policyName && 
-            <h5 className="font-weight-bold text-primary mt-3" style={{ fontFamily: 'title' }}>{`${policyName} - (${policies.length})`} </h5>}
            
-            {/* <div className="d-flex gap-5">
-                {
-                    dashCardInfo.map((info, index) => (<DashboardCard key={index} imgSrc={info.img} title={info.title} />))
-                }
-            </div> */}
+            <h5 className="font-weight-bold text-primary mt-3" style={{ fontFamily: 'title' }}>{`${fileName} Defaulters List- (${policies.length})`} </h5>
+           
 
             <div className="w-100 mt-5">
-                <AdminDefaultersListTab handleCreatePolicy={ ()=>navigate('/admin/create-policy')} />
+                <ApproverDefaultersListTab handleCreatePolicy={ ()=>navigate('/admin/create-policy')} />
             </div>
         </div>
     )

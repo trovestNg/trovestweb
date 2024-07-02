@@ -406,8 +406,8 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                 {/* : !policy.isAuthorized && ? 'Pending ' : policy.isAuthorized && policy.isRejected?'Rejected':'' */}
                                                 {/* <span onClick={(e) => handleShowReasonForRej(e, policy)}>{policy.isRejected && <i className="bi bi-file-earmark-excel text-danger"></i>}</span> */}
                                             </td>
-                                            <td className="table-icon">
-                                                <i className=" bi bi-three-dots"></i>
+                                            <td className="table-icon" >
+                                                <i className=" bi bi-three-dots" onClick={(e)=>e.stopPropagation()}></i>
                                                 <div className="content ml-5" style={{ position: 'relative' }}>
                                                     {
                                                         policy.isAuthorized &&
@@ -460,7 +460,7 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
                                                                             <i className="bi bi-download"></i>
-                                                                           Download
+                                                                           Download Policy
                                                                         </div>
                                                                     </span>
                                                                 </ListGroupItem>

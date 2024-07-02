@@ -39,10 +39,10 @@ const ApproverDashboardPage = () => {
 
     const dashCardInfo = [
         {
-            title: 'All Uploaded Policies',
+            title: 'All Policies',
             img: openBook,
             color : 'primary',
-            count: userDBInfo?.totalUploadedPolicy,
+            count: userDBInfo?.totalPolicyForAuthorizer,
             path : '/admn/all-policies',
             icon: '',
 

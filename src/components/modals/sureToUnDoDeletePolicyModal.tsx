@@ -3,7 +3,7 @@ import { Button, Modal, Spinner } from "react-bootstrap";
 import alertIcon from "../../assets/icons/alertIcon.png";
 import { useNavigate } from "react-router-dom";
 
-const SureToDeletePolicyModal : React.FC<any> = ({show, off, action, loading})=>{
+const SureToUnDoDeletePolicyModal : React.FC<any> = ({show, off, action, loading})=>{
     const navigate = useNavigate();
 return (
     <div>
@@ -19,7 +19,7 @@ return (
                     <div className="py-2 d-flex justify-content-center align-items-center flex-column">
                         <img src={alertIcon} height={'114px'} />
                         <p className="text-primary mt-2" style={{ fontFamily: 'title' }}>Are you sure?</p>
-                        <p className="text-center px-3">You are about to send a policy to approver for deletion.</p>
+                        <p className="text-center px-3">You are about to cancel the deletion request of this policy.</p>
                         
                         <Button onClick={action} disabled={loading} className="py-2 mt-3"  style={{minWidth:'20em'}}>
                             {
@@ -32,4 +32,4 @@ return (
     </div>
 )
 } 
-export default SureToDeletePolicyModal
+export default SureToUnDoDeletePolicyModal

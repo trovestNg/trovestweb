@@ -17,6 +17,9 @@ import { IUser } from "../../../interfaces/user";
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
+import Papa from 'papaparse'
+import { saveAs } from 'file-saver';
+
 const ApproverDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     type TPolicy = {
@@ -32,7 +35,7 @@ const ApproverDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
         header: string;
         dataKey: keyof TPolicy;
     };
-    
+
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
     const [policies, setPolicies] = useState<IUser[]>([]);
@@ -42,7 +45,7 @@ const ApproverDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const [bySearch, setBySearch] = useState(false);
     const [selectedDept, setSelectedDept] = useState('');
     const [userSearch, setUserSearch] = useState('');
-    const { id } = useParams();
+    const { id, fileName, deadlineDate } = useParams();
     const [query, setQuery] = useState<string>('');
     const [policyName, setPolicyName] = useState<string>('')
 
@@ -56,20 +59,20 @@ const ApproverDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
         // setLoading(true)
         try {
             let userInfo = await getUserInfo();
-           
+
             if (userInfo) {
                 const res = await api.get(`Policy/defaulters?policyId=${id}`, `${userInfo.access_token}`);
-                
+
                 if (res?.data) {
                     setPolicies(res?.data)
                     setPolicyName(res?.data[0]?.policyName)
                     setLoading(false)
                 } else {
 
-                    
+
                     setLoading(false)
                 }
-              
+
             }
 
         } catch (error) {
@@ -87,14 +90,15 @@ const ApproverDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
                 const res = await api.get(`Policy/defaulters?policyId=${id}`, `${userInfo.access_token}`);
                 // // console.log({ gotten: userInfo })({ listHere: res?.data })
                 if (res?.data) {
-                    let filtered = res?.data.filter((policy: IUser) => policy.userName.toLowerCase().includes(userSearch.toLowerCase())
+                    let filtered = res?.data.filter((policy: IUser) => policy.firstName.toLowerCase().includes(userSearch.toLowerCase())
+                    || policy.lastName.toLowerCase().includes(userSearch.toLowerCase())
                     );
                     setPolicies(filtered.reverse());
                     setPolicyName(res?.data[0]?.policyName)
                     setLoading(false)
                 } else {
 
-                    
+
                     setLoading(false)
                 }
 
@@ -118,7 +122,7 @@ const ApproverDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
         // Create rows from the policies array
         const rows = policies.map(policy => ({
-            userName: policy.userName,
+            userName: policy.displayName,
             email: policy.email,
             department: policy.department,
             attestationTime: moment(policy.attestationTime).format('YYYY-MM-DD') || 'N/A',
@@ -131,8 +135,61 @@ const ApproverDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
             startY: 20,
         });
 
-        doc.save(`${policies[0].policyName}.pdf`);
+        doc.save(`${fileName}.pdf`);
     };
+    // Define headers
+    const headers: any = [
+        { label: 'S/N', key: 'serial' },
+        { label: 'Staff Name', key: 'displayName' },
+        { label: 'Emails', key: 'email' },
+        { label: 'Department', key: 'department' },
+        { label: 'Deadline Date', key: 'deadline' }
+    ];
+
+
+    const generateCSV = (data: IUser[], headers: { label: string; key: keyof IUser }[]) => {
+        // Map data to match the headers
+        const csvData = data.map((item, index) => ({
+            serial: index + 1,
+            displayName: `${item.firstName} ${item.lastName}`,
+            email: item.email,
+            department: item.department,
+            deadline: moment(item.deadlineTime).format('MMM DD YYYY')
+        }));
+
+        // Convert the data to CSV format with headers
+        const csv = Papa.unparse({
+            fields: headers.map(header => header.label),
+            data: csvData.map((item: any) => headers.map(header => item[header.key]))
+        });
+
+        // Create a Blob from the CSV string
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+
+        // Use FileSaver.js to save the file
+        saveAs(blob, `${fileName} Defaulters List`);
+    };
+
+    const handleSendReminder = async () => {
+        setLoading(true)
+        try {
+            let userInfo = await getUserInfo();
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            if (userInfo) {
+                const res = await api.post(`Policy/reminder?policyId=${id}`, { "policyId": id }, userInfo?.access_token);
+                if (res?.status == 200) {
+                    toast.success('Reminder sent!');
+                    setRefreshData(!refreshData)
+                    setLoading(false)
+                } else {
+                    toast.error('Error sending reminder')
+                }
+            }
+
+        } catch (error) {
+
+        }
+    }
 
     const handleSearch = () => {
         setBySearch(true);
@@ -143,6 +200,16 @@ const ApproverDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
         setSelectedDept(val);
         setSortByDept(true)
         setRefreshData(!refreshData)
+    }
+
+    const handleListDownload = (val: string) => {
+        if (val == 'pdf') {
+            downloadPdf()
+        } else if (val == 'csv') {
+            generateCSV(policies, headers)
+        } else {
+            return
+        }
     }
 
 
@@ -192,12 +259,19 @@ const ApproverDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
                 </div>
                 {
                     policies.length >= 1 &&
-                    <div className="">
+                    <div className="d-flex gap-2">
                         <Button
+                            disabled={loading}
                             variant="primary"
-                            style={{ minWidth: '100px' }}
-                            onClick={downloadPdf}
-                        >Download List</Button>
+                            style={{ minWidth: '10em' }}
+                            onClick={handleSendReminder}
+                        >Send Reminder</Button>
+
+                        <FormSelect onChange={(e) => handleListDownload(e.currentTarget.value)}>
+                            <option>Download List</option>
+                            <option value={'csv'}>CSV</option>
+                            <option value={'pdf'}>PDf</option>
+                        </FormSelect>
                     </div>}
             </div>
 
@@ -234,7 +308,7 @@ const ApproverDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                         // onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
                                         >
                                             <th scope="row">{index + 1}</th>
-                                            <td className="text-primary"><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.userName, 40)}`}</td>
+                                            <td>{`${shortenString(policy?.displayName, 40)}`}</td>
                                             <td>{policy.email}</td>
                                             <td>{policy.department}</td>
                                             <td>{moment(policy.deadlineTime).format('MMM DD YYYY')}</td>

@@ -51,6 +51,8 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                 let userInfo = await getUserInfo();
             let userName = userInfo?.profile?.sub.split('\\')[1]
                 const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo?.access_token}`);
+                let allPolicy = res?.data.filter((pol: IPolicy) => pol.isDeleted)
+                console.log({deleted:allPolicy})
                 if (res?.data) {
                     let allPolicy = res?.data.filter((pol: IPolicy) => pol.isDeleted)
                     setPolicies(allPolicy.reverse());
@@ -275,8 +277,9 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     const handleDownloadPolicy = (e: any, pol: IPolicy) => {
         e.stopPropagation();
-        toast.success('Downloading file')
-        
+        // toast.success('Downloading file')
+        window.open(pol.url, '_blank');
+
     }
 
     
@@ -360,7 +363,7 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                             <tr >
                                 <th scope="col" className="bg-primary text-light">#</th>
                                 <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                <th scope="col" className="bg-primary text-light">Initiator</th>
+                                <th scope="col" className="bg-primary text-light">Authorizer</th>
                                 <th scope="col" className="bg-primary text-light">Department</th>
                                 <th scope="col" className="bg-primary text-light">Date Deleted</th>
                                 <th scope="col" className="bg-primary text-light">Action</th>
@@ -370,12 +373,11 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                 {policies.length <= 0 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
                                     policies.map((policy, index) => (
                                         <tr key={index} style={{ cursor: 'pointer' }}
-                                            onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
                                         >
                                             <th scope="row">{index + 1}</th>
                                             <td><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.fileName, 40)}`}</td>
 
-                                            <td>{policy.uploadedBy}</td>
+                                            <td>{policy.authorizedBy}</td>
                                             <td>{policy.policyDepartment}</td>
                                             <td>{moment(policy.deleteRequestedTime).format('MMM DD YYYY')}</td>
                                             {/* <td className={`text-${policy.isAuthorized ? 'success' : 'warning'}`}>
@@ -383,8 +385,8 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                 {'  '}
                                                 <span >{policy.isAuthorized ? 'Approved' : 'Pending'}</span>
                                             </td> */}
-                                            <td className="table-icon">
-                                                <i className=" bi bi-three-dots"></i>
+                                            <td className="table-icon" >
+                                                <i className=" bi bi-three-dots" onClick={(e)=>e.stopPropagation()}></i>
                                                 <div className="content ml-5" style={{ position: 'relative' }}>
                                                     {
                                                         policy.isAuthorized &&
@@ -515,7 +517,7 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                         <Card className="p-2  shadow-sm rounded border-0"
                                                             style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
                                                             <ListGroup>
-                                                                <ListGroupItem
+                                                                {/* <ListGroupItem
                                                                     onClick={(e) => handleEdit(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
@@ -524,7 +526,7 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                             Edit Policy
                                                                         </div>
                                                                     </span>
-                                                                </ListGroupItem>
+                                                                </ListGroupItem> */}
 
                                                                 <ListGroupItem
                                                                 onClick={(e) => handleDownloadPolicy(e, policy)}
@@ -538,7 +540,7 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                     </span>
                                                                 </ListGroupItem>
 
-                                                                <ListGroupItem
+                                                                {/* <ListGroupItem
                                                                 onClick={(e)=>handleSendAuthorizationReminder(e,policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
@@ -547,9 +549,9 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                             Send Reminder
                                                                         </div>
                                                                     </span>
-                                                                </ListGroupItem>
+                                                                </ListGroupItem> */}
 
-                                                                <ListGroupItem
+                                                                {/* <ListGroupItem
                                                                     disabled={policy?.markedForDeletion}
                                                                     onClick={(e) => handleDelete(e, policy)}
                                                                 >
@@ -559,7 +561,7 @@ const AdminDeletedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                             Delete
                                                                         </div>
                                                                     </span>
-                                                                </ListGroupItem>
+                                                                </ListGroupItem> */}
                                                             </ListGroup>
                                                         </Card>}
 

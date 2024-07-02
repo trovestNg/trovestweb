@@ -77,9 +77,7 @@ export default function () {
                 <Route path="rejected-policies" element={<ApproverRejectedPoliciesPage />} />
                 <Route path="deleted-policies" element={<ApproverDeletedPoliciesPage />} />
                 <Route path="attesters-list/:id" element={<ApproverAttestersListPage />} />
-                <Route path="defaulters-list/:id" element={<ApproverDefaultersListPage />}/>
                 <Route path="policy/:id/:attestationStatus" element={<ApproverPolicyviewpage />} />
-
                 <Route path="attesters-list/:id/:fileName/:deadlineDate" element={<ApproverAttestersListPage />} />
                 <Route path="defaulters-list/:id/:fileName/:deadlineDate" element={<ApproverDefaultersListPage />} />
             </Route>

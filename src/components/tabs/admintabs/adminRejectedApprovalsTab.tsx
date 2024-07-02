@@ -100,7 +100,7 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
                     setLoading(false)
 
                     let filtered = res?.data.filter((policy: IPolicy) =>
-                        policy.fileName.toLowerCase().includes(query.toLowerCase()) && !policy.isAuthorized && !policy.markedForDeletion
+                        policy.fileName.toLowerCase().includes(query.toLowerCase()) && policy.isRejected && !policy.markedForDeletion
                     );
                     setPolicies(filtered.reverse());
 
@@ -125,7 +125,7 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
 
     const handleClick = (e: any) => {
         e.stopPropagation();
-        toast.error('hii')
+      
     }
 
 
@@ -315,8 +315,8 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
                                         <td>{policy.authorizedBy}</td>
                                         <td>{policy.comment}</td>
                                         <td>{moment(policy.deadlineDate).format('MMM DD YYYY')}</td>
-                                        <td className="table-icon" onClick={(e) => handleClick(e)}>
-                                                <i className=" bi bi-three-dots"></i>
+                                        <td className="table-icon">
+                                                <i className=" bi bi-three-dots" onClick={(e) => handleClick(e)}></i>
                                                 <div className="content ml-5" style={{ position: 'relative' }}>
                                                     {
                                                         policy.isAuthorized &&
@@ -453,7 +453,7 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
                                                                             <i className="bi bi-download"></i>
-                                                                           Download
+                                                                           Download Policy
                                                                         </div>
                                                                     </span>
                                                                 </ListGroupItem>

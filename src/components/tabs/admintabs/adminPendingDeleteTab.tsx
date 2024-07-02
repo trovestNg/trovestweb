@@ -84,8 +84,8 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     setLoading(false)
 
                     let filtered = res?.data.filter((policy: IPolicy) =>
-                        policy.fileName.toLowerCase().includes(query.toLowerCase()) && policy.markedForDeletion ||
-                        policy.policyDepartment.toLowerCase().includes(query.toLowerCase()) && policy.markedForDeletion
+                        policy.fileName.toLowerCase().includes(query.toLowerCase()) && policy.markedForDeletion && !policy.isDeleted ||
+                        policy.policyDepartment.toLowerCase().includes(query.toLowerCase()) && policy.markedForDeletion && !policy.isDeleted
                     );
                     setPolicies(filtered.reverse());
 
@@ -285,7 +285,8 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     const handleDownloadPolicy = (e: any, pol: IPolicy) => {
         e.stopPropagation();
-        toast.success('Downloading file')
+        // toast.success('Downloading file')
+        window.open(pol.url, '_blank');
 
     }
 
@@ -393,8 +394,8 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                 {'  '}
                                                 <span >{policy.isAuthorized ? 'Approved' : 'Pending'}</span>
                                             </td> */}
-                                            <td className="table-icon">
-                                                <i className=" bi bi-three-dots"></i>
+                                            <td className="table-icon" >
+                                                <i className=" bi bi-three-dots" onClick={(e)=>e.stopPropagation()}></i>
                                                 <div className="content ml-5" style={{ position: 'relative' }}>
                                                     {
                                                         policy.isAuthorized &&
@@ -538,9 +539,9 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                         <Card className="p-2  shadow-sm rounded border-0"
                                                             style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
                                                             <ListGroup
-                                                                onClick={(e) => handleGroupClick(e, policy)}
+                                                                
                                                             >
-                                                                <ListGroupItem
+                                                                 <ListGroupItem
                                                                     onClick={(e) => handleEdit(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
@@ -574,7 +575,7 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                     </span>
                                                                 </ListGroupItem>
 
-                                                                <ListGroupItem
+                                                                {/* <ListGroupItem
                                                                     disabled={policy?.markedForDeletion}
                                                                     onClick={(e) => handleDelete(e, policy)}
                                                                 >
@@ -584,7 +585,7 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                             Delete
                                                                         </div>
                                                                     </span>
-                                                                </ListGroupItem>
+                                                                </ListGroupItem> */}
                                                             </ListGroup>
                                                         </Card>}
 

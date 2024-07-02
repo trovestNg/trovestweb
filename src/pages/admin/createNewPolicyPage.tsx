@@ -27,6 +27,7 @@ const CreateNewPolicyPage: React.FC<any> = () => {
     const [policyDoc, setPolicyDoc] = useState('');
     const [subSidiaries, setSubSidiaries] = useState<IDept[]>();
     const [authorizers, setAuthorizers] = useState<IAuthorizers[]>();
+    const [newPolicy,setNewPolicy] = useState();
     const navigate = useNavigate();
 
     const [showCreatePrompt, setShowCreatePrompt] = useState(false)
@@ -34,14 +35,15 @@ const CreateNewPolicyPage: React.FC<any> = () => {
     const [createLoading, setCreateLoading] = useState(false)
 
     const [showSub, setShowSub] = useState(false);
-    const [fileName,setFileName] = useState('')
+    const [fileName,setFileName] = useState('');
+    const [fileUrl,setFileUrl] = useState('');
 
     const initialValues = {
         policyName: '',
         policyDocument: null,
         fileDescription: '',
         DeadlineDate: '',
-        Department: [],
+        Subsidiary: null,
         Frequency: '',
         Authorizer: '',
 
@@ -53,7 +55,7 @@ const CreateNewPolicyPage: React.FC<any> = () => {
         DeadlineDate: Yup.string().required('Select deadline date'),
         Frequency: Yup.string().required('Select reminder frequency'),
         Authorizer: Yup.string().required('Selecte an authorizer'),
-        Department: Yup.array().of(Yup.string().required('Department is required')),
+        Subsidiary: Yup.array().of(Yup.string().required('Select Subsidiary')),
         policyDocument: Yup.mixed()
             .required('A file is required')
             .test('fileType', 'Only PDF files are accepted', (value: any) => {
@@ -121,9 +123,13 @@ const CreateNewPolicyPage: React.FC<any> = () => {
     }
 
     const handleFileChange = (event:any, setFieldValue:any) => {
+        console.log(event)
         const file = event.currentTarget.files[0];
+        
         if (file) {
+            let path = URL.createObjectURL(file)
           setFileName(file.name);
+          setFileUrl(path);
           setFieldValue('policyDocument', file);
         }
       };
@@ -131,10 +137,8 @@ const CreateNewPolicyPage: React.FC<any> = () => {
     const createNewPolicy = async (body: any) => {
         // console.log({ gotten: userInfo })({ bodyHere: body });
         setCreateLoading(true)
-        let convertedToInt = body?.Department.map((id: any) => +id)
+        let convertedToInt = body?.Subsidiary.map((id: any) => +id)
         let formData = new FormData()
-
-        let dep: any = ['1023']
 
         formData.append('policyDocument', body?.policyDocument)
         formData.append('fileDescription', body?.fileDescription)
@@ -143,7 +147,6 @@ const CreateNewPolicyPage: React.FC<any> = () => {
         formData.append('Frequency', body?.Frequency)
         formData.append('Authorizer', body?.Authorizer)
         formData.append('DeadlineDate', body?.DeadlineDate)
-        // formData.append('Department', dep)
 
         let userInfo = await getUserInfo();
 
@@ -162,6 +165,18 @@ const CreateNewPolicyPage: React.FC<any> = () => {
             }
         }
 
+
+    }
+
+    const handlePolicyCreation = (body:any)=>{
+        console.log({wantToSend:body});
+        setNewPolicy(body);
+        setShowCreatePrompt(true);
+        let updated = {
+
+        }
+
+        
 
     }
 
@@ -226,7 +241,7 @@ const CreateNewPolicyPage: React.FC<any> = () => {
             <Formik
                 initialValues={initialValues}
                 validationSchema={validationSchema}
-                onSubmit={createNewPolicy}
+                onSubmit={handlePolicyCreation}
             >
                 {({ values, setFieldValue, handleReset, handleBlur, handleSubmit, handleChange, touched, errors }) => (
                     <Form onSubmit={handleSubmit} onReset={handleReset} className="d-flex flex-column align-items-center">
@@ -258,6 +273,7 @@ const CreateNewPolicyPage: React.FC<any> = () => {
                                 {fileName==''?' Click to upload file':' Click to Replace File'}
                                 
                                 </label>
+                                
                                 <input
                                     id="policyDocument"
                                     name="policyDocument"
@@ -271,15 +287,23 @@ const CreateNewPolicyPage: React.FC<any> = () => {
                                 />
                                 </div>
                                 <p
-                                    className="p-0 text-danger m-0 mt-1"
+                                    className="p-0 px-3 text-danger m-0 mt-1"
                                     style={{ fontSize: '0.7em' }}>{touched.policyDocument && errors['policyDocument']}
                                 </p>
                             </div>
-                            {fileName &&
-                                <div className="px-3 d-flex">
-                            <i className="bi bi-file-earmark-pdf text-danger"></i>
-                            <p className="px-1 text-primary">{fileName}</p>
-                            </div>}
+                            {fileName == '' ?
+                                <div className="px-3 d-flex mt-2">
+                                    {fileName && <i className="bi bi-file-earmark-pdf text-danger"></i>}
+                                    <a  href={fileUrl} target="_blank" className="px-1 text-primary">{fileName}</a>
+                                </div> :
+                                <div className="mt-2 d-flex">
+                                    {fileName &&
+                                        <div className="px-3 d-flex">
+                                            <i className="bi bi-file-earmark-pdf text-danger"></i>
+                                            <a  href={fileUrl} target="_blank" className="px-1 text-primary">{fileName}</a>
+                                        </div>}
+                                </div>
+                            }
                             
 
                             {/* {
@@ -347,10 +371,10 @@ const CreateNewPolicyPage: React.FC<any> = () => {
                                     <Card className="py-1 px-2">
                                         <div className="d-flex flex-column" role="group">
                                             {subSidiaries && subSidiaries.map((option) => (
-                                                <label key={option.id}>
+                                                <label key={option.id} className="d-flex gap-2">
                                                     <Field
                                                         type="checkbox"
-                                                        name="Department"
+                                                        name="Subsidiary"
                                                         value={JSON.stringify(option.id)}
                                                     />
                                                     {option.name}
@@ -362,7 +386,7 @@ const CreateNewPolicyPage: React.FC<any> = () => {
 
                                 <p
                                     className="p-0 text-danger m-0 mt-1"
-                                    style={{ fontSize: '0.7em' }}>{touched.Department && errors['Department']}
+                                    style={{ fontSize: '0.7em' }}>{touched.Subsidiary && errors['Subsidiary']}
                                 </p>
                             </div>
 
@@ -439,10 +463,10 @@ const CreateNewPolicyPage: React.FC<any> = () => {
 
 
                             <div className="mt-2">
-                                <Button onClick={() => setShowCreatePrompt(true)} variant="primary mt-3">Submit for Approval </Button>
+                                <Button type="submit"  variant="primary mt-3">Submit for Approval </Button>
                             </div>
                         </div>
-                        <SureToCreatePolicyModal loading={createLoading} action={handleSubmit} off={() => setShowCreatePrompt(false)} show={showCreatePrompt} />
+                        <SureToCreatePolicyModal loading={createLoading} action={()=>createNewPolicy(newPolicy)} off={() => setShowCreatePrompt(false)} show={showCreatePrompt} />
                         <PolicyCreatedSuccessModal off={() =>{ 
                             setpolicyCreatedSucc(false)
                             window.location.reload()

@@ -6,16 +6,17 @@ import api from "../../config/api";
 import { getUserInfo } from "../../controllers/auth";
 import moment from "moment";
 import { toast } from 'react-toastify';
+import { shortenString } from "../../util";
 
 const UpdatePolicyModal: React.FC<any> = ({ show, off, pol }) => {
-    const initialVal  = {
+    const initialVal = {
         "id": pol?.id,
-        "deadlineDate": pol?.deadlineDate
-      }
+        "deadlineDate": ''
+    }
 
     let validationSchem = object({
         // policyDocument: string().required('Kindly upload a file'),
-        deadlineDate: string().required('Date is required'),
+        deadlineDate: string().required('New date is required'),
         // fileDescription: string().required('Description cannot be empty'),
 
         // age: number().required().positive().integer(),
@@ -52,27 +53,32 @@ const UpdatePolicyModal: React.FC<any> = ({ show, off, pol }) => {
                 <Modal.Body >
                     <Formik
                         initialValues={initialVal}
-                        // validationSchema={validationSchem}
+                        validationSchema={validationSchem}
                         validateOnBlur
                         onSubmit={(val) => createNewPolicy(val)
                         }
                     >{
-                            ({ handleChange, handleSubmit, errors,values, touched, handleBlur }) => (
+                            ({ handleChange, handleSubmit, errors, values, touched, handleBlur }) => (
 
                                 <form onSubmit={handleSubmit} className="px-2">
                                     <div className="">
-                                    <h6>File name</h6>
-                                            <div className="d-flex">
-                                                {' '}
-                                                <i className="bi bi-file-earmark-pdf text-danger"></i>
-                                                <h5>{pol?.fileName}</h5>
-                                            </div>
-                                        <div className="w-50">
-                                            
-                                            <div>
-                                                <h6 className="mt-3">File Description</h6>
-                                                <p>{pol?.fileDescription}</p>
-                                            </div>
+                                        <h6>File name</h6>
+                                        <div className="d-flex">
+                                            {' '}
+                                            <i className="bi bi-file-earmark-pdf text-danger"></i>
+                                            <h5>{pol?.fileName}</h5>
+                                        </div>
+                                        <div className="w-75">
+
+
+                                            <h6 className="mt-3">File Description</h6>
+                                            <p className=" d-flex gap-2"
+                                                style={{ fontSize: '0.9em', wordBreak: 'break-word' }}>
+                                                {
+                                                    shortenString(pol?.fileDescription, 120)
+                                                }
+                                            </p>
+
                                         </div>
                                         <div className="">
                                             <p className="text-danger p-0 m-0"> Deadline date</p>
@@ -84,15 +90,19 @@ const UpdatePolicyModal: React.FC<any> = ({ show, off, pol }) => {
                                                     onChange={handleChange}
                                                     id="deadlineDate"
                                                     type="date" placeholder="Select date" style={{ marginTop: '5px', maxWidth: '200px' }} />
+                                                <p
+                                                    className="p-0 text-danger m-0 mt-1 px-2"
+                                                    style={{ fontSize: '0.7em' }}>{touched.deadlineDate && errors['deadlineDate']}
+                                                </p>
                                             </div>
                                         </div>
 
 
                                     </div>
                                     <div className="w-100 d-flex gap-4 mt-4 justify-content-end">
-                                        <Button onClick={()=>off()}  variant="outline border py-1">Cancel</Button>
+                                        <Button onClick={() => off()} variant="outline border py-1">Cancel</Button>
                                         <Button type="submit" variant="primary">
-                                        Update Deadline
+                                            Update Deadline
                                         </Button>
                                     </div>
 

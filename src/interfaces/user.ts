@@ -21,7 +21,8 @@ export interface IUserDashboard {
     totalApprovedPolicy: number,
     totalPendingPolicy: number,
     totalRejectedPolicy: number,
-    totalUploadedPolicy: number
+    totalUploadedPolicy: number,
+    totalPolicyForAuthorizer:number
 
 }
 

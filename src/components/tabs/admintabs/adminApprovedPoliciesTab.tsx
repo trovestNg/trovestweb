@@ -93,8 +93,8 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     setLoading(false)
 
                     let filtered = res?.data.filter((policy: IPolicy) =>
-                        policy.fileName.toLowerCase().includes(query.toLowerCase()) &&policy.isAuthorized&&!policy.markedForDeletion ||
-                        policy.policyDepartment.toLowerCase().includes(query.toLowerCase())&&policy.isAuthorized &&!policy.markedForDeletion
+                        policy.fileName.toLowerCase().includes(query.toLowerCase()) &&policy.isAuthorized && !policy.markedForDeletion ||
+                        policy.policyDepartment.toLowerCase().includes(query.toLowerCase()) &&policy.isAuthorized && !policy.markedForDeletion
                     );
                     setPolicies(filtered.reverse());
 
@@ -273,8 +273,9 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     const handleDownloadPolicy = (e: any, pol: IPolicy) => {
         e.stopPropagation();
-        toast.success('Downloading file')
-        
+        // toast.success('Downloading file')
+        window.open(pol.url, '_blank');
+
     }
 
     return (
@@ -372,15 +373,15 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                 {'  '}
                                                 <span >{policy.isAuthorized ? 'Approved' : 'Pending'}</span></td> */}
                                             <td className="table-icon">
-                                                <i className=" bi bi-three-dots"></i>
+                                                <i className=" bi bi-three-dots" onClick={(e)=>e.stopPropagation()}></i>
                                                 <div className="content ml-5" style={{ position: 'relative' }}>
-                                                    {
+                                                {
                                                         policy.isAuthorized &&
                                                         <Card className="p-2  shadow-sm rounded border-0"
                                                             style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
                                                             <ListGroup>
                                                                 <ListGroupItem className="multi-layer"
-                                                                   onClick={(e) => handleGetAttestersList(e, policy)}
+                                                                    onClick={(e) => handleGetAttestersList(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
@@ -394,7 +395,7 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                 </ListGroupItem>
 
                                                                 <ListGroupItem className="multi-layer"
-                                                                onClick={(e) => handleGetDefaultersList(e, policy)}
+                                                                    onClick={(e) => handleGetDefaultersList(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
@@ -408,12 +409,24 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                 </ListGroupItem>
 
                                                                 <ListGroupItem
-                                                                onClick={(e) => handleUpdate(e, policy)}
+                                                                    onClick={(e) => handleUpdate(e, policy)}
                                                                 >
                                                                     <span className="w-100 d-flex justify-content-between">
                                                                         <div className="d-flex gap-2">
                                                                             <i className="bi bi-calendar-event"></i>
                                                                             Update Deadline
+                                                                        </div>
+                                                                    </span>
+                                                                </ListGroupItem>
+
+                                                                <ListGroupItem
+                                                                    onClick={(e) => handleDownloadPolicy(e, policy)}
+
+                                                                >
+                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                        <div className="d-flex gap-2">
+                                                                            <i className="bi bi-download"></i>
+                                                                           Download Policy
                                                                         </div>
                                                                     </span>
                                                                 </ListGroupItem>
@@ -447,7 +460,9 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                 </span>
                                                             </ListGroupItem>
 
-                                                            <ListGroupItem>
+                                                            <ListGroupItem
+                                                             onClick={(e) => handleDownloadPolicy(e, policy)}
+                                                            >
                                                             <span className="w-100 d-flex justify-content-between">
                                                                     <div className="d-flex gap-2">
                                                                     <i className="bi bi-download"></i>

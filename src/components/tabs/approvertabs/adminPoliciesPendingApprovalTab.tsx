@@ -46,7 +46,7 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
                 const res = await api.get(`Dashboard/authorizer-policy?userName=${userName}`, `${userInfo.access_token}`);
 
                 if (res?.data) {
-                    let unApprovedPolicies = res?.data.filter((policy: IPolicy) => !policy.isAuthorized && !policy.markedForDeletion)
+                    let unApprovedPolicies = res?.data.filter((policy: IPolicy) => !policy.isAuthorized && !policy.markedForDeletion && !policy.isDeleted)
                     setPolicies(unApprovedPolicies);
                     setLoading(false)
                 } else {
@@ -90,7 +90,7 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
 
     const handleClick = (e: any) => {
         e.stopPropagation();
-        toast.error('hii')
+      
     }
 
     const handleSearchByPolicyNameOrDept = async () => {
@@ -240,7 +240,8 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
 
     const handleDownloadPolicy = (e: any, pol: IPolicy) => {
         e.stopPropagation();
-        toast.success('Downloading file')
+        // toast.success('Downloading file')
+        window.open(pol.url, '_blank');
 
     }
 
@@ -335,8 +336,8 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
                                             <td>{policy.policyDepartment}</td>
                                             <td>{policy.authorizedBy}</td>
                                             <td>{moment(policy.uploadTime).format('MMM DD YYYY')}</td>
-                                            <td className="table-icon" onClick={(e) => handleClick(e)}>
-                                                <i className=" bi bi-three-dots"></i>
+                                            <td className="table-icon" >
+                                                <i className=" bi bi-three-dots" onClick={(e) => handleClick(e)}></i>
                                                 <div className="content ml-5" style={{ position: 'relative' }}>
                                                     {
                                                         policy.isAuthorized &&
@@ -350,7 +351,7 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
                                                                             Attesters List
                                                                         </div>
 
-                                                                        <i className="bi bi-chevron-right"></i>
+                                                                        {/* <i className="bi bi-chevron-right"></i> */}
                                                                     </span>
                                                                     <div className="container">
                                                                         <Card

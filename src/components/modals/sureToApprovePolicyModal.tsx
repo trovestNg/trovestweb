@@ -21,7 +21,7 @@ return (
                         <p className="text-primary mt-2" style={{ fontFamily: 'title' }}>Are you sure?</p>
                         <p className="text-center px-3">You are about to mark this policy as Approved.</p>
                         
-                        <Button onClick={action} disabled={loading} className="py-2 mt-3">
+                        <Button onClick={action} disabled={loading} className="py-2 mt-3"  style={{minWidth:'20em'}}>
                             {
                                 loading?<Spinner/> :'Yes, Please proceed'
                             }

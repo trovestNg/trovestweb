@@ -265,6 +265,11 @@ const ApproverApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
         navigate(`/admn/attesters-list/${pol.id}`);
     }
 
+    const handleViewPolicy = (e: any, pol: IPolicy) => {
+        e.stopPropagation();
+        navigate(`/admn/policy/${pol.id}`);
+    }
+
     const handleGetDefaultersList = (e: any, pol: IPolicy) => {
         e.stopPropagation();
         navigate(`/admn/defaulters-list/${pol.id}`);
@@ -272,8 +277,9 @@ const ApproverApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     const handleDownloadPolicy = (e: any, pol: IPolicy) => {
         e.stopPropagation();
-        toast.success('Downloading file')
-        
+        // toast.success('Downloading file')
+        window.open(pol.url, '_blank');
+
     }
 
     return (
@@ -357,14 +363,24 @@ const ApproverApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                 <img src={policy.isAuthorized ? successElipse : warningElipse} height={'10px'} />
                                                 {'  '}
                                                 <span >{policy.isAuthorized ? 'Approved' : 'Pending'}</span></td> */}
-                                            <td className="table-icon">
-                                                <i className=" bi bi-three-dots"></i>
+                                            <td className="table-icon" >
+                                                <i className=" bi bi-three-dots" onClick={(e)=>e.stopPropagation()}></i>
                                                 <div className="content ml-5" style={{ position: 'relative' }}>
                                                     {
                                                         policy.isAuthorized &&
                                                         <Card className="p-2  shadow-sm rounded border-0"
                                                             style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
                                                             <ListGroup>
+                                                            <ListGroupItem
+                                                                    
+                                                                >
+                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                        <div className="d-flex gap-2">
+                                                                            <i className="bi bi-eye"></i>
+                                                                            View Policy
+                                                                        </div>
+                                                                    </span>
+                                                                </ListGroupItem>
                                                                 <ListGroupItem className="multi-layer"
                                                                    onClick={(e) => handleGetAttestersList(e, policy)}
                                                                 >
@@ -391,17 +407,6 @@ const ApproverApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                                                         {/* <i className="bi bi-chevron-right"></i> */}
                                                                     </span>
                                                                     
-                                                                </ListGroupItem>
-
-                                                                <ListGroupItem
-                                                                    
-                                                                >
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-trash"></i>
-                                                                            View Policy
-                                                                        </div>
-                                                                    </span>
                                                                 </ListGroupItem>
 
                                                                 <ListGroupItem

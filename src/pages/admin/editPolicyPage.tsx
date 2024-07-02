@@ -6,13 +6,14 @@ import * as Yup from 'yup';
 import api from "../../config/api";
 import { getUserInfo } from "../../controllers/auth";
 import { toast } from "react-toastify";
-import { IPolicy } from "../../interfaces/policy";
+import { IPolicy, IPolicyEdit } from "../../interfaces/policy";
 import { IDept } from "../../interfaces/dept";
 import { useNavigate, useParams } from "react-router-dom";
 import SureToCreatePolicyModal from "../../components/modals/sureToCreatePolicyModal";
 import PolicyCreatedSuccessModal from "../../components/modals/policyCreatedSuccessModal";
 import style from './upload.module.css';
 import moment from "moment";
+import SureToEditPolicyModal from "../../components/modals/sureToEditPolicyModal";
 
 
 const EditPolicyPage: React.FC<any> = () => {
@@ -38,27 +39,26 @@ const EditPolicyPage: React.FC<any> = () => {
     const [createLoading, setCreateLoading] = useState(false)
 
     const [showSub, setShowSub] = useState(false);
-    const [fileName, setFileName] = useState('')
+    const [fileName, setFileName] = useState('');
+    const [updatedPolDoc,setUpddatedPolDoc] = useState();
 
-    const initialValues = {
+    const initialValues  = {
         ...policy,
         policyDocument: null,
-        reminderFrequency: '',
-        Subsidiary: ''
+        Subsidiary: null
     }
 
     const validationSchema = Yup.object({
-        policyName: Yup.string().required('Policy title is required'),
-        fileDescription: Yup.string().required('Policy description is required'),
-        DeadlineDate: Yup.string().required('Select deadline date'),
-        Frequency: Yup.string().required('Select reminder frequency'),
-        Authorizer: Yup.string().required('Selecte an authorizer'),
-        Department: Yup.array().of(Yup.string().required('Department is required')),
+        fileName: Yup.string().required('Policy title is required'),
         policyDocument: Yup.mixed()
             .required('A file is required')
             .test('fileType', 'Only PDF files are accepted', (value: any) => {
                 return value && value.type === 'application/pdf';
             }),
+        fileDescription: Yup.string().required('Policy description is required'),
+        deadlineDate: Yup.string().required('Select deadline date'),
+        reminderFrequency: Yup.string().required('Select reminder frequency'),
+        Subsidiary: Yup.array().of(Yup.string().required('Select at least one subsidiary')),
     });
 
 
@@ -190,6 +190,18 @@ const EditPolicyPage: React.FC<any> = () => {
 
     }
 
+    const handlePolicyEdit = (body:any)=>{
+        console.log({wantToSend:body});
+        setUpddatedPolDoc(body);
+        setShowCreatePrompt(true);
+        let updated = {
+
+        }
+
+        
+
+    }
+
     const getPolicy = async () => {
         let userInfo = await getUserInfo();
         if (userInfo) {
@@ -224,61 +236,14 @@ const EditPolicyPage: React.FC<any> = () => {
     return (
         <div>
             <div><Button variant="outline border border-2" onClick={() => navigate(-1)}>Go Back</Button></div>
-            {/* <Formik
-                    initialValues={initialVal}
-                    validationSchema={validationSchem}
-                    validateOnBlur
-                    onSubmit={(val) => createNewPolicy(val)
-                    }
-                >{
-                        ({ handleChange, handleSubmit, errors, touched, handleBlur }) => (
-                            <form onSubmit={handleSubmit} className="w-100 px-2 d-flex align-items-center flex-column">
-
-                              
-                                    
-
-                                    
-
-                                    
-
-                                   
-
-                                    <div className="p-2" style={{ marginTop: '5px', minWidth: '400px' }}>
-                                        <p className="p-0 m-0">Subsidiary</p>
-                                        <FormSelect
-                                            id="Department"
-                                            className="py-2"
-                                            onChange={handleChange}
-                                            onBlur={handleBlur}
-                                            style={{ marginTop: '5px', maxWidth: '400px' }}>
-                                            <option>Select</option>
-                                            {
-                                                subsidiaries.map((sub,index)=>
-                                                    <option key={index} value={sub.id}>{sub.name}</option>
-                                                )
-                                            }
-                                        </FormSelect>
-
-                                        <p
-                                            className="p-0 text-danger m-0 mt-1"
-                                            style={{ fontSize: '0.7em' }}>{touched.Department && errors['Department']}
-                                        </p>
-                                    </div>
-
-                                    
-                                
-                                
-
-                                
-                            </form>)
-                    }
-                </Formik> */}
+            
 
             <Formik
                 initialValues={initialValues}
                 enableReinitialize
-                // validationSchema={validationSchema}
-                onSubmit={createNewPolicy}
+                validationSchema={validationSchema}
+                validateOnBlur
+                onSubmit={handlePolicyEdit}
             >
                 {({ values, setFieldValue, handleReset, handleBlur, handleSubmit, handleChange, touched, errors }) => (
                     <Form onSubmit={handleSubmit} onReset={handleReset} className="d-flex flex-column align-items-center">
@@ -296,10 +261,10 @@ const EditPolicyPage: React.FC<any> = () => {
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                     placeholder="Enter Policy Title" />
-                                {/* <p
+                                <p
                                     className="p-0 text-danger m-0 mt-1"
-                                    style={{ fontSize: '0.7em' }}>{touched. && errors['policyName']}
-                                </p> */}
+                                    style={{ fontSize: '0.7em' }}>{touched && errors['fileName']}
+                                </p>
 
                             </div>
 
@@ -308,7 +273,7 @@ const EditPolicyPage: React.FC<any> = () => {
                                     <p>Upload File (PDF)</p>
                                     <label htmlFor="policyDocument" className={`p-4 w-100 text-center text-primary border-1 m-0 ${style.fileUploadLabel}`}>
                                         {<i className="bi bi-file-earmark-pdf"></i>}
-                                        {fileName == '' ? ' Click to Change file' : ' Click to Replace File'}
+                                        {fileName == '' ? ' Click to Upload file' : ' Click to Replace File'}
 
                                     </label>
                                     <input
@@ -317,21 +282,17 @@ const EditPolicyPage: React.FC<any> = () => {
                                         type="file"
                                         className={`p-2 ${style.fileInput}`}
                                         onChange={(event) => handleFileChange(event, setFieldValue)}
-
-                                    // {handleFileChange(event: any) => {
-                                    //     setFieldValue("policyDocument", event.currentTarget.files[0]);
-                                    // }}
                                     />
                                 </div>
-                                {/* <p
-                                    className="p-0 text-danger m-0 mt-1"
+                                <p
+                                    className="p-0  px-2 text-danger m-0 mt-1"
                                     style={{ fontSize: '0.7em' }}>{touched.policyDocument && errors['policyDocument']}
-                                </p> */}
+                                </p>
                             </div>
                             {fileName == '' ?
                                 <div className="px-3 d-flex mt-2">
                                     {values.fileName && <i className="bi bi-file-earmark-pdf text-danger"></i>}
-                                    <a href={values.url} className="px-1 text-primary">{values.fileName}</a>
+                                    <a  href={values.url} target="_blank" className="px-1 text-primary">{values.fileName}</a>
                                 </div> :
                                 <div className="mt-2 d-flex">
                                     {fileName &&
@@ -341,18 +302,6 @@ const EditPolicyPage: React.FC<any> = () => {
                                         </div>}
                                 </div>
                             }
-
-
-                            {/* {
-                                <div className="mt-1 text-primary d-flex">
-                                     {
-                                        
-                                        
-                                        && fileName
-                                     }
-                                </div>
-                               
-                            } */}
 
                             <div className="p-2" style={{ marginTop: '5px', minWidth: '400px' }}>
                                 <p className="p-0 m-0">Policy Description</p>
@@ -390,10 +339,10 @@ const EditPolicyPage: React.FC<any> = () => {
                                     id="deadlineDate"
                                     name="deadlineDate"
                                     type="date" style={{ marginTop: '5px', maxWidth: '400px' }} />
-                                {/* <p
+                                <p
                                     className="p-0 text-danger m-0 mt-1"
-                                    style={{ fontSize: '0.7em' }}>{touched.DeadlineDate && errors['DeadlineDate']}
-                                </p> */}
+                                    style={{ fontSize: '0.7em' }}>{touched.deadlineDate && errors['deadlineDate']}
+                                </p>
 
                             </div>
 
@@ -410,7 +359,7 @@ const EditPolicyPage: React.FC<any> = () => {
                                     <Card className="py-1 px-2">
                                         <div className="d-flex flex-column" role="group">
                                             {subSidiaries && subSidiaries.map((option) => (
-                                                <label key={option.id}>
+                                                <label key={option.id} className="d-flex gap-2">
                                                     <Field
                                                         type="checkbox"
                                                         name="Subsidiary"
@@ -423,10 +372,10 @@ const EditPolicyPage: React.FC<any> = () => {
                                     </Card>
                                 </Collapse>
 
-                                {/* <p
+                                <p
                                     className="p-0 text-danger m-0 mt-1"
-                                    style={{ fontSize: '0.7em' }}>{touched.Department && errors['Department']}
-                                </p> */}
+                                    style={{ fontSize: '0.7em' }}>{touched.Subsidiary && errors['Subsidiary']}
+                                </p>
                             </div>
 
 
@@ -442,7 +391,7 @@ const EditPolicyPage: React.FC<any> = () => {
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                     style={{ marginTop: '5px', maxWidth: '400px' }}>
-                                    <option>{values.reminderFrequency}</option>
+                                    <option value={values.reminderFrequency}>{values.reminderFrequency}</option>
                                     {
                                         remFreq.map((sub, index) =>
                                             <option key={index} value={sub.name}>{sub.name}</option>
@@ -450,10 +399,10 @@ const EditPolicyPage: React.FC<any> = () => {
                                     }
                                 </FormSelect>
 
-                                {/* <p
+                                <p
                                     className="p-0 text-danger m-0 mt-1"
-                                    style={{ fontSize: '0.7em' }}>{touched.Frequency && errors['Frequency']}
-                                </p> */}
+                                    style={{ fontSize: '0.7em' }}>{touched.reminderFrequency && errors['reminderFrequency']}
+                                </p>
                             </div>
 
                             <div className="p-2" style={{ marginTop: '5px', minWidth: '400px' }}>
@@ -473,19 +422,19 @@ const EditPolicyPage: React.FC<any> = () => {
                                     }
                                 </FormSelect>
 
-                                {/* <p
+                                <p
                                     className="p-0 text-danger m-0 mt-1"
-                                    style={{ fontSize: '0.7em' }}>{touched.Authorizer && errors['Authorizer']}
-                                </p> */}
+                                    style={{ fontSize: '0.7em' }}>{touched.authorizedBy && errors['authorizedBy']}
+                                </p>
                             </div>
 
 
 
                             <div className="mt-2">
-                                <Button onClick={() => setShowCreatePrompt(true)} variant="primary mt-3">Submit for Approval </Button>
+                                <Button type="submit" variant="primary mt-3">Submit for Approval </Button>
                             </div>
                         </div>
-                        <SureToCreatePolicyModal loading={createLoading} action={handleSubmit} off={() => setShowCreatePrompt(false)} show={showCreatePrompt} />
+                        <SureToEditPolicyModal loading={createLoading} action={()=>createNewPolicy(updatedPolDoc)} off={() => setShowCreatePrompt(false)} show={showCreatePrompt} />
                         <PolicyCreatedSuccessModal off={() => setpolicyCreatedSucc(false)} show={policyCreatedSucc} />
                     </Form>
                 )}

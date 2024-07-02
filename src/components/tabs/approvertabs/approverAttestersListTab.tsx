@@ -55,20 +55,20 @@ const ApproverAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
         // setLoading(true)
         try {
             let userInfo = await getUserInfo();
-
+            // console.log({ gotten: userInfo })({ gotten: userInfo })
             if (userInfo) {
                 const res = await api.get(`Attest/${id}`, `${userInfo.access_token}`);
-
+                // console.log({ gotten: userInfo })({listHere:res?.data})
                 if (res?.data) {
                     setPolicies(res?.data)
                     setPolicyName(res?.data[0]?.policyName)
                     setLoading(false)
                 } else {
-
-
+                   
+                    
                     setLoading(false)
                 }
-
+                // console.log({ gotten: userInfo })({ response: res })
             }
 
         } catch (error) {
@@ -187,14 +187,6 @@ const ApproverAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
         } else {
             return
         }
-    }
-
-
-
-    const handleDeptSelection = (val: string) => {
-        setSelectedDept(val);
-        setSortByDept(true)
-        setRefreshData(!refreshData)
     }
 
 

@@ -333,8 +333,8 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
                                             <td>{policy.policyDepartment}</td>
                                             <td>{policy.authorizedBy}</td>
                                             <td>{moment(policy.uploadTime).format('MMM DD YYYY')}</td>
-                                            <td className="table-icon" onClick={(e) => handleClick(e)}>
-                                                <i className=" bi bi-three-dots"></i>
+                                            <td className="table-icon">
+                                                <i className=" bi bi-three-dots" onClick={(e) => handleClick(e)}></i>
                                                 <div className="content ml-5" style={{ position: 'relative' }}>
                                                     {
                                                         policy.isAuthorized &&

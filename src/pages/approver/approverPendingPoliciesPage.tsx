@@ -62,7 +62,8 @@ const ApproverPendingPoliciesPage = () => {
 
     return (
         <div className="w-100">
-            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Pending Policies</h5>
+            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Pending Policies {userDBInfo?.totalPendingPolicy} </h5>
+            
             <p>Here, you'll find Pending policies. You can cancel, edit and delete before approval.</p>
             {/* <div className="d-flex gap-5">
                 {

@@ -60,13 +60,15 @@ const ApproverAllPoliciesPage = () => {
 
     return (
         <div className="w-100">
-            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>All Policies {userDBInfo?.totalUploadedPolicy} </h5>
+            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>All Policies {userDBInfo?.totalPolicyForAuthorizer} </h5>
             <p>Here, you'll find all policies you have uploaded.</p>
-            {/* <div className="d-flex gap-5">
+            {
+            /* <div className="d-flex gap-5">
                 {
                     dashCardInfo.map((info, index) => (<DashboardCard key={index} imgSrc={info.img} title={info.title} />))
                 }
-            </div> */}
+            </div> */
+            }
 
             <div className="w-100 mt-5">
                 <ApproverAllPoliciesTab handleCreatePolicy={ ()=>navigate('/admin/create-policy')}/>
