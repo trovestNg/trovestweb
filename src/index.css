@@ -3,6 +3,11 @@
   font-family: "MoolBoran";
   src: url("../src/Assets/Fonts/moolbor_0.ttf");
 }
+
+body{
+  
+}
+
 :root {
   --Montserrat: 'Montserrat', sans-serif;
   --MoolBoran: MoolBoran;
@@ -27,6 +32,8 @@
   --error: #FF0000;
   --cardshadow: 0 4px 8px 0 rgba(0,0,0,0.2);
   --footer-blue: #02042E;
+  
+
 }
 
 * {

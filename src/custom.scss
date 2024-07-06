@@ -1,11 +1,108 @@
 @import "../node_modules/bootstrap/scss/functions";
 @import "../node_modules/bootstrap/scss/mixins";
 
+@font-face {
+    font-family: 'primary-font';
+    src: url('./Assets/Fonts/Montserrat-Regular.ttf');
+}
+
+@font-face {
+    font-family: 'title-font-md';
+    src: url('./Assets/Fonts/Montserrat-Bold.ttf');
+}
+
+@font-face {
+    font-family: 'title-font';
+    src: url('./Assets/Fonts/Montserrat-ExtraBold.ttf');
+}
+
+@font-face {
+    font-family: 'header-font';
+    src: url('../src/Assets/Fonts/moolbor_0.ttf');
+}
+
+
+
 $primary : #01065B;
 $secondary : #7A0D0C;
 $light : #FAF1EC;
 $white : #fff;
 $info : #3F0E38;
+
+body{
+    overflow: hidden;
+    font-family: primary-font;
+}
+
+.table-icon .list-group-item {
+    cursor: pointer;
+  }
+  
+  .table-icon .list-group-item:hover {
+    background: #3F0E38;
+    color: #fff;
+  }
+  
+  .cardHover:hover {
+    transform: translateY(-10px);
+    box-shadow: 5px 2rem 3rem rgba(0, 0, 0, 0.212) !important;
+  }
+  
+  .table-icon .content {
+    display: none;
+  }
+  .table-icon:hover .content {
+    display: block;
+    right: 1rem;
+    z-index: 9999999 !important;
+  }
+  .content:hover {
+    display: block;
+  }
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0) inset !important;
+    background-clip: text !important;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
+  background: transparent;
+  border: none;
+  color: inherit;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+select {
+    border-right: 20px solid transparent !important; /* Adjust padding size */
+}
+
+.form-control:focus {
+    outline: none;
+}
+
+
 
 @import "../node_modules/bootstrap/scss/variables";
 

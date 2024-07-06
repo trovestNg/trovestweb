@@ -1,0 +1,16 @@
+.pic {
+	display: flex;
+	max-width: 140px;
+	max-height: 150px;
+	border-radius: 80px;
+	justify-content: center;
+	align-items: center;
+	
+}
+
+.navLink:hover {
+    background-color:#53214C;
+    transition: all ease-in-out 0.3s;
+
+}
+

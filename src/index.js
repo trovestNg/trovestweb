@@ -14,7 +14,7 @@ root.render(
 	<React.StrictMode>
 		<Provider store={store}>
 			<App />
-			<ToastContainer />
+			<ToastContainer limit={1}/>
 		</Provider>
 	</React.StrictMode>
 );

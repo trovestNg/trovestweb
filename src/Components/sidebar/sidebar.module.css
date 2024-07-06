@@ -1,0 +1,15 @@
+.pic {
+	display: flex;
+	width: 150px;
+	height: 150px;
+	border-radius: 75px;
+	justify-content: center;
+	align-items: center;
+}
+
+.navLink:hover {
+    background-color:#53214C;
+    transition: all ease-in-out 0.3s;
+
+}
+
