@@ -182,7 +182,7 @@ const SAdminDashboardViewPage = () => {
                             title="Your Admins"
                             tabClassName="border border-1 px-5 py-2 rounded-1 text-center d-flex w-100"
                         >
-                            <ApprovedAdmins data={admins ? admins : []} />
+                            <ApprovedAdmins/>
                             
 
 

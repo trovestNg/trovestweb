@@ -12,7 +12,7 @@ import ResetAgentPassword from "../../../Components/Modal/resetAgentPassword";
 import { useNavigate } from "react-router-dom";
 
 import api from "../../../app/controllers/endpoints/api";
-import {superAdminGetAdminAgents} from "../../../Sagas/Requests";
+import { superAdminGetAdminAgents } from "../../../Sagas/Requests";
 
 import {
     user_storage_token,
@@ -46,7 +46,7 @@ const SuperAdminViewAdminPage = () => {
 
     const [limit, setLimit] = useState(100);
     const [page, setPage] = useState(1);
-    
+
     const [artisans, setArtisans] = useState([{}]);
 
     const [totalCollections, setTotalCollections] = useState(0);
@@ -65,11 +65,11 @@ const SuperAdminViewAdminPage = () => {
     const [ploading, setPloading] = useState(false);
     const [refreshData, setRefreshData] = useState(false);
 
-    
+
 
     const handleAdminGetAgentArtisans = async () => {
         setloading(true)
-        let payload = { page : page, limit:limit, token:token, admin_id:id }
+        let payload = { page: page, limit: limit, token: token, admin_id: id }
         try {
             const res = await superAdminGetAdminAgents(payload)
             console.log(res)
@@ -80,7 +80,7 @@ const SuperAdminViewAdminPage = () => {
                 setDeposit(res?.data?.data?.total_remmitance)
                 setPayout(res?.data?.data?.total_payout)
                 setloading(false)
-            } else{
+            } else {
                 toast.error('Network error!')
             }
 
@@ -96,6 +96,12 @@ const SuperAdminViewAdminPage = () => {
         setSearchAgent(true);
         setRefreshData(!refreshData);
 
+    }
+
+    const handleClear = () => {
+        setSearchAgent(false);
+        setUserInput('');
+        setRefreshData(!refreshData)
     }
 
     const searchAgentArtisanByName = async () => {
@@ -142,15 +148,15 @@ const SuperAdminViewAdminPage = () => {
 
     return (
         <div className="w-100 py-1 px-0">
-           
+
             <div className="d-flex w-100 justify-content-between px-5">
                 <div className="">
                     {
                         loading ? <Spinner size="sm" /> :
                             <AdminProfileCard
-                            onClickEdit={() => setAdminEditAgentModal(true)} 
-                            onClickReset={()=>setResetAgentPasswordModal(true)}
-                            title={'Total Revenue'} value={totalCollections} info={agentData} tColor={'#01065B'} icon={"bi bi-bank2"} width={'40em'} height={'17em'} />
+                                onClickEdit={() => setAdminEditAgentModal(true)}
+                                onClickReset={() => setResetAgentPasswordModal(true)}
+                                title={'Total Revenue'} value={totalCollections} info={agentData} tColor={'#01065B'} icon={"bi bi-bank2"} width={'40em'} height={'17em'} />
                     }
 
 
@@ -179,42 +185,32 @@ const SuperAdminViewAdminPage = () => {
                                 </tr>
                             </table>
                     }
-
-
-
-
                 </div>
             </div>
-
-            {/* <div className="d-flex gap-3 mt-4 justify-content-center">
-                {
-                    loading ? <Spinner /> :
-                        <>
-                            <PrimaryCard title={'Total Revenue'} value={totalCollections} tColor={'#01065B'} icon={"bi bi-bank2"} width={'18em'} height={'7.7em'} />
-                            <PrimaryCard title={'Your Deposits'} value={totalDeposits} tColor={'#5BB971'} icon={"bi bi-arrow-down-left"} width={'18em'} height={'7.7em'} />
-                            <PrimaryCard title={'Your Payouts'} value={totalPayouts} tColor={'#F30D0D'} icon={"bi bi-arrow-up-right"} width={'18em'} height={'7.7em'} />
-                        </>
-                }
-
-            </div> */}
             <div className="w-100 mt-5">
                 <div className="d-flex align-items-center w-100">
 
-                    <h4 className="px-2 w-75" style={{ fontFamily: 'title-font' }}>Admin Agents</h4>
+                    <h4 className="px-2 w-75 text-primary" style={{ fontFamily: 'title-font' }}>Admin Agents</h4>
 
-                    <div className="w-50 text-end justify-content-end">
-                        <form onSubmit={(e) => handleAgentSearch(e)} className="d-flex justify-content-end w-100 flex-row m-0 p-0" >
-                            <FormControl onChange={(e) => setUserInput(e.currentTarget.value)} placeholder="Search agent" className="rounded-1" style={{ maxWidth: '15em' }} />
+                    <div className="d-flex align-items-center gap-2" style={{ position: 'relative' }}>
+                        <FormControl
+                            onChange={(e) => setUserInput(e.currentTarget.value)}
+                            placeholder="Search name.."
+                            value={userInput}
+                            className="py-2" style={{ minWidth: '350px' }} />
+                        <i
+                            className="bi bi-x-lg"
+                            onClick={handleClear}
+                            style={{ marginLeft: '310px', display: userInput == '' ? 'none' : 'flex', cursor: 'pointer', float: 'right', position: 'absolute' }}></i>
 
-                            <Button
-                                disabled
-                                type="submit" variant="grey border rounded-1" style={{ maxWidth: '3em' }}>
-                                {
-                                    sloading ? <Spinner size="sm" /> : <i className="bi bi-search"></i>
-                                }
-                            </Button>
-                            {/* <PrimaryInput placeHolder={'Search agent'} icon2={"bi bi-search"} maxWidth={'15em'} /> */}
-                        </form>
+                        <Button
+                            disabled={userInput == '' || sloading}
+                            onClick={(e) => handleAgentSearch(e)}
+                            variant="primary" style={{ minWidth: '20px', marginRight: '-5px', minHeight: '2.4em' }}>
+                            {
+                                sloading ? <Spinner size="sm" /> : <i className="bi bi-search"></i>
+                            }
+                        </Button>
                     </div>
 
                 </div>
@@ -233,7 +229,7 @@ const SuperAdminViewAdminPage = () => {
                         {
                             artisans.length <= 0 ?
                                 <tr>
-                                    <td colSpan={6}>
+                                    <td colSpan={7}>
                                         <p className="font-weight-bold w-100 text-center" style={{ fontFamily: 'title-font' }}>No data available</p>
                                     </td>
                                 </tr> :
@@ -246,7 +242,7 @@ const SuperAdminViewAdminPage = () => {
                                 </tr> :
                                     artisans.map((agent, index) => (
                                         <tr
-                                            // onClick={() => navigate(`/admin/artisan/${agent?._id}`)}
+                                            onClick={() => navigate(`superadmin/admin/${agent?._id}`)}
                                             key={index} style={{ cursor: 'pointer' }}>
                                             <th scope="row">{index + 1}</th>
                                             <td className="text-capitalize">{`${agent?.first_name} ${agent?.last_name}`}</td>
@@ -313,14 +309,14 @@ const SuperAdminViewAdminPage = () => {
                 // validationSchema={validationSchema}
                 // validateOnBlur
                 onReset={() => resetEditForm()}
-                onSubmit={(val, actions) => console.log({iamHere:val})
+                onSubmit={(val, actions) => console.log({ iamHere: val })
                     // createAdminAccount(val, actions)
                 }
             >
                 {({
-                   
+
                     handleReset
-                    }) => (
+                }) => (
                     <>
                         <Modal show={adminEditAgentModal} centered size='lg' style={{ fontFamily: 'primary-font' }}>
                             <Modal.Header className="bg-info text-light">
@@ -346,7 +342,7 @@ const SuperAdminViewAdminPage = () => {
                                     reload={() => setRefreshData(!refreshData)}
                                     off={
                                         handleReset
-                                        
+
                                     } />
                             </ModalBody>
 
@@ -357,15 +353,15 @@ const SuperAdminViewAdminPage = () => {
 
 
             {< ResetAgentPassword
-                    info={agentData}
-                    on={resetAgentPasswordModal}
-                    success={adminCreateAgentSuccessModal}
-                    offSuccess={offSuccessModal}
-                    onSuccess={() => setAdminCreateAgentSuccessModal(true)}
-                    reload={()=>setRefreshData(!refreshData)}
-                    off={() => {
-                        setResetAgentPasswordModal(false);
-                    }} /> 
+                info={agentData}
+                on={resetAgentPasswordModal}
+                success={adminCreateAgentSuccessModal}
+                offSuccess={offSuccessModal}
+                onSuccess={() => setAdminCreateAgentSuccessModal(true)}
+                reload={() => setRefreshData(!refreshData)}
+                off={() => {
+                    setResetAgentPasswordModal(false);
+                }} />
             }
         </div>
     )

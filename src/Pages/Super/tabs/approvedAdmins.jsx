@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import moment from "moment";
-import { Spinner, Card, ListGroup, ListGroupItem,Button,FormControl } from "react-bootstrap";
+import { Spinner, Card, ListGroup, ListGroupItem, Button, FormControl } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { convertToThousand } from "../../../config";
 import { getAdminAgents } from "../../../Sagas/Requests";
@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { getSuperAdminDashboard } from "../../../Sagas/Requests";
 import api from "../../../app/controllers/endpoints/api";
 
-const ApprovedAdmins = ({ data, reloadComp }) => {
+const ApprovedAdmins = () => {
     const token = localStorage.getItem('userToken') || '';
     const [agents, setAgents] = useState([]);
     const [loading, setloading] = useState(false);
@@ -22,27 +22,9 @@ const ApprovedAdmins = ({ data, reloadComp }) => {
 
     const navigate = useNavigate();
 
-    // const getApprovedAgents = async () => {
-    //     try {
-    //         setloading(true)
-    //         const payload = { page: page, limit: limit, token: token };
-    //         const res = await getAdminAgents(payload);
-    //         // console.log({res})
-    //         if (res?.data?.success) {
-    //             setAgents(res?.data?.data?.agents?.docs);
-    //             setloading(false)
-    //         } else {
-    //             setloading(false);
-    //             toast.error('Network error!')
-    //         }
-
-    //     } catch (error) {
-
-    //     }
-    // }
 
     const handleAgentSearch = (e) => {
-        
+
         e.preventDefault()
         setSearchAgent(true);
         setRefreshData(!refreshData);
@@ -125,28 +107,34 @@ const ApprovedAdmins = ({ data, reloadComp }) => {
     return (
         <div className="w-100">
 
-                <div className="d-flex justify-content-end align-items-center gap-2" style={{ position: 'relative' }}>
-                        <FormControl
-                            onChange={(e) => setUserInput(e.currentTarget.value)} 
-                            placeholder="Search by name"
-                            value={userInput}
-                            className="py-2" style={{ maxWidth: '350px' }} />
-                        <i
-                            className="bi bi-x-lg"
-                            onClick={handleClear}
-                            style={{ marginLeft: '310px', display: userInput == '' ? 'none' : 'flex', cursor: 'pointer', float: 'right', position: 'absolute' }}></i>
+            <div className="d-flex align-items-center w-100">
 
-                        <Button
-                            disabled={userInput == '' || sloading}
-                            onClick={(e) => handleAgentSearch(e)}
-                            variant="primary" style={{ maxWidth: '50px', marginRight: '-5px', minHeight:'2.4em' }}>
-                                {
-                                    sloading?<Spinner size="sm"/>:<i className="bi bi-search"></i>
-                                }
-                            </Button>
-                    </div>
+                <h4 className="px-2 w-75 text-info" style={{ fontFamily: 'title-font' }}></h4>
 
-          
+                <div className="d-flex align-items-center gap-2" style={{ position: 'relative' }}>
+                    <FormControl
+                        onChange={(e) => setUserInput(e.currentTarget.value)}
+                        placeholder="Search name.."
+                        value={userInput}
+                        className="py-2" style={{ minWidth: '350px' }} />
+                    <i
+                        className="bi bi-x-lg"
+                        onClick={handleClear}
+                        style={{ marginLeft: '310px', display: userInput == '' ? 'none' : 'flex', cursor: 'pointer', float: 'right', position: 'absolute' }}></i>
+
+                    <Button
+                        disabled={userInput == '' || sloading}
+                        onClick={(e) => handleAgentSearch(e)}
+                        variant="primary" style={{ minWidth: '20px', marginRight: '-5px', minHeight: '2.4em' }}>
+                        {
+                            sloading ? <Spinner size="sm" /> : <i className="bi bi-search"></i>
+                        }
+                    </Button>
+                </div>
+
+            </div>
+
+
             <table className="table table-striped mt-2">
                 <thead>
                     <tr className="bg-primary   text-light">
@@ -167,13 +155,13 @@ const ApprovedAdmins = ({ data, reloadComp }) => {
                             </td>
 
                         </tr> :
-                             admins && admins.length <= 0 ?
+                            admins && admins.length <= 0 ?
                                 <tr>
                                     <td colSpan={6}>
                                         <p className="font-weight-bold w-100 text-center" style={{ fontFamily: 'title-font' }}>No Data Available</p>
                                     </td>
                                 </tr> :
-                                 admins.map((agent, index) => (
+                                admins.map((agent, index) => (
                                     <tr
                                         onClick={() => navigate(`/superadmin/admin/${agent._id}`)}
                                         key={index} style={{ cursor: 'pointer' }}>

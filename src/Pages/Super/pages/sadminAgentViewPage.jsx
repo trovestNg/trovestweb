@@ -24,7 +24,7 @@ import { useParams } from "react-router-dom";
 import moment from "moment";
 import { Formik } from "formik";
 
-const AdminAgentViewPage = () => {
+const SAdminAgentViewPage = () => {
     const { id } = useParams();
     const token = localStorage.getItem('userToken') || '';
     const navigate = useNavigate();
@@ -105,6 +105,12 @@ const AdminAgentViewPage = () => {
         setSearchAgent(true);
         setRefreshData(!refreshData);
 
+    }
+
+    const handleClear = () => {
+        setSearchAgent(false);
+        setUserInput('');
+        setRefreshData(!refreshData)
     }
 
     const searchAgentArtisanByName = async () => {
@@ -193,18 +199,6 @@ const AdminAgentViewPage = () => {
 
                 </div>
             </div>
-
-            {/* <div className="d-flex gap-3 mt-4 justify-content-center">
-                {
-                    loading ? <Spinner /> :
-                        <>
-                            <PrimaryCard title={'Total Revenue'} value={totalCollections} tColor={'#01065B'} icon={"bi bi-bank2"} width={'18em'} height={'7.7em'} />
-                            <PrimaryCard title={'Your Deposits'} value={totalDeposits} tColor={'#5BB971'} icon={"bi bi-arrow-down-left"} width={'18em'} height={'7.7em'} />
-                            <PrimaryCard title={'Your Payouts'} value={totalPayouts} tColor={'#F30D0D'} icon={"bi bi-arrow-up-right"} width={'18em'} height={'7.7em'} />
-                        </>
-                }
-
-            </div> */}
             <div className="w-100 mt-5">
                 <div className="d-flex align-items-center w-100">
 
@@ -378,4 +372,4 @@ const AdminAgentViewPage = () => {
     )
 }
 
-export default AdminAgentViewPage;
+export default SAdminAgentViewPage;

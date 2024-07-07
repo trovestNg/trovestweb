@@ -4,6 +4,7 @@ import Home from "../Components/Home/Index";
 import SAdminContainer from "../Pages/Super/sAdminContainer";
 import SAdminDashboardViewPage from "../Pages/Super/pages/sAdminDashboardViewPage";
 import SuperAdminViewAdminPage from "../Pages/Super/pages/sAdminViewAdminPage";
+import SAdminAgentViewPage from "../Pages/Super/pages/sadminAgentViewPage";
 
 import AdminContainer from "../Pages/Admin/adminContainer";
 import AdminDashboardViewPage from "../Pages/Admin/pages/adminDashboardViewPage";
@@ -201,6 +202,7 @@ export default function App() {
           <Route index element={<SAdminDashboardViewPage />} />
           <Route path="admin/transactions/:id" element={<SuperAdminViewAdminTransactionRecordPage/>} />
           <Route path="admin/:id" element={<SuperAdminViewAdminPage/>} />
+          <Route path="agent/:id" element={<SAdminAgentViewPage/>} />
         </Route>
 
         <Route path="admin" element={<AdminContainer />}>
@@ -214,9 +216,6 @@ export default function App() {
           <Route path="profile" element={<AdminProfileViewPage />} />
           <Route path="settings" element={<AdminSettingsViewPage/>} />
         </Route>
-
-        
-
         <Route path="*" element={<ErrorPage />} />
       </Routes>
     </Router>

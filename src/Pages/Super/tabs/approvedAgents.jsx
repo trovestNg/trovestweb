@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { convertToThousand } from "../../../config";
 import { getAdminAgents } from "../../../Sagas/Requests";
 import { toast } from "react-toastify";
+import { getSuperAdminDashboard } from "../../../Sagas/Requests";
+import api from "../../../app/controllers/endpoints/api";
 
 const ApprovedAgents = ({ data, reloadComp }) => {
     const token = localStorage.getItem('userToken') || '';
@@ -14,61 +16,128 @@ const ApprovedAgents = ({ data, reloadComp }) => {
     const [limit, setLimit] = useState(100);
     const [userInput, setUserInput] = useState('');
     const [sloading, setSloading] = useState(false);
+    const [searchAgent, setSearchAgent] = useState(false);
+    const [refreshData, setRefreshData] = useState(false);
+    const [admins, setAdmins] = useState([]);
 
     const navigate = useNavigate();
 
-    // const getApprovedAgents = async () => {
-    //     try {
-    //         setloading(true)
-    //         const payload = { page: page, limit: limit, token: token };
-    //         const res = await getAdminAgents(payload);
-    //         // console.log({res})
-    //         if (res?.data?.success) {
-    //             setAgents(res?.data?.data?.agents?.docs);
-    //             setloading(false)
-    //         } else {
-    //             setloading(false);
-    //             toast.error('Network error!')
-    //         }
-
-    //     } catch (error) {
-
-    //     }
-    // }
 
     const handleAgentSearch = (e) => {
-        // setSloading(true);
-        // e.preventDefault()
-        // setSearchAgent(true);
-        // setRefreshData(!refreshData);
+        
+        e.preventDefault()
+        setSearchAgent(true);
+        setRefreshData(!refreshData);
 
     }
 
-    // useEffect(() => {
-    //     getApprovedAgents();
-    // }, [reloadComp])
+    const handleGetSuperAdminDash = async () => {
+        try {
+            setloading(true)
+            const payload = { page: page, limit: limit, token: token };
+            const res = await getSuperAdminDashboard(payload);
+            console.log(res)
+            // console.log({res})
+            if (res?.data?.success) {
+
+                // setAdmins(res?.data?.data?.superadmin?.admin.reverse());
+                setAgents(res?.data?.data?.superadmin?.agents);
+                // setTotalCollections(res?.data?.data?.total_collections);
+                // setTotalDeposits(res?.data?.data?.total_remmitance);
+                // setTotalPayouts(res?.data?.data?.total_payout);
+                setloading(false)
+            }
+            else {
+                setloading(false);
+            }
+
+        } catch (error) {
+            console.log(error);
+            // toast.error('Network error!')
+        }
+    }
+
+    const searchAgentByName = async () => {
+        try {
+            setloading(true)
+            const payload = { page: page, limit: limit, token: token };
+            const res = await getSuperAdminDashboard(payload);
+            console.log(res)
+            // console.log({res})
+            if (res?.data?.success) {
+                let filtered = res?.data?.data?.superadmin?.agents.filter((policy) =>
+                    policy.first_name.toLowerCase().includes(userInput.toLowerCase())
+                );
+
+                setAgents(filtered.reverse());
+                // setTotalCollections(res?.data?.data?.total_collections);
+                // setTotalDeposits(res?.data?.data?.total_remmitance);
+                // setTotalPayouts(res?.data?.data?.total_payout);
+                setloading(false)
+            }
+            else {
+                setloading(false);
+            }
+
+        } catch (error) {
+            console.log(error);
+            // toast.error('Network error!')
+        }
+    }
+
+    const handleClear = () => {
+        setSearchAgent(false);
+        setUserInput('');
+        setRefreshData(!refreshData)
+    }
+
+    const fetchData = () => {
+        if (searchAgent) {
+            searchAgentByName();
+        } else {
+            handleGetSuperAdminDash();
+        }
+
+    }
+
+    useEffect(() => {
+        fetchData()
+    }, [refreshData])
 
     return (
         <div className="w-100">
-            
 
-                
 
-                <div className="w-100 text-end justify-content-end">
-                    <form onSubmit={(e) => handleAgentSearch(e)} className="d-flex justify-content-end w-100 flex-row m-0 p-0" >
-                        <FormControl onChange={(e) => setUserInput(e.currentTarget.value)} placeholder="Search admin" className="rounded-1" style={{ maxWidth: '15em' }} />
 
-                        <Button
-                            type="submit" variant="grey border rounded-1" style={{ maxWidth: '3em' }}>
-                            {
-                                sloading ? <Spinner size="sm" /> : <i className="bi bi-search"></i>
-                            }
-                        </Button>
-                        {/* <PrimaryInput placeHolder={'Search agent'} icon2={"bi bi-search"} maxWidth={'15em'} /> */}
-                    </form>
+
+            <div className="d-flex align-items-center w-100">
+
+                <h4 className="px-2 w-75 text-info" style={{ fontFamily: 'title-font' }}></h4>
+
+                <div className="d-flex align-items-center gap-2" style={{ position: 'relative' }}>
+                    <FormControl
+                        onChange={(e) => setUserInput(e.currentTarget.value)}
+                        placeholder="Search name.."
+                        value={userInput}
+                        className="py-2" style={{ minWidth: '350px' }} />
+                    <i
+                        className="bi bi-x-lg"
+                        onClick={handleClear}
+                        style={{ marginLeft: '310px', display: userInput == '' ? 'none' : 'flex', cursor: 'pointer', float: 'right', position: 'absolute' }}></i>
+
+                    <Button
+                        disabled={userInput == '' || sloading}
+                        onClick={(e) => handleAgentSearch(e)}
+                        variant="primary" style={{ minWidth: '20px', marginRight: '-5px', minHeight: '2.4em' }}>
+                        {
+                            sloading ? <Spinner size="sm" /> : <i className="bi bi-search"></i>
+                        }
+                    </Button>
                 </div>
 
-          
+            </div>
+
+
             <table className="table table-striped mt-2">
                 <thead>
                     <tr className="bg-primary   text-light">
@@ -88,13 +157,13 @@ const ApprovedAgents = ({ data, reloadComp }) => {
                             </td>
 
                         </tr> :
-                            data.length <= 0 ?
+                            agents.length <= 0 ?
                                 <tr>
                                     <td colSpan={6}>
                                         <p className="font-weight-bold w-100 text-center" style={{ fontFamily: 'title-font' }}>No Data Available</p>
                                     </td>
                                 </tr> :
-                                data.map((agent, index) => (
+                                agents.map((agent, index) => (
                                     <tr
                                         onClick={() => navigate(`/admin/agent/${agent._id}`)}
                                         key={index} style={{ cursor: 'pointer' }}>

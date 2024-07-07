@@ -21,7 +21,7 @@ import Approved from "../tabs/approved";
 import PendingAgents from "../tabs/pending";
 import DisabledAgents from "../tabs/disabled";
 
-const AdminAgentsViewPage = () => {
+const SAdminAgentsViewPage = () => {
     const token = localStorage.getItem('userToken') || '';
     const userInfo = localStorage.getItem(user_storage_name);
     const userData = JSON.parse(userInfo);
@@ -200,4 +200,4 @@ const AdminAgentsViewPage = () => {
     )
 }
 
-export default AdminAgentsViewPage;
+export default SAdminAgentsViewPage;
