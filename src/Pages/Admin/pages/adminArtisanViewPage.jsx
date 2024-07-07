@@ -30,6 +30,7 @@ const AdminArtisanViewPage = () => {
     const [amountToDebit, setAmountToDebit] = useState(0);
     const [debitLoading, setDebitLoading] = useState(false);
     const [debitConfModal, setDebitConfModal] = useState(false);
+    const [debitSucModal, setDebitSucModal] = useState(false);
     
     const [editArtisanModal, setEditArtisanModal] = useState(false);
 
@@ -120,8 +121,8 @@ const AdminArtisanViewPage = () => {
         const res = await debitClient(payload)
         // console.log(res);
         if(res?.data?.success){
-        //   setDebitConfModal(false);
-        //   setDebitSucModal(true);
+          setDebitConfModal(false);
+          setDebitSucModal(true);
           setDebitLoading(false);
           setRefreshData(!refreshData)
         }
@@ -446,6 +447,7 @@ const AdminArtisanViewPage = () => {
                              onClick={() =>  handleDebit()}
                             className="ml-3"
                             variant="info"
+                            disabled={debitLoading}
                             style={{ maxWidth: "7em" }}
                         >
                             {debitLoading? <Spinner color="primary"/> : 'Proceed'}
@@ -466,7 +468,7 @@ const AdminArtisanViewPage = () => {
             </Modal>
 
             <Modal show={false} centered>
-                <Modal.Header className="bg-primary text-light">
+                <Modal.Header className="bg-info text-light">
                     <Col>Low balance</Col>
                     <Col
                         className="d-flex justify-content-end"
@@ -482,15 +484,15 @@ const AdminArtisanViewPage = () => {
                 </Modal.Body>
             </Modal>
 
-            <Modal show={false} centered>
-                <Modal.Header className="bg-primary text-light">
+            <Modal show={debitSucModal} centered>
+                <Modal.Header className="bg-info text-light">
                     <Col>Debit Success</Col>
                     <Col
                         className="d-flex justify-content-end"
-                        // onClick={() => {
-                        //   setDebitSucModal(false)
+                        onClick={() => {
+                          setDebitSucModal(false)
                         //   setRefreshData(!refreshData);
-                        // }}
+                        }}
                         style={{ cursor: "pointer" }}
                     >
                         X

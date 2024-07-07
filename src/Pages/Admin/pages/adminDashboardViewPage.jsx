@@ -87,13 +87,17 @@ const AdminDashboardViewPage = () => {
     //         setloading(false)
     //     }
     // }
+    const handleClear = () => {
+        setSearchAgent(false);
+        setUserInput('');
+        setRefreshData(!refreshData)
+    }
 
     const handleAgentSearch = (e) => {
-        setSloading(true);
         e.preventDefault()
+        setSloading(true);
         setSearchAgent(true);
         setRefreshData(!refreshData);
-
     }
 
     const searchAgentByName = async () => {
@@ -180,18 +184,25 @@ const AdminDashboardViewPage = () => {
 
                     <h4 className="px-2 w-75 text-info" style={{ fontFamily: 'title-font' }}>Your Agents</h4>
 
-                    <div className="w-50 text-end justify-content-end">
-                        <form onSubmit={(e) => handleAgentSearch(e)} className="d-flex justify-content-end w-100 flex-row m-0 p-0" >
-                            <FormControl onChange={(e) => setUserInput(e.currentTarget.value)} placeholder="Search agent" className="rounded-1" style={{ maxWidth: '15em' }} />
+                    <div className="d-flex align-items-center gap-2" style={{ position: 'relative' }}>
+                        <FormControl
+                            onChange={(e) => setUserInput(e.currentTarget.value)} 
+                            placeholder="Search agent"
+                            value={userInput}
+                            className="py-2" style={{ minWidth: '350px' }} />
+                        <i
+                            className="bi bi-x-lg"
+                            onClick={handleClear}
+                            style={{ marginLeft: '310px', display: userInput == '' ? 'none' : 'flex', cursor: 'pointer', float: 'right', position: 'absolute' }}></i>
 
-                            <Button
-                                type="submit" variant="grey border rounded-1" style={{ maxWidth: '3em' }}>
+                        <Button
+                            disabled={userInput == '' || sloading}
+                            onClick={(e) => handleAgentSearch(e)}
+                            variant="primary" style={{ minWidth: '20px', marginRight: '-5px', minHeight:'2.4em' }}>
                                 {
                                     sloading?<Spinner size="sm"/>:<i className="bi bi-search"></i>
                                 }
                             </Button>
-                            {/* <PrimaryInput placeHolder={'Search agent'} icon2={"bi bi-search"} maxWidth={'15em'} /> */}
-                        </form>
                     </div>
 
                 </div>

@@ -37,7 +37,7 @@ const AdminAgentViewPage = () => {
     const [payout, setPayout] = useState('0');
 
     const [userInput, setUserInput] = useState('');
-    const [searchLoading, setSearchLoading] = useState(false);
+    const [bySearch, setBySearch] = useState(false);
 
 
     const [searchAgent, setSearchAgent] = useState(false);
@@ -100,25 +100,27 @@ const AdminAgentViewPage = () => {
     }
 
     const handleAgentSearch = (e) => {
-        setSloading(true);
         e.preventDefault()
+        setSloading(true);
         setSearchAgent(true);
         setRefreshData(!refreshData);
-
     }
 
     const searchAgentArtisanByName = async () => {
         try {
-            const res = await api.get(`/admin/admin-search-agent?name=${userInput}&page=${page}&limit=50`, token);
-            console.log(res);
-
+            const res = await adminGetAgentArtisans(token, id, 1, 10)
+            
+            // console.log({seeMe:res})
+            
             if (res?.data?.success) {
-                setloading(false)
-                setArtisans(res?.data?.data?.docs);
                 setSloading(false)
-            } else {
-                toast.error('Network error');
-                setSloading(false)
+                let filtered = res?.data?.data?.artisan.filter((policy) =>
+                    policy.full_name.toLowerCase().includes(userInput.toLowerCase())
+                );
+                setArtisans(filtered);
+            }
+            else{
+                toast.error('Error searching')
             }
 
         } catch (error) {
@@ -147,6 +149,12 @@ const AdminAgentViewPage = () => {
 
     const resetEditForm = () => {
         setAdminEditAgentModal(false);
+    }
+
+    const handleClear = () => {
+        setSearchAgent(false);
+        setUserInput('');
+        setRefreshData(!refreshData)
     }
 
     return (
@@ -179,9 +187,11 @@ const AdminAgentViewPage = () => {
                                     <td><InfoCard width={'21em'} value={artisans.length} title={'Total Artisans'} height={'8.5em'} /></td>
                                 </tr>
                                 <tr className="d-flex mt-4" style={{ fontSize: '1.2em' }}
-                                    onClick={() => navigate(`/admin/agent/transactions/${id}`)}
+                                    
                                 >
-                                    <td className="text-end text-info py-2 d-flex gap-1" style={{ cursor: 'pointer' }}>
+                                    <td className="text-end text-info py-2 d-flex gap-1"
+                                    onClick={() => navigate(`/admin/agent/transactions/${id}`)}
+                                     style={{ cursor: 'pointer' }}>
                                         <i className="bi bi-receipt"></i>
                                         View Transaction History
                                     </td>
@@ -199,19 +209,27 @@ const AdminAgentViewPage = () => {
 
                     <h4 className="px-2 w-75 text-info" style={{ fontFamily: 'title-font' }}>Agent's Custormers</h4>
 
-                    <div className="w-50 text-end justify-content-end">
-                        <form onSubmit={(e) => handleAgentSearch(e)} className="d-flex justify-content-end w-100 flex-row m-0 p-0" >
-                            <FormControl onChange={(e) => setUserInput(e.currentTarget.value)} placeholder="Search customer" className="rounded-1" style={{ maxWidth: '15em' }} />
+                    
 
-                            <Button
-                                disabled
-                                type="submit" variant="grey border rounded-1" style={{ maxWidth: '3em' }}>
+                    <div className="d-flex align-items-center gap-2" style={{ position: 'relative' }}>
+                        <FormControl
+                            onChange={(e) => setUserInput(e.currentTarget.value)}
+                            placeholder="Search customer..." 
+                            value={userInput}
+                            className="py-2" style={{ minWidth: '350px' }} />
+                        <i
+                            className="bi bi-x-lg"
+                            onClick={handleClear}
+                            style={{ marginLeft: '310px', display: userInput == '' ? 'none' : 'flex', cursor: 'pointer', float: 'right', position: 'absolute' }}></i>
+
+                        <Button
+                            disabled={userInput == '' || sloading}
+                            onClick={(e) => handleAgentSearch(e)}
+                            variant="primary" style={{ minWidth: '20px', marginRight: '-5px', minHeight:'2.4em' }}>
                                 {
-                                    sloading ? <Spinner size="sm" /> : <i className="bi bi-search"></i>
+                                    sloading?<Spinner size="sm"/>:<i className="bi bi-search"></i>
                                 }
                             </Button>
-                            {/* <PrimaryInput placeHolder={'Search agent'} icon2={"bi bi-search"} maxWidth={'15em'} /> */}
-                        </form>
                     </div>
 
                 </div>

@@ -62,7 +62,7 @@ export default function ACustomerView() {
   const [clientData, setClientData] = useState();
   const [amountToDebit, setAmountToDebit] = useState(0);
 
-  const [updateModal, setUpdateModate] = useState(false)
+  const [updateModal, setUpdateModate] = useState(false);
 
   const [adminCreateSuccessModal, setAdminCreateSuccessModal] = useState(false);
   const [finconCreateModal, setFinconCreateModal] = useState(false);
@@ -110,35 +110,30 @@ export default function ACustomerView() {
     }
   };
 
-  const postDebit =()=>{
+  const postDebit = () => {
     setDebit(true);
-    if(debit){
-      handleClientDebit()
-    }
-    else return;
-   
-  }
+    if (debit) {
+      handleClientDebit();
+    } else return;
+  };
 
-  const handleClientDebit = async ()=>{
-    setDebitLoading(true)
-    const payload = {data : amountToDebit, token :token, userId : client_id }
-    
-    const res = await debitClient(payload)
-    // console.log(res);
-    if(res?.data?.success){
-      setConfDebitModal(false);
+  const handleClientDebit = async () => {
+    toast.error('debiting')
+    setDebitLoading(true);
+    const payload = { data: amountToDebit, token: token, userId: client_id };
+
+    const res = await debitClient(payload);
+    console.log({resultHere:res});
+    if (res?.data?.success) {
+      setConfDebitModal(false)
       setDebitSucModal(true);
       setDebitLoading(false);
     }
+  };
 
-  }
-
-  const handleUpdateCLientInfo = ()=>{
-
-  }
+  const handleUpdateCLientInfo = () => {};
   const calculateBalance = () => {
     const balance = calculateTotalSavings(thrifts) - withdrawn;
-    
 
     return balance;
   };
@@ -147,19 +142,18 @@ export default function ACustomerView() {
   //   console.log('Confirmed')
   // }
 
-  const handleDebit = ()=>{
+  const handleDebit = () => {
     // console.log(clientData?.total_balance);
     const bal = parseInt(clientData?.total_balance);
-    if(amountToDebit > bal ){
-    setDebitModal(false);
-    setLessSavingModal(true);
+    if (amountToDebit > bal) {
+      setDebitModal(false);
+      setLessSavingModal(true);
     } else {
       setDebitModal(false);
       setDebit(true);
       setConfDebitModal(true);
     }
-    
-  }
+  };
 
   // console.log(client_id);
 
@@ -222,12 +216,14 @@ export default function ACustomerView() {
     <Container fluid className={`d-flex p-0 ${Styles.container} min-vh-100`}>
       {/* side bar */}
       <AdminSideNav adminInfo={admin} />
-      <UpdateClientInfo on={updateModal} off={()=>{
-        setUpdateModate(false)
-        setRefreshData(!refreshData)
+      <UpdateClientInfo
+        on={updateModal}
+        off={() => {
+          setUpdateModate(false);
+          setRefreshData(!refreshData);
         }}
         initialInfo={clientData}
-        />
+      />
       {/* page */}
       <Col
         xs={10}
@@ -325,15 +321,13 @@ export default function ACustomerView() {
                       <Button
                         onClick={() => setDebitModal(true)}
                         className="ml-3"
-                        
                       >
                         Debit Client
                       </Button>
 
                       <Button
                         className="ml-3 bg-secondary"
-                        onClick={()=>setUpdateModate(true)}
-                        
+                        onClick={() => setUpdateModate(true)}
                       >
                         Update Info
                       </Button>
@@ -351,7 +345,10 @@ export default function ACustomerView() {
                         <Modal.Body>
                           <p>Enter amount</p>
                           <form>
-                            <FormControl type="number" onChange={(e)=>setAmountToDebit(e.target.value)}/>
+                            <FormControl
+                              type="number"
+                              onChange={(e) => setAmountToDebit(e.target.value)}
+                            />
                             <div className="d-flex w-100 gap-3 mt-3">
                               <Button
                                 onClick={handleDebit}
@@ -380,7 +377,7 @@ export default function ACustomerView() {
                           <Col
                             className="d-flex justify-content-end"
                             onClick={() => {
-                              setConfDebitModal(false)
+                              setConfDebitModal(false);
                               setDebit(false);
                             }}
                             style={{ cursor: "pointer" }}
@@ -389,27 +386,34 @@ export default function ACustomerView() {
                           </Col>
                         </Modal.Header>
                         <Modal.Body>
-                          <p className="p-3">{`You are debiting this customer ${convertToThousand(amountToDebit)}, do you want to proceed ?`}</p>
+                          <p className="p-3">{`You are debiting this customer ${convertToThousand(
+                            amountToDebit
+                          )}, do you want to proceed ?`}</p>
                           <div className="d-flex w-100 gap-3 mt-3">
-                              <Button
-                                onClick={postDebit}
-                                className="ml-3"
-                                style={{ maxWidth: "7em" }}
-                              >
-                                {debitLoading? <Spinner color="primary"/> : 'Proceed'}
-                              </Button>
-                              <Button
-                                onClick={() => {
-                                  setConfDebitModal(false)
-                                  setDebit(false);
-                                }}
-                                className="ml-3"
-                                style={{ maxWidth: "7em" }}
-                                variant="light border border-1"
-                              >
-                                Cancel
-                              </Button>
-                            </div>
+                            <Button
+                              onClick={postDebit}
+                              disabled={debitLoading}
+                              className="ml-3"
+                              style={{ maxWidth: "7em" }}
+                            >
+                              {debitLoading ? (
+                                <Spinner color="primary" />
+                              ) : (
+                                "Proceed"
+                              )}
+                            </Button>
+                            <Button
+                              onClick={() => {
+                                setConfDebitModal(false);
+                                setDebit(false);
+                              }}
+                              className="ml-3"
+                              style={{ maxWidth: "7em" }}
+                              variant="light border border-1"
+                            >
+                              Cancel
+                            </Button>
+                          </div>
                         </Modal.Body>
                       </Modal>
 
@@ -426,7 +430,6 @@ export default function ACustomerView() {
                         </Modal.Header>
                         <Modal.Body>
                           <p className="p-3">{`Amount you are trying to debit is higher than the available balance. `}</p>
-                          
                         </Modal.Body>
                       </Modal>
 
@@ -436,7 +439,7 @@ export default function ACustomerView() {
                           <Col
                             className="d-flex justify-content-end"
                             onClick={() => {
-                              setDebitSucModal(false)
+                              setDebitSucModal(false);
                               setRefreshData(!refreshData);
                             }}
                             style={{ cursor: "pointer" }}
@@ -574,7 +577,7 @@ export default function ACustomerView() {
                           style={{ maxWidth: "3em" }}
                         >
                           {
-                            // searchLoading? <Spinner/> :
+                            // seaarchLoading? <Spinner/> :
                             <i className="bi bi-search"></i>
                           }
                         </Button>
