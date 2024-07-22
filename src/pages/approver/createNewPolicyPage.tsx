@@ -137,6 +137,14 @@ const CreateNewPolicyPage: React.FC<any> = () => {
 
     }
 
+    const getCurrentDate = () => {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+        const dd = String(today.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+      };
+
     const createNewPolicy = async (body: any) => {
         // console.log({ gotten: userInfo })({ bodyHere: body });
         setCreateLoading(true)
@@ -322,6 +330,7 @@ const CreateNewPolicyPage: React.FC<any> = () => {
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                     className="py-2"
+                                    min={getCurrentDate()}
                                     id="DeadlineDate"
                                     name="DeadlineDate"
                                     type="date" placeholder="Select date" style={{ marginTop: '5px', maxWidth: '400px' }} />

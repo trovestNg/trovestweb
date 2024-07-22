@@ -74,11 +74,19 @@ const CreateNewPolicyPage: React.FC<any> = () => {
         },
         {
             id: 1,
-            name: "Weekly"
+            name: "Bi-Weekly"
         },
         {
             id: 2,
             name: "Monthly"
+        },
+        {
+            id: 3,
+            name: "Yearly"
+        },
+        {
+            id: 4,
+            name: "Every 3 Years"
         },
     ]
 
@@ -167,6 +175,14 @@ const CreateNewPolicyPage: React.FC<any> = () => {
 
 
     }
+
+    const getCurrentDate = () => {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+        const dd = String(today.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+      };
 
     const handlePolicyCreation = (body:any)=>{
         console.log({wantToSend:body});
@@ -351,6 +367,7 @@ const CreateNewPolicyPage: React.FC<any> = () => {
                                     className="py-2"
                                     id="DeadlineDate"
                                     name="DeadlineDate"
+                                    min={getCurrentDate()}
                                     type="date" placeholder="Select date" style={{ marginTop: '5px', maxWidth: '400px' }} />
                                 <p
                                     className="p-0 text-danger m-0 mt-1"
@@ -358,11 +375,12 @@ const CreateNewPolicyPage: React.FC<any> = () => {
                                 </p>
                             </div>
 
-                            <div className="px-2">
-                                <label className="d-flex justify-content-between rounded border border-1 py-2 px-2">
+                            <div className="px-2" >
+                                <label 
+                                onClick={() => setShowSub(!showSub)}
+                                className="d-flex justify-content-between rounded border border-1 py-2 px-2">
                                     Select Subsidiaries
                                     <i
-                                        onClick={() => setShowSub(!showSub)}
                                         className={`bi bi-chevron-${showSub ? 'up' : 'down'}`} style={{ cursor: 'pointer' }}></i>
                                 </label>
                                 <Collapse

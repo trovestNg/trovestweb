@@ -160,6 +160,14 @@ const EditPolicyPage: React.FC<any> = () => {
 
     }
 
+    const getCurrentDate = () => {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+        const dd = String(today.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+      };
+
     useEffect(()=>{
         handleGetDepts();
     },[])
@@ -279,6 +287,7 @@ const EditPolicyPage: React.FC<any> = () => {
                                 <FormControl
                                     onChange={handleChange}
                                     onBlur={handleBlur}
+                                    min={getCurrentDate()}
                                     className="py-2"
                                     id="DeadlineDate"
                                     name="DeadlineDate"

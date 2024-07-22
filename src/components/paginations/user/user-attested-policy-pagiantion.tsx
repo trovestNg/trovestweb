@@ -6,7 +6,7 @@ import successElipse from '../../../assets/images/Ellipse-success.png';
 import warningElipse from '../../../assets/images/Ellipse-warning.png';
 import { Pagination } from "react-bootstrap";
 
-const UserAllPolicyPagination: React.FC<any> = ({ data }) => {
+const UserAttestedPolicyPagination: React.FC<any> = ({ data }) => {
     const navigate = useNavigate();
     const totalPages = Math.ceil(data.length / 10);
     const [currentPage, setCurrentPage] = useState(1);
@@ -94,4 +94,4 @@ const UserAllPolicyPagination: React.FC<any> = ({ data }) => {
     )
 }
 
-export default UserAllPolicyPagination;
+export default UserAttestedPolicyPagination;

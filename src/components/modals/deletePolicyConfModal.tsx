@@ -19,7 +19,7 @@ return (
                     <div className="py-2 d-flex justify-content-center align-items-center flex-column">
                         <img src={alertIcon} height={'114px'} />
                         <p className="text-primary mt-2" style={{ fontFamily: 'title' }}>Are you sure?</p>
-                        <p className="text-center px-3">You are about confirm deletion of this policy.</p>
+                        <p className="text-center px-3">You are about to confirm deletion of this policy.</p>
                         
                         <Button onClick={action} disabled={loading} className="py-2 mt-3" style={{minWidth:'20em'}}>
                             {

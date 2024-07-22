@@ -136,6 +136,14 @@ const EditPolicyPage: React.FC<any> = () => {
         }
     };
 
+    const getCurrentDate = () => {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+        const dd = String(today.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+      };
+
     const createNewPolicy = async (body: any) => {
         // // console.log({ gotten: userInfo })({ bodyHere: body });
 
@@ -334,7 +342,7 @@ const EditPolicyPage: React.FC<any> = () => {
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                     className="py-2"
-
+                                    min={getCurrentDate()}
                                     value={moment(values.deadlineDate).format('yyyy-MM-D')}
                                     id="deadlineDate"
                                     name="deadlineDate"
@@ -346,11 +354,12 @@ const EditPolicyPage: React.FC<any> = () => {
 
                             </div>
 
-                            <div className="px-2">
-                                <label className="d-flex justify-content-between rounded border border-1 w-100 py-2 px-2">
+                            <div className="px-2" >
+                                <label 
+                                onClick={() => setShowSub(!showSub)}
+                                className="d-flex justify-content-between rounded border border-1 w-100 py-2 px-2">
                                     Select Subsidiaries
                                     <i
-                                        onClick={() => setShowSub(!showSub)}
                                         className={`bi bi-chevron-${showSub ? 'up' : 'down'}`} style={{ cursor: 'pointer' }}></i>
                                 </label>
                                 <Collapse
