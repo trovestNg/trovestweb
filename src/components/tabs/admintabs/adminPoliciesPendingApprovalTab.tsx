@@ -12,6 +12,7 @@ import { getUserInfo, loginUser } from "../../../controllers/auth";
 import api from "../../../config/api";
 import SureToDeletePolicyModal from "../../modals/sureToDeletePolicyModal";
 import UpdatePolicyModal from "../../modals/updatePolicyModal";
+import AdminPendingPolicyPagination from "../../paginations/admin/admin-pending-policy-pagiantion";
 
 const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const [refreshData, setRefreshData] = useState(false);
@@ -49,7 +50,7 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
             }
 
         } catch (error) {
-           
+
         }
 
 
@@ -73,7 +74,7 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
 
             }
         } catch (error) {
-           
+
         }
 
 
@@ -297,22 +298,9 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
 
             <div className="mt-4" >
                 {
-                    loading ? <table className="table table-stripped w-100">
-                        <thead className="thead-dark">
-                            <tr >
-                                <th scope="col" className="bg-primary text-light">#</th>
-                                <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                <th scope="col" className="bg-primary text-light">Department</th>
-                                <th scope="col" className="bg-primary text-light">Deadline to Attest</th>
-                                <th scope="col" className="bg-primary text-light">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr className=""><td className="text-center" colSpan={5}><Spinner className="spinner-grow text-primary" /></td></tr>
-                        </tbody>
-                    </table> :
-                        <table className="table w-100">
-                            <thead className="thead-dark">
+                    loading ?
+                        <table className="table table-stripped w-100">
+                           <thead className="thead-dark">
                                 <tr >
                                     <th scope="col" className="bg-primary text-light">#</th>
                                     <th scope="col" className="bg-primary text-light">Policy Title</th>
@@ -323,190 +311,10 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
                                 </tr>
                             </thead>
                             <tbody>
-                                {policies.length <= 0 ? <tr><td className="text-center" colSpan={5}>No Data Available</td></tr> :
-                                    policies.map((policy, index) => (
-                                        <tr key={index} style={{ cursor: 'pointer' }}
-                                            onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
-                                        >
-                                            <th scope="row">{index + 1}</th>
-                                            <td className="text-primary"><i className="bi bi-file-earmark-pdf text-danger"></i> {policy.fileName}</td>
-                                            <td>{policy.policyDepartment}</td>
-                                            <td>{policy.authorizedBy}</td>
-                                            <td>{moment(policy.uploadTime).format('MMM DD YYYY')}</td>
-                                            <td className="table-icon">
-                                                <i className=" bi bi-three-dots" onClick={(e) => handleClick(e)}></i>
-                                                <div className="content ml-5" style={{ position: 'relative' }}>
-                                                    {
-                                                        policy.isAuthorized &&
-                                                        <Card className="p-2  shadow-sm rounded border-0"
-                                                            style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
-                                                            <ListGroup>
-                                                                <ListGroupItem className="multi-layer">
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-clipboard-check"></i>
-                                                                            Attesters List
-                                                                        </div>
-
-                                                                        <i className="bi bi-chevron-right"></i>
-                                                                    </span>
-                                                                    <div className="container">
-                                                                        <Card
-                                                                            className="p-2  shadow-sm rounded border-0"
-                                                                            style={{
-                                                                                minWidth: '15em',
-                                                                                marginLeft: '-16.5em',
-                                                                                marginTop: '-2.5em',
-                                                                                position: 'absolute'
-                                                                            }}
-                                                                        >
-                                                                            <ListGroup>
-                                                                                <ListGroupItem>
-                                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                                        <div className="d-flex gap-2">
-                                                                                            <i className="bi bi-file-text"></i>
-                                                                                            View List
-                                                                                        </div>
-                                                                                    </span>
-                                                                                </ListGroupItem>
-
-                                                                                <ListGroupItem>
-                                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                                        <div className="d-flex gap-2">
-                                                                                            <i className="bi bi-download"></i>
-                                                                                            Download List
-                                                                                        </div>
-                                                                                    </span>
-                                                                                </ListGroupItem>
-                                                                            </ListGroup>
-                                                                        </Card>
-                                                                    </div>
-                                                                </ListGroupItem>
-
-                                                                <ListGroupItem className="multi-layer">
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-clipboard-x"></i>
-                                                                            Defaulters List
-                                                                        </div>
-
-                                                                        <i className="bi bi-chevron-right"></i>
-                                                                    </span>
-                                                                    <div className="container">
-                                                                        <Card
-                                                                            className="p-2  shadow-sm rounded border-0"
-                                                                            style={{
-                                                                                minWidth: '15em',
-                                                                                marginLeft: '-16.5em',
-                                                                                marginTop: '-2.5em',
-                                                                                position: 'absolute'
-                                                                            }}
-                                                                        >
-                                                                            <ListGroup>
-                                                                                <ListGroupItem>
-                                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                                        <div className="d-flex gap-2">
-                                                                                            <i className="bi bi-file-text"></i>
-                                                                                            View List
-                                                                                        </div>
-                                                                                    </span>
-                                                                                </ListGroupItem>
-
-                                                                                <ListGroupItem>
-                                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                                        <div className="d-flex gap-2">
-                                                                                            <i className="bi bi-download"></i>
-                                                                                            Download List
-                                                                                        </div>
-                                                                                    </span>
-                                                                                </ListGroupItem>
-                                                                            </ListGroup>
-                                                                        </Card>
-                                                                    </div>
-                                                                </ListGroupItem>
-
-                                                                <ListGroupItem>
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-calendar-event"></i>
-                                                                            Update Deadline
-                                                                        </div>
-                                                                    </span>
-                                                                </ListGroupItem>
-
-                                                                <ListGroupItem>
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-trash"></i>
-                                                                            Delete
-                                                                        </div>
-                                                                    </span>
-                                                                </ListGroupItem>
-                                                            </ListGroup>
-                                                        </Card>}
-
-
-                                                    {
-                                                        !policy.isAuthorized &&
-                                                        <Card className="p-2  shadow-sm rounded border-0"
-                                                            style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
-                                                            <ListGroup>
-                                                                <ListGroupItem
-                                                                    onClick={(e) => handleEdit(e, policy)}
-                                                                >
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-file-text"></i>
-                                                                            Edit Policy
-                                                                        </div>
-                                                                    </span>
-                                                                </ListGroupItem>
-
-                                                                <ListGroupItem
-                                                                    onClick={(e) => handleSendAuthorizationReminder(e, policy)}
-                                                                >
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-file-text"></i>
-                                                                            Nudge Authorizer
-                                                                        </div>
-                                                                    </span>
-                                                                </ListGroupItem>
-
-                                                                <ListGroupItem
-                                                                    onClick={(e) => handleDownloadPolicy(e, policy)}
-
-                                                                >
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-download"></i>
-                                                                            Download
-                                                                        </div>
-                                                                    </span>
-                                                                </ListGroupItem>
-
-                                                                <ListGroupItem
-                                                                    disabled={policy?.markedForDeletion}
-                                                                    onClick={(e) => handleDelete(e, policy)}
-                                                                >
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-file-text"></i>
-                                                                            Delete
-                                                                        </div>
-                                                                    </span>
-                                                                </ListGroupItem>
-                                                            </ListGroup>
-                                                        </Card>}
-
-                                                </div>
-
-                                            </td>
-                                        </tr>
-                                    ))
-                                }
+                                <tr className=""><td className="text-center" colSpan={5}><Spinner className="spinner-grow text-primary" /></td></tr>
                             </tbody>
-                        </table>
+                        </table> :
+                        <AdminPendingPolicyPagination data={policies} refData={() => setRefreshData(!refreshData)}/>
                 }
             </div>
             {/* {

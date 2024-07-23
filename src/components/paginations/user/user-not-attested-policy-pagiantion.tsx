@@ -22,7 +22,7 @@ const UserNotAttestedPolicyPagination: React.FC<any> = ({ data }) => {
             <Pagination.Item
               key={i}
               active={i === currentPage}
-            //   onClick={() => handlePageChange(i)}
+              onClick={() => handlePageChange(i)}
             >
               {i}
             </Pagination.Item>

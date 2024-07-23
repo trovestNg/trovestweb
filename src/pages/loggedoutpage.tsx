@@ -1,12 +1,18 @@
 import React,{useState, useEffect} from "react";
 import { Button, Spinner } from "react-bootstrap";
-import { loginUser } from "../controllers/auth";
+import { getUserInfo, loginUser } from "../controllers/auth";
 // import { UserManager } from 'oidc-client';
 // import { Identity } from '../config/config';
 
 
 const LoggedOutPage = () => {
+    const checkUserStatus = async ()=>{
+        let userInfo = await getUserInfo();
+            console.log({userCred:userInfo})
+    }
+    
     useEffect(()=>{
+        checkUserStatus()
         window.history.pushState(null, '', window.location.href);
         window.onpopstate = function(event) {
           window.history.go(1);

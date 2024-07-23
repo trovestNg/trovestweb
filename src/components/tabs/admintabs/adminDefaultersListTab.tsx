@@ -19,6 +19,7 @@ import autoTable from 'jspdf-autotable';
 
 import Papa from 'papaparse'
 import { saveAs } from 'file-saver';
+import AuthorizerDefaultersListPagination from "../../paginations/authorizer/authorizer-defaulters-list-pagiantion";
 
 const AdminDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
@@ -292,32 +293,7 @@ const AdminDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
                             <tr className=""><td className="text-center" colSpan={7}><Spinner className="spinner-grow text-primary" /></td></tr>
                         </tbody>
                     </table> :
-                        <table className="table table-striped w-100">
-                            <thead className="thead-dark">
-                                <tr >
-                                    <th scope="col" className="bg-primary text-light">#</th>
-                                    <th scope="col" className="bg-primary text-light">Staff Name</th>
-                                    <th scope="col" className="bg-primary text-light">Emails</th>
-                                    <th scope="col" className="bg-primary text-light">Department</th>
-                                    <th scope="col" className="bg-primary text-light">Deadline Date</th>
-                                </tr>
-                            </thead>
-                            <tbody className="">
-                                {policies.length <= 0 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
-                                    policies.map((policy, index) => (
-                                        <tr key={index} style={{ cursor: 'pointer' }}
-                                        // onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
-                                        >
-                                            <th scope="row">{index + 1}</th>
-                                            <td>{`${shortenString(policy?.displayName, 40)}`}</td>
-                                            <td>{policy.email}</td>
-                                            <td>{policy.department}</td>
-                                            <td>{moment(policy.deadlineTime).format('MMM DD YYYY')}</td>
-                                        </tr>
-                                    ))
-                                }
-                            </tbody>
-                        </table>
+                        <AuthorizerDefaultersListPagination data={policies}/>
                 }
             </div>
             {/* {

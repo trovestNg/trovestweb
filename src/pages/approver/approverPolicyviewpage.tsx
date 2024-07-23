@@ -182,7 +182,7 @@ const ApproverPolicyviewpage = () => {
             action={()=>approvePolicy()} 
             show={sureToApproveModal} 
             loading={loading}
-            off={()=>setDeteletPolicyModal(false)}/>
+            off={()=>setSureToApproveModal(false)}/>
 
             <div><Button variant="outline border border-2" onClick={() => navigate(-1)}>Go Back</Button></div>
             <div className="w-100 d-flex justify-content-between gap-4">

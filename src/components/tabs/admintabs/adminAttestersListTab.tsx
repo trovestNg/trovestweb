@@ -16,6 +16,7 @@ import { shortenString } from "../../../util";
 import { IUser } from "../../../interfaces/user";
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import AuthorizerAttestersListPagination from "../../paginations/authorizer/authorizer-attesters-list-pagiantion";
 
 
 import Papa from 'papaparse'
@@ -289,35 +290,7 @@ const AdminAttestersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
                             <tr className=""><td className="text-center" colSpan={7}><Spinner className="spinner-grow text-primary" /></td></tr>
                         </tbody>
                     </table> :
-                        <table className="table table-striped w-100">
-                            <thead className="thead-dark">
-                                <tr >
-                                    <th scope="col" className="bg-primary text-light">#</th>
-                                    <th scope="col" className="bg-primary text-light">Staff Name</th>
-                                    <th scope="col" className="bg-primary text-light">Emails</th>
-                                    <th scope="col" className="bg-primary text-light">Department</th>
-                                    <th scope="col" className="bg-primary text-light">Date Attested</th>
-                                    <th scope="col" className="bg-primary text-light">Deadline Date</th>
-                                </tr>
-                            </thead>
-                            <tbody className="">
-                                {
-                                policies.length <= 0 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
-                                    policies.map((policy, index) => (
-                                        <tr key={index} style={{ cursor: 'pointer' }}
-                                        // onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
-                                        >
-                                            <th scope="row">{index + 1}</th>
-                                            <td>{policy.userName}</td>
-                                            <td>{policy.email}</td>
-                                            <td>{policy.department}</td>
-                                            <td>{moment(policy.attestationTime).format('MMM DD YYYY')}</td>
-                                            <td>{moment(policy.deadlineTime).format('MMM DD YYYY')}</td>
-                                        </tr>
-                                    ))
-                                }
-                            </tbody>
-                        </table>
+                        <AuthorizerAttestersListPagination data={policies}/>
                 }
             </div>
             {/* {

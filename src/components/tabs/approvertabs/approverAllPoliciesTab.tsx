@@ -16,6 +16,7 @@ import SureToDeletePolicyModal from "../../modals/sureToDeletePolicyModal";
 import UpdatePolicyModal from "../../modals/updatePolicyModal";
 import { shortenString } from "../../../util";
 import dangerElipse from '../../../assets/images/Ellipse-danger.png';
+import AuthorizerAllPolicyPagination from "../../paginations/authorizer/authorizer-all-policy-pagiantion";
 
 const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
@@ -388,148 +389,7 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                             <tr className=""><td className="text-center" colSpan={7}><Spinner className="spinner-grow text-primary" /></td></tr>
                         </tbody>
                     </table> :
-                        <table className="table table-striped w-100">
-                            <thead className="thead-dark">
-                                <tr >
-                                    <th scope="col" className="bg-primary text-light">#</th>
-                                    <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                    <th scope="col" className="bg-primary text-light">Initiator</th>
-                                    <th scope="col" className="bg-primary text-light">Date Uploaded</th>
-                                    <th scope="col" className="bg-primary text-light">Status</th>
-                                    <th scope="col" className="bg-primary text-light">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {policies.length <= 0 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
-                                    policies.map((policy, index) => (
-                                        <tr key={index} style={{ cursor: 'pointer' }}
-                                            onClick={() => navigate(`/admn/policy/${policy.id}/${policy.isAuthorized}`)}
-                                        >
-                                            <th scope="row">{index + 1}</th>
-                                            <td className="text-primary"><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.fileName, 40)}`}</td>
-
-                                            <td>{policy.uploadedBy}</td>
-                                            <td>{moment(policy.uploadTime).format('MMM DD YYYY')}</td>
-                                            <td className={`text-${policy.isAuthorized?'success':!policy.isAuthorized  && !policy.isRejected?'warning':!policy.isAuthorized  && policy.isRejected?'danger':'primary'}`}>
-                                                <img src={policy.isAuthorized?successElipse:!policy.isAuthorized  && !policy.isRejected?warningElipse:!policy.isAuthorized  && policy.isRejected?dangerElipse:''} height={'10px'} />
-                                                {'  '}
-                                                <span >{policy.isAuthorized &&'Approved'}{!policy.isAuthorized  && !policy.isRejected &&'Pending'} {!policy.isAuthorized  && policy.isRejected &&'Rejected'}</span>
-                                                {/* : !policy.isAuthorized && ? 'Pending ' : policy.isAuthorized && policy.isRejected?'Rejected':'' */}
-                                                {/* <span onClick={(e) => handleShowReasonForRej(e, policy)}>{policy.isRejected && <i className="bi bi-file-earmark-excel text-danger"></i>}</span> */}
-                                            </td>
-                                            <td className="table-icon" >
-                                                <i className=" bi bi-three-dots" onClick={(e)=>e.stopPropagation()}></i>
-                                                <div className="content ml-5" style={{ position: 'relative' }}>
-                                                    {
-                                                        policy.isAuthorized &&
-                                                        <Card className="p-2  shadow-sm rounded border-0"
-                                                            style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
-                                                            <ListGroup>
-                                                            <ListGroupItem className="multi-layer"
-                                                                >
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-eye"></i>
-                                                                           View Policy
-                                                                        </div>
-
-                                                                        {/* <i className="bi bi-chevron-right"></i> */}
-                                                                    </span>
-                                                                </ListGroupItem>
-
-                                                                <ListGroupItem className="multi-layer"
-                                                                    onClick={(e) => handleGetAttestersList(e, policy)}
-                                                                >
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-clipboard-check"></i>
-                                                                            Attesters List
-                                                                        </div>
-
-                                                                        {/* <i className="bi bi-chevron-right"></i> */}
-                                                                    </span>
-                                                                </ListGroupItem>
-
-                                                                <ListGroupItem className="multi-layer"
-                                                                    onClick={(e) => handleGetDefaultersList(e, policy)}
-                                                                >
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-clipboard-x"></i>
-                                                                            Defaulters List
-                                                                        </div>
-
-                                                                        {/* <i className="bi bi-chevron-right"></i> */}
-                                                                    </span>
-                                                                </ListGroupItem>
-
-                                                                <ListGroupItem
-                                                                    onClick={(e) => handleDownloadPolicy(e, policy)}
-
-                                                                >
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-download"></i>
-                                                                           Download Policy
-                                                                        </div>
-                                                                    </span>
-                                                                </ListGroupItem>
-                                                            </ListGroup>
-                                                        </Card>}
-
-
-                                                    {
-                                                        !policy.isAuthorized &&
-                                                        <Card className="p-2  shadow-sm rounded border-0"
-                                                            style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
-                                                            <ListGroup>
-                                                            <ListGroupItem
-                                                                >
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-eye"></i>
-                                                                            View Policy
-                                                                        </div>
-                                                                    </span>
-                                                                </ListGroupItem>
-
-                                                                <ListGroupItem
-                                                                    onClick={(e) => handleDownloadPolicy(e, policy)}
-
-                                                                >
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-download"></i>
-                                                                           Download Policy
-                                                                        </div>
-                                                                    </span>
-                                                                </ListGroupItem>
-
-{/*                                                                 
-
-                                                                <ListGroupItem
-                                                                    disabled={policy?.markedForDeletion}
-                                                                    onClick={(e) => handleDelete(e, policy)}
-                                                                >
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-file-text"></i>
-                                                                            Delete
-                                                                        </div>
-                                                                    </span>
-                                                                </ListGroupItem> */}
-                                                            </ListGroup>
-                                                        </Card>}
-
-                                                </div>
-
-                                            </td>
-
-                                        </tr>
-                                    ))
-                                }
-                            </tbody>
-                        </table>
+                        <AuthorizerAllPolicyPagination data={policies} refData={()=>setRefreshData(!refreshData)}/>
                 }
             </div>
             {/* {

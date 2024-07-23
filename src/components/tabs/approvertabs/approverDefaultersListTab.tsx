@@ -19,6 +19,7 @@ import autoTable from 'jspdf-autotable';
 
 import Papa from 'papaparse'
 import { saveAs } from 'file-saver';
+import AuthorizerDefaultersListPagination from "../../paginations/authorizer/authorizer-defaulters-list-pagiantion";
 
 const ApproverDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
@@ -45,7 +46,7 @@ const ApproverDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
     const [bySearch, setBySearch] = useState(false);
     const [selectedDept, setSelectedDept] = useState('');
     const [userSearch, setUserSearch] = useState('');
-    const { id, fileName, deadlineDate } = useParams();
+    const { id,fileName,deadlineDate } = useParams();
     const [query, setQuery] = useState<string>('');
     const [policyName, setPolicyName] = useState<string>('')
 
@@ -84,6 +85,7 @@ const ApproverDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
         try {
             setLoading(true)
+            // toast.error('okk')
             let userInfo = await getUserInfo();
             // // console.log({ gotten: userInfo })({ gotten: userInfo })
             if (userInfo) {
@@ -98,7 +100,7 @@ const ApproverDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     setLoading(false)
                 } else {
 
-
+                    
                     setLoading(false)
                 }
 
@@ -149,18 +151,18 @@ const ApproverDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
 
     const generateCSV = (data: IUser[], headers: { label: string; key: keyof IUser }[]) => {
         // Map data to match the headers
-        const csvData = data.map((item, index) => ({
-            serial: index + 1,
+        const csvData = data.map((item,index) => ({
+            serial : index +1,
             displayName: `${item.firstName} ${item.lastName}`,
             email: item.email,
             department: item.department,
-            deadline: moment(item.deadlineTime).format('MMM DD YYYY')
+            deadline:moment(item.deadlineTime).format('MMM DD YYYY')
         }));
 
         // Convert the data to CSV format with headers
         const csv = Papa.unparse({
             fields: headers.map(header => header.label),
-            data: csvData.map((item: any) => headers.map(header => item[header.key]))
+            data: csvData.map((item :any) => headers.map(header => item[header.key]))
         });
 
         // Create a Blob from the CSV string
@@ -169,6 +171,44 @@ const ApproverDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
         // Use FileSaver.js to save the file
         saveAs(blob, `${fileName} Defaulters List`);
     };
+
+    const handleSearch = () => {
+        setBySearch(true);
+        setRefreshData(!refreshData)
+    }
+
+    const handleDeptSelection = (val: string) => {
+        setSelectedDept(val);
+        setSortByDept(true)
+        setRefreshData(!refreshData)
+    }
+
+
+    const fetchData = () => {
+        if (sortByDept) {
+            // getBySort();
+        } else if (bySearch) {
+            handleSearchByPolicyNameOrDept();
+        } else {
+            getUploadedPolicies();
+        }
+    }
+
+    const handleClear = () => {
+        setBySearch(false);
+        setUserSearch('')
+        setRefreshData(!refreshData)
+    }
+
+    const handleListDownload = (val: string) => {
+        if (val == 'pdf') {
+            downloadPdf()
+        } else if (val =='csv') {
+            generateCSV(policies, headers)
+        } else {
+            return
+        }
+    }
 
     const handleSendReminder = async () => {
         setLoading(true)
@@ -189,44 +229,6 @@ const ApproverDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
         } catch (error) {
 
         }
-    }
-
-    const handleSearch = () => {
-        setBySearch(true);
-        setRefreshData(!refreshData)
-    }
-
-    const handleDeptSelection = (val: string) => {
-        setSelectedDept(val);
-        setSortByDept(true)
-        setRefreshData(!refreshData)
-    }
-
-    const handleListDownload = (val: string) => {
-        if (val == 'pdf') {
-            downloadPdf()
-        } else if (val == 'csv') {
-            generateCSV(policies, headers)
-        } else {
-            return
-        }
-    }
-
-
-    const fetchData = () => {
-        if (sortByDept) {
-            // getBySort();
-        } else if (bySearch) {
-            handleSearchByPolicyNameOrDept();
-        } else {
-            getUploadedPolicies();
-        }
-    }
-
-    const handleClear = () => {
-        setBySearch(false);
-        setUserSearch('')
-        setRefreshData(!refreshData)
     }
 
 
@@ -291,32 +293,7 @@ const ApproverDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
                             <tr className=""><td className="text-center" colSpan={7}><Spinner className="spinner-grow text-primary" /></td></tr>
                         </tbody>
                     </table> :
-                        <table className="table table-striped w-100">
-                            <thead className="thead-dark">
-                                <tr >
-                                    <th scope="col" className="bg-primary text-light">#</th>
-                                    <th scope="col" className="bg-primary text-light">Staff Name</th>
-                                    <th scope="col" className="bg-primary text-light">Emails</th>
-                                    <th scope="col" className="bg-primary text-light">Department</th>
-                                    <th scope="col" className="bg-primary text-light">Deadline Date</th>
-                                </tr>
-                            </thead>
-                            <tbody className="">
-                                {policies.length <= 0 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
-                                    policies.map((policy, index) => (
-                                        <tr key={index} style={{ cursor: 'pointer' }}
-                                        // onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
-                                        >
-                                            <th scope="row">{index + 1}</th>
-                                            <td>{`${shortenString(policy?.displayName, 40)}`}</td>
-                                            <td>{policy.email}</td>
-                                            <td>{policy.department}</td>
-                                            <td>{moment(policy.deadlineTime).format('MMM DD YYYY')}</td>
-                                        </tr>
-                                    ))
-                                }
-                            </tbody>
-                        </table>
+                        <AuthorizerDefaultersListPagination data={policies}/>
                 }
             </div>
             {/* {

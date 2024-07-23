@@ -106,7 +106,7 @@ const handleSendAuthorizationReminder = async (e: any, policy: IPolicy) => {
             <Pagination.Item
               key={i}
               active={i === currentPage}
-            //   onClick={() => handlePageChange(i)}
+              onClick={() => handlePageChange(i)}
             >
               {i}
             </Pagination.Item>
