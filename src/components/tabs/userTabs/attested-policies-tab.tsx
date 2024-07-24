@@ -37,7 +37,7 @@ const UserAttestedPoliciesTab: React.FC<any> = () => {
             let userName = userInfo?.profile?.sub.split('\\')[1]
             const res = await api.get(`Policy/user-policy?userName=${userName}`, `${userInfo?.access_token}`);
             if (res?.data) {
-                let attested = res?.data.filter((policy: IUserPolicy) => policy.isAttested && !policy.isDeleted
+                let attested = res?.data.filter((policy: IUserPolicy) => policy.isAttested && (!policy.isDeleted || !policy.markedForDeletion)
                 );
                 setPolicies(attested);
                 setLoading(false)
@@ -57,7 +57,7 @@ const UserAttestedPoliciesTab: React.FC<any> = () => {
             let userName = userInfo?.profile?.sub.split('\\')[1]
             const res = await api.get(`Policy/user-policy?userName=${userName}`, `${userInfo?.access_token}`);
             if (res?.data) {
-                let attested = res?.data.filter((policy: IUserPolicy) => policy.isAttested && !policy.isDeleted);
+                let attested = res?.data.filter((policy: IUserPolicy) => policy.isAttested && (!policy.isDeleted || !policy.markedForDeletion));
 
                 let filtered = attested.filter((policy: IUserPolicy) =>
                     policy.fileName.toLowerCase().includes(query.toLowerCase()) ||

@@ -393,6 +393,7 @@ const CreateNewPolicyPage: React.FC<any> = () => {
                                                     <Field
                                                         type="checkbox"
                                                         name="Subsidiary"
+                                                        id="Subsidiary"
                                                         value={JSON.stringify(option.id)}
                                                     />
                                                     {option.name}
@@ -442,7 +443,7 @@ const CreateNewPolicyPage: React.FC<any> = () => {
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                     style={{ marginTop: '5px', maxWidth: '400px' }}>
-                                    <option>Select</option>
+                                    <option value={''}>Select</option>
                                     {
                                         remFreq.map((sub, index) =>
                                             <option key={index} value={sub.name}>{sub.name}</option>
@@ -464,7 +465,7 @@ const CreateNewPolicyPage: React.FC<any> = () => {
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                     style={{ marginTop: '5px', maxWidth: '400px' }}>
-                                    <option>Select</option>
+                                    <option value={''}>Select</option>
                                     {
                                         authorizers && authorizers.map((sub, index) =>
                                             <option key={index} value={sub.authorizerName}>{sub.authorizerName}</option>

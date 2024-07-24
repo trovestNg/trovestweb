@@ -46,7 +46,7 @@ const UserAllPoliciesTab: React.FC<any> = () => {
             let userName = userInfo?.profile?.sub.split('\\')[1]
             const res = await api.get(`Policy/user-policy?userName=${userName}`, `${userInfo?.access_token}`);
             if (res?.data) {
-                let notDeleted = res?.data.filter((pol: IPolicy) => !pol.isDeleted)
+                let notDeleted = res?.data.filter((pol: IPolicy) => !pol.isDeleted || !pol.markedForDeletion)
                 setPolicies(notDeleted);
                 setLoading(false)
             }
@@ -66,8 +66,8 @@ const UserAllPoliciesTab: React.FC<any> = () => {
             const res = await api.get(`Policy/user-policy?userName=${userName}`, `${userInfo?.access_token}`);
             if (res?.data) {
                 let filtered = res?.data.filter((policy: IUserPolicy) =>
-                    policy.fileName.toLowerCase().includes(query.toLowerCase()) && !policy.isDeleted ||
-                    policy.policyDepartment.toLowerCase().includes(query.toLowerCase()) && !policy.isDeleted
+                    policy.fileName.toLowerCase().includes(query.toLowerCase()) && (!policy.isDeleted || !policy.markedForDeletion) ||
+                    policy.policyDepartment.toLowerCase().includes(query.toLowerCase()) && (!policy.isDeleted || !policy.markedForDeletion)
                 );
                 setPolicies(filtered);
                 setLoading(false)

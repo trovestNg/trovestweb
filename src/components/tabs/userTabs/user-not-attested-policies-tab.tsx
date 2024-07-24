@@ -34,7 +34,7 @@ const UserNotAttestedPoliciesTab: React.FC<any> = () => {
             let userName = userInfo?.profile?.sub.split('\\')[1]
             const res = await api.get(`Policy/user-policy?userName=${userName}`, `${userInfo?.access_token}`);
             if (res?.data) {
-                let unAttested = res?.data.filter((policy: IUserPolicy) => !policy.isAttested && !policy.isDeleted);
+                let unAttested = res?.data.filter((policy: IUserPolicy) => !policy.isAttested && (!policy.isDeleted || !policy.markedForDeletion));
                 setPolicies(unAttested);
                 setLoading(false)
             }

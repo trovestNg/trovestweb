@@ -100,7 +100,9 @@ const ApproverRejectedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     setLoading(false)
 
                     let filtered = res?.data.filter((policy: IPolicy) =>
-                        policy.fileName.toLowerCase().includes(query.toLowerCase()) && !policy.isDeleted && policy.isRejected
+                        policy.fileName.toLowerCase().includes(query.toLowerCase()) && !policy?.markedForDeletion && !policy.isDeleted && policy.isRejected ||
+                    policy.policyDepartment.toLowerCase().includes(query.toLowerCase()) && !policy?.markedForDeletion && !policy.isDeleted && policy.isRejected
+                    
                     );
                     setPolicies(filtered.reverse());
 

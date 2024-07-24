@@ -9,6 +9,16 @@ import { toast } from 'react-toastify';
 import { shortenString } from "../../util";
 
 const UpdatePolicyModal: React.FC<any> = ({ show, off, pol }) => {
+
+    const getCurrentDate = () => {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+        const dd = String(today.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+      };
+
+      
     const initialVal = {
         "id": pol?.id,
         "deadlineDate": ''
@@ -87,6 +97,7 @@ const UpdatePolicyModal: React.FC<any> = ({ show, off, pol }) => {
                                             <div className="">
                                                 <p className="p-0 m-0">Select New Deadline Date</p>
                                                 <FormControl
+                                                min={getCurrentDate()}
                                                     onChange={handleChange}
                                                     id="deadlineDate"
                                                     type="date" placeholder="Select date" style={{ marginTop: '5px', maxWidth: '200px' }} />

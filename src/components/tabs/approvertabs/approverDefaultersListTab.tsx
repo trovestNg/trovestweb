@@ -22,6 +22,7 @@ import { saveAs } from 'file-saver';
 import AuthorizerDefaultersListPagination from "../../paginations/authorizer/authorizer-defaulters-list-pagiantion";
 
 const ApproverDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
+    
 
     type TPolicy = {
         attestationTime: string,
@@ -128,7 +129,7 @@ const ApproverDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
             email: policy.email,
             department: policy.department,
             attestationTime: moment(policy.attestationTime).format('YYYY-MM-DD') || 'N/A',
-            deadlineTime: moment(policy.deadlineTime).format('YYYY-MM-DD') || 'N/A'
+            deadlineTime: moment(deadlineDate).format('YYYY-MM-DD') || 'N/A'
         }));
 
         autoTable(doc, {
@@ -156,7 +157,7 @@ const ApproverDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
             displayName: `${item.firstName} ${item.lastName}`,
             email: item.email,
             department: item.department,
-            deadline:moment(item.deadlineTime).format('MMM DD YYYY')
+            deadline:moment(deadlineDate).format('MMM DD YYYY')
         }));
 
         // Convert the data to CSV format with headers
@@ -293,7 +294,7 @@ const ApproverDefaultersListTab: React.FC<any> = ({ handleCreatePolicy }) => {
                             <tr className=""><td className="text-center" colSpan={7}><Spinner className="spinner-grow text-primary" /></td></tr>
                         </tbody>
                     </table> :
-                        <AuthorizerDefaultersListPagination data={policies}/>
+                        <AuthorizerDefaultersListPagination data={policies} date={deadlineDate}/>
                 }
             </div>
             {/* {
