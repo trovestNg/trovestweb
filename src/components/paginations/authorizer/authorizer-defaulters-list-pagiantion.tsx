@@ -14,7 +14,8 @@ import SureToDeletePolicyModal from "../../modals/sureToDeletePolicyModal";
 import UpdatePolicyModal from "../../modals/updatePolicyModal";
 import RejectReasonModal from "../../modals/rejectReasonModal";
 
-const AuthorizerDefaultersListPagination: React.FC<any> = ({ data, refData }) => {
+const AuthorizerDefaultersListPagination: React.FC<any> = ({ data, refData, date }) => {
+    console.log(date)
     const navigate = useNavigate();
     const totalPages = Math.ceil(data.length / 10);
     const [currentPage, setCurrentPage] = useState(1);
@@ -161,7 +162,7 @@ const handleSendAuthorizationReminder = async (e: any, policy: IPolicy) => {
                                             <td>{`${shortenString(policy?.displayName, 40)}`}</td>
                                             <td>{policy.email}</td>
                                             <td>{policy.department}</td>
-                                            <td>{moment(policy.deadlineTime).format('MMM DD YYYY')}</td>
+                                            <td>{moment(date).format('MMM DD YYYY')}</td>
                                         </tr>
                                     ))
                                 }
