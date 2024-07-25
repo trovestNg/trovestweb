@@ -85,8 +85,9 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     setLoading(false)
 
                     let filtered = res?.data.filter((policy: IPolicy) =>
-                        policy.fileName.toLowerCase().includes(query.toLowerCase()) && policy.markedForDeletion && !policy.isDeleted ||
-                        policy.policyDepartment.toLowerCase().includes(query.toLowerCase()) && policy.markedForDeletion && !policy.isDeleted
+                        policy.fileName.toLowerCase().includes(query.toLowerCase()) && policy.markedForDeletion && !policy.isDeleted 
+                    // ||
+                    //     policy.policyDepartment.toLowerCase().includes(query.toLowerCase()) && policy.markedForDeletion && !policy.isDeleted
                     );
                     setPolicies(filtered.reverse());
 
@@ -319,7 +320,7 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     <div className="d-flex align-items-center gap-2" style={{ position: 'relative' }}>
                         <FormControl
                             onChange={(e) => setQuery(e.target.value)}
-                            placeholder="Search by Name, Department..."
+                            placeholder="Search by Name of policy..."
                             value={query}
                             className="py-2" style={{ minWidth: '350px' }} />
                         <i
@@ -358,13 +359,13 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                                 <th scope="col" className="bg-primary text-light">#</th>
                                 <th scope="col" className="bg-primary text-light">Policy Title</th>
                                 <th scope="col" className="bg-primary text-light">Authorizer</th>
-                                <th scope="col" className="bg-primary text-light">Department</th>
+                                {/* <th scope="col" className="bg-primary text-light">Department</th> */}
                                 <th scope="col" className="bg-primary text-light">Date Deleted</th>
                                 <th scope="col" className="bg-primary text-light">Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr className=""><td className="text-center" colSpan={7}><Spinner className="spinner-grow text-primary" /></td></tr>
+                            <tr className=""><td className="text-center" colSpan={6}><Spinner className="spinner-grow text-primary" /></td></tr>
                         </tbody>
                     </table> :
                         <AdminPendingDelPolicyPagination data={policies} refData={()=>setRefreshData(!refreshData)}/>

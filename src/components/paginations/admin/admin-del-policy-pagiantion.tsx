@@ -154,13 +154,13 @@ const handleGroupClick = async (e: any, policy: any) => {
                                 <th scope="col" className="bg-primary text-light">#</th>
                                 <th scope="col" className="bg-primary text-light">Policy Title</th>
                                 <th scope="col" className="bg-primary text-light">Authorizer</th>
-                                <th scope="col" className="bg-primary text-light">Department</th>
+                                {/* <th scope="col" className="bg-primary text-light">Department</th> */}
                                 <th scope="col" className="bg-primary text-light">Date Deleted</th>
                                 <th scope="col" className="bg-primary text-light">Action</th>
                             </tr>
                         </thead>
                             <tbody>
-                                {currentItems.length <= 0 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
+                                {currentItems.length <= 0 ? <tr><td className="text-center" colSpan={6}>No Data Available</td></tr> :
                                     currentItems.map((policy:any, index:number) => (
                                         <tr key={index} style={{ cursor: 'pointer' }}
                                         >
@@ -168,7 +168,7 @@ const handleGroupClick = async (e: any, policy: any) => {
                                             <td><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.fileName, 40)}`}</td>
 
                                             <td>{policy.authorizedBy}</td>
-                                            <td>{policy.policyDepartment}</td>
+                                            {/* <td>{policy.policyDepartment}</td> */}
                                             <td>{moment(policy.deleteRequestedTime).format('MMM DD YYYY')}</td>
                                             {/* <td className={`text-${policy.isAuthorized ? 'success' : 'warning'}`}>
                                                 <img src={policy.isAuthorized ? successElipse : warningElipse} height={'10px'} />

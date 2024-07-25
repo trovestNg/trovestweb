@@ -14,6 +14,7 @@ import SureToDeletePolicyModal from "../../components/modals/sureToDeletePolicyM
 import SureToApprovePolicyModal from "../../components/modals/sureToApprovePolicyModal";
 import { shortenString } from "../../util";
 import DeletePolicyConfModal from "../../components/modals/deletePolicyConfModal";
+import SureToUnDoDeletePolicyModal from "../../components/modals/sureToUnDoDeletePolicyModal";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -39,6 +40,8 @@ const ApproverPolicyviewpage = () => {
     const [scale, setScale] = useState(1.0);
     const [numPages, setNumPages] = useState<number>(0);
     const [pageNumber, setPageNumber] = useState(1);
+    const [confUndoDelModal, setConUndofDelModal] = useState(false);
+    const [confDelModal, setConfDelModal] = useState(false);
 
 
     const handleZoomIn = () => setScale(scale + 0.1);
@@ -109,6 +112,30 @@ const ApproverPolicyviewpage = () => {
             }
         }
         
+    }
+
+    const handleUndoPolicyDelete = async (e: any) => {
+        setLoading(true)
+        try {
+            let userInfo = await getUserInfo();
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            if (userInfo) {
+                const res = await api.post(`Policy/reset-mark-for-deletion`, 
+                    { "id": policy?.id, "username": userName ,"markForDeletion": false}, userInfo.access_token);
+                if (res?.status == 200) {
+                    toast.success('Delete request Canceled for this policy!');
+                    setConfDelModal(false);
+                    setLoading(false)
+                    navigate(-1)
+                } else {
+                    toast.error('Failed to Undo delete')
+                    setLoading(false)
+                }
+            }
+
+        } catch (error) {
+
+        }
     }
 
 
@@ -183,6 +210,12 @@ const ApproverPolicyviewpage = () => {
             show={sureToApproveModal} 
             loading={loading}
             off={()=>setSureToApproveModal(false)}/>
+
+<SureToUnDoDeletePolicyModal
+                show={confUndoDelModal}
+                action={handleUndoPolicyDelete}
+                off={() => setConUndofDelModal(false)}
+            />
 
             <div><Button variant="outline border border-2" onClick={() => navigate(-1)}>Go Back</Button></div>
             <div className="w-100 d-flex justify-content-between gap-4">
@@ -346,10 +379,11 @@ const ApproverPolicyviewpage = () => {
                                 onClick={handleDelete}
 
                             >Approve Deletion</Button>
-                            <Button
+                             <Button
+                                disabled={loading}
                                 variant="border border-danger text-danger outline"
-                                onClick={() => navigate(-1)}
-                            >Cancel</Button>
+                                onClick={() => setConUndofDelModal(true)}
+                            >Cancel Deletion</Button> 
 
                         </div>
                     }

@@ -107,7 +107,9 @@ const PolicyViewPage = () => {
 
     return (
         <div className="">
-            <div><Button variant="outline border border-2" onClick={() => navigate(-1)}>Go Back</Button></div>
+            <h5 className="text-primary">Policy Information</h5>
+            <div className="mt-3"><Button variant="outline border border-2" onClick={() => navigate(-1)}>Go Back</Button></div>
+            
             <div className="w-100 d-flex justify-content-between gap-4">
                 <div className="" style={{ minWidth: '70%' }}>
                     <div className="bg-dark mt-2 d-flex justify-content-between px-4 py-2 text-light ">
@@ -223,8 +225,10 @@ const PolicyViewPage = () => {
                             {/* <i className="bi bi-file-earmark"></i> */}
                             {policy?.policyDepartment}
                         </p>
+                        <hr/>
                         <div className="d-flex justify-content-between">
-                            <div>
+                            <div className="">
+                            
                                 <p className=" d-flex gap-2 text-grey p-0 m-0">
                                     {/* <i className="bi bi-file-earmark"></i> */}
                                     Date Uploaded
@@ -251,7 +255,9 @@ const PolicyViewPage = () => {
                     {
                         attested == 'false'?
                         <>
-                            <Button disabled={pageNumber !== numPages || attesting} onClick={() =>handlyPolicyAttest()} className="W-100 mt-3">
+                            <Button 
+                            disabled={pageNumber !== numPages || attesting} onClick={() =>handlyPolicyAttest()}
+                            className="W-100 py-3 mt-3">
                                {
                                 attesting?<Spinner/>: `Click To Attest To This Policy`
                                }

@@ -379,7 +379,8 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                             <tr >
                                 <th scope="col" className="bg-primary text-light">#</th>
                                 <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                <th scope="col" className="bg-primary text-light">Authorizer</th>
+                                <th scope="col" className="bg-primary text-light">Department</th>
+                                <th scope="col" className="bg-primary text-light">Initiator</th>
                                 <th scope="col" className="bg-primary text-light">Date Uploaded</th>
                                 <th scope="col" className="bg-primary text-light">Status</th>
                                 <th scope="col" className="bg-primary text-light">Action</th>

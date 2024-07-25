@@ -142,16 +142,16 @@ const handleSendAuthorizationReminder = async (e: any, policy: IPolicy) => {
                 }}
             />
             <table className="table table-striped w-100">
-                            <thead className="thead-dark">
+            <thead className="thead-dark">
                             <tr >
                                 <th scope="col" className="bg-primary text-light">#</th>
                                 <th scope="col" className="bg-primary text-light">Policy Title</th>
+                                <th scope="col" className="bg-primary text-light">Department</th>
                                 <th scope="col" className="bg-primary text-light">Initiator</th>
-                                {/* <th scope="col" className="bg-primary text-light">Authorizer</th> */}
-                                <th scope="col" className="bg-primary text-light">Deadline Date</th>
+                                <th scope="col" className="bg-primary text-light">Date Uploaded</th>
                                 <th scope="col" className="bg-primary text-light">Action</th>
                             </tr>
-                            </thead>
+                        </thead>
                             <tbody className="">
                                 {data.length <= 0 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
                                     currentItems.map((policy:any, index:number) => (
@@ -160,9 +160,10 @@ const handleSendAuthorizationReminder = async (e: any, policy: IPolicy) => {
                                         >
                                             <th scope="row">{index + 1}</th>
                                             <td className="text-primary"><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.fileName,40)}`}</td>
+                                            <td>{policy.policyDepartment}</td>
                                             <td>{policy.uploadedBy}</td>
                                             {/* <td>{policy.authorizedBy}</td> */}
-                                            <td>{moment(policy.deadlineDate).format('MMM DD YYYY')}</td>
+                                            <td>{moment(policy.uploadTime).format('MMM DD YYYY')}</td>
                                             {/* <td className={`text-${policy.isAuthorized ? 'success' : 'warning'}`}>
                                                 <img src={policy.isAuthorized ? successElipse : warningElipse} height={'10px'} />
                                                 {'  '}

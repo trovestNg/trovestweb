@@ -154,23 +154,23 @@ const handleGroupClick = async (e: any, policy: any) => {
                                     <th scope="col" className="bg-primary text-light">#</th>
                                     <th scope="col" className="bg-primary text-light">Policy Title</th>
                                     <th scope="col" className="bg-primary text-light">Authorizer</th>
-                                    <th scope="col" className="bg-primary text-light">Department</th>
+                                    {/* <th scope="col" className="bg-primary text-light">Department</th> */}
                                     <th scope="col" className="bg-primary text-light">Date Deleted</th>
                                     <th scope="col" className="bg-primary text-light">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                               
-                                {currentItems.length <= 0 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
+                                {currentItems.length <= 0 ? <tr><td className="text-center" colSpan={6}>No Data Available</td></tr> :
                                     currentItems.map((policy:any, index:number) => (
                                         <tr key={index} style={{ cursor: 'pointer' }}
-                                            onClick={() => navigate(`/admin/policy/${policy.id}/${policy.isAuthorized}`)}
+                                            onClick={() => navigate(`/admin/view-deleted/${policy.id}`)}
                                         >
                                             <th scope="row">{index + 1}</th>
                                             <td className="text-primary"><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.fileName, 40)}`}</td>
 
                                             <td>{policy.authorizedBy}</td>
-                                            <td>{policy.policyDepartment}</td>
+                                            {/* <td>{policy.policyDepartment}</td> */}
                                             <td>{moment(policy.deleteRequestedTime).format('MMM DD YYYY')}</td>
                                             {/* <td className={`text-${policy.isAuthorized ? 'success' : 'warning'}`}>
                                                 <img src={policy.isAuthorized ? successElipse : warningElipse} height={'10px'} />
@@ -185,8 +185,19 @@ const handleGroupClick = async (e: any, policy: any) => {
                                                         <Card className="p-2  shadow-sm rounded border-0"
                                                             style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
                                                             <ListGroup
-                                                                onClick={(e) => handleGroupClick(e, policy)}
+                                                                
                                                             >
+                                                                <ListGroupItem
+                                                                    
+                                                                    >
+                                                                        <span className="w-100 d-flex justify-content-between">
+                                                                            <div className="d-flex gap-2">
+                                                                                <i className="bi bi-eye"></i>
+                                                                                View Policy
+                                                                            </div>
+                                                                        </span>
+                                                                    </ListGroupItem>
+
                                                                 <ListGroupItem className="multi-layer"
                                                                     onClick={(e) => handleGetAttestersList(e, policy)}
                                                                 >
@@ -214,17 +225,6 @@ const handleGroupClick = async (e: any, policy: any) => {
                                                                    
                                                                 </ListGroupItem>
 
-                                                                {/* <ListGroupItem
-                                                                onClick={(e) => handleUpdate(e, policy)}
-                                                                >
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-calendar-event"></i>
-                                                                            Update Deadline
-                                                                        </div>
-                                                                    </span>
-                                                                </ListGroupItem> */}
-
                                                                 <ListGroupItem
                                                                     onClick={(e) => handleSendAuthorizationReminder(e, policy)}
                                                                 >
@@ -236,7 +236,7 @@ const handleGroupClick = async (e: any, policy: any) => {
                                                                     </span>
                                                                 </ListGroupItem>
 
-                                                                <ListGroupItem
+                                                                {/* <ListGroupItem
                                                                     disabled={policy?.markedForDeletion}
                                                                     onClick={(e) => handleDelete(e, policy)}
                                                                 >
@@ -246,7 +246,7 @@ const handleGroupClick = async (e: any, policy: any) => {
                                                                             Delete
                                                                         </div>
                                                                     </span>
-                                                                </ListGroupItem>
+                                                                </ListGroupItem> */}
                                                             </ListGroup>
                                                         </Card>}
 
@@ -258,6 +258,16 @@ const handleGroupClick = async (e: any, policy: any) => {
                                                             <ListGroup
                                                                 
                                                             >
+                                                                <ListGroupItem
+                                                                    
+                                                                >
+                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                        <div className="d-flex gap-2">
+                                                                            <i className="bi bi-eye"></i>
+                                                                            View Policy
+                                                                        </div>
+                                                                    </span>
+                                                                </ListGroupItem>
                                                                  <ListGroupItem
                                                                     onClick={(e) => handleEdit(e, policy)}
                                                                 >

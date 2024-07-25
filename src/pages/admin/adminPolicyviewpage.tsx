@@ -156,7 +156,8 @@ const AdminPolicyviewpage = () => {
                 action={handleUndoPolicyDelete}
                 off={() => setConUndofDelModal(false)}
             />
-            <div><Button variant="outline border border-2" onClick={() => navigate(-1)}>Go Back</Button></div>
+            <h5 className="text-primary">Policy Information</h5>
+            <div className="mt-3"><Button variant="outline border border-2" onClick={() => navigate(-1)}>Go Back</Button></div>
             <div className="w-100 d-flex justify-content-between gap-4">
                 <div className="" style={{ minWidth: '70%' }}>
                     <div className="bg-dark mt-2 d-flex justify-content-between px-4 py-2 text-light ">

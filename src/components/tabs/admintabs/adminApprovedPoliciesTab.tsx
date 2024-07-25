@@ -94,8 +94,7 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     setLoading(false)
 
                     let filtered = res?.data.filter((policy: IPolicy) =>
-                        policy.fileName.toLowerCase().includes(query.toLowerCase()) && policy.isAuthorized && !policy.markedForDeletion ||
-                        policy.policyDepartment.toLowerCase().includes(query.toLowerCase()) && policy.isAuthorized && !policy.markedForDeletion
+                        policy.fileName.toLowerCase().includes(query.toLowerCase()) && policy.isAuthorized && !policy.markedForDeletion
                     );
                     setPolicies(filtered.reverse());
 
@@ -299,7 +298,7 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     <div className="d-flex align-items-center gap-2" style={{ position: 'relative' }}>
                         <FormControl
                             onChange={(e) => setQuery(e.target.value)}
-                            placeholder="Search by Name, Department..."
+                            placeholder="Search by Name of policy..."
                             value={query}
                             className="py-2" style={{ minWidth: '350px' }} />
                         <i

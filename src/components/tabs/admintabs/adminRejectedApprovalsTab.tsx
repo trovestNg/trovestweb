@@ -246,7 +246,7 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
                 <div className="d-flex align-items-center gap-2" style={{ position: 'relative' }}>
                         <FormControl
                             onChange={(e) => setQuery(e.target.value)}
-                            placeholder="Search by Name, Department..."
+                            placeholder="Search by Name of policy..."
                             value={query}
                             className="py-2" style={{ minWidth: '350px' }} />
                         <i
