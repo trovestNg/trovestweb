@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 import SureToDeletePolicyModal from "../../modals/sureToDeletePolicyModal";
 import UpdatePolicyModal from "../../modals/updatePolicyModal";
 import RejectReasonModal from "../../modals/rejectReasonModal";
+import { IDept } from "../../../interfaces/dept";
 
 const AuthorizerAllPolicyPagination: React.FC<any> = ({ data, refData }) => {
     const navigate = useNavigate();
@@ -29,6 +30,7 @@ const AuthorizerAllPolicyPagination: React.FC<any> = ({ data, refData }) => {
   const [updatePolicyModal, setUpdatePolicyModal] = useState<boolean>(false);
   const [deletePolicyModal, setDeteletPolicyModal] = useState<boolean>(false);
   const [rejReasonModal, setRejReasonModal] = useState<boolean>(false);
+  const [subSidiaries, setSubSidiaries] = useState<IDept[]>();
 
   const handleGetAttestersList = (e: any, pol: IPolicy) => {
     e.stopPropagation();
@@ -45,6 +47,26 @@ const handleUpdate = (e: any, policy: IPolicy) => {
     setPolicy(policy);
     setUpdatePolicyModal(true);
     // navigate(`/admin/edit-policy/${policy.id}`)
+}
+
+const handleGetSubs = async () => {
+    // setLoading(true)
+    try {
+        let userInfo = await getUserInfo();
+        let userName = userInfo?.profile?.sub.split('\\')[1]
+        const res = await api.get(`Subsidiaries`, `${userInfo?.access_token}`);
+        // console.log({ gotten: userInfo })({ dataHere: res })
+
+        if (res?.data) {
+            setSubSidiaries([{id:1000, name:"All Subsidiaries"},...res?.data])
+        } else {
+
+        }
+        // console.log({ gotten: userInfo })({ response: res })
+    } catch (error) {
+
+    }
+
 }
 
 const handleDownloadPolicy = (e: any, pol: IPolicy) => {

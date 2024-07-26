@@ -48,7 +48,7 @@ const UserAttestedPolicyPage = () => {
 
     return (
         <div className="w-100">
-            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Attested Policies {totalAttested} </h5>
+            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Attested Policies {`(${totalAttested})`}</h5>
             <p>Here you’ll see all the policies you have attested to.</p>
             {/* <div className="d-flex gap-5">
                 {

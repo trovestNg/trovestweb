@@ -135,7 +135,7 @@ const AdminSideBar: React.FC<any> = ({ payload }) => {
                 }
             </ul>
 
-            <ul className="px-2 mt-3 w-100">
+            <ul className="px-2 mt-5 w-100">
                 <li
                     className="d-flex text-light  align-items-center gap-3 p-0 m-0"
                     style={{ cursor: 'pointer'}}

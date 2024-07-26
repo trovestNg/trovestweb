@@ -79,7 +79,7 @@ const UserUnAttestedPolicyPage = () => {
    
     return (
         <div className="w-100">
-            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Not Attested Policies {totalNotAttested} </h5>
+            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Not Attested Policies {`(${totalNotAttested})`} </h5>
             <p>Review policies you haven't attested to yet. Kindly read and attest</p>
             {/* <div className="d-flex gap-5">
                 {

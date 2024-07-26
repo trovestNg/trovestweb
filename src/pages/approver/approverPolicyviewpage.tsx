@@ -314,7 +314,7 @@ const ApproverPolicyviewpage = () => {
                         </p>
                         <p className=" d-flex gap-2">
                             {/* <i className="bi bi-file-earmark"></i> */}
-                            {policy?.departmentId}
+                            {policy?.policyDepartment}
                         </p>
                         <hr />
                         <div className="d-flex justify-content-between">

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Modal, Card, Button } from "react-bootstrap";
 import { User } from "../interfaces/user";
 import PrimaryInput from "../components/inputFields/primaryInput";
@@ -48,6 +48,10 @@ const DashboardPage = () => {
 
         },
     ]
+
+useEffect(()=>{
+    
+})
 
     return (
         <div className="w-100">

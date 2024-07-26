@@ -19,7 +19,7 @@ const AdminApprovedPoliciesPage = () => {
     const [refreshComponent,setRefreshComponent] = useState(false);
     const navigate = useNavigate()
 
-    const [totalPolicyCount,setTotalPolicyCount] =useState(0);
+    const [totalApprovedPolicyByInitiator,settotalApprovedPolicyByInitiator] =useState(0);
     const [totalAttested,setTotalAttested] =useState(0);
     const [totalNotAttested,setTotalNotAttested] =useState(0);
     const [userDBInfo,setUserDBInfo]  = useState<IUserDashboard>()
@@ -31,7 +31,7 @@ const AdminApprovedPoliciesPage = () => {
             let userName = userInfo?.profile?.sub.split('\\')[1]
             const res = await api.get(`Dashboard/initiator?userName=${userName}`, `${userInfo?.access_token}`);
             setUserDBInfo(res?.data);
-            // console.log({ gotten: userInfo })({here:res})
+            settotalApprovedPolicyByInitiator(res?.data.totalApprovedPolicy)
             if (res?.data) {
                 let allAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>data.isAuthorized);
                 let unAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>!data.isAuthorized);
@@ -59,7 +59,9 @@ const AdminApprovedPoliciesPage = () => {
 
     return (
         <div className="w-100">
-            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Approved Policies {userDBInfo?.totalApprovedPolicy} </h5>
+            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Approved Policies 
+            {` (${totalApprovedPolicyByInitiator})`}
+            </h5>
             <p>Here, you'll find approved policies. Download lists of attesters and defaulters..</p>
             {/* <div className="d-flex gap-5">
                 {

@@ -24,6 +24,7 @@ subsidiaryId: number
 uploadTime: string,
 uploadedBy: string
 url: string,
+isAttested:boolean,
 subsidiaryName:string
 policyDepartment:string
 }

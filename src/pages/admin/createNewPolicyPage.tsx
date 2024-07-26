@@ -410,29 +410,7 @@ const CreateNewPolicyPage: React.FC<any> = () => {
                             </div>
 
 
-                            {/* <div className="px-2">
-                                <label>Select Subsidiaries</label>
-                                <Collapse
-                                    in={true}
-                                >
-                                    <Card>
-                                        <div className="d-flex flex-column" role="group">
-                                            {subsidiaries.map((option) => (
-                                                <label key={option.id}>
-                                                    <Field
-                                                        type="checkbox"
-                                                        name="department"
-                                                        value={option.id}
-                                                    />
-                                                    {option.name}
-                                                </label>
-                                            ))}
-                                        </div>
-                                    </Card>
-                                </Collapse>
-
-                                <ErrorMessage name="department" component="div" />
-                            </div> */}
+                           
 
                             <div className="p-2" style={{ marginTop: '5px', minWidth: '400px' }}>
 

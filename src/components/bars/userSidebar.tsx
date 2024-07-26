@@ -99,8 +99,7 @@ const UserSideBar: React.FC<any> = ({ payload }) => {
                     ))
                 }
             </ul>
-
-            <ul className="px-2 mt-3 w-100">
+            <ul className="px-2 mt-5 w-100">
                 {
                     userType == 'authorizer' &&
                     <li

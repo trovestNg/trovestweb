@@ -20,7 +20,7 @@ const AdminUploadedPoliciesPage = () => {
     const [userDBInfo,setUserDBInfo]  = useState<IUserDashboard>();
     const navigate = useNavigate();
 
-    const [totalPolicyCount,setTotalPolicyCount] =useState(0);
+    const [totalUploadedPolicyByInitiator,settotalUploadedPolicyByInitiator] =useState(0);
     const [totalAttested,setTotalAttested] =useState(0);
     const [totalNotAttested,setTotalNotAttested] =useState(0);
 
@@ -32,6 +32,7 @@ const AdminUploadedPoliciesPage = () => {
             // const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo?.access_token}`);
             const res = await api.get(`Dashboard/initiator?userName=${userName}`, `${userInfo?.access_token}`);
             setUserDBInfo(res?.data);
+            settotalUploadedPolicyByInitiator(res?.data.totalUploadedPolicyByInitiator)
             // console.log({ gotten: userInfo })({here:res})
             if (res?.data) {
                 let allAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>data.isAuthorized);
@@ -62,7 +63,9 @@ const AdminUploadedPoliciesPage = () => {
 
     return (
         <div className="w-100">
-            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Uploaded Policies {userDBInfo?.totalUploadedPolicyByInitiator} </h5>
+            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Uploaded Policies 
+            {` (${totalUploadedPolicyByInitiator})`}
+            </h5>
             <p>Here, you'll find all policies you have uploaded.</p>
             {/* <div className="d-flex gap-5">
                 {

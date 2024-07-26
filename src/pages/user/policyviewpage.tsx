@@ -285,15 +285,17 @@ const PolicyViewPage = () => {
             </div>
 
             <Modal show={attestedSuccesmodal} centered>
-                <Modal.Header className="">
-                    <i className="bi bi-x-circle text-end w-100" style={{ cursor: 'pointer' }} onClick={() => setAttestedSuccessModal(false)}></i>
-                </Modal.Header>
-                <Modal.Body>
-                    <div className="p-3 d-flex justify-content-center align-items-center flex-column">
+               
+                <Modal.Body className="w-100 text-end">
+                <i className="bi bi-x-circle text-end w-100" style={{ cursor: 'pointer', fontSize:'1.3em' }} onClick={() => setAttestedSuccessModal(false)}></i>
+                    <div className="p-3 py-5 d-flex justify-content-center align-items-center flex-column">
                         <img src={successIcon} height={'134px'} />
                         <p className="text-primary" style={{ fontFamily: 'title' }}>Policy Attested Successfully </p>
                         <p className="text-center">Thanks for attesting! Please check your list for any policies not yet attested. Your commitment is valued.</p>
-                        <Link to={''} onClick={() => navigate(-1)}>Return to the list of policies</Link>
+                        <Button onClick={()=>navigate('/policy-portal/unattested-policy')} className="text-light mt-3 p-3" >Return to the list of Not Attested Policies
+                            </Button>
+                        <Link className="mt-4" to={'/policy-portal'} >Back to dashboard</Link>
+                       
                     </div>
                 </Modal.Body>
             </Modal>

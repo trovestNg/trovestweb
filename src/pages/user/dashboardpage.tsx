@@ -25,16 +25,17 @@ const UserDashboardPage = () => {
     const [loading, setLoading] = useState(false);
     const [refreshComponent, setRefreshComponent] = useState(false)
 
-    const [totalPolicyCount, setTotalPolicyCount] = useState(0);
-    const [totalAttested, setTotalAttested] = useState(0);
-    const [totalNotAttested, setTotalNotAttested] = useState(0);
+    const [allPol, setAllPol] = useState(0);
+    const [attPol, setAttPol] = useState(0);
+    const [notAttPol, setNotAttPol] = useState(0);
+
     const [userDBInfo, setUserDBInfo] = useState<IUserDashboard>()
 
     const dashCardInfo = [
         {
             title: 'Total Policies',
             img: openBook,
-            count: userDBInfo?.totalPolicy,
+            count: allPol,
             path: '/policy-portal/all-policy',
             icon: '',
 
@@ -42,7 +43,7 @@ const UserDashboardPage = () => {
         {
             title: 'Attested Policies',
             img: checked,
-            count: userDBInfo?.totalAttested,
+            count: attPol,
             path: '/policy-portal/attested-policy',
             icon: '',
 
@@ -50,7 +51,7 @@ const UserDashboardPage = () => {
         {
             title: 'Not Attested Policies',
             img: timer,
-            count: userDBInfo?.totalNotAttested,
+            count: notAttPol,
             path: '/policy-portal/unattested-policy',
             icon: '',
 
@@ -80,9 +81,36 @@ const UserDashboardPage = () => {
         }
     }
 
+    const getAllPolicies = async () => {
+        setLoading(true)
+        try {
+            let userInfo = await getUserInfo();
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.get(`Policy/user-policy?userName=${userName}`, `${userInfo?.access_token}`);
+            if (res?.data) {
+                let allPolicies = res?.data.filter((pol: IPolicy) => !pol.isDeleted)
+                let attested = res?.data.filter((pol: IPolicy) =>pol.isAttested && !pol.isDeleted)
+                let notAttested = res?.data.filter((pol: IPolicy) => !pol.isAttested && !pol.isDeleted)
+                
+                console.log({seeHere :notAttested})
+
+                setAllPol(allPolicies.length)
+                setAttPol(attested.length)
+                setNotAttPol(notAttested.length)
+                
+                setLoading(false)
+            }
+
+        } catch (error) {
+            // console.log({ gotten: userInfo })(error)
+        }
+
+
+    }
+
 
     useEffect(() => {
-        getUserDashboard();
+        getAllPolicies()
     }, [refreshComponent])
     return (
         <div className="w-100">

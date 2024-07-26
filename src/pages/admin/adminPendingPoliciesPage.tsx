@@ -19,7 +19,7 @@ const AdminPendingPoliciesPage = () => {
     const [loading, setLoading] = useState(false);
     const [refreshComponent,setRefreshComponent] = useState(false)
 
-    const [totalPolicyCount,setTotalPolicyCount] =useState(0);
+    const [totalPendingPolicy,settotalPendingPolicyByInitiator] =useState(0);
     const [totalAttested,setTotalAttested] =useState(0);
     const [totalNotAttested,setTotalNotAttested] =useState(0);
     
@@ -30,13 +30,11 @@ const AdminPendingPoliciesPage = () => {
             let userInfo = await getUserInfo();
             let userName = userInfo?.profile?.sub.split('\\')[1]
             const res = await api.get(`Dashboard/initiator?userName=${userName}`, `${userInfo?.access_token}`);
-            setUserDBInfo(res?.data);
-            // console.log({ gotten: userInfo })({here:res})
+            settotalPendingPolicyByInitiator(res?.data.totalApprovedPolicy)
             if (res?.data) {
+                
                 let allAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>data.isAuthorized);
                 let unAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>!data.isAuthorized);
-                
-                setUserDBInfo(res?.data);
                 // setTotalAttested(allAttested.length);
                 // setTotalNotAttested(unAttested.length)
                 setPolicies([]);
@@ -59,8 +57,10 @@ const AdminPendingPoliciesPage = () => {
 
     return (
         <div className="w-100">
-            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Pending Policies {userDBInfo?.totalPendingPolicy} </h5>
-            <p>Here, you'll find Pending policies. You can cancel, edit and delete before approval.</p>
+            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Pending Policies 
+            {` (${totalPendingPolicy})`}
+            </h5>
+            <p>He you'll find Pending policies. You can cancel, edit and delete before approval.</p>
             {/* <div className="d-flex gap-5">
                 {
                     dashCardInfo.map((info, index) => (<DashboardCard key={index} imgSrc={info.img} title={info.title} />))

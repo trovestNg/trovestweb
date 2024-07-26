@@ -54,7 +54,7 @@ const UserAllPolicyPage = () => {
 
     return (
         <div className="w-100">
-            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>All Policies {totalPolicyCount} </h5>
+            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>All Policies {`(${totalPolicyCount})`} </h5>
             <p>Discover all policies and their respective statuses here.</p>
             {/* <div className="d-flex gap-5">
                 {

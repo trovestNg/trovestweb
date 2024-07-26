@@ -18,7 +18,7 @@ const AdminRejectedPoliciesPage = () => {
     const [loading, setLoading] = useState(false);
     const [refreshComponent,setRefreshComponent] = useState(false)
 
-    const [totalPolicyCount,setTotalPolicyCount] =useState(0);
+    const [totalRejected,settotalRejectedPolicy] =useState(0);
     const [totalAttested,setTotalAttested] =useState(0);
     const [totalNotAttested,setTotalNotAttested] =useState(0);
     
@@ -28,7 +28,7 @@ const AdminRejectedPoliciesPage = () => {
             let userInfo = await getUserInfo();
             let userName = userInfo?.profile?.sub.split('\\')[1]
             const res = await api.get(`Dashboard/initiator?userName=${userName}`, `${userInfo?.access_token}`);
-            setUserDBInfo(res?.data);
+            settotalRejectedPolicy(res?.data.totalRejectedPolicy)
             // console.log({ gotten: userInfo })({here:res})
             if (res?.data) {
                 let allAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>data.isAuthorized);
@@ -57,7 +57,8 @@ const AdminRejectedPoliciesPage = () => {
 
     return (
         <div className="w-100">
-            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Rejected Policies {userDBInfo?.totalRejectedPolicy} </h5>
+            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Rejected Policies 
+            {` (${totalRejected})`}</h5>
             <p>Here, you'll find rejected policies awaiting your reveiw.</p>
             {/* <div className="d-flex gap-5">
                 {

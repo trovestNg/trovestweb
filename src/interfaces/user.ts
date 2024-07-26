@@ -53,6 +53,7 @@ export interface IUserPolicy {
     department: string
     policyId: number
     policyName: string
+    subsidiaryId:number
 }
 
 export interface IUser {

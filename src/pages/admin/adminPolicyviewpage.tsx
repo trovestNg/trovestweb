@@ -333,10 +333,9 @@ const AdminPolicyviewpage = () => {
             </div>
 
             <Modal show={attestedSuccesmodal} centered>
-                <Modal.Header className="">
-                    <i className="bi bi-x-circle text-end w-100" style={{ cursor: 'pointer' }} onClick={() => setAttestedSuccessModal(false)}></i>
-                </Modal.Header>
+                
                 <Modal.Body>
+                <i className="bi bi-x-circle text-end w-100" style={{ cursor: 'pointer' }} onClick={() => setAttestedSuccessModal(false)}></i>
                     <div className="p-3 d-flex justify-content-center align-items-center flex-column">
                         <img src={successIcon} height={'134px'} />
                         <p className="text-primary" style={{ fontFamily: 'title' }}>Policy Attested Successfully </p>
