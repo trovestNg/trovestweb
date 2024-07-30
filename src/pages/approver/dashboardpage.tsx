@@ -137,13 +137,15 @@ const ApproverDashboardPage = () => {
                         <ApproverAllPoliciesTab handleCreatePolicy={()=>navigate('/admn/create-policy')} />
                     </Tab>
 
+                    <Tab eventKey="approved" title="Approved Policies">
+                    < ApproverApprovedPoliciesTab handleCreatePolicy={()=>navigate('/admn/create-policy')} />
+                    </Tab>
+
                     <Tab eventKey="pending" title="Policies Pending Approval">
                     <ApproverPendingPolicyTab handleCreatePolicy={()=>navigate('/admn/create-policy')} />
                     </Tab>
                     
-                    <Tab eventKey="approved" title="Approved Policies">
-                    < ApproverApprovedPoliciesTab handleCreatePolicy={()=>navigate('/admn/create-policy')} />
-                    </Tab>
+                   
                     
 
                     <Tab eventKey="rejected" title="Rejected Policies">

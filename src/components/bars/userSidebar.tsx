@@ -4,6 +4,7 @@ import logo from '../../assets/icons/logo1.png';
 import { useLocation, useNavigate, useNavigation } from "react-router-dom";
 import { getUserInfo, logoutUser } from "../../controllers/auth";
 import PromptModal from "../modals/promptModal";
+import SureToLogoutModal from "../modals/sureToLogoutModal";
 
 const UserSideBar: React.FC<any> = ({ payload }) => {
     const currentPath = useLocation().pathname;
@@ -11,6 +12,7 @@ const UserSideBar: React.FC<any> = ({ payload }) => {
     const [showPromt, setShowPromt] = useState(false);
     const [showApproverPrompt, setApproverPrompt] = useState(false);
     const [userType, setUserType] = useState('');
+    const [showlogout,setShowlogout] = useState(false);
 
 
 
@@ -25,8 +27,26 @@ const UserSideBar: React.FC<any> = ({ payload }) => {
     }
 
     const handleUserLogout = async () => {
-        const res = await logoutUser();
+        setShowlogout(true);
     }
+
+    const logUserOut = async () => {
+        logoutUser();
+
+        //  window.history.pushState(null, '', window.location.href);
+        // window.onpopstate = function(event) {
+        //   window.history.go(1);
+
+        // };
+
+        // window.history.replaceState(null,'',window.location.href)
+        // const res = await
+
+       
+
+
+    }
+
     const navlinksUser = [
         {
             title: 'Dashboard',
@@ -73,6 +93,7 @@ const UserSideBar: React.FC<any> = ({ payload }) => {
     },[])
     return (
         <div className={`min-vh-100 bg-primary ${styles.sidebarContainer}`} style={{ minWidth: '18em' }}>
+            <SureToLogoutModal action={logUserOut} show={showlogout} off={()=>setShowlogout(false)}/>
             <PromptModal show={showPromt} off={() => setShowPromt(false)} action={handleSwitch} />
             <PromptModal show={showApproverPrompt} off={() => setApproverPrompt(false)} action={handleAdminSwitch} />
 

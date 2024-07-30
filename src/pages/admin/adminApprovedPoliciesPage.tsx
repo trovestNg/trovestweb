@@ -19,37 +19,47 @@ const AdminApprovedPoliciesPage = () => {
     const [refreshComponent,setRefreshComponent] = useState(false);
     const navigate = useNavigate()
 
-    const [totalApprovedPolicyByInitiator,settotalApprovedPolicyByInitiator] =useState(0);
+    const [apPolicy,setApPol] =useState(0);
     const [totalAttested,setTotalAttested] =useState(0);
     const [totalNotAttested,setTotalNotAttested] =useState(0);
     const [userDBInfo,setUserDBInfo]  = useState<IUserDashboard>()
     
     const getInitiatorDashboard = async () => {
         setLoading(true)
-        try {
-            let userInfo = await getUserInfo();
+
+       
+            try {
+                let userInfo = await getUserInfo();
+                if (userInfo) {
             let userName = userInfo?.profile?.sub.split('\\')[1]
-            const res = await api.get(`Dashboard/initiator?userName=${userName}`, `${userInfo?.access_token}`);
-            setUserDBInfo(res?.data);
-            settotalApprovedPolicyByInitiator(res?.data.totalApprovedPolicy)
-            if (res?.data) {
-                let allAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>data.isAuthorized);
-                let unAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>!data.isAuthorized);
+            const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
+                    if (res?.data) {
+                        setLoading(false);
+
+                let allPolicies = res?.data.filter((pol: IPolicy) => !pol.isDeleted && !pol.markedForDeletion)
+                let apPol = res?.data.filter((pol: IPolicy) => pol.isAuthorized && !pol.isDeleted && !pol.markedForDeletion)
+                let pendPol = res?.data.filter((pol: IPolicy) => !pol.isAuthorized && !pol.isDeleted && !pol.isRejected && !pol.markedForDeletion)
+                let rejPol = res?.data.filter((pol: IPolicy) => pol.isRejected && !pol.isDeleted && !pol.markedForDeletion)
+
+
+                // console.log({seeHere :notAttested})
+
+
                 
-                setUserDBInfo(res?.data);
-                // setTotalAttested(allAttested.length);
-                // setTotalNotAttested(unAttested.length)
-                setPolicies([]);
-                setLoading(false);
-            } else {
-                setLoading(false);
-                // loginUser()
-                // toast.error('Session expired!, You have been logged out!!')
-            }
-            // console.log({ gotten: userInfo })({ response: res })
-        } catch (error) {
+                setApPol(apPol.length);
+                
+                    } else {
+                        // loginUser()
+                        // toast.error('Session expired!, You have been logged out!!')
+                    }
+                    // console.log({ gotten: userInfo })({ response: res })
+                }
     
-        }
+            } catch (error) {
+    
+            }
+        
+        
     }
 
    
@@ -60,7 +70,7 @@ const AdminApprovedPoliciesPage = () => {
     return (
         <div className="w-100">
             <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Approved Policies 
-            {` (${totalApprovedPolicyByInitiator})`}
+            {` (${apPolicy})`}
             </h5>
             <p>Here, you'll find approved policies. Download lists of attesters and defaulters..</p>
             {/* <div className="d-flex gap-5">

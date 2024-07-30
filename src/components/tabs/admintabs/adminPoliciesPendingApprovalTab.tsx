@@ -14,7 +14,7 @@ import SureToDeletePolicyModal from "../../modals/sureToDeletePolicyModal";
 import UpdatePolicyModal from "../../modals/updatePolicyModal";
 import AdminPendingPolicyPagination from "../../paginations/admin/admin-pending-policy-pagiantion";
 
-const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) => {
+const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy,refComp}) => {
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
     const [policies, setPolicies] = useState<IPolicy[]>([]);
@@ -44,7 +44,7 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
             const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo?.access_token}`);
 
             if (res?.data) {
-                let unApprovedPolicies = res?.data.filter((policy: IPolicy) => !policy.isAuthorized && !policy.markedForDeletion && !policy.isDeleted)
+                let unApprovedPolicies = res?.data.filter((policy: IPolicy) => !policy.isAuthorized && !policy.isRejected && !policy.markedForDeletion && !policy.isDeleted)
                 setPolicies(unApprovedPolicies.reverse());
                 setLoading(false)
             }
@@ -304,7 +304,7 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
                                 <tr >
                                     <th scope="col" className="bg-primary text-light">#</th>
                                     <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                    <th scope="col" className="bg-primary text-light">Department</th>
+                                    <th scope="col" className="bg-primary text-light">Subsidiary</th>
                                     <th scope="col" className="bg-primary text-light">Authorizer</th>
                                     <th scope="col" className="bg-primary text-light">Date Uploaded</th>
                                     <th scope="col" className="bg-primary text-light">Action</th>
@@ -314,7 +314,7 @@ const AdminPoliciesPendingApprovalTab: React.FC<any> = ({ handleCreatePolicy }) 
                                 <tr className=""><td className="text-center" colSpan={5}><Spinner className="spinner-grow text-primary" /></td></tr>
                             </tbody>
                         </table> :
-                        <AdminPendingPolicyPagination data={policies} refData={() => setRefreshData(!refreshData)}/>
+                        <AdminPendingPolicyPagination data={policies} refData={()=>{refComp();setRefreshData(!refreshData)}} />
                 }
             </div>
             {/* {

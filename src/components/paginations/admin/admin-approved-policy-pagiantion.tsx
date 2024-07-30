@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import successElipse from '../../../assets/images/Ellipse-success.png';
 import warningElipse from '../../../assets/images/Ellipse-warning.png';
 import dangerElipse from '../../../assets/images/Ellipse-danger.png';
-import { Card, ListGroup, ListGroupItem, Pagination } from "react-bootstrap";
+import { Card, ListGroup, ListGroupItem, OverlayTrigger, Pagination, Tooltip } from "react-bootstrap";
 import { IPolicy } from "../../../interfaces/policy";
 import { getUserInfo } from "../../../controllers/auth";
 import api from "../../../config/api";
@@ -98,6 +98,26 @@ const handleSendAuthorizationReminder = async (e: any, policy: IPolicy) => {
     
 }
 
+let handleSubName = (subsidiaryArray: any) => {
+    let names: string[] = subsidiaryArray.map((subs: any) => subs.subsidiaryName);
+    // console.log({subName : })
+    let shortened = shortenString(names.toString(), 30)
+    return shortened
+}
+
+let handleFullSub = (subsidiaryArray: any) => {
+    let names: string[] = subsidiaryArray.map((subs: any) => subs.subsidiaryName);
+    // console.log({subName : })
+    
+    return names.toString()
+}
+
+const renderTooltip = (props:any) => (
+    <Tooltip id="button-tooltip" {...props}>
+      <p>{props}</p>
+    </Tooltip>
+  );
+
 
     const renderPaginationItems = () => {
         const items = [];
@@ -146,7 +166,7 @@ const handleSendAuthorizationReminder = async (e: any, policy: IPolicy) => {
                             <tr >
                                 <th scope="col" className="bg-primary text-light">#</th>
                                 <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                {/* <th scope="col" className="bg-primary text-light">Initiator</th> */}
+                                <th scope="col" className="bg-primary text-light">Subsidiary</th>
                                 <th scope="col" className="bg-primary text-light">Authorizer</th>
                                 <th scope="col" className="bg-primary text-light">Deadline Date</th>
                                 <th scope="col" className="bg-primary text-light">Action</th>
@@ -160,6 +180,11 @@ const handleSendAuthorizationReminder = async (e: any, policy: IPolicy) => {
                                         >
                                             <th scope="row">{index + 1}</th>
                                             <td className="text-primary"><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.fileName,40)}`}</td>
+                                            <td>
+            <OverlayTrigger placement="top" overlay={renderTooltip(handleFullSub(policy?.subsidiaries))}>
+              <span>{handleSubName(policy?.subsidiaries)}</span>
+            </OverlayTrigger>
+          </td>
                                             {/* <td>{policy.uploadedBy}</td> */}
                                             <td>{policy.authorizedBy}</td>
                                             <td>{moment(policy.deadlineDate).format('MMM DD YYYY')}</td>

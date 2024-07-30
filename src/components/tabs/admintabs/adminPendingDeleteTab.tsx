@@ -358,6 +358,7 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                             <tr >
                                 <th scope="col" className="bg-primary text-light">#</th>
                                 <th scope="col" className="bg-primary text-light">Policy Title</th>
+                                <th scope="col" className="bg-primary text-light">Subsidiary</th>
                                 <th scope="col" className="bg-primary text-light">Authorizer</th>
                                 {/* <th scope="col" className="bg-primary text-light">Department</th> */}
                                 <th scope="col" className="bg-primary text-light">Date Deleted</th>
@@ -365,7 +366,7 @@ const AdminPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr className=""><td className="text-center" colSpan={6}><Spinner className="spinner-grow text-primary" /></td></tr>
+                            <tr className=""><td className="text-center" colSpan={7}><Spinner className="spinner-grow text-primary" /></td></tr>
                         </tbody>
                     </table> :
                         <AdminPendingDelPolicyPagination data={policies} refData={()=>setRefreshData(!refreshData)}/>

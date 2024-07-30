@@ -27,6 +27,7 @@ url: string,
 isAttested:boolean,
 subsidiaryName:string
 policyDepartment:string
+subsidiaries:[{}]
 }
 
 export interface IPolicyEdit {

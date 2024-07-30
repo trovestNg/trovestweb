@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import notificationIcon from "../../assets/icons/notification-icon.png";
 import { Card, ListGroup, ListGroupItem } from "react-bootstrap";
-import { getUserInfo } from "../../controllers/auth";
+import { getUserInfo, logoutUser } from "../../controllers/auth";
 
 
 
@@ -9,9 +9,18 @@ import { getUserInfo } from "../../controllers/auth";
 const TopBar: React.FC<any> = ({ payload }) => {
     const [userType, setUserType] = useState('');
     const [userName, setUserName] = useState('');
+
     const getUserType = async () => {
         try {
             let userInfo = await getUserInfo();
+            console.log({him:userInfo})
+            if (userInfo?.expired) {
+                logoutUser();
+            }
+
+            if (userInfo?.profile.given_name == null) {
+                logoutUser();
+            }
             if (userInfo) {
                 setUserName(`${userInfo?.profile?.given_name} ${userInfo?.profile?.family_name}`)
             }
@@ -25,7 +34,7 @@ const TopBar: React.FC<any> = ({ payload }) => {
             }
 
         } catch (error) {
-
+            logoutUser()
         }
 
     }
@@ -45,13 +54,13 @@ const TopBar: React.FC<any> = ({ payload }) => {
                         <i className="bi bi-person-circle text-primary" style={{ fontSize: '1.5em' }}></i>
                     </div>
                     <div>
-                    <p className="p-0 m-0">{userName}</p>
-                    <p className="p-0 m-0" style={{ fontFamily: 'primary' }}>{userType}</p>
+                        <p className="p-0 m-0">{userName}</p>
+                        <p className="p-0 m-0" style={{ fontFamily: 'primary' }}>{userType}</p>
                     </div>
-                    
+
                 </div>
                 <div>
-                   
+
                 </div>
 
             </div>

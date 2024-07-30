@@ -10,7 +10,9 @@ const SigninCallBackPage = () => {
     const handleUserAuth = async () => {
         const res = await handleCallback();
         if (res?.access_token) {
+            
             navigate('/policy-portal', { replace: true });
+           
         } else {
         //    loginUser()
         }

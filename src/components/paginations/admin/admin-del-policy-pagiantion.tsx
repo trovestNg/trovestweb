@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import successElipse from '../../../assets/images/Ellipse-success.png';
 import warningElipse from '../../../assets/images/Ellipse-warning.png';
 import dangerElipse from '../../../assets/images/Ellipse-danger.png';
-import { Card, ListGroup, ListGroupItem, Pagination } from "react-bootstrap";
+import { Card, ListGroup, ListGroupItem, OverlayTrigger, Pagination, Tooltip } from "react-bootstrap";
 import { IPolicy } from "../../../interfaces/policy";
 import { getUserInfo } from "../../../controllers/auth";
 import api from "../../../config/api";
@@ -83,21 +83,25 @@ const handleEdit = (e: any, policy: IPolicy) => {
     navigate(`/admin/edit-policy/${policy.id}`)
 }
 
-const handleSendAuthorizationReminder = async (e: any, policy: IPolicy) => {
-    e.stopPropagation();
-    let userInfo = await getUserInfo();
-        if (userInfo) {
-            const res = await api.post(`Policy/nudge-authorizer?policyId=${policy.id}`, { "policyId": policy.id }, userInfo?.access_token);
-    if (res?.status == 200) {
-        toast.success('Reminder sent!');
-        refData()
-    } else {
-        toast.error('Error sending reminder')
-    }
-        }
-
-    
+let handleSubName = (subsidiaryArray: any) => {
+    let names: string[] = subsidiaryArray.map((subs: any) => subs.subsidiaryName);
+    // console.log({subName : })
+    let shortened = shortenString(names.toString(), 30)
+    return shortened
 }
+
+let handleFullSub = (subsidiaryArray: any) => {
+    let names: string[] = subsidiaryArray.map((subs: any) => subs.subsidiaryName);
+    // console.log({subName : })
+
+    return names.toString()
+}
+
+const renderTooltip = (props: any) => (
+    <Tooltip id="button-tooltip" {...props}>
+        <p>{props}</p>
+    </Tooltip>
+);
 
 const handleGroupClick = async (e: any, policy: any) => {
     e.stopPropagation();
@@ -149,16 +153,17 @@ const handleGroupClick = async (e: any, policy: any) => {
                 }}
             />
             <table className="table table-striped w-100">
-                            <thead className="thead-dark">
-                            <tr >
-                                <th scope="col" className="bg-primary text-light">#</th>
-                                <th scope="col" className="bg-primary text-light">Policy Title</th>
-                                <th scope="col" className="bg-primary text-light">Authorizer</th>
-                                {/* <th scope="col" className="bg-primary text-light">Department</th> */}
-                                <th scope="col" className="bg-primary text-light">Date Deleted</th>
-                                <th scope="col" className="bg-primary text-light">Action</th>
-                            </tr>
-                        </thead>
+            <thead className="thead-dark">
+                    <tr >
+                        <th scope="col" className="bg-primary text-light">#</th>
+                        <th scope="col" className="bg-primary text-light">Policy Title</th>
+                        <th scope="col" className="bg-primary text-light">Subsidiary</th>
+                        <th scope="col" className="bg-primary text-light">Authorizer</th>
+                        {/* <th scope="col" className="bg-primary text-light">Department</th> */}
+                        <th scope="col" className="bg-primary text-light">Date Deleted</th>
+                        <th scope="col" className="bg-primary text-light">Action</th>
+                    </tr>
+                </thead>
                             <tbody>
                                 {currentItems.length <= 0 ? <tr><td className="text-center" colSpan={6}>No Data Available</td></tr> :
                                     currentItems.map((policy:any, index:number) => (
@@ -166,7 +171,11 @@ const handleGroupClick = async (e: any, policy: any) => {
                                         >
                                             <th scope="row">{index + 1}</th>
                                             <td><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.fileName, 40)}`}</td>
-
+                                            <td>
+                                    <OverlayTrigger placement="top" overlay={renderTooltip(handleFullSub(policy?.subsidiaries))}>
+                                        <span>{handleSubName(policy?.subsidiaries)}</span>
+                                    </OverlayTrigger>
+                                </td>
                                             <td>{policy.authorizedBy}</td>
                                             {/* <td>{policy.policyDepartment}</td> */}
                                             <td>{moment(policy.deleteRequestedTime).format('MMM DD YYYY')}</td>

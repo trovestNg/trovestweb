@@ -47,7 +47,7 @@ export default function () {
         <Routes>
             <Route path="/" element={<Landingpage />} />
             <Route path="callback" element={<SigninCallBackPage />} />
-            <Route path="/logout" element={<LoggedOutPage />} />
+            <Route path="logout" element={<LoggedOutPage />} />
 
             <Route path="policy-portal" element={< UserDashboardContainer />}>
                 <Route index element={<UserDashboardPage />} />

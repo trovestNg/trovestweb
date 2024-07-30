@@ -19,7 +19,7 @@ import { shortenString } from "../../../util";
 import RejectReasonModal from "../../modals/rejectReasonModal";
 import AdminAllPolicyPagination from "../../paginations/admin/admin-all-policy-pagiantion";
 
-const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
+const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy, refComp }) => {
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
     const [policies, setPolicies] = useState<IPolicy[]>([]);
@@ -340,13 +340,6 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                             onClick={() => handleSearch()}
                             variant="primary" style={{ minWidth: '100px', marginRight: '-5px', minHeight:'2.4em' }}>Search</Button>
                     </div>
-                    {/* <Form.Select onChange={(e) => handleDeptSelection(e.currentTarget.value)} className="custom-select"
-                        style={{ maxWidth: '170px' }}>
-                        <option value={'all'}>Select Department</option>
-                        {
-                            depts.map((dept) => <option key={dept.id} value={dept.name}>{dept.name}</option>)
-                        }
-                    </Form.Select> */}
 
                 </div>
                 <div className="">
@@ -365,6 +358,7 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                             <tr >
                                 <th scope="col" className="bg-primary text-light">#</th>
                                 <th scope="col" className="bg-primary text-light">Policy Title</th>
+                                <th scope="col" className="bg-primary text-light">Subsidiary</th>
                                 <th scope="col" className="bg-primary text-light">Authorizer</th>
                                 <th scope="col" className="bg-primary text-light">Date Uploaded</th>
                                 <th scope="col" className="bg-primary text-light">Status</th>
@@ -375,7 +369,7 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                             <tr className=""><td className="text-center" colSpan={7}><Spinner className="spinner-grow text-primary" /></td></tr>
                         </tbody>
                     </table> :
-                        <AdminAllPolicyPagination data={policies} refData={()=>setRefreshData(!refreshData)}/>
+                        <AdminAllPolicyPagination data={policies} refData={()=>{refComp();setRefreshData(!refreshData)}}/>
                 }
             </div>
             {/* {

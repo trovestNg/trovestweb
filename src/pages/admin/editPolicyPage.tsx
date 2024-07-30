@@ -42,6 +42,8 @@ const EditPolicyPage: React.FC<any> = () => {
     const [fileName, setFileName] = useState('');
     const [updatedPolDoc,setUpddatedPolDoc] = useState();
 
+    const [allSelected, setAllSelected] = useState(false);
+
     const initialValues  = {
         ...policy,
         policyDocument: null,
@@ -81,25 +83,22 @@ const EditPolicyPage: React.FC<any> = () => {
     ]
 
     const handleGetDepts = async () => {
-        let userInfo = await getUserInfo();
-
-        if (userInfo) {
-            try {
-                const res = await api.get(`Subsidiaries`, `${userInfo?.access_token}`);
-                // console.log({ gotten: userInfo })({ dataHere: res })
-    
-                if (res?.data) {
-                    setSubSidiaries(res?.data)
-                } else {
-    
-                }
-                // console.log({ gotten: userInfo })({ response: res })
-            } catch (error) {
-    
-            }
-        }
         // setLoading(true)
-        
+        try {
+            let userInfo = await getUserInfo();
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.get(`Subsidiaries`, `${userInfo?.access_token}`);
+            // console.log({ gotten: userInfo })({ dataHere: res })
+
+            if (res?.data) {
+                setSubSidiaries([{ id: 1000, name: 'All', subsidiaryId: 5000 }, ...res?.data])
+            } else {
+
+            }
+            // console.log({ gotten: userInfo })({ response: res })
+        } catch (error) {
+
+        }
 
     }
 
@@ -210,6 +209,7 @@ const EditPolicyPage: React.FC<any> = () => {
 
     }
 
+
     const getPolicy = async () => {
         let userInfo = await getUserInfo();
         if (userInfo) {
@@ -232,6 +232,34 @@ const EditPolicyPage: React.FC<any> = () => {
         }
 
     }
+
+    const handleCheckboxChange = (setFieldValue :any, option:any, index:any, values:any) => (event:any) => {
+        const isChecked = event.target.checked;
+
+        if (option.name === 'All') {
+            setAllSelected(isChecked);
+            if (isChecked) {
+                setFieldValue('Subsidiary', subSidiaries && subSidiaries.map((opt) => opt.id));
+            } else {
+                setFieldValue('Subsidiary', []);
+            }
+        } else {
+            const newValues = [...values.Subsidiary];
+            if (isChecked) {
+                newValues.push(option.id);
+            } else {
+                const valueIndex = newValues.indexOf(option.id);
+                if (valueIndex !== -1) {
+                    newValues.splice(valueIndex, 1);
+                }
+            }
+            setFieldValue('Subsidiary', newValues);
+
+            if ( subSidiaries && newValues.length ===  subSidiaries.length - 1 && !isChecked) {
+                setAllSelected(false);
+            }
+        }
+    };
 
 
 
@@ -367,12 +395,16 @@ const EditPolicyPage: React.FC<any> = () => {
                                 >
                                     <Card className="py-1 px-2">
                                         <div className="d-flex flex-column" role="group">
-                                            {subSidiaries && subSidiaries.map((option) => (
+                                            {subSidiaries && subSidiaries.map((option, index) => (
                                                 <label key={option.id} className="d-flex gap-2">
                                                     <Field
+                                                        disabled={allSelected && option.name !== 'All'}
                                                         type="checkbox"
                                                         name="Subsidiary"
-                                                        value={JSON.stringify(option.id)}
+                                                        id="Subsidiary"
+                                                        value={option.id}
+                                                        // checked={values.Subsidiary.includes(2)}
+                                                        onChange={handleCheckboxChange(setFieldValue, option, index, values)}
                                                     />
                                                     {option.name}
                                                 </label>

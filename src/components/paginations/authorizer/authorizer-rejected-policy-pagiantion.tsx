@@ -147,6 +147,7 @@ const AuthorizerRejectedPolicyPagination: React.FC<any> = ({ data, refData }) =>
                         <th scope="col" className="bg-primary text-light">#</th>
                         <th scope="col" className="bg-primary text-light">Policy Title</th>
                         <th scope="col" className="bg-primary text-light">Initiator</th>
+                        <th scope="col" className="bg-primary text-light">Department</th>
                         <th scope="col" className="bg-primary text-light">Reason for Rejection</th>
                         <th scope="col" className="bg-primary text-light">Date Rejected</th>
                         <th scope="col" className="bg-primary text-light">Action</th>
@@ -160,12 +161,13 @@ const AuthorizerRejectedPolicyPagination: React.FC<any> = ({ data, refData }) =>
                             >
                                 <th scope="row">{index + 1}</th>
                                 <td className="text-primary"><i className="bi bi-file-earmark-pdf text-danger"></i> {policy.fileName}</td>
-                                <td className="text-primary"><i className="bi bi-file-earmark-pdf text-danger"></i> {policy.uploadedBy}</td>
+                                <td >{policy.uploadedBy}</td>
+                                <td >{policy.policyDepartment}</td>
                                 <td>{policy.comment}</td>
                                 <td>{moment(policy.deadlineDate).format('MMM DD YYYY')}</td>
                                 <td className="table-icon" >
                                     <i className=" bi bi-three-dots" onClick={(e) => e.stopPropagation()}></i>
-                                    <div className="content ml-5" style={{ position: 'relative' }}>
+                                    <div className="content ml-5" style={{ position: 'relative', zIndex:1500 }}>
                                         {
                                             policy.isAuthorized &&
                                             <Card className="p-2  shadow-sm rounded border-0"

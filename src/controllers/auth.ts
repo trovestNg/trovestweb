@@ -9,7 +9,9 @@ const userManager = new UserManager(Identity);
 // Function to sign-in
 export const loginUser = async () => {
   try {
-    await userManager.signinRedirect();
+    await userManager.signinRedirect({
+      extraQueryParams: { prompt: 'login' }
+  });
   } catch (error) {
     console.error('Error signing in:', error);
   }
@@ -91,7 +93,7 @@ export const logoutUser = async () => {
   try {
     
     await userManager.signoutRedirect();
-    localStorage.removeItem('access_token');
+    localStorage.removeItem('access_token');  
     localStorage.clear()
   } catch (error) {
     console.error('Error signing out:', error);

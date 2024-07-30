@@ -13,6 +13,7 @@ import api from "../../config/api";
 import { IPolicy } from "../../interfaces/policy";
 import { IDept } from "../../interfaces/dept";
 import { toast } from "react-toastify";
+import { IUserPolicy } from "../../interfaces/user";
 
 
 const UserUnAttestedPolicyPage = () => {
@@ -52,28 +53,29 @@ const UserUnAttestedPolicyPage = () => {
     ]
 
 
-    const getUserDashboard = async () => {
+    const getAllPolicies = async () => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
             let userName = userInfo?.profile?.sub.split('\\')[1]
-            const res = await api.get(`Dashboard/user?userName=${userName}`, `${userInfo?.access_token}`);
+            const res = await api.get(`Policy/user-policy?userName=${userName}`, `${userInfo?.access_token}`);
             if (res?.data) {
-                setTotalNotAttested(res?.data?.totalNotAttested);
-                setLoading(false);
-            } else {
-                // setLoading(false);
-                ;
+                let unAttested = res?.data.filter((policy: IUserPolicy) => !policy.isAttested && (!policy.isDeleted || !policy.markedForDeletion));
+                
+                setTotalNotAttested(unAttested.length);
+                setLoading(false)
             }
-
 
         } catch (error) {
             // console.log({ gotten: userInfo })(error)
         }
+
+
     }
 
+   
     useEffect(()=>{
-        getUserDashboard(); 
+        getAllPolicies(); 
     },[refreshComponent])
 
    

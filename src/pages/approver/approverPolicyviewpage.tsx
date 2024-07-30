@@ -138,6 +138,12 @@ const ApproverPolicyviewpage = () => {
         }
     }
 
+    let handleSubName = (subsidiaryArray: any) => {
+        let names: string[] = subsidiaryArray.map((subs: any) => subs.subsidiaryName);
+        // console.log({subName : })
+        let shortened = shortenString(names.toString(), 30)
+        return shortened
+    }
 
     const approvePolicy = async () => {
         setLoading(true)
@@ -316,6 +322,17 @@ const ApproverPolicyviewpage = () => {
                             {/* <i className="bi bi-file-earmark"></i> */}
                             {policy?.policyDepartment}
                         </p>
+
+                        <p className=" d-flex gap-2 text-grey p-0 m-0">
+                            {/* <i className="bi bi-file-earmark"></i> */}
+                            Subsidiary
+                        </p>
+                        <p className=" d-flex gap-2">
+                            {/* <i className="bi bi-file-earmark"></i> */}
+                            {
+                            policy && handleSubName(policy?.subsidiaries) 
+                            }
+                        </p>
                         <hr />
                         <div className="d-flex justify-content-between">
                             <div>
@@ -352,6 +369,8 @@ const ApproverPolicyviewpage = () => {
                         </div>
                     }
                     {
+                       policy && !policy.isRejected &&<div>
+                    {
                         policy && !policy?.isAuthorized && !policy?.markedForDeletion &&
                         <div className="d-flex mt-4 gap-3">
                             {
@@ -370,6 +389,8 @@ const ApproverPolicyviewpage = () => {
 
                         </div>
                     }
+                    </div>}
+                    
 
                     {
                     policy?.markedForDeletion  && !policy.isDeleted &&

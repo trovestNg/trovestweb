@@ -24,7 +24,6 @@ import AdminApprovedPoliciesTab from "../../components/tabs/admintabs/adminAppro
 
 const AdminDashboardPage = () => {
     const navigate = useNavigate()
-    const [policies, setPolicies] = useState<IPolicy[]>([]);
     const [depts, setDepts] = useState<IDept[]>([]);
     // const [regUsers, setRegUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
@@ -32,13 +31,18 @@ const AdminDashboardPage = () => {
     const [userDBInfo, setUserDBInfo] = useState<IUserDashboard>()
     const [createPolicy, setCreatePolicy] = useState(false);
 
+    const [allPol, setAllPol] = useState(0);
+    const [apPol, setApPol] = useState(0);
+    const [pendPol, setPendPol] = useState(0);
+    const [rejPol, setRejPol] = useState(0);
+
     const dashCardInfo = [
         {
             title: 'Uploaded Policies',
             img: openBook,
             color: 'primary',
-            count: userDBInfo?.totalUploadedPolicyByInitiator,
-            path:'/admin/uploaded-policies',
+            count: allPol,
+            path: '/admin/uploaded-policies',
             icon: '',
 
         },
@@ -46,8 +50,8 @@ const AdminDashboardPage = () => {
             title: 'Approved Policies',
             color: 'primary',
             img: checked,
-            count: userDBInfo?.totalApprovedPolicy,
-            path:'/admin/approved-policies',
+            count: apPol,
+            path: '/admin/approved-policies',
             icon: '',
 
         },
@@ -55,8 +59,8 @@ const AdminDashboardPage = () => {
             title: 'Pending Policies',
             color: 'primary',
             img: timer,
-            count: userDBInfo?.totalPendingPolicy,
-            path:'/admin/pending-policies',
+            count: pendPol,
+            path: '/admin/pending-policies',
             icon: '',
 
         },
@@ -64,32 +68,52 @@ const AdminDashboardPage = () => {
             title: 'Rejected Policies',
             color: 'danger',
             img: error,
-            count: userDBInfo?.totalRejectedPolicy,
-            path:'/admin/rejected-policies',
+            count:rejPol,
+            path: '/admin/rejected-policies',
             icon: '',
 
         },
     ]
 
+   
+
     const getInitiatorDashboard = async () => {
         setLoading(true)
-        try {
-            let userInfo = await getUserInfo();
+
+       
+            try {
+                let userInfo = await getUserInfo();
+                if (userInfo) {
             let userName = userInfo?.profile?.sub.split('\\')[1]
-            const res = await getPolicies(`Dashboard/initiator?userName=${userName}`, `${userInfo?.access_token}`);
+            const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
+                    if (res?.data) {
+                        setLoading(false);
 
-            if (res?.data) {
-                setUserDBInfo(res?.data);
-                setLoading(false);
-            } else {
-                // setLoading(false);
-                ;
+                let allPolicies = res?.data.filter((pol: IPolicy) => !pol.isDeleted && !pol.markedForDeletion)
+                let apPol = res?.data.filter((pol: IPolicy) => pol.isAuthorized && !pol.isDeleted && !pol.markedForDeletion)
+                let pendPol = res?.data.filter((pol: IPolicy) => !pol.isAuthorized && !pol.isDeleted && !pol.isRejected && !pol.markedForDeletion)
+                let rejPol = res?.data.filter((pol: IPolicy) => pol.isRejected && !pol.isDeleted && !pol.markedForDeletion)
+
+
+                // console.log({seeHere :notAttested})
+
+
+                setAllPol(allPolicies.length);
+                setApPol(apPol.length);
+                setPendPol(pendPol.length);
+                setRejPol(rejPol.length);
+                    } else {
+                        // loginUser()
+                        // toast.error('Session expired!, You have been logged out!!')
+                    }
+                    // console.log({ gotten: userInfo })({ response: res })
+                }
+    
+            } catch (error) {
+    
             }
-
-
-        } catch (error) {
-            // console.log({ gotten: userInfo })(error)
-        }
+        
+        
     }
 
     useEffect(() => {
@@ -119,22 +143,29 @@ const AdminDashboardPage = () => {
                     <Tab eventKey="uploaded" title="Uploaded Policies"
                         tabClassName=""
                     >
-                        <AdminUploadedPoliciesTab handleCreatePolicy={() => navigate('/admin/create-policy')} />
+                        <AdminUploadedPoliciesTab 
+                        refComp={()=>setRefreshComponent(!refreshComponent)} handleCreatePolicy={() => navigate('/admin/create-policy')} />
                     </Tab>
 
                     <Tab eventKey="approved" title="Approved Policies">
-                        <AdminApprovedPoliciesTab handleCreatePolicy={() => navigate('/admin/create-policy')} />
+                        <AdminApprovedPoliciesTab 
+                        refComp={()=>setRefreshComponent(!refreshComponent)} handleCreatePolicy={() => navigate('/admin/create-policy')}
+                        />
                     </Tab>
 
                     <Tab eventKey="pending" title="Policies Pending Approval">
-                        <AdminPoliciesPendingApprovalTab handleCreatePolicy={() => navigate('/admin/create-policy')} />
+                        <AdminPoliciesPendingApprovalTab 
+                        refComp={()=>setRefreshComponent(!refreshComponent)} handleCreatePolicy={() => navigate('/admin/create-policy')}
+                         />
                     </Tab>
 
                     <Tab eventKey="rejected" title="Rejected Policies">
-                        <AdminRejectedApprovalsTab handleCreatePolicy={() => navigate('/admin/create-policy')} />
+                        <AdminRejectedApprovalsTab 
+                        refComp={()=>setRefreshComponent(!refreshComponent)} handleCreatePolicy={() => navigate('/admin/create-policy')}
+                         />
                     </Tab>
 
-                    
+
                 </Tabs>
 
             </div>

@@ -8,6 +8,7 @@ import { getPolicies } from "../../controllers/policy";
 import { getUserInfo, loginUser } from "../../controllers/auth";
 import { toast } from "react-toastify";
 import api from "../../config/api";
+import { IUserPolicy } from "../../interfaces/user";
 
 
 const UserAttestedPolicyPage = () => {
@@ -21,29 +22,29 @@ const UserAttestedPolicyPage = () => {
     const [totalAttested,setTotalAttested] =useState(0);
     const [totalNotAttested,setTotalNotAttested] =useState(0);
     
-    const getUserDashboard = async () => {
+    const getAllPolicies = async () => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
             let userName = userInfo?.profile?.sub.split('\\')[1]
-            const res = await getPolicies(`Dashboard/user?userName=${userName}`, `${userInfo?.access_token}`);
+            const res = await api.get(`Policy/user-policy?userName=${userName}`, `${userInfo?.access_token}`);
             if (res?.data) {
-                setTotalAttested(res?.data?.totalAttested);
-                setLoading(false);
-            } else {
-                // setLoading(false);
-                ;
+                let attested = res?.data.filter((policy: IUserPolicy) => policy.isAttested && (!policy.isDeleted || !policy.markedForDeletion)
+                );
+                setTotalAttested(attested.length);
+                setLoading(false)
             }
-
 
         } catch (error) {
             // console.log({ gotten: userInfo })(error)
         }
+
+
     }
 
    
     useEffect(()=>{
-        getUserDashboard(); 
+        getAllPolicies(); 
     },[refreshComponent])
 
     return (

@@ -54,7 +54,7 @@ const ApproverPendingDeleteTab: React.FC<any> = ({ handleCreatePolicy }) => {
                 const res = await api.get(`Dashboard/authorizer-policy?userName=${userName}`, `${userInfo.access_token}`);
                 if (res?.data) {
                     let allPolicy = res?.data.filter((pol: IPolicy) => pol.markedForDeletion && !pol.isDeleted)
-                    setPolicies(allPolicy.reverse());
+                    setPolicies(allPolicy);
                     setLoading(false)
                 } else {
                     // loginUser()

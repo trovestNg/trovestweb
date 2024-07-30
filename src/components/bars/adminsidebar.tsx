@@ -8,32 +8,34 @@ import { IPolicy } from "../../interfaces/policy";
 
 import api from "../../config/api";
 import { getUserInfo, logoutUser} from "../../controllers/auth";
+import SureToLogoutModal from "../modals/sureToLogoutModal";
+import ShowSwtichToUserModal from "../modals/showSwtichToUserModal";
 
 const AdminSideBar: React.FC<any> = ({ payload }) => {
     const navigate = useNavigate()
     const currentPath = useLocation().pathname;
     const [showPromt,setShowPromt] = useState(false);
+    const [showSwitchToUserModal,setShowSwitchToUserModal] = useState(false);
+    const [showlogout,setShowlogout] = useState(false);
+
 
     const [policies, setPolicies] = useState<IPolicy[]>([]);
 
     
     const handleSwitch = ()=>{
+        setShowSwitchToUserModal(true)
+    }
+    const handleAdminSwitch = ()=>{
         window.history.replaceState(null,'',window.location.href)
-       navigate('/', {replace:true})
+       navigate('/policy-portal', {replace:true})
     }
 
-    const handleUserLogout = async () => {
-         // window.history.pushState(null, '', window.location.href);
-        // window.onpopstate = function(event) {
-        //   window.history.go(1);
+    const handleAdminLogout = async () => {
+        setShowlogout(true);
+    }
 
-        // };
-
-        // window.history.replaceState(null,'',window.location.href)
-        const res = await logoutUser();
-
-       
-
+    const logUserOut = async () => {
+        logoutUser();
 
     }
 
@@ -110,7 +112,9 @@ const AdminSideBar: React.FC<any> = ({ payload }) => {
     },[])
     return (
         <div className={`min-vh-100 bg-primary ${styles.sidebarContainer}`} style={{ minWidth: '18em' }}>
-            <PromptModal show={showPromt} off={()=>setShowPromt(false)} action={handleSwitch}/>
+            {/* <PromptModal show={showPromt} off={()=>setShowPromt(false)} action={handleSwitch}/> */}
+                <SureToLogoutModal action={logUserOut} show={showlogout} off={()=>setShowlogout(false)}/>
+                <ShowSwtichToUserModal show={showSwitchToUserModal} action={handleAdminSwitch} off={()=>setShowSwitchToUserModal(false)}/>
             <div className="d-flex justify-content-center mb-3 py-3  align-items-center w-100">
                 <img src={logo} height={'60.15px'} />
             </div>
@@ -129,7 +133,7 @@ const AdminSideBar: React.FC<any> = ({ payload }) => {
                                 currentPath === nav.path &&
                                 <span className="bg-light px-0 h-100 py-2" style={{ minHeight: '3.5em' }}>|</span>}
                             <i className={`$ px-2 ${nav.icon}`}></i>
-                            <p className="py-2 m-0">{`${nav.title} ${nav?.count &&`(${nav?.count})`}`}</p>
+                            <p className="py-2 m-0">{nav.title}</p>
                         </li>
                     ))
                 }
@@ -149,7 +153,7 @@ const AdminSideBar: React.FC<any> = ({ payload }) => {
                 <li
                     className="d-flex text-light  align-items-center gap-3 p-0 m-0"
                     style={{ cursor: 'pointer' }}
-                    onClick={handleUserLogout}
+                    onClick={handleAdminLogout}
                 >
                     <span className="bg-light px-0 h-100 py-2" style={{ minHeight: '3.5em' }}></span>
                     <i className="bi bi-box-arrow-left"></i>

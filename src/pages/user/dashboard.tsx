@@ -14,18 +14,22 @@ const UserDashboardContainer = () => {
     const [loading, setLoading] = useState(false);
     const [refreshComponent, setRefreshComponent] = useState(false)
     const [userDBInfo, setUserDBInfo] = useState<IUserDashboard>();
+    const [userFullName, setUserFullName] = useState<string>('');
+    const [userType, setUserType] = useState<string>('');
     const navigate = useNavigate();
 
 
     const getUserDashboard = async () => {
         try {
             let userInfo = await getUserInfo();
-            // console.log({userCred:userInfo?.scopes})
+            console.log({userCred:userInfo})
             if(userInfo?.expired) {
                 toast.error('Session timed out!');
                 await loginUser()
             } else if(userInfo?.profile){
-                let userName = userInfo?.profile?.sub.split('\\')[1]
+                let userName = userInfo?.profile?.sub.split('\\')[1];
+                let fullName = `${userInfo?.profile?.family_name} ${userInfo?.profile?.given_name}`
+
                 const res = await getPolicies(`Dashboard/user?userName=${userName}`, `${userInfo?.access_token}`);
                 if (res?.data) {
                     setUserDBInfo(res?.data);
@@ -33,7 +37,6 @@ const UserDashboardContainer = () => {
                 } else {
                     toast.error('Network error!');
                     setLoading(false);
-                    await loginUser()
                 }
 
             } else {

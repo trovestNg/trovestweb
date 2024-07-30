@@ -7,6 +7,8 @@ import PromptModal from "../modals/promptModal";
 import { getUserInfo, logoutUser } from "../../controllers/auth";
 import api from "../../config/api";
 import { IPolicy } from "../../interfaces/policy";
+import SureToLogoutModal from "../modals/sureToLogoutModal";
+import ShowSwtichToUserModal from "../modals/showSwtichToUserModal";
 
 const ApproverSideBar: React.FC<any> = ({ payload }) => {
     const navigate = useNavigate()
@@ -14,11 +16,28 @@ const ApproverSideBar: React.FC<any> = ({ payload }) => {
     const [showPromt,setShowPromt] = useState(false);
     const [policies, setPolicies] = useState<IPolicy[]>([]);
 
-    
+    const [showSwitchToUserModal,setShowSwitchToUserModal] = useState(false);
+    const [showlogout,setShowlogout] = useState(false);
+
+
     const handleSwitch = ()=>{
-        window.history.replaceState(null,'',window.location.href)
-       navigate('/', {replace:true})
+        setShowSwitchToUserModal(true)
     }
+
+    const handleAdminSwitch = ()=>{
+        window.history.replaceState(null,'',window.location.href)
+       navigate('/policy-portal', {replace:true})
+    }
+
+    const handleAdminLogout = async () => {
+        setShowlogout(true);
+    }
+
+    const logUserOut = async () => {
+        logoutUser();
+
+    }
+
 
     const getInitiatorPolicies = async () => {
         try {
@@ -90,7 +109,8 @@ const ApproverSideBar: React.FC<any> = ({ payload }) => {
    
     return (
         <div className={`min-vh-100 bg-primary ${styles.sidebarContainer}`} style={{ minWidth: '18em' }}>
-            <PromptModal show={showPromt} off={()=>setShowPromt(false)} action={handleSwitch}/>
+            <SureToLogoutModal action={logUserOut} show={showlogout} off={()=>setShowlogout(false)}/>
+                <ShowSwtichToUserModal show={showSwitchToUserModal} action={handleAdminSwitch} off={()=>setShowSwitchToUserModal(false)}/>
             <div className="d-flex justify-content-center mb-3 py-3  align-items-center w-100">
                 <img src={logo} height={'60.15px'} />
             </div>
@@ -109,14 +129,14 @@ const ApproverSideBar: React.FC<any> = ({ payload }) => {
                                 currentPath === nav.path &&
                                 <span className="bg-light px-0 h-100 py-2" style={{ minHeight: '3.5em' }}>|</span>}
                             <i className={`$ px-2 ${nav.icon}`}></i>
-                            <p className="py-2 m-0">{`${nav.title} ${nav?.count &&`(${nav?.count})`}`}</p>
+                            <p className="py-2 m-0">{`${nav.title}`}</p>
                         </li>
                     ))
                 }
             </ul>
 
             <ul className="px-2 mt-3 w-100">
-                <li
+            <li
                     className="d-flex text-light  align-items-center gap-3 p-0 m-0"
                     style={{ cursor: 'pointer'}}
                     onClick={handleSwitch}
@@ -129,6 +149,7 @@ const ApproverSideBar: React.FC<any> = ({ payload }) => {
                 <li
                     className="d-flex text-light  align-items-center gap-3 p-0 m-0"
                     style={{ cursor: 'pointer' }}
+                    onClick={handleAdminLogout}
                 >
                     <span className="bg-light px-0 h-100 py-2" style={{ minHeight: '3.5em' }}></span>
                     <i className="bi bi-box-arrow-left"></i>

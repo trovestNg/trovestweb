@@ -19,7 +19,7 @@ const AutoLogout = ({ timeout = 10000 }) => {
   const logout = () => {
     // Perform any logout logic here, like clearing tokens
     toast.success('Session expired!');
-    localStorage.clear()
+    // localStorage.clear()
     loginUser()
   };
 

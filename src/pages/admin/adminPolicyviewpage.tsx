@@ -109,6 +109,13 @@ const AdminPolicyviewpage = () => {
         }
     }
 
+    let handleSubName = (subsidiaryArray: any) => {
+        let names: string[] = subsidiaryArray.map((subs: any) => subs.subsidiaryName);
+        // console.log({subName : })
+        let shortened = shortenString(names.toString(), 30)
+        return shortened
+    }
+
     const handleUndoPolicyDelete = async (e: any) => {
         setLoading(true)
         try {
@@ -253,6 +260,17 @@ const AdminPolicyviewpage = () => {
                         <p className=" d-flex gap-2">
                             {/* <i className="bi bi-file-earmark"></i> */}
                             {policy?.policyDepartment}
+                        </p>
+
+                        <p className=" d-flex gap-2 text-grey p-0 m-0">
+                            {/* <i className="bi bi-file-earmark"></i> */}
+                            Subsidiary
+                        </p>
+                        <p className=" d-flex gap-2">
+                            {/* <i className="bi bi-file-earmark"></i> */}
+                            {
+                            policy && handleSubName(policy?.subsidiaries) 
+                            }
                         </p>
                         <hr />
                         <div className="d-flex justify-content-between">

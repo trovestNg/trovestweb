@@ -17,6 +17,7 @@ import AdminDeletedPoliciesTab from "../../components/tabs/admintabs/adminDelete
 import ApproverPendingDeleteTab from "../../components/tabs/approvertabs/approverPendingDeleteTab";
 import { useNavigate } from "react-router-dom";
 import ApproverDeletedPoliciesTab from "../../components/tabs/approvertabs/approverDeletedPoliciesTab";
+import api from "../../config/api";
 
 
 const ApproverDeletedPoliciesPage = () => {
@@ -33,6 +34,9 @@ const ApproverDeletedPoliciesPage = () => {
     const [totalAttested,setTotalAttested] =useState(0);
     const [totalNotAttested,setTotalNotAttested] =useState(0);
     const [createPolicy,setCreatePolicy] =useState(false);
+
+    const [pendingDel,setPendingDel] = useState<any>(0);
+    const [delPol,setDelPol] = useState<any>(0);
 
     const dashCardInfo = [
         {
@@ -71,27 +75,26 @@ const ApproverDeletedPoliciesPage = () => {
 
 
 
-    const getAllPolicies = async () => {
+    const getInitiatorPolicies = async () => {
         setLoading(true)
         try {
             let userInfo = await getUserInfo();
+            if (userInfo) {
             let userName = userInfo?.profile?.sub.split('\\')[1]
-            const res = await getPolicies(`policy?subsidiaryName=FSDH Merchant Bank`, `${userInfo?.access_token}`);
-            if (res?.data) {
-                let allAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>data.isAuthorized);
-                let unAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>!data.isAuthorized);
-                
-                setTotalPolicyCount(res?.data.length);
-                setTotalAttested(allAttested.length);
-                setTotalNotAttested(unAttested.length)
-                setPolicies([]);
-                setLoading(false);
-            } else {
-                setLoading(false);
-                // loginUser()
-                toast.error('Session expired!, You have been logged out!!')
+                const res = await api.get(`Dashboard/authorizer-policy?userName=${userName}`, `${userInfo.access_token}`);
+                if (res?.data) {
+                    let allPolicy = res?.data.filter((pol: IPolicy) => pol.markedForDeletion && !pol.isDeleted)
+                    let allDel = res?.data.filter((pol: IPolicy) => pol.isDeleted)
+                    setPendingDel(allPolicy.length);
+                    setDelPol(allDel.length);
+                    setLoading(false)
+                } else {
+                    // loginUser()
+                    // toast.error('Session expired!, You have been logged out!!')
+                }
+                // console.log({ gotten: userInfo })({ response: res })
             }
-            // console.log({ gotten: userInfo })({ response: res })
+
         } catch (error) {
 
         }
@@ -99,7 +102,7 @@ const ApproverDeletedPoliciesPage = () => {
 
    
     useEffect(()=>{
-        getAllPolicies(); 
+        getInitiatorPolicies(); 
     },[refreshComponent])
     return (
         <div className="w-100">
@@ -121,12 +124,12 @@ const ApproverDeletedPoliciesPage = () => {
                     variant="underline"
                     className="mb-3"
                 >
-                    <Tab eventKey="uploaded" title="Policies Pending Deletion"
+                    <Tab eventKey="uploaded" title={`Policies Pending Deletion (${pendingDel})`}
                     tabClassName="px-3"
                     >
                         <ApproverPendingDeleteTab />
                     </Tab>
-                    <Tab eventKey="approved" title="Deleted Policies">
+                    <Tab eventKey="approved" title={`Deleted Policies (${delPol})`}>
                     <ApproverDeletedPoliciesTab  />
                     </Tab>
                     

@@ -31,7 +31,7 @@ import AdminApprovedPolicyPagination from "../../paginations/admin/admin-approve
                 setRefreshData(!refreshData)
             }} */}
 
-const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
+const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy,refComp }) => {
 
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
@@ -340,7 +340,7 @@ const AdminApprovedPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                             <tr className=""><td className="text-center" colSpan={5}><Spinner className="spinner-grow text-primary" /></td></tr>
                         </tbody>
                     </table> :
-                        <AdminApprovedPolicyPagination data={policies} refData={() => setRefreshData(!refreshData)} />
+                        <AdminApprovedPolicyPagination data={policies} refData={()=>{refComp();setRefreshData(!refreshData)}} />
                 }
             </div>
 

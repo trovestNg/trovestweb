@@ -14,7 +14,7 @@ import SureToDeletePolicyModal from "../../modals/sureToDeletePolicyModal";
 import UpdatePolicyModal from "../../modals/updatePolicyModal"
 import AdminRejectedPolicyPagination from "../../paginations/admin/admin-rejected-policy-pagiantion";
 
-const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
+const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy, refComp}) => {
     
     const [refreshData, setRefreshData] = useState(false);
     const navigate = useNavigate();
@@ -287,7 +287,7 @@ const AdminRejectedApprovalsTab: React.FC<any> = ({handleCreatePolicy}) => {
                             <tr className=""><td className="text-center" colSpan={5}><Spinner className="spinner-grow text-primary" /></td></tr>
                         </tbody>
                     </table> :
-                       <AdminRejectedPolicyPagination data={policies} refData={() => setRefreshData(!refreshData)}/>
+                       <AdminRejectedPolicyPagination data={policies} refData={()=>{refComp();setRefreshData(!refreshData)}}/>
                 }
             </div>
             {/* {

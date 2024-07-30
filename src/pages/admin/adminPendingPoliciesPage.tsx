@@ -19,37 +19,48 @@ const AdminPendingPoliciesPage = () => {
     const [loading, setLoading] = useState(false);
     const [refreshComponent,setRefreshComponent] = useState(false)
 
-    const [totalPendingPolicy,settotalPendingPolicyByInitiator] =useState(0);
+    const [totalPendingPolicy,setPPol] =useState(0);
     const [totalAttested,setTotalAttested] =useState(0);
     const [totalNotAttested,setTotalNotAttested] =useState(0);
     
     
     const getInitiatorDashboard = async () => {
         setLoading(true)
-        try {
-            let userInfo = await getUserInfo();
-            let userName = userInfo?.profile?.sub.split('\\')[1]
-            const res = await api.get(`Dashboard/initiator?userName=${userName}`, `${userInfo?.access_token}`);
-            settotalPendingPolicyByInitiator(res?.data.totalApprovedPolicy)
-            if (res?.data) {
-                
-                let allAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>data.isAuthorized);
-                let unAttested:(IPolicy)[] = res?.data.filter((data:IPolicy)=>!data.isAuthorized);
-                // setTotalAttested(allAttested.length);
-                // setTotalNotAttested(unAttested.length)
-                setPolicies([]);
-                setLoading(false);
-            } else {
-                setLoading(false);
-                // loginUser()
-                // toast.error('Session expired!, You have been logged out!!')
-            }
-            // console.log({ gotten: userInfo })({ response: res })
-        } catch (error) {
-    
-        }
-    }
 
+       
+            try {
+                let userInfo = await getUserInfo();
+                if (userInfo) {
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.get(`Dashboard/initiator-policy?userName=${userName}`, `${userInfo.access_token}`);
+                    if (res?.data) {
+                        setLoading(false);
+
+                let allPolicies = res?.data.filter((pol: IPolicy) => !pol.isDeleted && !pol.markedForDeletion)
+                let apPol = res?.data.filter((pol: IPolicy) => pol.isAuthorized && !pol.isDeleted && !pol.markedForDeletion)
+                let pendPol = res?.data.filter((pol: IPolicy) => !pol.isAuthorized && !pol.isDeleted && !pol.isRejected && !pol.markedForDeletion)
+                let rejPol = res?.data.filter((pol: IPolicy) => pol.isRejected && !pol.isDeleted && !pol.markedForDeletion)
+
+
+                // console.log({seeHere :notAttested})
+
+
+                
+                setPPol(pendPol.length);
+                
+                    } else {
+                        // loginUser()
+                        // toast.error('Session expired!, You have been logged out!!')
+                    }
+                    // console.log({ gotten: userInfo })({ response: res })
+                }
+    
+            } catch (error) {
+    
+            }
+        
+        
+    }
    
     useEffect(()=>{
         getInitiatorDashboard(); 
