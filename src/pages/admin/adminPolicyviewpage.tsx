@@ -13,6 +13,7 @@ import UpdatePolicyModal from "../../components/modals/updatePolicyModal";
 import SureToDeletePolicyModal from "../../components/modals/sureToDeletePolicyModal";
 import { shortenString } from "../../util";
 import SureToUnDoDeletePolicyModal from "../../components/modals/sureToUnDoDeletePolicyModal";
+import { IDept } from "../../interfaces/dept";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -22,6 +23,7 @@ const AdminPolicyviewpage = () => {
     const [attestedSuccesmodal, setAttestedSuccessModal] = useState(false);
     const [loading,setLoading] = useState(false)
     const [policy, setPolicy] = useState<IPolicy>();
+    const [subSidiaries, setSubSidiaries] = useState<IDept[]>();
 
     const [updateDeadlineModal, setUpdateDeadlineModal] = useState(false);
     const [confDelModal, setConfDelModal] = useState(false);
@@ -59,8 +61,29 @@ const AdminPolicyviewpage = () => {
 
     }
 
+    const handleGetDepts = async () => {
+        // setLoading(true)
+        try {
+            let userInfo = await getUserInfo();
+            let userName = userInfo?.profile?.sub.split('\\')[1]
+            const res = await api.get(`Subsidiaries`, `${userInfo?.access_token}`);
+            // console.log({ gotten: userInfo })({ dataHere: res })
+
+            if (res?.data) {
+                setSubSidiaries([{ id: 1000, name: 'All', subsidiaryId: 5000 }, ...res?.data])
+            } else {
+
+            }
+            // console.log({ gotten: userInfo })({ response: res })
+        } catch (error) {
+
+        }
+
+    }
+
     useEffect(() => {
         getPolicy();
+        handleGetDepts()
     }, [ref])
 
     const onDocumentLoadSuccess = (numPages: number) => {
@@ -111,9 +134,14 @@ const AdminPolicyviewpage = () => {
 
     let handleSubName = (subsidiaryArray: any) => {
         let names: string[] = subsidiaryArray.map((subs: any) => subs.subsidiaryName);
-        // console.log({subName : })
-        let shortened = shortenString(names.toString(), 30)
-        return shortened
+        console.log({subName : names.length, allSubs : subSidiaries})
+        if(names.length == (subSidiaries &&subSidiaries?.length -1)){
+            return 'All Subsidiary'
+        } else {
+            let shortened = shortenString(names.toString(), 30)
+            return shortened
+        }
+        
     }
 
     const handleUndoPolicyDelete = async (e: any) => {

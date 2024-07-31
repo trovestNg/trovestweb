@@ -70,15 +70,28 @@ const EditPolicyPage: React.FC<any> = () => {
     const remFreq = [
         {
             id: 0,
-            name: "Daily"
+            name: "Daily",
+            val : "Daily"
         },
         {
             id: 1,
-            name: "Weekly"
+            name: "Bi-Weekly",
+            val : "Bi-Weekly"
         },
         {
             id: 2,
-            name: "Monthly"
+            name: "Monthly",
+            val : "Monthly"
+        },
+        {
+            id: 3,
+            name: "Yearly",
+            val : "Yearly"
+        },
+        {
+            id: 4,
+            name: "Every 3 Years",
+            val : "3Years"
         },
     ]
 
@@ -161,13 +174,14 @@ const EditPolicyPage: React.FC<any> = () => {
 
         setCreateLoading(true)
         let convertedToInt = body?.Subsidiary.map((id: any) => +id)
+        let newFreq = body?.reminderFrequency == "Every 3 Years"? "3Years" : body?.reminderFrequency 
         let formData = new FormData()
 
         formData.append('policyDocument', body?.policyDocument)
         formData.append('fileDescription', body?.fileDescription)
         formData.append('policyName', body?.fileName)
         formData.append('Subsidiary', convertedToInt)
-        formData.append('Frequency', body?.reminderFrequency)
+        formData.append('Frequency', newFreq)
         formData.append('Authorizer', body?.authorizedBy)
         formData.append('policyId', body?.id)
         formData.append('DeadlineDate', body?.deadlineDate)
@@ -432,10 +446,12 @@ const EditPolicyPage: React.FC<any> = () => {
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                     style={{ marginTop: '5px', maxWidth: '400px' }}>
-                                    <option value={values.reminderFrequency}>{values.reminderFrequency}</option>
+                                    <option value={values.reminderFrequency}>
+                                        {values.reminderFrequency === "3Years"?"Every 3 Years" :values.reminderFrequency }
+                                        </option>
                                     {
                                         remFreq.map((sub, index) =>
-                                            <option key={index} value={sub.name}>{sub.name}</option>
+                                            <option key={index} value={sub.name === "3Years"?"Every 3 Years" :sub.name }>{sub.name === "3Years"?"Every 3 Years" :sub.name}</option>
                                         )
                                     }
                                 </FormSelect>

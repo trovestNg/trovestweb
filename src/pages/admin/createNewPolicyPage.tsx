@@ -72,23 +72,28 @@ const CreateNewPolicyPage: React.FC<any> = () => {
     const remFreq = [
         {
             id: 0,
-            name: "Daily"
+            name: "Daily",
+            val : "Daily"
         },
         {
             id: 1,
-            name: "Bi-Weekly"
+            name: "Bi-Weekly",
+            val : "Bi-Weekly"
         },
         {
             id: 2,
-            name: "Monthly"
+            name: "Monthly",
+            val : "Monthly"
         },
         {
             id: 3,
-            name: "Yearly"
+            name: "Yearly",
+            val : "Yearly"
         },
         {
             id: 4,
-            name: "Every 3 Years"
+            name: "Every 3 Years",
+            val : "3Years"
         },
     ]
 
@@ -188,8 +193,8 @@ const CreateNewPolicyPage: React.FC<any> = () => {
 
     const handlePolicyCreation = (body: any) => {
         let newBody = {...body,Subsidiary:body.Subsidiary.slice(1)}
-        console.log({ wantToSend:newBody });
-        setNewPolicy(newBody);
+        // console.log({ wantToSend:newBody });
+        setNewPolicy(body);
         setShowCreatePrompt(true);
 
 
@@ -455,7 +460,7 @@ const CreateNewPolicyPage: React.FC<any> = () => {
                                     <option value={''}>Select</option>
                                     {
                                         remFreq.map((sub, index) =>
-                                            <option key={index} value={sub.name}>{sub.name}</option>
+                                            <option key={index} value={sub.val}>{sub.name}</option>
                                         )
                                     }
                                 </FormSelect>
