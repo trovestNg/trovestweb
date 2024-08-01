@@ -8,6 +8,8 @@ const userManager = new UserManager(Identity);
 
 // Function to sign-in
 export const loginUser = async () => {
+  localStorage.removeItem('access_token');  
+  localStorage.clear()
   try {
     await userManager.signinRedirect({
       extraQueryParams: { prompt: 'login' }

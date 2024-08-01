@@ -47,7 +47,7 @@ const EditPolicyPage: React.FC<any> = () => {
     const initialValues  = {
         ...policy,
         policyDocument: null,
-        Subsidiary: null
+        Subsidiary: [],
     }
 
     const validationSchema = Yup.object({
@@ -152,7 +152,7 @@ const EditPolicyPage: React.FC<any> = () => {
         const today = new Date();
         const yyyy = today.getFullYear();
         const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-        const dd = String(today.getDate()).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '00');
         return `${yyyy}-${mm}-${dd}`;
       };
 
@@ -385,7 +385,7 @@ const EditPolicyPage: React.FC<any> = () => {
                                     onBlur={handleBlur}
                                     className="py-2"
                                     min={getCurrentDate()}
-                                    value={moment(values.deadlineDate).format('yyyy-MM-D')}
+                                    value={moment(values.deadlineDate).format('yyyy-MM-DD')}
                                     id="deadlineDate"
                                     name="deadlineDate"
                                     type="date" style={{ marginTop: '5px', maxWidth: '400px' }} />

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import notificationIcon from "../../assets/icons/notification-icon.png";
 import { Button, Card, ListGroup, ListGroupItem, Modal } from "react-bootstrap";
-import { getUserInfo, logoutUser } from "../../controllers/auth";
+import { getUserInfo, loginUser, logoutUser } from "../../controllers/auth";
 
 
 
@@ -18,11 +18,11 @@ const TopBar: React.FC<any> = ({ payload }) => {
             let userInfo = await getUserInfo();
             // console.log({him:userInfo})
             if (userInfo?.expired) {
-                logoutUser();
+                loginUser();
             }
 
             if (userInfo?.profile.given_name == null) {
-                logoutUser();
+                loginUser();
             }
             if (userInfo) {
                 setUserName(`${userInfo?.profile?.given_name} ${userInfo?.profile?.family_name}`)
@@ -37,7 +37,7 @@ const TopBar: React.FC<any> = ({ payload }) => {
             }
 
         } catch (error) {
-            logoutUser()
+            loginUser();
         }
 
     }
