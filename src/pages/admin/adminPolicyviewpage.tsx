@@ -138,8 +138,8 @@ const AdminPolicyviewpage = () => {
         if(names.length == (subSidiaries &&subSidiaries?.length -1)){
             return 'All Subsidiary'
         } else {
-            let shortened = shortenString(names.toString(), 30)
-            return shortened
+            // let shortened = shortenString(names.toString(), 30)
+            return names.toString()
         }
         
     }
@@ -321,6 +321,30 @@ const AdminPolicyviewpage = () => {
                                 <p className=" d-flex gap-2 text-primary">
                                     {/* <i className="bi bi-file-earmark"></i> */}
                                     {policy?.uploadTime && moment(policy?.deadlineDate).format('MMM DD YYYY')}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="d-flex justify-content-between">
+                            <div>
+                                <p className=" d-flex gap-2 text-grey p-0 m-0">
+                                    {/* <i className="bi bi-file-earmark"></i> */}
+                                    Initiator
+                                </p>
+                                <p className=" d-flex gap-2 text-primary">
+                                    {/* <i className="bi bi-file-earmark"></i> */}
+                                    {policy?.uploadedBy}
+                                </p>
+                            </div>
+
+                            <div>
+                                <p className=" d-flex gap-2 p-0 m-0">
+                                    {/* <i className="bi bi-file-earmark"></i> */}
+                                    Authorizer
+                                </p>
+                                <p className=" d-flex gap-2 text-primary">
+                                    {/* <i className="bi bi-file-earmark"></i> */}
+                                    {policy?.authorizedBy}
                                 </p>
                             </div>
                         </div>

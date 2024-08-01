@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from './sidebar.module.css';
 import logo from '../../assets/icons/logo1.png';
 import { useLocation, useNavigate, useNavigation } from "react-router-dom";
-import { getUserInfo, logoutUser } from "../../controllers/auth";
+import { getUserInfo, loginUser, logoutUser } from "../../controllers/auth";
 import PromptModal from "../modals/promptModal";
 import SureToLogoutModal from "../modals/sureToLogoutModal";
 
@@ -31,7 +31,7 @@ const UserSideBar: React.FC<any> = ({ payload }) => {
     }
 
     const logUserOut = async () => {
-        logoutUser();
+        loginUser();
 
         //  window.history.pushState(null, '', window.location.href);
         // window.onpopstate = function(event) {
