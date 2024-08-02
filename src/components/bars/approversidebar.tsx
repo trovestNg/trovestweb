@@ -18,6 +18,7 @@ const ApproverSideBar: React.FC<any> = ({ payload }) => {
 
     const [showSwitchToUserModal,setShowSwitchToUserModal] = useState(false);
     const [showlogout,setShowlogout] = useState(false);
+    const [loading,setLoading] = useState(false)
 
 
     const handleSwitch = ()=>{
@@ -34,8 +35,8 @@ const ApproverSideBar: React.FC<any> = ({ payload }) => {
     }
 
     const logUserOut = async () => {
-        logoutUser();
-
+        setLoading(true)
+         logoutUser()
     }
 
 
@@ -109,7 +110,7 @@ const ApproverSideBar: React.FC<any> = ({ payload }) => {
    
     return (
         <div className={`min-vh-100 bg-primary ${styles.sidebarContainer}`} style={{ minWidth: '18em' }}>
-            <SureToLogoutModal action={logUserOut} show={showlogout} off={()=>setShowlogout(false)}/>
+            <SureToLogoutModal loading={loading} action={logUserOut} show={showlogout} off={()=>setShowlogout(false)}/>
                 <ShowSwtichToUserModal show={showSwitchToUserModal} action={handleAdminSwitch} off={()=>setShowSwitchToUserModal(false)}/>
             <div className="d-flex justify-content-center mb-3 py-3  align-items-center w-100">
                 <img src={logo} height={'60.15px'} />

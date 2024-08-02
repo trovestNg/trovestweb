@@ -50,6 +50,14 @@ const UserDashboardContainer = () => {
     useEffect(() => {
         getUserDashboard();
     }, [refreshComponent])
+
+    useEffect(() => {
+        // checkUserStatus()
+        window.history.replaceState(null, '', window.location.href);
+        window.onpopstate = function (event) {
+            window.history.go(2);
+        };
+    })
     return (
         <div className="d-flex p-0 m-0 min-vh-100 p-0 w-100">
             <div><UserSideBar /></div>

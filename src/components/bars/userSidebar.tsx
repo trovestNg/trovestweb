@@ -13,6 +13,7 @@ const UserSideBar: React.FC<any> = ({ payload }) => {
     const [showApproverPrompt, setApproverPrompt] = useState(false);
     const [userType, setUserType] = useState('');
     const [showlogout,setShowlogout] = useState(false);
+    const [loading,setLoading] = useState(false)
 
 
 
@@ -31,20 +32,8 @@ const UserSideBar: React.FC<any> = ({ payload }) => {
     }
 
     const logUserOut = async () => {
-        loginUser();
-
-        //  window.history.pushState(null, '', window.location.href);
-        // window.onpopstate = function(event) {
-        //   window.history.go(1);
-
-        // };
-
-        // window.history.replaceState(null,'',window.location.href)
-        // const res = await
-
-       
-
-
+        setLoading(true)
+         logoutUser()
     }
 
     const navlinksUser = [
@@ -93,7 +82,7 @@ const UserSideBar: React.FC<any> = ({ payload }) => {
     },[])
     return (
         <div className={`min-vh-100 bg-primary ${styles.sidebarContainer}`} style={{ minWidth: '18em' }}>
-            <SureToLogoutModal action={logUserOut} show={showlogout} off={()=>setShowlogout(false)}/>
+            <SureToLogoutModal loading={loading} action={logUserOut} show={showlogout} off={()=>setShowlogout(false)}/>
             <PromptModal show={showPromt} off={() => setShowPromt(false)} action={handleSwitch} />
             <PromptModal show={showApproverPrompt} off={() => setApproverPrompt(false)} action={handleAdminSwitch} />
 

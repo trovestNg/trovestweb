@@ -163,7 +163,7 @@ const PolicyViewPage = () => {
                             <div className="gap-3 d-flex w-25 align-items-center justify-content-between">
                                 <Button onClick={goToPreviousPage} disabled={pageNumber <= 1} variant="outline text-light" className="p-0 m-0" style={{ cursor: 'pointer' }}><i className="bi bi-chevron-bar-left"></i></Button>
                                 <p className="p-0 m-0">{pageNumber}/{numPages}</p>
-                                <OverlayTrigger placement="top" overlay={renderTooltip('Read policy! you can next when timer equals 0s')}>
+                                <OverlayTrigger placement="top" overlay={renderTooltip(timer>0?'Read policy! you can next when timer equals 0s': 'Now Click to next')}>
                                     <div>
                                          <Button onClick={goToNextPage} disabled={pageNumber >= numPages || timer > 0} variant="outline text-light"
                                     className="p-0 m-0" style={{ cursor: 'pointer' }}><i className="bi bi-chevron-bar-right"></i> </Button> 
@@ -208,10 +208,17 @@ const PolicyViewPage = () => {
                                     Prev
                                 </Button>
                                 <p className="p-0 m-0">{pageNumber}/{numPages}</p>
-                                <Button onClick={goToNextPage} disabled={pageNumber >= numPages || timer > 0} variant="outline border-0" className="p-0 m-0" style={{ cursor: 'pointer' }}>
+                                <OverlayTrigger placement="top" overlay={renderTooltip(timer>0?'Read policy! you can next when timer equals 0s': 'Now Click to next')}>
+                                    <div>
+                                    <Button onClick={goToNextPage} disabled={pageNumber >= numPages || timer > 0} variant="outline border-0" className="p-0 m-0" style={{ cursor: 'pointer' }}>
                                     {/* <i className="bi bi-chevron-bar-right"></i> */}
                                     Next
-                                </Button></div>
+                                </Button>
+                                { pageNumber !== numPages && <Badge className="bg-light text-primary">{timer}s</Badge>}
+                               </div>
+                                </OverlayTrigger>
+                                
+                                </div>
 
                         </div>}
 

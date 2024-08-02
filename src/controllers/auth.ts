@@ -8,8 +8,7 @@ const userManager = new UserManager(Identity);
 
 // Function to sign-in
 export const loginUser = async () => {
-  localStorage.removeItem('access_token');  
-  localStorage.clear()
+  window.history.pushState(null, '', window.location.href);
   try {
     await userManager.signinRedirect({
       extraQueryParams: { prompt: 'login' }
@@ -93,10 +92,16 @@ export const getUserInfo = async () => {
 // Function to sign out
 export const logoutUser = async () => {
   try {
-    
+    window.history.pushState(null, '', window.location.href='/');
     await userManager.signoutRedirect();
-    localStorage.removeItem('access_token');  
-    localStorage.clear()
+    //      window.onpopstate = function(event) {
+    //         window.history.go(1);
+  
+    //       };
+    //       localStorage.removeItem('access_token');  
+    //       localStorage.clear()
+    
+    
   } catch (error) {
     console.error('Error signing out:', error);
   }
