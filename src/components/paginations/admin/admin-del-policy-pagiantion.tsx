@@ -31,22 +31,7 @@ const AdminDelPolicyPagination: React.FC<any> = ({ data, refData }) => {
   const [deletePolicyModal, setDeteletPolicyModal] = useState<boolean>(false);
   const [rejReasonModal, setRejReasonModal] = useState<boolean>(false);
 
-  const handleGetAttestersList = (e: any, pol: IPolicy) => {
-    e.stopPropagation();
-    navigate(`/admin/attesters-list/${pol.id}/${pol.fileName}/${pol.deadlineDate}`);
-}
-
-const handleGetDefaultersList = (e: any, pol: IPolicy) => {
-    e.stopPropagation();
-    navigate(`/admin/defaulters-list/${pol.id}/${pol.fileName}/${pol.deadlineDate}`);
-}
-
-const handleUpdate = (e: any, policy: IPolicy) => {
-    e.stopPropagation();
-    setPolicy(policy);
-    setUpdatePolicyModal(true);
-    // navigate(`/admin/edit-policy/${policy.id}`)
-}
+  
 
 const handleDownloadPolicy = (e: any, pol: IPolicy) => {
     e.stopPropagation();

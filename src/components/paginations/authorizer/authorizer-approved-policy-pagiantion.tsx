@@ -32,12 +32,12 @@ const AuthorizerApprovedPolicyPagination: React.FC<any> = ({ data, refData }) =>
 
     const handleGetAttestersList = (e: any, pol: IPolicy) => {
         e.stopPropagation();
-        navigate(`/admin/attesters-list/${pol.id}/${pol.fileName}/${pol.deadlineDate}`);
+        navigate(`/admn/attesters-list/${pol.id}?deadlineDate=${encodeURIComponent(pol.deadlineDate)}&fileName=${encodeURIComponent(pol.fileName)}`);
     }
 
     const handleGetDefaultersList = (e: any, pol: IPolicy) => {
         e.stopPropagation();
-        navigate(`/admin/defaulters-list/${pol.id}/${pol.fileName}/${pol.deadlineDate}`);
+        navigate(`/admn/defaulters-list/${pol.id}?deadlineDate=${encodeURIComponent(pol.deadlineDate)}&fileName=${encodeURIComponent(pol.fileName)}`);
     }
 
     const handleUpdate = (e: any, policy: IPolicy) => {

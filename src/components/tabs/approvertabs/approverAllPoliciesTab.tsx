@@ -53,7 +53,7 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                 let userName = userInfo?.profile?.sub.split('\\')[1]
                 const res = await api.get(`Dashboard/authorizer-policy?userName=${userName}`, `${userInfo.access_token}`);
                 if (res?.data) {
-                    let allPolicy = res?.data.filter((pol: IPolicy) => !pol.markedForDeletion&&!pol.isDeleted)
+                    let allPolicy = res?.data.filter((pol: IPolicy) => !pol.markedForDeletion && !pol.isDeleted)
                     setPolicies(allPolicy.reverse());
                     setLoading(false)
                 } else {
@@ -86,8 +86,8 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                     setLoading(false)
 
                     let filtered = res?.data.filter((policy: IPolicy) =>
-                        policy.fileName.toLowerCase().includes(query.toLowerCase()) && !policy.markedForDeletion&&!policy.isDeleted ||
-                        policy.policyDepartment.toLowerCase().includes(query.toLowerCase())&& !policy.markedForDeletion&&!policy.isDeleted
+                        policy.fileName.toLowerCase().includes(query.toLowerCase()) && !policy.markedForDeletion && !policy.isDeleted ||
+                        policy.policyDepartment.toLowerCase().includes(query.toLowerCase()) && !policy.markedForDeletion && !policy.isDeleted
                     );
                     setPolicies(filtered.reverse());
 
@@ -367,7 +367,7 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                             onClick={() => handleSearch()}
                             variant="primary" style={{ minWidth: '100px', marginRight: '-5px', minHeight: '2.4em' }}>Search</Button>
                     </div>
-                    
+
 
                 </div>
             </div>
@@ -390,7 +390,7 @@ const ApproverAllPoliciesTab: React.FC<any> = ({ handleCreatePolicy }) => {
                             <tr className=""><td className="text-center" colSpan={7}><Spinner className="spinner-grow text-primary" /></td></tr>
                         </tbody>
                     </table> :
-                        <AuthorizerAllPolicyPagination data={policies} refData={()=>setRefreshData(!refreshData)}/>
+                        <AuthorizerAllPolicyPagination data={policies} refData={() => setRefreshData(!refreshData)} />
                 }
             </div>
             {/* {

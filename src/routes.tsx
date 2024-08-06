@@ -61,8 +61,8 @@ export default function () {
                 <Route index element={<AdminDashboardPage />} />
                 <Route path="create-policy" element={<CreateNewPolicyPage />} />
                 <Route path="edit-policy/:id" element={<EditPolicyPage />} />
-                <Route path="attesters-list/:id/:fileName/:deadlineDate" element={<AdminAttestersListPage />} />
-                <Route path="defaulters-list/:id/:fileName/:deadlineDate" element={<AdminDefaultersListPage />} />
+                <Route path="attesters-list/:id" element={<AdminAttestersListPage />} />
+                <Route path="defaulters-list/:id" element={<AdminDefaultersListPage />} />
                 <Route path="uploaded-policies" element={<AdminUploadedPoliciesPage />} />
                 <Route path="approved-policies" element={<AdminApprovedPoliciesPage />} />
                 <Route path="pending-policies" element={<AdminPendingPoliciesPage />} />
@@ -80,8 +80,8 @@ export default function () {
                 <Route path="deleted-policies" element={<ApproverDeletedPoliciesPage />} />
                 <Route path="attesters-list/:id" element={<ApproverAttestersListPage />} />
                 <Route path="policy/:id/:attestationStatus" element={<ApproverPolicyviewpage />} />
-                <Route path="attesters-list/:id/:fileName/:deadlineDate" element={<ApproverAttestersListPage />} />
-                <Route path="defaulters-list/:id/:fileName/:deadlineDate" element={<ApproverDefaultersListPage />} />
+                <Route path="attesters-list/:id"  element={<ApproverAttestersListPage />} />
+                <Route path="defaulters-list/:id" element={<ApproverDefaultersListPage />} />
             </Route>
             <Route path="*" element={<ErrorPage />} />
         </Routes>

@@ -276,12 +276,12 @@ const AdminUploadedPoliciesTab: React.FC<any> = ({ handleCreatePolicy, refComp }
 
     const handleGetAttestersList = (e: any, pol: IPolicy) => {
         e.stopPropagation();
-        navigate(`/admin/attesters-list/${pol.id}/${pol.fileName}/${pol.deadlineDate}`);
+        navigate(`/admin/attesters-list/${pol.id}?deadlineDate=${encodeURIComponent(pol.deadlineDate)}&fileName=${encodeURIComponent(pol.fileName)}`);
     }
 
     const handleGetDefaultersList = (e: any, pol: IPolicy) => {
         e.stopPropagation();
-        navigate(`/admin/defaulters-list/${pol.id}/${pol.fileName}/${pol.deadlineDate}`);
+        navigate(`/admin/defaulters-list/${pol.id}?deadlineDate=${encodeURIComponent(pol.deadlineDate)}&fileName=${encodeURIComponent(pol.fileName)}`);
     }
 
     const handleDownloadPolicy = (e: any, pol: IPolicy) => {

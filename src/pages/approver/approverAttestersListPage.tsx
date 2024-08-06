@@ -8,7 +8,7 @@ import api from "../../config/api";
 import { IUserDashboard } from "../../interfaces/user";
 import AdminApprovedPoliciesTab from "../../components/tabs/admintabs/adminApprovedPoliciesTab";
 import AdminAttestersListTab from "../../components/tabs/admintabs/adminAttestersListTab";
-import { useNavigate,useParams } from "react-router-dom";
+import { useLocation, useNavigate,useParams } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import ApproverAttestersListTab from "../../components/tabs/approvertabs/approverAttestersListTab";
 
@@ -25,7 +25,12 @@ const ApproverAttestersListPage = () => {
 
     const [userDBInfo,setUserDBInfo]  = useState<IUserDashboard>();
     const [policyName,setPolicyName] = useState<string>('');
-    const { id,fileName,deadlineDate } = useParams();
+    const { id} = useParams();
+
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const deadlineDate = queryParams.get('deadlineDate');
+    const fileName = queryParams.get('fileName');
     
     const getUploadedPolicies = async () => {
         // setLoading(true)
