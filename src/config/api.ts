@@ -1,9 +1,20 @@
-import axios, {AxiosRequestConfig} from "axios"
+import axiosRetry from 'axios-retry';
+import axios, {AxiosRequestConfig} from "axios";
+
 import { baseUrl } from "./config";
 
-const header ={
+axiosRetry(axios, {
+    retries: 3, // Number of retry attempts
+    retryDelay: (retryCount) => {
+      console.log(`Retry attempt #${retryCount}`);
+      return retryCount * 1000; // Delay between retries (in ms)
+    },
+    retryCondition: (error:any) => {
+      // Retry only for network errors or 5xx server errors
+      return axiosRetry.isNetworkOrIdempotentRequestError(error) || error.response.status >= 500;
+    },
+  });
 
-}
 export default {
     get : async (path: string, token: string) => {
         const config: AxiosRequestConfig = {
