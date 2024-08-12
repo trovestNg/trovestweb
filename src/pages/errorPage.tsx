@@ -15,8 +15,8 @@ const ErrorPage : React.FC<any> = () => {
     return (
         <div className="min-vh-100 w-100 d-flex flex-column justify-content-center align-items-center" style={{fontFamily:'primary'}}>
            
-            <h4>Page Not Found</h4>
-            <Button onClick={()=>navigate(-1)}>Go Back</Button>
+            <h4>You need to be logged in</h4>
+            <Button onClick={()=>navigate('/')}>Login</Button>
             {/* <a className="mt-3" href="/">Click here to go back </a> */}
         </div>
     )

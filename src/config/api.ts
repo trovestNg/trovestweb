@@ -4,7 +4,7 @@ import axios, {AxiosRequestConfig} from "axios";
 import { baseUrl } from "./config";
 
 axiosRetry(axios, {
-    retries: 3, // Number of retry attempts
+    retries: 5, // Number of retry attempts
     retryDelay: (retryCount) => {
       console.log(`Retry attempt #${retryCount}`);
       return retryCount * 1000; // Delay between retries (in ms)
@@ -18,6 +18,7 @@ axiosRetry(axios, {
 export default {
     get : async (path: string, token: string) => {
         const config: AxiosRequestConfig = {
+            timeout:10000,
             headers: {
                 Authorization: `Bearer ${token}`,
                 'Access-Control-Allow-Origin': '*', // Allow requests from any origin
