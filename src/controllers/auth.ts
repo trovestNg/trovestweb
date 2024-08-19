@@ -87,6 +87,15 @@ export const getUserInfo = async () => {
   }
 };
 
+export const refreshToken = async () => {
+  try {
+   const check = await userManager.startSilentRenew();
+   console.log({renewed:check})
+    
+  } catch (error) {
+    console.error('Unable to renew:', error);
+  }
+};
 
 
 // Function to sign out

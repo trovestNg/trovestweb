@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import notificationIcon from "../../assets/icons/notification-icon.png";
 import { Button, Card, ListGroup, ListGroupItem, Modal } from "react-bootstrap";
-import { getUserInfo, logoutUser } from "../../controllers/auth";
+import { getUserInfo, logoutUser, refreshToken } from "../../controllers/auth";
 
 
 
@@ -9,8 +9,9 @@ import { getUserInfo, logoutUser } from "../../controllers/auth";
 const TopBar: React.FC<any> = ({ payload }) => {
     const [userType, setUserType] = useState('');
     const [userName, setUserName] = useState('');
-    const initialTime = 20; // Set initial countdown time here
-    const [timer,setTimer] = useState(initialTime);
+    const initialTime = 250;
+    // Set initial countdown time here
+    const [timer, setTimer] = useState(initialTime);
     const [showModal, setShowModal] = useState(false);
 
     const getUserType = async () => {
@@ -42,33 +43,46 @@ const TopBar: React.FC<any> = ({ payload }) => {
 
     }
 
-   
 
-    // useEffect(() => {
-    //     const timer = setInterval(() => {
-    //       setTimer((prevTime:any) => {
-    //         if (prevTime <= 1) {
-    //           clearInterval(timer);
-    //           setShowModal(true); // Show modal when time is up
-    //           return 0;
-    //         }
-    //         return prevTime - 1;
-    //       });
-    //     }, 1000);
-    
-    //     return () => clearInterval(timer); // Cleanup timer on component unmount
-    //   }, []);
-    
-    //   const handleStay = useCallback(() => {
-    //     setTimer(initialTime); // Reset time
-    //     setShowModal(false); // Hide modal if it's shown
-    //   }, [initialTime]);
-    
-    //   useEffect(() => {
-    //     if (timer === 10) {
-    //       setShowModal(true); // Show modal when 10 seconds are left
-    //     }
-    //   }, [timer]);
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setTimer((prevTime: any) => {
+                if (prevTime <= 1) {
+                    clearInterval(timer);
+                    setShowModal(true); // Show modal when time is up
+                    return 0;
+                }
+                return prevTime - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(timer); // Cleanup timer on component unmount
+    }, []);
+
+    const handleStay = useCallback(() => {
+        setShowModal(false);
+        setTimer(initialTime); // Reset time
+        refreshToken();
+    }, [initialTime]);
+
+    const handleLogout = useCallback(() => {
+        setTimer(initialTime); // Reset time
+        setShowModal(false); // Hide modal if it's shown
+        logoutUser()
+    }, [initialTime]);
+
+    useEffect(() => {
+        if (timer === 10) {
+            setShowModal(true); // Show modal when 10 seconds are left
+        }
+    }, [timer]);
+
+    useEffect(() => {
+        if (timer === 0) {
+            logoutUser()
+        }
+    }, [timer]);
 
     useEffect(() => {
         getUserType();
@@ -95,17 +109,18 @@ const TopBar: React.FC<any> = ({ payload }) => {
                 </div>
 
             </div>
-<Modal show={showModal} >
-<Modal.Body className="p-4 gap-3">
-   
-    {` You will be logged out in : `}
-    <p className="fs-1 text-danger">{timer}s</p>
-    <div className="d-flex gap-3 mt-5 w-100 text-end justify-content-end">
-        <Button >Stay logged in</Button>
-        <Button variant="outline border border-2">Logout</Button>
-    </div>
-</Modal.Body>
-</Modal>
+
+            <Modal show={showModal} >
+                <Modal.Body className="p-4 gap-3">
+
+                    {` You will be logged out in : `}
+                    <p className="fs-1 text-danger">{timer}s</p>
+                    <div className="d-flex gap-3 mt-5 w-100 text-end justify-content-end">
+                        <Button onClick={handleStay}>Stay logged in</Button>
+                        <Button variant="outline border border-2">Logout</Button>
+                    </div>
+                </Modal.Body>
+            </Modal>
         </div>
     )
 }

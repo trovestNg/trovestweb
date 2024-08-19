@@ -10,7 +10,9 @@ export const Identity = {
 	scope: 'openid profile roles work_info policy-viewer-api-scope',
 	post_logout_redirect_uri: process.env.REACT_APP_HOME + 'logout',
 	userStore: new Oidc.WebStorageStateStore({ store: window.localStorage }),
-  revokeAccessTokenOnSignout: true,
+	automaticSilentRenew: true,
+	loadUserInfo: true,
+	revokeAccessTokenOnSignout: true,
 };
 
 export const baseUrl = process.env.REACT_APP_POLICY_API
