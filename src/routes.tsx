@@ -1,7 +1,7 @@
 import React, { Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
-import UserDashboardContainer from "./pages/user/dashboard";
-import UserDashboardPage from "./pages/user/dashboardpage";
+
+import UnAuthUserDashboardContainer from "./pages/unauth-user/dashboard";
 import PolicyViewPage from "./pages/user/policyviewpage";
 import Landingpage from "./pages/landingpage";
 import LoggedOutPage from "./pages/loggedoutpage";
@@ -36,6 +36,13 @@ import ApproverAttestersListPage from "./pages/approver/approverAttestersListPag
 import ApproverDefaultersListPage from "./pages/approver/approverDefaultersListPage";
 import ApproverDeletedPoliciesPage from "./pages/approver/approverDeletedPoliciesPage";
 import AdminViewDelPolicyPage from "./pages/admin/adminViewDelPolicyPage";
+import UserUnAuthDashboardPage from "./pages/unauth-user/dashboardpage";
+import UserUnAuthFirstLayerPage from "./pages/unauth-user/userUnAuthFirstLayerPage";
+import UnAuthBmoViewPage from "./pages/unauth-user/unAuthBmoView";
+import UnAuthBmoView2 from "./pages/unauth-user/unAuthBmoView2";
+import UboAdminDashboardContainer from "./pages/user/ubo-dashboard-container";
+import UboAdminInitDashboardpage from "./pages/user/ubo-admin-init-dashboardpage";
+import AuthBmoViewPage from "./pages/user/auth-bmo-view";
 
 // const UserDBC = React.lazy(() => import("./pages/user/dashboard"));
 
@@ -45,13 +52,17 @@ export default function () {
     return (
 
         <Routes>
-            <Route path="/" element={<Landingpage />} />
+            <Route path="/" element={<UnAuthUserDashboardContainer />}>
+                <Route index element={<UserUnAuthDashboardPage />} />
+                <Route path="accountdetails/:curstomerNumber" element={<UnAuthBmoViewPage />} />
+                <Route path="custormer-details/:curstomerNumber" element={<UnAuthBmoView2 />} />
+            </Route>
             <Route path="callback" element={<SigninCallBackPage />} />
             <Route path="logout" element={<LoggedOutPage />} />
 
-            <Route path="policy-portal" element={< UserDashboardContainer />}>
-                <Route index element={<UserDashboardPage />} />
-                <Route path="policy/:attestationStatus/:id" element={<PolicyViewPage />} />
+            <Route path="ubo-portal" element={< UboAdminDashboardContainer />}>
+                <Route index element={<UboAdminInitDashboardpage />} />
+                <Route path="accountdetails/:curstomerNumber" element={<AuthBmoViewPage/>} />
                 <Route path="all-policy" element={<UserAllPolicyPage />} />
                 <Route path="attested-policy" element={<UserAttestedPolicyPage />} />
                 <Route path="unattested-policy" element={<UserUnAttestedPolicyPage />} />
@@ -80,7 +91,7 @@ export default function () {
                 <Route path="deleted-policies" element={<ApproverDeletedPoliciesPage />} />
                 <Route path="attesters-list/:id" element={<ApproverAttestersListPage />} />
                 <Route path="policy/:id/:attestationStatus" element={<ApproverPolicyviewpage />} />
-                <Route path="attesters-list/:id"  element={<ApproverAttestersListPage />} />
+                <Route path="attesters-list/:id" element={<ApproverAttestersListPage />} />
                 <Route path="defaulters-list/:id" element={<ApproverDefaultersListPage />} />
             </Route>
             <Route path="*" element={<ErrorPage />} />

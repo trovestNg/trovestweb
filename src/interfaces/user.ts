@@ -22,7 +22,7 @@ export interface IUserDashboard {
     totalPendingPolicy: number,
     totalRejectedPolicy: number,
     totalUploadedPolicy: number,
-    totalPolicyForAuthorizer:number
+    totalPolicyForAuthorizer: number
 
 }
 
@@ -53,11 +53,11 @@ export interface IUserPolicy {
     department: string
     policyId: number
     policyName: string
-    subsidiaryId:number
+    subsidiaryId: number
 }
 
 export interface IUser {
-    attestationTime:string,
+    attestationTime: string,
     deadlineTime: string,
     department: string,
     email: string,
@@ -69,8 +69,19 @@ export interface IUser {
     : string,
     userName
     : string,
-    displayName : string,
+    displayName: string,
     firstName: string,
-    lastName:string
+    lastName: string
 
+}
+
+export interface IBMO {
+    customerName: string,
+    customerNumber: string,
+    customerType: string,
+    kycReferenceNumber: string,
+    level: string,
+    rating: number,
+    rcNumber: string,
+    riskLevel: string,
 }

@@ -1,0 +1,13 @@
+/* Custom CSS */
+.custom-table .table {
+    /* Your custom styles here */
+    background-color: red !important;
+  }
+  
+  .custom-table .table .thead {
+    background-color:blue !important;
+  }
+  
+  .custom-table .table td {
+    /* Your custom styles for table cells */
+  }

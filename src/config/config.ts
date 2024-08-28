@@ -15,7 +15,8 @@ export const Identity = {
 	revokeAccessTokenOnSignout: true,
 };
 
-export const baseUrl = process.env.REACT_APP_POLICY_API
+export const baseUrl = process.env.REACT_APP_API
+export const publicBaseUrl = process.env.REACT_APP_PUBLIC
 
 // export const Identity = {
 // 	authority: 'https://idp-test.fsdhgroup.com/',

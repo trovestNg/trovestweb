@@ -16,9 +16,11 @@ import { IDept } from "../../interfaces/dept";
 import { toast } from "react-toastify";
 import { getUserInfo, loginUser, logoutUser } from "../../controllers/auth";
 import api from "../../config/api";
+import UnAuthorizedBMOListTab from "../../components/tabs/users-unauth-tabs/unAuthorizedBMOListTab";
+import UnAuthorizedFirstLayerBMOListTab from "../../components/tabs/users-unauth-tabs/unAuthorizedFirstLayerBMOListTab";
 
 
-const UserDashboardPage = () => {
+const UserUnAuthFirstLayerPage = () => {
     const [policies, setPolicies] = useState<IPolicy[]>([]);
     const [depts, setDepts] = useState<IDept[]>([]);
     // const [regUsers, setRegUsers] = useState<User[]>([]);
@@ -113,57 +115,13 @@ const UserDashboardPage = () => {
         getAllPolicies()
     }, [refreshComponent])
     return (
-        <div className="w-100">
-            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Dashboard</h5>
-            {
-                loading ?
-                    <div className="d-flex justify-content-center flex-column align-items-center">
-                        <Spinner className="spinner-grow text-primary" />
-                        <p>Loading</p>
-                    </div>
-                    :
-                    <div className="d-flex gap-5">
-                        {
-                            dashCardInfo.map((info, index) => (
-                                <DashboardCard key={index} count={info.count}
-                                    imgSrc={info.img}
-                                    title={info.title}
-                                    url={info.path}
-                                />))
-                        }
-                    </div>
-
-            }
-
-
-            <div className="mt-5">
-                <Tabs
-                    defaultActiveKey="all-policies"
-                    id="uncontrolled-tab-example"
-                    variant="underline"
-                    className="mb-3 gap-5"
-                >
-                    <Tab eventKey="all-policies" title="All Policies"
-                        tabClassName=""
-                    >
-                        <UserAllPoliciesTab />
-                    </Tab>
-
-                    <Tab eventKey="pending" title="Attested Policy">
-                        <UserAttestedPoliciesTab />
-                    </Tab>
-
-                    <Tab eventKey="not-attested" title="Not Attested Policy">
-                        <UserNotAttestedPoliciesTab />
-                    </Tab>
-                    
-
-                </Tabs>
-
-            </div>
+        <div className="w-100 p-0">
+           
+            <UnAuthorizedFirstLayerBMOListTab/>
+           
         </div>
     )
 
 }
 
-export default UserDashboardPage;
+export default UserUnAuthFirstLayerPage;

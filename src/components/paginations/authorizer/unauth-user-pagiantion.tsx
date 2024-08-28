@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import moment from "moment";
-import { shortenString } from "../../../util";
+// import { shortenString } from "../../../util";
 import { useNavigate } from "react-router-dom";
 import successElipse from '../../../assets/images/Ellipse-success.png';
 import warningElipse from '../../../assets/images/Ellipse-warning.png';
@@ -14,14 +14,15 @@ import SureToDeletePolicyModal from "../../modals/sureToDeletePolicyModal";
 import UpdatePolicyModal from "../../modals/updatePolicyModal";
 import RejectReasonModal from "../../modals/rejectReasonModal";
 import { IDept } from "../../../interfaces/dept";
+import { IBMO } from "../../../interfaces/bmo";
 
-const AuthorizerAllPolicyPagination: React.FC<any> = ({ data, refData }) => {
+const UnAuthUserPagination: React.FC<any> = ({ data, refData }) => {
     const navigate = useNavigate();
     const totalPages = Math.ceil(data.length / 10);
     const [currentPage, setCurrentPage] = useState(1);
 
-    const indexOfLastItem = currentPage * 15;
-    const indexOfFirstItem = indexOfLastItem - 15;
+    const indexOfLastItem = currentPage * 10;
+    const indexOfFirstItem = indexOfLastItem - 10;
     const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
 
     const [policy, setPolicy] = useState<IPolicy>();
@@ -32,15 +33,7 @@ const AuthorizerAllPolicyPagination: React.FC<any> = ({ data, refData }) => {
     const [rejReasonModal, setRejReasonModal] = useState<boolean>(false);
     const [subSidiaries, setSubSidiaries] = useState<IDept[]>();
 
-    const handleGetAttestersList = (e: any, pol: IPolicy) => {
-        e.stopPropagation();
-        navigate(`/admn/attesters-list/${pol.id}?deadlineDate=${encodeURIComponent(pol.deadlineDate)}&fileName=${encodeURIComponent(pol.fileName)}`);
-    }
-
-    const handleGetDefaultersList = (e: any, pol: IPolicy) => {
-        e.stopPropagation();
-        navigate(`/admn/defaulters-list/${pol.id}?deadlineDate=${encodeURIComponent(pol.deadlineDate)}&fileName=${encodeURIComponent(pol.fileName)}`);
-    }
+    
 
     const handleUpdate = (e: any, policy: IPolicy) => {
         e.stopPropagation();
@@ -144,8 +137,8 @@ const AuthorizerAllPolicyPagination: React.FC<any> = ({ data, refData }) => {
     let handleSubName = (subsidiaryArray: any) => {
         let names: string[] = subsidiaryArray.map((subs: any) => subs.subsidiaryName);
         // console.log({subName : })
-        let shortened = shortenString(names.toString(), 30)
-        return shortened
+        // let shortened = shortenString(names.toString(), 30)
+        // return shortened
     }
 
     let handleFullSub = (subsidiaryArray: any) => {
@@ -183,45 +176,37 @@ const AuthorizerAllPolicyPagination: React.FC<any> = ({ data, refData }) => {
                     setRejReasonModal(false);
                 }}
             />
+            <div className=" p-1" style={{ overflowY: 'scroll', height: '70vh' }}>
             <table className="table table-striped w-100">
                 <thead className="thead-dark">
                     <tr >
                         <th scope="col" className="bg-primary text-light">#</th>
-                        <th scope="col" className="bg-primary text-light">Policy Title</th>
-                        <th scope="col" className="bg-primary text-light">Subsidiary</th>
-                        <th scope="col" className="bg-primary text-light">Initiator</th>
-                        <th scope="col" className="bg-primary text-light">Date Uploaded</th>
-                        <th scope="col" className="bg-primary text-light">Status</th>
+                        <th scope="col" className="bg-primary text-light">Business Name</th>
+                        <th scope="col" className="bg-primary text-light">RN/BN/CAC/IT Number</th>
                         <th scope="col" className="bg-primary text-light">Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {data.length <= 0 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
-                        currentItems.map((policy: any, index: any) => (
+                    {currentItems.length < 1 ? <tr><td className="text-center" colSpan={7}>No Data Available</td></tr> :
+                        currentItems.map((bmo: IBMO, index: any) => (
                             <tr key={index} style={{ cursor: 'pointer' }}
-                                onClick={() => navigate(`/admn/policy/${policy.id}/${policy.isAuthorized}`)}
+                                onClick={() => navigate(`accountdetails/${bmo.customerNumber}`)}
                             >
                                 <th scope="row">{index + 1}</th>
-                                <td className="text-primary"><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.fileName, 40)}`}</td>
-                                <td>
+                                {/* <td className="text-primary"><i className="bi bi-file-earmark-pdf text-danger"></i> {`${shortenString(policy.fileName, 40)}`}</td> */}
+                                {/* <td>
                                     <OverlayTrigger placement="top" overlay={renderTooltip(handleFullSub(policy?.subsidiaries))}>
                                         <span>{handleSubName(policy?.subsidiaries)}</span>
                                     </OverlayTrigger>
-                                </td>
-                                <td>{policy.uploadedBy}</td>
-                                <td>{moment(policy.uploadTime).format('MMM DD YYYY')}</td>
-                                <td className={`text-${policy.isAuthorized ? 'success' : !policy.isAuthorized && !policy.isRejected ? 'warning' : !policy.isAuthorized && policy.isRejected ? 'danger' : 'primary'}`}>
-                                    <img src={policy.isAuthorized ? successElipse : !policy.isAuthorized && !policy.isRejected ? warningElipse : !policy.isAuthorized && policy.isRejected ? dangerElipse : ''} height={'10px'} />
-                                    {'  '}
-                                    <span >{policy.isAuthorized && 'Approved'}{!policy.isAuthorized && !policy.isRejected && 'Pending'} {!policy.isAuthorized && policy.isRejected && 'Rejected'}</span>
-                                    {/* : !policy.isAuthorized && ? 'Pending ' : policy.isAuthorized && policy.isRejected?'Rejected':'' */}
-                                    {/* <span onClick={(e) => handleShowReasonForRej(e, policy)}>{policy.isRejected && <i className="bi bi-file-earmark-excel text-danger"></i>}</span> */}
-                                </td>
-                                <td className="table-icon" >
-                                    <i className=" bi bi-three-dots" onClick={(e) => e.stopPropagation()}></i>
-                                    <div className="content ml-5" style={{ position: 'relative', zIndex: 1500 }}>
+                                </td> */}
+                                <td className="text-primary">{bmo.customerName}</td>
+                                <td>{bmo.kycReferenceNumber}</td>
+                                <td>
+                                    <div className=" table-icon w-25">
+                                    <i className=" bi bi-three-dots " onClick={(e) => e.stopPropagation()}></i>
+                                    <div className="content ml-5" style={{ zIndex: 1500,position: 'relative',bottom:'100px' }}>
                                         {
-                                            policy.isAuthorized &&
+                                           
                                             <Card className="p-2  shadow-sm rounded border-0"
                                                 style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
                                                 <ListGroup>
@@ -238,7 +223,7 @@ const AuthorizerAllPolicyPagination: React.FC<any> = ({ data, refData }) => {
                                                     </ListGroupItem>
 
                                                     <ListGroupItem className="multi-layer"
-                                                        onClick={(e) => handleGetAttestersList(e, policy)}
+                                                        // onClick={(e) => handleGetAttestersList(e, policy)}
                                                     >
                                                         <span className="w-100 d-flex justify-content-between">
                                                             <div className="d-flex gap-2">
@@ -251,7 +236,7 @@ const AuthorizerAllPolicyPagination: React.FC<any> = ({ data, refData }) => {
                                                     </ListGroupItem>
 
                                                     <ListGroupItem className="multi-layer"
-                                                        onClick={(e) => handleGetDefaultersList(e, policy)}
+                                                        // onClick={(e) => handleGetDefaultersList(e, policy)}
                                                     >
                                                         <span className="w-100 d-flex justify-content-between">
                                                             <div className="d-flex gap-2">
@@ -264,7 +249,7 @@ const AuthorizerAllPolicyPagination: React.FC<any> = ({ data, refData }) => {
                                                     </ListGroupItem>
 
                                                     <ListGroupItem
-                                                        onClick={(e) => handleDownloadPolicy(e, policy)}
+                                                        // onClick={(e) => handleDownloadPolicy(e, bmo)}
 
                                                     >
                                                         <span className="w-100 d-flex justify-content-between">
@@ -278,50 +263,12 @@ const AuthorizerAllPolicyPagination: React.FC<any> = ({ data, refData }) => {
                                             </Card>}
 
 
-                                        {
-                                            !policy.isAuthorized &&
-                                            <Card className="p-2  shadow-sm rounded border-0"
-                                                style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
-                                                <ListGroup>
-                                                    <ListGroupItem
-                                                    >
-                                                        <span className="w-100 d-flex justify-content-between">
-                                                            <div className="d-flex gap-2">
-                                                                <i className="bi bi-eye"></i>
-                                                                View Policy
-                                                            </div>
-                                                        </span>
-                                                    </ListGroupItem>
-
-                                                    <ListGroupItem
-                                                        onClick={(e) => handleDownloadPolicy(e, policy)}
-
-                                                    >
-                                                        <span className="w-100 d-flex justify-content-between">
-                                                            <div className="d-flex gap-2">
-                                                                <i className="bi bi-download"></i>
-                                                                Download Policy
-                                                            </div>
-                                                        </span>
-                                                    </ListGroupItem>
-
-                                                    {/*                                                                 
-
-                                                                <ListGroupItem
-                                                                    disabled={policy?.markedForDeletion}
-                                                                    onClick={(e) => handleDelete(e, policy)}
-                                                                >
-                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                        <div className="d-flex gap-2">
-                                                                            <i className="bi bi-file-text"></i>
-                                                                            Delete
-                                                                        </div>
-                                                                    </span>
-                                                                </ListGroupItem> */}
-                                                </ListGroup>
-                                            </Card>}
+                                        
 
                                     </div>
+                                    </div>
+                                    
+                                    
 
                                 </td>
 
@@ -330,10 +277,12 @@ const AuthorizerAllPolicyPagination: React.FC<any> = ({ data, refData }) => {
                     }
                 </tbody>
             </table>
+            </div>
+            
 
             {
                 data.length <= 0 ? '' :
-                    <div className="d-flex justify-content-between align-items-center">
+                    <div className="d-flex justify-content-between">
                         <p className="p-0 m-0">{`Showing Page ${currentPage} of ${totalPages} pages`}</p>
                         {
                             data.length <= 0 ? '' :
@@ -358,4 +307,4 @@ const AuthorizerAllPolicyPagination: React.FC<any> = ({ data, refData }) => {
     )
 }
 
-export default AuthorizerAllPolicyPagination;
+export default UnAuthUserPagination;

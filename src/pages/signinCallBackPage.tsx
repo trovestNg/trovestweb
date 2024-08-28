@@ -11,7 +11,7 @@ const SigninCallBackPage = () => {
       try {
         const res = await handleCallback();
         if (res?.access_token) {
-            window.history.replaceState(null, '', window.location.href = '/policy-portal',);
+            window.history.replaceState(null, '', window.location.href = '/ubo-portal',);
             window.onpopstate = function (event) {
                 window.history.pushState(null, '', window.location.href);
             };
