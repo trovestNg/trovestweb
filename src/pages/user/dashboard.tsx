@@ -7,6 +7,7 @@ import { getPolicies } from "../../controllers/policy";
 import { IUserDashboard } from "../../interfaces/user";
 import { getUserInfo, loginUser, logoutUser } from "../../controllers/auth";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 
 
 const UserDashboardContainer = () => {

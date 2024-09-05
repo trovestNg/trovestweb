@@ -45,32 +45,32 @@ const UboAdminSideBar: React.FC<any> = ({ payload }) => {
         {
             title: 'BO Risk Assessment',
             icon: 'bi bi-person-gear',
-            path: '/bo-risk-assessment',
+            path: '/ubo-portal/bo-risk-assessment',
         },
         {
             title: 'Approved BO (30)',
             icon: "bi bi-journal-check",
-            path: '/approved-bo',
+            path: '/ubo-portal/approved-bo',
         },
         {
             title: 'Pending BO (15)',
             icon: 'bi bi-hourglass',
-            path: '/pending-bo',
+            path: '/ubo-portal/pending-bo',
         },
         {
             title: 'Rejected BO (9)',
             icon: 'bi bi-journal-x',
-            path: '/rejected-bo',
+            path: '/ubo-portal/rejected-bo',
         },
         {
             title: 'History',
             icon: 'bi bi-journal-x',
-            path: '/history',
+            path: '/ubo-portal/history',
         },
         {
             title: 'Reports',
             icon: 'bi bi-journal-x',
-            path: '/reports',
+            path: '/ubo-portal/reports',
         }
     ]
 

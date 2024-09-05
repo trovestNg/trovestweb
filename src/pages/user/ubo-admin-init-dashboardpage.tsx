@@ -21,27 +21,36 @@ import styles from './unAuth.module.css'
 import { IBMO } from "../../interfaces/bmo";
 import apiUnAuth from "../../config/apiUnAuth";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { handleUserSearch, handleUserSearchResult } from "../../store/slices/userSlice";
+import CreateBMOOwnerImportModal from "../../components/modals/createBMOOwnerImportModal";
 
 
 const UboAdminInitDashboardpage = () => {
-    const [bmoList, setBmoList] = useState<IBMO[]>([]);
+    const bmoList:IBMO[] = useSelector((state:any)=>state.userSlice.userBMOSearch.searchResult)
     const [loading, setLoading] = useState(false);
-    const [userSearch, setUserSearch] = useState('');
+   
+    // const [userSearch, setUserSearch] = useState('');
     const [refreshComponent, setRefreshComponent] = useState(false)
     const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const userSearch = useSelector((state:any)=>state.userSlice.userBMOSearch.searchWords);
+    const [addNewBenefOwnerImportModal, setAddNewBenefOwnerImportModal] = useState(false);
 
 
 
     const handleSearchByBmoNameOrNumber = async (e: any) => {
         e.preventDefault()
-        setLoading(true)
+        setLoading(true);
+       
         // toast.error('Await')
         try {
             const res = await apiUnAuth.get(`customers?search=${userSearch}`);
             console.log(res)
             if (res.data) {
                 setLoading(false);
-                setBmoList(res?.data?.customerAccounts);
+                dispatch(handleUserSearchResult(res?.data?.customerAccounts))
+                // setBmoList(res?.data?.customerAccounts);
                 if (res?.data?.customerAccounts?.length <= 0) {
                     toast.error('No Custormer by that Name/ID')
                 }
@@ -70,8 +79,9 @@ const UboAdminInitDashboardpage = () => {
 
     const handleClear = () => {
         // setBySearch(false);
-        setUserSearch('')
-        setBmoList([])
+        dispatch(handleUserSearch(''))
+        dispatch(handleUserSearchResult([]))
+        // setBmoList([])
         // setRefreshData(!refreshData)
     }
 
@@ -81,6 +91,7 @@ const UboAdminInitDashboardpage = () => {
 
     return (
         <div className="w-100 p-0">
+            <CreateBMOOwnerImportModal off={() => setAddNewBenefOwnerImportModal(false)} show={addNewBenefOwnerImportModal} />
             <div className={`w-100 p-3 rounded rounded-3 py-4 ${styles.jumbo}`}
             >
                 <Card className={`rounded rounded-3 bg-primary py-4 text-light px-3 ${styles.jumbo2}`}>
@@ -99,7 +110,7 @@ const UboAdminInitDashboardpage = () => {
                 <form onSubmit={handleSearchByBmoNameOrNumber} className="d-flex align-items-center w-75 justify-content-center mt-3 gap-3">
 
                     <FormControl
-                        onChange={(e) => setUserSearch(e.target.value)}
+                        onChange={(e) => dispatch(handleUserSearch(e.target.value))}
                         placeholder="Search by Name, Company, Assets...."
                         value={userSearch}
                         className="py-2" />
@@ -114,6 +125,7 @@ const UboAdminInitDashboardpage = () => {
                         variant="primary" style={{ minWidth: '6em', marginRight: '-5px', minHeight: '2.4em' }}>{loading ? <Spinner size="sm" /> : 'Search'}</Button>
 
                     <Button
+                    onClick={()=>setAddNewBenefOwnerImportModal(true)}
                         variant="outline border  d-flex gap-2 border-primary text-primary" style={{ minWidth: '9em', marginRight: '-5px', minHeight: '2.4em' }}>{<div className="d-flex w-100 gap-2 justify-content-center"> <i className="bi bi-file-earmark-arrow-up"></i>
                         <p className="p-0 m-0" >Bulk Upload</p></div>}</Button>
                 </form>

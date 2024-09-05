@@ -21,57 +21,53 @@ import styles from './unAuth.module.css'
 import { IBMO } from "../../interfaces/bmo";
 import apiUnAuth from "../../config/apiUnAuth";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { handleUserSearch, handleUserSearchResult } from "../../store/slices/userSlice";
 
 
-const UserUnAuthDashboardPage = () => {
-    const [bmoList, setBmoList] = useState<IBMO[]>([]);
+const UboUnAuthUserDashboardpage = () => {
+    const bmoList:IBMO[] = useSelector((state:any)=>state.userSlice.userBMOSearch.searchResult)
     const [loading, setLoading] = useState(false);
-    const [userSearch, setUserSearch] = useState('');
+    const dispatch = useDispatch()
+    // const [userSearch, setUserSearch] = useState('');
     const [refreshComponent, setRefreshComponent] = useState(false)
     const navigate = useNavigate()
+    const userSearch = useSelector((state:any)=>state.userSlice.userBMOSearch.searchWords)
 
 
 
     const handleSearchByBmoNameOrNumber = async (e: any) => {
         e.preventDefault()
-        setLoading(true)
+        setLoading(true);
+       
         // toast.error('Await')
         try {
             const res = await apiUnAuth.get(`customers?search=${userSearch}`);
             console.log(res)
             if (res.data) {
                 setLoading(false);
-                setBmoList(res?.data?.customerAccounts);
-                if(res?.data?.customerAccounts?.length<=0){
+                dispatch(handleUserSearchResult(res?.data?.customerAccounts))
+                // setBmoList(res?.data?.customerAccounts);
+                if (res?.data?.customerAccounts?.length <= 0) {
                     toast.error('No Custormer by that Name/ID')
                 }
                 setLoading(false);
             }
             else {
                 setLoading(false)
-                
+
             }
         } catch (error) {
-            
+
             setLoading(false)
         }
-        // try {
-        //     
-        //     console.log({ listHere: res?.data })
-        //     
-        //         
-        //        
-        //     }
-        // }
-        // catch (error) {
-        //     console.log(error)
-        // }
     }
 
     const handleClear = () => {
         // setBySearch(false);
-        setUserSearch('')
-        setBmoList([])
+        dispatch(handleUserSearch(''))
+        dispatch(handleUserSearchResult([]))
+        // setBmoList([])
         // setRefreshData(!refreshData)
     }
 
@@ -95,23 +91,25 @@ const UserUnAuthDashboardPage = () => {
             </div>
 
 
-            <div className="w-100 d-flex justify-content-center">
-                <form onSubmit={handleSearchByBmoNameOrNumber} className="d-flex align-items-center w-50 justify-content-center mt-3 gap-3" style={{ position: 'relative' }}>
+            <div className="w-100 d-flex justify-content-center" style={{ position: 'relative' }}>
+                <form onSubmit={handleSearchByBmoNameOrNumber} className="d-flex align-items-center w-75 justify-content-center mt-3 gap-3">
 
                     <FormControl
-                        onChange={(e) => setUserSearch(e.target.value)}
+                        onChange={(e) => dispatch(handleUserSearch(e.target.value))}
                         placeholder="Search by Name, Company, Assets...."
                         value={userSearch}
-                        className="py-2" />
+                        className="py-2 w-50" />
                     <i
                         className="bi bi-x-lg"
                         onClick={handleClear}
-                        style={{ marginLeft: '450px', display: userSearch == '' ? 'none' : 'flex', cursor: 'pointer', float: 'right', position: 'absolute' }}></i>
+                        style={{ marginLeft: '400px', display: userSearch == '' ? 'none' : 'flex', cursor: 'pointer', float: 'right', position: 'absolute' }}></i>
 
                     <Button
-                        disabled={userSearch == ''}
+                        disabled={userSearch == '' || loading}
                         type="submit"
-                        variant="primary" style={{ minWidth: '100px', marginRight: '-5px', minHeight: '2.4em' }}>{loading ? <Spinner size="sm" /> : 'Search'}</Button>
+                        variant="primary" style={{ minWidth: '6em', marginRight: '-5px', minHeight: '2.4em' }}>{loading ? <Spinner size="sm" /> : 'Search'}</Button>
+
+                  
                 </form>
 
             </div>
@@ -121,7 +119,7 @@ const UserUnAuthDashboardPage = () => {
                 {bmoList.length > 0 && <ul className="w-50 rounded border rounded-3 m-0 p-0" style={{ listStyle: 'none' }}>{
                     bmoList.map((bmo: IBMO, index: number) => (
 
-                        <li key={index} onClick={() => navigate(`/accountdetails/${bmo.customerNumber}`)} role="button" className="p-2 m-0 border px-3">{bmo.customerName}</li>
+                        <li key={index} onClick={() => navigate(`accountdetails/${bmo.customerNumber}`)} role="button" className="p-2 m-0 border px-3">{bmo.customerName}</li>
 
 
                     ))
@@ -136,4 +134,4 @@ const UserUnAuthDashboardPage = () => {
 
 }
 
-export default UserUnAuthDashboardPage;
+export default UboUnAuthUserDashboardpage;

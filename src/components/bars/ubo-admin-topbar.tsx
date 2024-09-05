@@ -2,6 +2,9 @@ import React, { useCallback, useEffect, useState } from "react";
 import notificationIcon from "../../assets/icons/notification-icon.png";
 import { Button, Card, ListGroup, ListGroupItem, Modal } from "react-bootstrap";
 import { getUserInfo, logoutUser, refreshToken } from "../../controllers/auth";
+import { useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { clearNav } from "../../store/slices/userSlice";
 
 
 
@@ -9,6 +12,8 @@ import { getUserInfo, logoutUser, refreshToken } from "../../controllers/auth";
 const UboAdminTopbar: React.FC<any> = ({ payload }) => {
     const [userType, setUserType] = useState('');
     const [userName, setUserName] = useState('');
+    const currentPath = useLocation().pathname;
+    const dispatch = useDispatch()
     const initialTime = 250;
     // Set initial countdown time here
     const [timer, setTimer] = useState(initialTime);
@@ -80,13 +85,28 @@ const UboAdminTopbar: React.FC<any> = ({ payload }) => {
 
     useEffect(() => {
         if (timer === 0) {
-            logoutUser()
+            // logoutUser()
         }
     }, [timer]);
 
     useEffect(() => {
         getUserType();
-    }, [])
+    }, []);
+
+    const handleClearNav = ()=>{
+        if(currentPath.includes('custormer-details')){
+            return
+        } else {
+            dispatch(clearNav([]));
+        }
+       
+    }
+
+    console.log()
+
+    useEffect(()=>{
+        handleClearNav()
+    },[currentPath.includes('custormer-details')])
     return (
         <div
             className="d-flex align-items-center justify-content-between bg-light shadow-sm w-100 px-4 py-3" style={{ fontFamily: 'title' }}>

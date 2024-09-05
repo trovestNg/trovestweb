@@ -26,7 +26,7 @@ import MoreInfoModal from "../../components/modals/moreInfoModal";
 
 
 const UnAuthBmoView2 = () => {
-    const [bmoList, setBmoList] = useState<IOwner[]>();
+    const [bmoList, setBmoList] = useState<IOwner[]>([]);
     const [bmoOwner, setBmoOwner] = useState<IOwner>();
     const [parentInfo, setParentInfo] = useState<IParent>();
     const { curstomerNumber } = useParams()
@@ -78,7 +78,7 @@ const UnAuthBmoView2 = () => {
     const navigate = useNavigate()
     return (
         <div className="w-100 p-0 px-5">
-            <ChartModal show={viewChartModal} off={() => setViewChartModal(false)} />
+            {bmoList.length>0 &&<ChartModal show={viewChartModal} off={() => setViewChartModal(false)} />}
                 <MoreInfoModal info={bmoOwner} off={()=>setViewMoreInfoModal(false)} show={viewMoreInfotModal}/>
             <Button className="d-flex gap-2" onClick={() => navigate(-1)} variant="outline border border-primary">
                 <i className="bi bi-arrow-left text-primary"></i>
@@ -149,7 +149,7 @@ const UnAuthBmoView2 = () => {
                                     </td>
                                     <td className="text-primary">
                                         {
-                                            bmoList && bmoList.length
+                                            bmoList.length>0 && bmoList.length
                                         }
                                     </td>
                                 </tr>

@@ -44,7 +44,7 @@ export default {
         };
     
         try {
-            const response = await axios.post(`${baseUrl}api/${path}`,body, config);
+            const response = await axios.post(`${baseUrl}`,body, config);
             return response;
         } catch (error) {
             // Handle error

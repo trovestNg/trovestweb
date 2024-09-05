@@ -1,19 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Container, Modal, Card, Button, Spinner, FormControl, Badge, FormSelect } from "react-bootstrap";
-import DashboardCard from "../../components/cards/dashboard-card";
-import openBook from '../../assets/images/open-book.png'
-import checked from '../../assets/images/check.png';
-import timer from '../../assets/images/deadline.png';
-import error from '../../assets/images/error.png';
-import { Tabs, Tab } from "react-bootstrap";
-import UserAllPoliciesTab from "../../components/tabs/userTabs/user-all-policies-tab";
-import UserNotAttestedPoliciesTab from "../../components/tabs/userTabs/user-not-attested-policies-tab";
-import UserAttestedPoliciesTab from "../../components/tabs/userTabs/attested-policies-tab";
-import { getPolicies } from "../../controllers/policy";
-import { IPolicy } from "../../interfaces/policy";
-import { IUserDashboard } from "../../interfaces/user";
-import { IDept } from "../../interfaces/dept";
-import { toast } from "react-toastify";
+import { Container, Modal, Card, Button, Spinner, FormControl, Badge, FormSelect, ListGroup, ListGroupItem } from "react-bootstrap";
 import { getUserInfo, loginUser, logoutUser } from "../../controllers/auth";
 import api from "../../config/api";
 import UnAuthorizedBMOListTab from "../../components/tabs/users-unauth-tabs/unAuthorizedBMOListTab";
@@ -23,15 +9,27 @@ import apiUnAuth from "../../config/apiUnAuth";
 import { useNavigate, useParams } from "react-router-dom";
 import ChartModal from "../../components/modals/chartModal";
 import MoreInfoModal from "../../components/modals/moreInfoModal";
+import AddNewBenefOwnerTypeModal from "../../components/modals/addNewBenefOwnerTypeModal";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import Papa from "papaparse";
 import { saveAs } from "file-saver";
+import { toast } from "react-toastify";
+import CreateBMOOwnerIndModal from "../../components/modals/createBMOOwnerIndModal";
+import { useDispatch, useSelector } from "react-redux";
+import { clearNav, updateNav } from "../../store/slices/userSlice";
+import CreateBMOOwnerCoperateModal from "../../components/modals/createBMOOwnerCoperateModal";
+import CreateBMOOwnerFundsManagerModal from "../../components/modals/createBMOOwnerFundsManagerModal";
+import CreateBMOOwnerImportModal from "../../components/modals/createBMOOwnerImportModal";
+import AuthBOList from "../../components/paginations/ubo/un-auth-ubo-list";
+import UnAuthBOList from "../../components/paginations/ubo/un-auth-ubo-list";
 
 
 
 
-const UnAuthBmoViewPage = () => {
+
+const UnAuthUserViewBmoPage = () => {
+    const dispatch = useDispatch();
     const [bmoList, setBmoList] = useState<IOwner[]>([]);
     const [bmoOwner, setBmoOwner] = useState<IOwner>();
     const [parentInfo, setParentInfo] = useState<IParent>();
@@ -41,7 +39,16 @@ const UnAuthBmoViewPage = () => {
     const [viewMoreInfotModal, setViewMoreInfoModal] = useState(false);
     const [userSearch, setUserSearch] = useState('');
     const [refreshComponent, setRefreshComponent] = useState(false);
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const [refData, setRefData] = useState(false)
+    const [addNewBenefOwnerModal, setAddNewBenefOwnerModal] = useState(false);
+
+    const [addNewBenefOwnerIndividualModal, setAddNewBenefOwnerIndividualModal] = useState(false);
+    const [addNewBenefOwnerCoperateModal, setAddNewBenefOwnerCoperateModal] = useState(false);
+    const [addNewBenefOwnerFundsManagerModal, setAddNewBenefOwnerFundsManagerModal] = useState(false);
+    const [addNewBenefOwnerImportModal, setAddNewBenefOwnerImportModal] = useState(false);
+
+
 
     type Column = {
         header: string;
@@ -52,18 +59,18 @@ const UnAuthBmoViewPage = () => {
         // Define the columns
         const columns: Column[] = [
 
-        { header: 'S/N', dataKey: 'serialNumber' },
-        { header: 'Beneficial Owner', dataKey: 'BusinessName' },
-        { header: 'Account Type', dataKey: 'CategoryDescription' },
-        { header: 'Nationality', dataKey: 'CountryName' },
-        { header: '% Holding', dataKey: 'PercentageHolding' },
-        { header:'No of Shares', dataKey: 'NumberOfShares' },
-        { header: 'PEP', dataKey: 'IsPEP' },
-        { header: 'Ticker', dataKey: 'Ticker' }
+            { header: 'S/N', dataKey: 'serialNumber' },
+            { header: 'Beneficial Owner', dataKey: 'BusinessName' },
+            { header: 'Account Type', dataKey: 'CategoryDescription' },
+            { header: 'Nationality', dataKey: 'CountryName' },
+            { header: '% Holding', dataKey: 'PercentageHolding' },
+            { header: 'No of Shares', dataKey: 'NumberOfShares' },
+            { header: 'PEP', dataKey: 'IsPEP' },
+            { header: 'Ticker', dataKey: 'Ticker' }
         ];
 
         // Create rows from the policies array
-        const rows:any = bmoList && bmoList.map((policy, index) => ({
+        const rows: any = bmoList && bmoList.map((policy, index) => ({
             BusinessName: policy.BusinessName,
             CategoryDescription: policy.CategoryDescription,
             CountryName: policy.CountryName,
@@ -85,7 +92,7 @@ const UnAuthBmoViewPage = () => {
     };
 
     const headers: any = [
-       
+
         { label: 'S/N', key: 'serialNumber' },
         { label: 'Beneficial Owner', key: 'BusinessName' },
         { label: 'Account Type', key: 'CategoryDescription' },
@@ -160,23 +167,68 @@ const UnAuthBmoViewPage = () => {
         // setRefreshData(!refreshData)
     }
 
+    const handleAddNewBenefOwner = () => {
+        setAddNewBenefOwnerModal(true)
+    }
+
+    const handleAddNewBenefOwnerType = (e: any) => {
+        switch (e) {
+            case 1:
+                setAddNewBenefOwnerIndividualModal(true);
+                break;
+            case 2:
+                setAddNewBenefOwnerCoperateModal(true);
+                break;
+            case 3:
+                setAddNewBenefOwnerFundsManagerModal(true);
+                break;
+            case 4:
+                setAddNewBenefOwnerImportModal(true);
+                break;
+            default:
+                break;
+        }
+        setAddNewBenefOwnerModal(false)
+    }
+
     const handleShowInfoModal = (owner: IOwner) => {
         setBmoOwner(owner);
         setViewMoreInfoModal(!viewMoreInfotModal);
     }
 
-    const handleViewChart =()=>{
+    const handleViewChart = () => {
         setViewChartModal(!viewChartModal)
+    }
+
+    const handleNavigateToLevel = (owner: IOwner, id: number) => {
+        let payload = {
+            name: owner.BusinessName,
+            id: owner.Id
+        }
+        dispatch(updateNav(payload))
+        navigate(`/custormer-details/${parentInfo && parentInfo?.Level + 1}/${id}`)
+
+    }
+    const handleBackToHomePage = () => {
+        dispatch(clearNav([]))
+       navigate('/')
     }
 
     useEffect(() => {
         fetch();
-    }, [])
+    }, [refData])
     return (
-        <div className="w-100 p-0 px-5">
-            <ChartModal bmoList={bmoList} profile={parentInfo} show={viewChartModal} off={() => setViewChartModal(false)} />
+        <div className="w-100 p-0">
+            {bmoList.length > 0 && <ChartModal bmoList={bmoList} profile={parentInfo} show={viewChartModal} off={() => setViewChartModal(false)} />}
             <MoreInfoModal info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} />
-            <Button className="d-flex gap-2" onClick={() => navigate(-1)} variant="outline border border-primary">
+            <AddNewBenefOwnerTypeModal action={handleAddNewBenefOwnerType} off={() => setAddNewBenefOwnerModal(false)} show={addNewBenefOwnerModal} />
+            
+            <CreateBMOOwnerIndModal off={() => setAddNewBenefOwnerIndividualModal(false)} show={addNewBenefOwnerIndividualModal} />
+            <CreateBMOOwnerCoperateModal off={() => setAddNewBenefOwnerCoperateModal(false)} show={addNewBenefOwnerCoperateModal} />
+            <CreateBMOOwnerFundsManagerModal off={() => setAddNewBenefOwnerFundsManagerModal(false)} show={addNewBenefOwnerFundsManagerModal} />
+            <CreateBMOOwnerImportModal off={() => setAddNewBenefOwnerImportModal(false)} show={addNewBenefOwnerImportModal} />
+
+            <Button className="d-flex gap-2" onClick={handleBackToHomePage} variant="outline border border-primary">
                 <i className="bi bi-arrow-left text-primary"></i>
                 <p className="p-0 m-0 text-primary">Back To Homepage</p>
 
@@ -191,11 +243,17 @@ const UnAuthBmoViewPage = () => {
                         </>
                     }
                 </div>
-                {bmoList && <FormSelect style={{maxWidth:'12em'}} onChange={(e) => handleListDownload(e.currentTarget.value)}>
-                            <option>Download</option>
-                            <option value={'csv'}>CSV</option>
-                            <option value={'pdf'}>PDf</option>
-                        </FormSelect>}
+                <div className="d-flex gap-2">
+                    {/* <Button onClick={handleAddNewBenefOwner} className="d-flex gap-2" style={{ minWidth: '15em' }}>
+                        <i className="bi bi-plus-circle"></i>
+                        <p className="p-0 m-0" >Add New Beneficial Owner</p></Button> */}
+                    {bmoList && <FormSelect style={{ maxWidth: '8em' }} onChange={(e) => handleListDownload(e.currentTarget.value)}>
+                        <option>Download</option>
+                        <option value={'csv'}>CSV</option>
+                        <option value={'pdf'}>PDf</option>
+                    </FormSelect>}
+                </div>
+
             </div>
 
             <div className="w-100 d-flex mt-3 justify-content-between p-2" style={{ backgroundColor: 'rgba(0,73,135,0.09)' }}>
@@ -249,7 +307,7 @@ const UnAuthBmoViewPage = () => {
                                     </td>
                                     <td className="text-primary">
                                         {
-                                            bmoList && bmoList.length
+                                            bmoList.length > 0 && bmoList.length
                                         }
                                     </td>
                                 </tr>
@@ -270,7 +328,7 @@ const UnAuthBmoViewPage = () => {
                         <p className="p-0 m-0" >View Chart</p>
                     </Button>
                 </div>}
-                <div style={{ height: '40vh', overflowY: 'scroll' }}>
+                <div style={{ height: '35vh', overflowY: 'scroll' }}>
                     <table className="table table-striped mt-3" >
                         {
                             loading ?
@@ -285,11 +343,12 @@ const UnAuthBmoViewPage = () => {
                                             <th scope="col" className="bg-primary text-light">No of Shares  </th>
                                             <th scope="col" className="bg-primary text-light">PEP</th>
                                             <th scope="col" className="bg-primary text-light">Ticker</th>
+                                            <th scope="col" className="bg-primary text-light">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {
-                                            <tr className="fw-bold"><td className="text-center" colSpan={8}><Spinner /></td></tr>
+                                            <tr className="fw-bold"><td className="text-center" colSpan={9}><Spinner /></td></tr>
                                         }
                                     </tbody>
                                 </> :
@@ -304,27 +363,13 @@ const UnAuthBmoViewPage = () => {
                                             <th scope="col" className="bg-primary text-light">No of Shares  </th>
                                             <th scope="col" className="bg-primary text-light">PEP</th>
                                             <th scope="col" className="bg-primary text-light">Ticker</th>
-                                            <th scope="col" className="bg-primary text-light"></th>
+                                            <th scope="col" className="bg-primary text-light">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {
-                                            bmoList && bmoList.length > 0 ? bmoList && bmoList.map((bmoOwner: IOwner, index: number) => (
-                                                <tr key={index}
-                                                    role="button"
-                                                    onClick={bmoOwner.CategoryDescription == 'Corporate' ? () => navigate(`/custormer-details/${bmoOwner.Id}`) : () => handleShowInfoModal(bmoOwner)}
-                                                >
-                                                    <th scope="row">{index + 1}</th>
-                                                    <td className="">{bmoOwner.BusinessName}</td>
-                                                    <td>{bmoOwner.CategoryDescription}</td>
-                                                    <td>{bmoOwner.CountryName}</td>
-                                                    <td>{bmoOwner.PercentageHolding}%</td>
-                                                    <td>{bmoOwner.NumberOfShares}</td>
-                                                    <td>{bmoOwner.IsPEP ? 'Yes' : 'No'}</td>
-                                                    <td>{bmoOwner.Ticker ? bmoOwner.Ticker : 'N/A'}</td>
-                                                    <td className="text-primary" role="button" style={{textDecoration:'underline'}}>View more</td>
-                                                </tr>
-                                            )) : <tr className="text-center">
+                                            bmoList && bmoList.length > 0 ? 
+                                            <UnAuthBOList lv={parentInfo?.Level} data={bmoList}/>: <tr className="text-center">
                                                 <td colSpan={9}>
                                                     No Data Available
                                                 </td>
@@ -337,7 +382,14 @@ const UnAuthBmoViewPage = () => {
                     </table>
 
                 </div>
-
+{/* <div className="d-flex justify-content-between mt-2">
+    <p>1 of 10</p>
+    <div className="d-flex gap-2">
+        <Button>1</Button>
+        <Button>2</Button>
+        <Button>3</Button>
+    </div>
+</div> */}
 
 
             </div>
@@ -349,4 +401,4 @@ const UnAuthBmoViewPage = () => {
 
 }
 
-export default UnAuthBmoViewPage;
+export default UnAuthUserViewBmoPage;

@@ -36,13 +36,15 @@ import ApproverAttestersListPage from "./pages/approver/approverAttestersListPag
 import ApproverDefaultersListPage from "./pages/approver/approverDefaultersListPage";
 import ApproverDeletedPoliciesPage from "./pages/approver/approverDeletedPoliciesPage";
 import AdminViewDelPolicyPage from "./pages/admin/adminViewDelPolicyPage";
-import UserUnAuthDashboardPage from "./pages/unauth-user/dashboardpage";
-import UserUnAuthFirstLayerPage from "./pages/unauth-user/userUnAuthFirstLayerPage";
-import UnAuthBmoViewPage from "./pages/unauth-user/unAuthBmoView";
 import UnAuthBmoView2 from "./pages/unauth-user/unAuthBmoView2";
 import UboAdminDashboardContainer from "./pages/user/ubo-dashboard-container";
 import UboAdminInitDashboardpage from "./pages/user/ubo-admin-init-dashboardpage";
 import AuthBmoViewPage from "./pages/user/auth-bmo-view";
+import AuthBmoLevelView from "./pages/user/auth-bmo-level-view";
+import UboUnAuthUserDashboardpage from "./pages/unauth-user/ubo-un-auth-user-dashboardpage";
+import UnAuthUserViewBmoPage from "./pages/unauth-user/un-auth-user-view-bmo-page";
+import UnAuthUserBmoLevelView from "./pages/unauth-user/un-auth-user-bmo-level-view";
+import AuthApprovedBmoPage from "./pages/user/auth-approved-bmo-page";
 
 // const UserDBC = React.lazy(() => import("./pages/user/dashboard"));
 
@@ -53,9 +55,9 @@ export default function () {
 
         <Routes>
             <Route path="/" element={<UnAuthUserDashboardContainer />}>
-                <Route index element={<UserUnAuthDashboardPage />} />
-                <Route path="accountdetails/:curstomerNumber" element={<UnAuthBmoViewPage />} />
-                <Route path="custormer-details/:curstomerNumber" element={<UnAuthBmoView2 />} />
+                <Route index element={<UboUnAuthUserDashboardpage />} />
+                <Route path="accountdetails/:curstomerNumber" element={<UnAuthUserViewBmoPage />} />
+                <Route path="custormer-details/:level/:curstomerNumber" element={<UnAuthUserBmoLevelView/>} />
             </Route>
             <Route path="callback" element={<SigninCallBackPage />} />
             <Route path="logout" element={<LoggedOutPage />} />
@@ -63,6 +65,9 @@ export default function () {
             <Route path="ubo-portal" element={< UboAdminDashboardContainer />}>
                 <Route index element={<UboAdminInitDashboardpage />} />
                 <Route path="accountdetails/:curstomerNumber" element={<AuthBmoViewPage/>} />
+                <Route path="custormer-details/:level/:curstomerNumber" element={<AuthBmoLevelView/>} />
+                <Route path="bo-risk-assessment" element={<AuthApprovedBmoPage/>} />
+                <Route path="approved-bo" element={<AuthApprovedBmoPage/>} />
                 <Route path="all-policy" element={<UserAllPolicyPage />} />
                 <Route path="attested-policy" element={<UserAttestedPolicyPage />} />
                 <Route path="unattested-policy" element={<UserUnAttestedPolicyPage />} />
