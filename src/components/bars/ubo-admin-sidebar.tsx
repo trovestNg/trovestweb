@@ -45,7 +45,7 @@ const UboAdminSideBar: React.FC<any> = ({ payload }) => {
         {
             title: 'BO Risk Assessment',
             icon: 'bi bi-person-gear',
-            path: '/ubo-portal/bo-risk-assessment',
+            path: '/bo-risk-portal',
         },
         {
             title: 'Approved BO (30)',

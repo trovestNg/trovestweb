@@ -45,6 +45,8 @@ import UboUnAuthUserDashboardpage from "./pages/unauth-user/ubo-un-auth-user-das
 import UnAuthUserViewBmoPage from "./pages/unauth-user/un-auth-user-view-bmo-page";
 import UnAuthUserBmoLevelView from "./pages/unauth-user/un-auth-user-bmo-level-view";
 import AuthApprovedBmoPage from "./pages/user/auth-approved-bmo-page";
+import UboAdminRiskDashboardContainer from "./pages/user/ubo-risk-dashboard-container";
+import UboRiskAdminInitDashboardpage from "./pages/user/ubo-risk-admin-init-dashboardpage";
 
 // const UserDBC = React.lazy(() => import("./pages/user/dashboard"));
 
@@ -68,10 +70,17 @@ export default function () {
                 <Route path="custormer-details/:level/:curstomerNumber" element={<AuthBmoLevelView/>} />
                 <Route path="bo-risk-assessment" element={<AuthApprovedBmoPage/>} />
                 <Route path="approved-bo" element={<AuthApprovedBmoPage/>} />
-                <Route path="all-policy" element={<UserAllPolicyPage />} />
-                <Route path="attested-policy" element={<UserAttestedPolicyPage />} />
-                <Route path="unattested-policy" element={<UserUnAttestedPolicyPage />} />
             </Route>
+
+            <Route path="bo-risk-portal" element={< UboAdminRiskDashboardContainer />}>
+                <Route index element={<UboRiskAdminInitDashboardpage />} />
+                <Route path="accountdetails/:curstomerNumber" element={<AuthBmoViewPage/>} />
+                <Route path="custormer-details/:level/:curstomerNumber" element={<AuthBmoLevelView/>} />
+                <Route path="bo-risk-assessment" element={<AuthApprovedBmoPage/>} />
+                <Route path="approved-bo" element={<AuthApprovedBmoPage/>} />
+            </Route>
+
+            
 
             <Route path="/admin" element={<AdminDashboardContainer />}>
                 <Route index element={<AdminDashboardPage />} />
