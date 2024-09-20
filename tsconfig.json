@@ -22,5 +22,5 @@
   },
   "include": [
     "src"
-, "src/controllers"  ]
+, "src/controllers", "setupTests.ts"  ]
 }

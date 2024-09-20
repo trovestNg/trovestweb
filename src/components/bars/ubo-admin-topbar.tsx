@@ -5,6 +5,7 @@ import { getUserInfo, logoutUser, refreshToken } from "../../controllers/auth";
 import { useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { clearNav } from "../../store/slices/userSlice";
+import { emptyAuthUserNavArray } from "../../store/slices/authUserSlice";
 
 
 
@@ -32,6 +33,7 @@ const UboAdminTopbar: React.FC<any> = ({ payload }) => {
             }
             if (userInfo) {
                 setUserName(`${userInfo?.profile?.given_name} ${userInfo?.profile?.family_name}`)
+                console.log(userInfo.access_token)
             }
             if (userInfo?.profile.role?.includes("DOMAIN1\\GROUP_POLICY_INIT")) {
                 setUserType('Initiator')
@@ -94,19 +96,17 @@ const UboAdminTopbar: React.FC<any> = ({ payload }) => {
     }, []);
 
     const handleClearNav = ()=>{
-        if(currentPath.includes('custormer-details')){
+        if(currentPath.includes("details")){
             return
         } else {
-            dispatch(clearNav([]));
+            dispatch(emptyAuthUserNavArray());
         }
        
     }
 
-    console.log()
-
     useEffect(()=>{
         handleClearNav()
-    },[currentPath.includes('custormer-details')])
+    },[currentPath])
     return (
         <div
             className="d-flex align-items-center justify-content-between bg-light shadow-sm w-100 px-4 py-3" style={{ fontFamily: 'title' }}>

@@ -1,29 +1,29 @@
 import React, { useEffect, useState } from "react";
-import { Button, FormControl, FormSelect, Modal, ProgressBar } from "react-bootstrap";
+import { Button, FormControl, FormSelect, Modal, ProgressBar, Spinner } from "react-bootstrap";
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import { object, string, number, date, InferType } from 'yup';
+import { object, string, number } from 'yup';
 import api from "../../config/api";
 import { getUserInfo } from "../../controllers/auth";
 import { getCountries } from "../../utils/helpers";
-import { ICountry } from "../../interfaces/country";
+import { ICountr, ICountry } from "../../interfaces/country";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
-const CreateBMOOwnerCoperateModal: React.FC<any> = ({ show, off }) => {
-    const [countries, setCountries] = useState<ICountry[]>()
+const CreateBMOOwnerCoperateModal: React.FC<any> = ({ show, off, parent, custormerNumb, lev, ownerId }) => {
+    const [countries, setCountries] = useState<ICountr[]>()
+    const [idTypes, setIdTypes] = useState<string[]>();
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+
     const initialVal = {
-        "id": '',
         "businessName": "",
-        "customerNumber": "",
-        "bvn": "",
-        "idType": "",
-        "idNumber": "",
         "countryId": "",
         "percentageHolding": '',
         "numberOfShares": '',
         "isPEP": "",
         "categoryId": "",
         "rcNumber": "",
-        "ticker": ""
+        "Ticker": ""
     }
 
 
@@ -33,10 +33,9 @@ const CreateBMOOwnerCoperateModal: React.FC<any> = ({ show, off }) => {
         countryId: string().required().label('Country'),
         percentageHolding: number().typeError('Must be a number').required().label('Percentage holding'),
         numberOfShares: number().typeError('Must be a number').required().label('No of share'),
-        bvn: number().typeError('Must be a number').required().label('Bvn'),
         isPEP: string().required().label('Politicaly Exposed Status'),
-        idType: string().required().label('ID Type'),
-        idNumber: number().typeError('Must be a number').required().label('ID Number'),
+        rcNumber: string().required().label('Reg Number'),
+        Ticker: string().required().label('Ticker'),
 
         // policyDocument: string().required('Kindly upload a file'),
 
@@ -48,43 +47,116 @@ const CreateBMOOwnerCoperateModal: React.FC<any> = ({ show, off }) => {
         // createdOn: date().default(() => new Date()),
     });
 
-    const handleCreateNewBMO = () => {
-
-
-    }
-
     const createNewBMO = async (body: any) => {
-        console.log({seeBody:body})
+        setLoading(true)
+        // console.log({seeBody:body})
         let userInfo = await getUserInfo();
 
 
 
         if (userInfo) {
+            let parentInfo = {
+                AuthorizeBy
+                    :
+                    parent?.AuthorizeBy,
+                AuthorizeDate
+                    :
+                    parent?.AuthorizeDate,
+                BVN
+                    :
+                    parent?.BVN,
+                BusinessName
+                    :
+                    parent?.BusinessName,
+                Category
+                    :
+                    parent?.Category,
+                CategoryDescription
+                    :
+                    parent?.CategoryDescription,
+                Comments
+                    :
+                    parent?. Comments,
+                CountryId
+                    :
+                    parent?. CountryId,
+                CountryName
+                    :
+                    parent?.CountryName,
+                CreatedBy
+                    :
+                    parent?. CreatedBy,
+                CreatedDate
+                    :
+                   parent?.CreatedDate,
+                Id
+                    :
+                    parent?.Id,
+                IdNumber
+                    :
+                    parent?.IdNumber,
+                IdType
+                    :
+                    parent?.IdType,
+                IsAuthorized
+                    :
+                    parent?.IsAuthorized,
+                IsPEP
+                    :
+                    parent?.IsPEP,
+                IsRejected
+                    :
+                    parent?.IsRejected,
+                LastUpdatedBy
+                    :
+                    parent?.LastUpdatedBy,
+                LastUpdatedDate
+                    :
+                    parent?.LastUpdatedDate,
+                Level
+                    :
+                    parent?.Level,
+                NumberOfShares
+                    :
+                    parent?.NumberOfShares,
+                ParentId
+                    :
+                    parent?.ParentId,
+                PercentageHolding
+                    :
+                    parent?.PercentageHolding,
+                RcNumber
+                    :
+                    parent?.RcNumber,
+                RejectedBy
+                    :
+                    parent?.RejectedBy,
+                RejectedDate
+                    :
+                    parent?.RejectedDate,
+                RiskLevel
+                    :
+                    parent?.RiskLevel,
+                RiskScore
+                    :
+                    parent?.RiskScore,
+                Ticker
+                    :
+                    parent?.Ticker,
+            }
 
             const apiBody = {
                 "requesterName": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
-                "parent": {
-                    
-                    //   "id": 0,
-                    //   "businessName": "string",
-                    //   "customerNumber": "string",
-                    //   "bvn": "string",
-                    //   "idType": "string",
-                    //   "idNumber": "string",
-                    //   "countryId": "string",
-                    //   "percentageHolding": 0,
-                    //   "numberOfShares": 0,
-                    //   "isPEP": true,
-                    //   "categoryId": "string",
-                    //   "rcNumber": "string",
-                    //   "ticker": "string",
-                    //   "originalId": 0,
-                    //   "navigation": "string"
-                },
+                "parent": { ...parentInfo, originalId: custormerNumb?custormerNumb:ownerId, CategoryId: 'C', CountryId: "NG", Level: +lev },
                 "beneficialOwners": [
-                    body
+                    {
+                        ...body,
+                        "categoryId": "C",
+                        "isPEP": body?.isPEP == 'yes' ? true : false,
+
+                    }
+
                     // {
-                    //     "id": 0,
                     //     "businessName": "string",
                     //     "customerNumber": "string",
                     //     "bvn": "string",
@@ -101,27 +173,50 @@ const CreateBMOOwnerCoperateModal: React.FC<any> = ({ show, off }) => {
                 ]
             }
 
+            console.log({ sending: apiBody })
+
             const res = await api.post(`BeneficialOwner`, apiBody, `${userInfo?.access_token}`)
-            if(res?.data.success){
-                toast.success('BMO added succesfully')
-            } else{
-                toast.error('Operation failed! Check your network')
+            if (res?.status==200) {
+                setLoading(false);
+                toast.success('BMO added succesfully');
+                off()
+            } else {
+                toast.error('Operation failed! Check your network');
+                setLoading(false);
             }
 
         }
     }
 
     const handleGetCountries = async () => {
-        const res = await getCountries();
-        const sortedCountries = res.data.sort((a: any, b: any) =>
-            a.name.common.localeCompare(b.name.common)
-        );
-        setCountries(sortedCountries)
+        try {
+            let userInfo = await getUserInfo();
+            const res = await api.get(`countries?requesterName=${userInfo?.profile.given_name}`, `${userInfo?.access_token}`);
+            console.log({ countHere: res })
+            // const sortedCountries = res?.data.sort((a: any, b: any) =>
+            //     a.name.common.localeCompare(b.name.common)
+            // );
+            setCountries(res?.data)
+        } catch (error) {
+
+        }
+    }
+
+    const handleGetIdTypes = async () => {
+        try {
+            let userInfo = await getUserInfo();
+            const res = await api.get(`idTypes?requesterName=${userInfo?.profile.given_name}`, `${userInfo?.access_token}`)
+
+            setIdTypes(res?.data)
+        } catch (error) {
+
+        }
     }
 
 
     useEffect(() => {
-        handleGetCountries()
+        handleGetCountries();
+        handleGetIdTypes()
     }, [])
 
     return (
@@ -173,8 +268,8 @@ const CreateBMOOwnerCoperateModal: React.FC<any> = ({ show, off }) => {
                                                 id='countryId' name='countryId'>
                                                 <option value={''}>Select</option>
                                                 {
-                                                    countries && countries.map((country: ICountry) => (
-                                                        <option value={country.idd.suffixes}>{country.name.common}</option>
+                                                    countries && countries.map((country: ICountr) => (
+                                                        <option value={country.id}>{country.displayName}</option>
                                                     ))
                                                 }
                                             </Field>
@@ -219,16 +314,16 @@ const CreateBMOOwnerCoperateModal: React.FC<any> = ({ show, off }) => {
 
                                     <div className="d-flex  justify-content-between my-3  gap-3 w-100">
                                         <div className="w-50">
-                                            <label className="" htmlFor="userEmail">
-                                               Ticker
+                                            <label className="" htmlFor="Ticker">
+                                                Ticker
                                             </label>
                                             <Field
-                                                value={values.bvn}
+                                                value={values.Ticker}
                                                 style={{ outline: 'none' }}
                                                 className="rounded rounded-1 p-2 outline form-control-outline w-100 border border-1 border-grey"
-                                                id='bvn' name='bvn' />
+                                                id='Ticker' name='Ticker' />
                                             <ErrorMessage
-                                                name="bvn"
+                                                name="Ticker"
                                                 component="div"
                                                 className="text-danger fw-medium" />
                                         </div>
@@ -257,23 +352,23 @@ const CreateBMOOwnerCoperateModal: React.FC<any> = ({ show, off }) => {
 
                                     <div className="d-flex justify-content-between my-3  gap-3 w-100">
                                         <div className="w-50">
-                                        <label className="" htmlFor="userEmail">
-                                        RC Number/CAC/BN
+                                            <label className="" htmlFor="userEmail">
+                                                RC Number/CAC/BN
                                             </label>
                                             <Field
-                                                value={values.idNumber}
+                                                value={values.rcNumber}
                                                 style={{ outline: 'none' }}
                                                 className="rounded rounded-1 p-2 w-100 border border-1 border-grey"
-                                                id='idNumber' name='idNumber' />
-                                           
+                                                id='rcNumber' name='rcNumber' />
+
                                             <ErrorMessage
-                                                name="idType"
+                                                name="rcNumber"
                                                 component="div"
                                                 className="text-danger fw-medium" />
                                         </div>
 
                                         <div className="w-50">
-                                         
+
                                         </div>
                                     </div>
 
@@ -283,7 +378,7 @@ const CreateBMOOwnerCoperateModal: React.FC<any> = ({ show, off }) => {
                                         </div>
 
                                         <div className="w-50">
-                                            <Button className="w-100 rounded rounded-1" type="submit" variant="primary mt-3">Submit for Approval </Button>
+                                            <Button  className="w-100 rounded rounded-1" type="submit" variant="primary mt-3">{loading ? <Spinner size="sm" /> : 'Submit for Approval'}</Button>
                                         </div>
                                     </div>
                                 </Form>)

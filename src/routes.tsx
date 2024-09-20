@@ -45,8 +45,15 @@ import UboUnAuthUserDashboardpage from "./pages/unauth-user/ubo-un-auth-user-das
 import UnAuthUserViewBmoPage from "./pages/unauth-user/un-auth-user-view-bmo-page";
 import UnAuthUserBmoLevelView from "./pages/unauth-user/un-auth-user-bmo-level-view";
 import AuthApprovedBmoPage from "./pages/user/auth-approved-bmo-page";
-import UboAdminRiskDashboardContainer from "./pages/user/ubo-risk-dashboard-container";
-import UboRiskAdminInitDashboardpage from "./pages/user/ubo-risk-admin-init-dashboardpage";
+import UboAdminRiskDashboardContainer from "./pages/user/ubo-risk/ubo-risk-dashboard-container";
+import UboRiskAdminInitDashboardpage from "./pages/user/ubo-risk/ubo-risk-admin-init-dashboardpage";
+import UnAuthBmoOwnerView from "./pages/unauth-user/un-auth-user-bmo-level-view";
+import AuthCustomerViewPage from "./pages/user/auth-bmo-view";
+import AuthOwnerViewPage from "./pages/user/auth-bmo-level-view";
+import AuthPendingBmoPage from "./pages/user/auth-pending-bmo-page copy";
+import AuthRejectedBmoPage from "./pages/user/auth-rejected-bmo-page";
+import AuthReportBmoPage from "./pages/user/auth-report-bmo-page";
+import AuthHistoryBmoPage from "./pages/user/auth-history-bmo-page";
 
 // const UserDBC = React.lazy(() => import("./pages/user/dashboard"));
 
@@ -58,55 +65,31 @@ export default function () {
         <Routes>
             <Route path="/" element={<UnAuthUserDashboardContainer />}>
                 <Route index element={<UboUnAuthUserDashboardpage />} />
-                <Route path="accountdetails/:curstomerNumber" element={<UnAuthUserViewBmoPage />} />
-                <Route path="custormer-details/:level/:curstomerNumber" element={<UnAuthUserBmoLevelView/>} />
+                <Route path="custormer-details/:level/:curstomerNumber" element={<UnAuthUserViewBmoPage />} />
+                <Route path="owner-details/:level/:ownerId" element={<UnAuthBmoOwnerView />} />
             </Route>
+
             <Route path="callback" element={<SigninCallBackPage />} />
             <Route path="logout" element={<LoggedOutPage />} />
 
             <Route path="ubo-portal" element={< UboAdminDashboardContainer />}>
                 <Route index element={<UboAdminInitDashboardpage />} />
-                <Route path="accountdetails/:curstomerNumber" element={<AuthBmoViewPage/>} />
-                <Route path="custormer-details/:level/:curstomerNumber" element={<AuthBmoLevelView/>} />
-                <Route path="bo-risk-assessment" element={<AuthApprovedBmoPage/>} />
-                <Route path="approved-bo" element={<AuthApprovedBmoPage/>} />
+                <Route path="custormer-details/:level/:curstomerNumber" element={<AuthCustomerViewPage />} />
+                <Route path="owner-details/:level/:ownerId" element={<AuthOwnerViewPage />} />
+                <Route path="bo-risk-assessment" element={<AuthApprovedBmoPage />} />
+                <Route path="approved-bo" element={<AuthApprovedBmoPage />} />
+                <Route path="pending-bo" element={<AuthPendingBmoPage />} />
+                <Route path="rejected-bo" element={<AuthRejectedBmoPage/>} />
+                <Route path="history" element={<AuthHistoryBmoPage/>} />
+                <Route path="reports" element={<AuthReportBmoPage/>} />
             </Route>
 
             <Route path="bo-risk-portal" element={< UboAdminRiskDashboardContainer />}>
                 <Route index element={<UboRiskAdminInitDashboardpage />} />
-                <Route path="accountdetails/:curstomerNumber" element={<AuthBmoViewPage/>} />
-                <Route path="custormer-details/:level/:curstomerNumber" element={<AuthBmoLevelView/>} />
-                <Route path="bo-risk-assessment" element={<AuthApprovedBmoPage/>} />
-                <Route path="approved-bo" element={<AuthApprovedBmoPage/>} />
-            </Route>
-
-            
-
-            <Route path="/admin" element={<AdminDashboardContainer />}>
-                <Route index element={<AdminDashboardPage />} />
-                <Route path="create-policy" element={<CreateNewPolicyPage />} />
-                <Route path="edit-policy/:id" element={<EditPolicyPage />} />
-                <Route path="attesters-list/:id" element={<AdminAttestersListPage />} />
-                <Route path="defaulters-list/:id" element={<AdminDefaultersListPage />} />
-                <Route path="uploaded-policies" element={<AdminUploadedPoliciesPage />} />
-                <Route path="approved-policies" element={<AdminApprovedPoliciesPage />} />
-                <Route path="pending-policies" element={<AdminPendingPoliciesPage />} />
-                <Route path="rejected-policies" element={<AdminRejectedPoliciesPage />} />
-                <Route path="deleted-policies" element={<AdminDeletedPoliciesPage />} />
-                <Route path="policy/:id/:attestationStatus" element={<AdminPolicyviewpage />} />
-                <Route path="view-deleted/:id" element={<AdminViewDelPolicyPage />} />
-            </Route>
-            <Route path="/admn" element={<ApproverDashboardContainer />}>
-                <Route index element={<ApproverDashboardPage />} />
-                <Route path="all-policies" element={< ApproverAllPoliciesPage />} />
-                <Route path="approved-policies" element={<ApproverApprovedPoliciesPage />} />
-                <Route path="pending-policies" element={<ApproverPendingPoliciesPage />} />
-                <Route path="rejected-policies" element={<ApproverRejectedPoliciesPage />} />
-                <Route path="deleted-policies" element={<ApproverDeletedPoliciesPage />} />
-                <Route path="attesters-list/:id" element={<ApproverAttestersListPage />} />
-                <Route path="policy/:id/:attestationStatus" element={<ApproverPolicyviewpage />} />
-                <Route path="attesters-list/:id" element={<ApproverAttestersListPage />} />
-                <Route path="defaulters-list/:id" element={<ApproverDefaultersListPage />} />
+                <Route path="accountdetails/:curstomerNumber" element={<AuthBmoViewPage />} />
+                <Route path="custormer-details/:level/:curstomerNumber" element={<AuthBmoLevelView />} />
+                <Route path="bo-risk-assessment" element={<AuthApprovedBmoPage />} />
+                <Route path="approved-bo" element={<AuthApprovedBmoPage />} />
             </Route>
             <Route path="*" element={<ErrorPage />} />
         </Routes>

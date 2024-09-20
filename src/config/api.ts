@@ -27,7 +27,7 @@ export default {
         };
     
         try {
-            const response = await axios.get(`${baseUrl}api/${path}`, config);
+            const response = await axios.get(`${baseUrl}/${path}`, config);
             return response;
         } catch (error) {
             // Handle error

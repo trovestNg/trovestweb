@@ -7,7 +7,9 @@ const initialState = {
         searchWords: '',
         searchResult: []
     },
-    userNav: []
+    userNav: [],
+    bmoCustormer:{},
+    bmoOwner:{}
 }
 
 const userSlice = createSlice({
@@ -29,9 +31,15 @@ const userSlice = createSlice({
         },
         handleUserSearchResult: (state, action) => {
             state.userBMOSearch.searchResult = action.payload
-        }
+        },
+        handleSetBmoCustormer: (state, action) => {
+            state.bmoCustormer=action.payload
+        },
+        handleSetBmoOwner: (state, action) => {
+            state.bmoOwner=action.payload
+        },
     }
 })
 
-export const { updateNav, reduceNavLink,handleUserSearch,handleUserSearchResult,clearNav } = userSlice.actions
+export const { updateNav,handleSetBmoCustormer,handleSetBmoOwner, reduceNavLink,handleUserSearch,handleUserSearchResult,clearNav } = userSlice.actions
 export default userSlice.reducer

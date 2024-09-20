@@ -1,4 +1,6 @@
 export interface ICountry {
+id:string,
+displayName:string,
 altSpellings:string[],
 area:number,
 capital:string[]
@@ -66,4 +68,8 @@ translations
 unMember
 : 
 false
+}
+export interface ICountr {
+    id:string,
+displayName:string,
 }

@@ -10,8 +10,9 @@ import { toast } from "react-toastify";
 import TopBarUnAuth from "../../components/bars/topbar-unauth";
 
 
-const UnAuthUserDashboardContainer = () => {
 
+const UnAuthUserDashboardContainer = () => {
+    const redUrl = process.env.REACT_APP_CALLBACK
     const [loading, setLoading] = useState(false);
     const [refreshComponent, setRefreshComponent] = useState(false)
     const [userDBInfo, setUserDBInfo] = useState<IUserDashboard>();
@@ -59,15 +60,16 @@ const UnAuthUserDashboardContainer = () => {
     //         window.history.go(2);
     //     };
     // })
+
+    useEffect(() => {
+        console.log({RedirectingTo:redUrl})
+    })
+
     return (
         <div className="p-0 m-0 min-vh-100 w-100">
             <div className="w-100"><TopBarUnAuth payload={userDBInfo} /></div>
             <div className="mt-2 m-0 p-3 rounded  rounded-3 w-100">{<Outlet />}</div>
-            {/* <div><UserSideBar /></div> */}
-            {/* <div className="m-0" >
-                
-                
-            </div> */}
+            
         </div>
     )
 

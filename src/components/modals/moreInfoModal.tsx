@@ -11,7 +11,7 @@ import moment from "moment";
 // Register necessary components for Chart.js
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const MoreInfoModal: React.FC<any> = ({ show, off, action, info }) => {
+const MoreInfoModal: React.FC<any> = ({ show, off, action, info,lev }) => {
     const navigate = useNavigate();
 
     let userInfo: any = {
@@ -91,14 +91,14 @@ const MoreInfoModal: React.FC<any> = ({ show, off, action, info }) => {
                                         <p className="p-0 m-0 bg-transparent px-0">
                                             {info?.BusinessName}
                                         </p>
+                                        {/* Level
                                         <p className="p-0 m-0 fw-normal">
-                                            Level
-                                            <span className="fw-normal text-primary bg-warning rounded p-0"> 1</span></p>
+                                            <span className="fw-normal text-primary bg-warning rounded p-0"> {lev}</span></p> */}
                                     </div>
 
                                 </td>
                                 <td className="fw-bold">Beneficial Owner
-                                    <span className="fw-normal text-primary bg-transparent p-0 m-0">Level 1</span>
+                                    <span className="fw-normal text-primary bg-transparent p-0 m-0">{`Level ${lev}`}</span>
                                 </td>
 
                             </tr>

@@ -17,7 +17,7 @@ const UnAuthBOList: React.FC<any> = ({ data, lv }) => {
             id: owner.Id
         }
         dispatch(updateNav(payload))
-        navigate(`/custormer-details/${+lv + 1}/${id}`)
+        navigate(`/owner-details/${+lv + 1}/${id}`)
 
     }
 

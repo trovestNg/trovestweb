@@ -7,12 +7,17 @@ import { getUserInfo } from "../../controllers/auth";
 import { getCountries } from "../../utils/helpers";
 import { ICountry } from "../../interfaces/country";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const CreateBMOOwnerImportModal: React.FC<any> = ({ show, off }) => {
 
-
+    const navigate = useNavigate()
     const [fileName, setFileName] = useState('');
     const [fileUrl, setFileUrl] = useState('');
+
+    // useEffect(() => {
+    //     navigate(fileUrl)
+    // }, [fileUrl])
 
     const initialVal = {
         "id": '',
@@ -29,7 +34,6 @@ const CreateBMOOwnerImportModal: React.FC<any> = ({ show, off }) => {
         "rcNumber": "",
         "ticker": ""
     }
-
 
 
     let validationSchem = yup.object({
@@ -49,10 +53,29 @@ const CreateBMOOwnerImportModal: React.FC<any> = ({ show, off }) => {
         // createdOn: date().default(() => new Date()),
     });
 
-    const handleCreateNewBMO = () => {
+    const handleTempDownload = async () => {
+        try {
+            let userInfo = await getUserInfo();
+            const res = await api.get(`upload/template/download?requesterName=${`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`}`, `${userInfo?.access_token}`);
+            console.log({here:res})
+            triggerFileDownload(res?.data)
+        } catch (error) {
 
+        }
 
     }
+
+      // Function to trigger the download
+  const triggerFileDownload = (url: string) => {
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'Template.xml'); // You can name the file anything you want
+    document.body.appendChild(link);
+    link.click();
+
+    // Clean up the DOM by removing the link
+    // link.remove();
+  };
 
     const handleFileChange = (event: any, setFieldValue: any) => {
         console.log(event)
@@ -124,7 +147,7 @@ const CreateBMOOwnerImportModal: React.FC<any> = ({ show, off }) => {
         }
     }
 
-    const handleFormReset = ()=>{
+    const handleFormReset = () => {
         off();
         setFileName('');
         setFileUrl('')
@@ -148,10 +171,10 @@ const CreateBMOOwnerImportModal: React.FC<any> = ({ show, off }) => {
                         onSubmit={(val) => createNewBMO(val)
                         }
                     >{
-                            ({ handleChange, handleSubmit, handleReset, values,setFieldValue }) => (
+                            ({ handleChange, handleSubmit, handleReset, values, setFieldValue }) => (
                                 <Form onSubmit={handleSubmit} onReset={handleReset} className="gap-0 px-3 slide-form">
                                     <div className="text-center">
-                                        Proceed to download CSV file template by clicking <span role="button" className="text-primary">Download CSV Template</span>
+                                        Proceed to download CSV file template by clicking <span onClick={handleTempDownload} role="button" className="text-primary">Download CSV Template</span>
                                     </div>
 
                                     <label
@@ -166,11 +189,11 @@ const CreateBMOOwnerImportModal: React.FC<any> = ({ show, off }) => {
                                         </p>
                                         <p className="p-0 m-0">CSV format only</p>
                                     </label>
-                                    <input style={{ display: 'none' }} 
-                                    id="fileUpload" 
-                                    name="fileUpload" type="file"
-                                    onChange={(event) => handleFileChange(event, setFieldValue)}
-                                     />
+                                    <input style={{ display: 'none' }}
+                                        id="fileUpload"
+                                        name="fileUpload" type="file"
+                                        onChange={(event) => handleFileChange(event, setFieldValue)}
+                                    />
                                     <div className="d-flex p-2 rounded border mt-2 align-items-center">
                                         <div></div>
                                         <div>

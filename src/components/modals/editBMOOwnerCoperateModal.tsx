@@ -1,16 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { Button, FormControl, FormSelect, Modal, ProgressBar } from "react-bootstrap";
+import { Button, FormControl, FormSelect, Modal, ProgressBar, Spinner } from "react-bootstrap";
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import { object, string, number, date, InferType } from 'yup';
+import { object, string, number} from 'yup';
 import api from "../../config/api";
 import { getUserInfo } from "../../controllers/auth";
 import { getCountries } from "../../utils/helpers";
-import { ICountry } from "../../interfaces/country";
+import { ICountr, ICountry } from "../../interfaces/country";
 import { toast } from "react-toastify";
 
-const EditBMOOwnerCoperateModal: React.FC<any> = ({ show, off,owner,parentInf }) => {
-    const [countries, setCountries] = useState<ICountry[]>()
-    const initialVal = owner
+const EditBMOOwnerCoperateModal: React.FC<any> = ({ show, off, parentInf,custormerNumb,lev, ownerInfo}) => {
+    const [countries, setCountries] = useState<ICountr[]>()
+    const [idTypes, setIdTypes] = useState<string[]>();
+    const [loading,setLoading] = useState(false);
+    
+    console.log({herer:ownerInfo})
+    const initialVal = {
+        "businessName": ownerInfo?.BusinessName || '',
+        "countryId": ownerInfo?.CountryId || '',
+        "percentageHolding": ownerInfo?.PercentageHolding || '',
+        "numberOfShares": ownerInfo?.NumberOfShares || '',
+        "isPEP":ownerInfo?.IsPEP || false,
+        "categoryId": ownerInfo?.IsPEP || '',
+        "rcNumber": ownerInfo?.RcNumber || '',
+        "Ticker": ownerInfo?.Ticker || '',
+        "Id": ownerInfo?.Id || '',
+    }
+
 
 
     let validationSchem = object({
@@ -18,10 +33,9 @@ const EditBMOOwnerCoperateModal: React.FC<any> = ({ show, off,owner,parentInf })
         countryId: string().required().label('Country'),
         percentageHolding: number().typeError('Must be a number').required().label('Percentage holding'),
         numberOfShares: number().typeError('Must be a number').required().label('No of share'),
-        bvn: number().typeError('Must be a number').required().label('Bvn'),
         isPEP: string().required().label('Politicaly Exposed Status'),
-        idType: string().required().label('ID Type'),
-        idNumber: number().typeError('Must be a number').required().label('ID Number'),
+        rcNumber: string().required().label('Reg Number'),
+        Ticker: string().required().label('Ticker'),
 
         // policyDocument: string().required('Kindly upload a file'),
 
@@ -33,13 +47,9 @@ const EditBMOOwnerCoperateModal: React.FC<any> = ({ show, off,owner,parentInf })
         // createdOn: date().default(() => new Date()),
     });
 
-    const handleCreateNewBMO = () => {
-
-
-    }
-
     const createNewBMO = async (body: any) => {
-        console.log({seeBody:body})
+        setLoading(true)
+        // console.log({seeBody:body})
         let userInfo = await getUserInfo();
 
 
@@ -48,28 +58,17 @@ const EditBMOOwnerCoperateModal: React.FC<any> = ({ show, off,owner,parentInf })
 
             const apiBody = {
                 "requesterName": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
-                "parent": {
-                    
-                    //   "id": 0,
-                    //   "businessName": "string",
-                    //   "customerNumber": "string",
-                    //   "bvn": "string",
-                    //   "idType": "string",
-                    //   "idNumber": "string",
-                    //   "countryId": "string",
-                    //   "percentageHolding": 0,
-                    //   "numberOfShares": 0,
-                    //   "isPEP": true,
-                    //   "categoryId": "string",
-                    //   "rcNumber": "string",
-                    //   "ticker": "string",
-                    //   "originalId": 0,
-                    //   "navigation": "string"
-                },
+                "parent": {...parentInf,originalId:custormerNumb,CategoryId:'C',CountryId:"NG", Level:+lev},
                 "beneficialOwners": [
-                    body
+                    {
+                        ... body,
+                        "customerNumber": custormerNumb,
+                        "categoryId": "C",
+                        "isPEP":body?.isPEP=='yes'?true:false,
+                        
+                    }
+                   
                     // {
-                    //     "id": 0,
                     //     "businessName": "string",
                     //     "customerNumber": "string",
                     //     "bvn": "string",
@@ -86,27 +85,50 @@ const EditBMOOwnerCoperateModal: React.FC<any> = ({ show, off,owner,parentInf })
                 ]
             }
 
+            console.log({sending:apiBody})
+
             const res = await api.post(`BeneficialOwner`, apiBody, `${userInfo?.access_token}`)
-            if(res?.data.success){
-                toast.success('BMO added succesfully')
-            } else{
-                toast.error('Operation failed! Check your network')
+            if (res?.status==200) {
+                setLoading(false);
+                off()
+                toast.success('BMO added succesfully');
+            } else {
+                toast.error('Operation failed! Check your network');
+                setLoading(false);
             }
 
         }
     }
 
     const handleGetCountries = async () => {
-        const res = await getCountries();
-        const sortedCountries = res.data.sort((a: any, b: any) =>
-            a.name.common.localeCompare(b.name.common)
-        );
-        setCountries(sortedCountries)
+        try {
+            let userInfo = await getUserInfo();
+            const res = await api.get(`countries?requesterName=${userInfo?.profile.given_name}`, `${userInfo?.access_token}`);
+            console.log({countHere:res})
+            // const sortedCountries = res?.data.sort((a: any, b: any) =>
+            //     a.name.common.localeCompare(b.name.common)
+            // );
+            setCountries(res?.data)
+        } catch (error) {
+
+        }
+    }
+
+    const handleGetIdTypes = async () => {
+        try {
+            let userInfo = await getUserInfo();
+            const res = await api.get(`idTypes?requesterName=${userInfo?.profile.given_name}`, `${userInfo?.access_token}`)
+           
+            setIdTypes(res?.data)
+        } catch (error) {
+
+        }
     }
 
 
     useEffect(() => {
-        handleGetCountries()
+        handleGetCountries();
+        handleGetIdTypes()
     }, [])
 
     return (
@@ -114,7 +136,7 @@ const EditBMOOwnerCoperateModal: React.FC<any> = ({ show, off,owner,parentInf })
             <Modal size="lg" show={show} centered>
                 <Modal.Header className="d-flex justify-content-between"
                     style={{ fontFamily: 'title' }}>
-                    <p className="p-0 m-0 text-primary">Update Corporate Beneficial Owner </p>
+                    <p className="p-0 m-0 text-primary">Edit Beneficial Owner Coperate </p>
                     <i className="bi bi-x-circle" onClick={() => off()}></i>
                 </Modal.Header>
                 <Modal.Body >
@@ -135,10 +157,10 @@ const EditBMOOwnerCoperateModal: React.FC<any> = ({ show, off,owner,parentInf })
                                                 Name
                                             </label>
                                             <Field
-                                                value={values.BusinessName}
+                                                // value={values.businessName}
                                                 style={{ outline: 'none' }}
                                                 className="rounded rounded-1 p-2  w-100 border border-1 border-grey"
-                                                id='BusinessName' name='BusinessName'
+                                                id='businessName' name='businessName'
                                             />
                                             <ErrorMessage
                                                 name="businessName"
@@ -158,8 +180,8 @@ const EditBMOOwnerCoperateModal: React.FC<any> = ({ show, off,owner,parentInf })
                                                 id='countryId' name='countryId'>
                                                 <option value={''}>Select</option>
                                                 {
-                                                    countries && countries.map((country: ICountry) => (
-                                                        <option value={country.idd.suffixes}>{country.name.common}</option>
+                                                    countries && countries.map((country: ICountr,index:number) => (
+                                                        <option key={index} value={country.id}>{country.displayName}</option>
                                                     ))
                                                 }
                                             </Field>
@@ -191,7 +213,7 @@ const EditBMOOwnerCoperateModal: React.FC<any> = ({ show, off,owner,parentInf })
                                                 No of Shares
                                             </label>
                                             <Field
-                                                value={values.numberOfShares}
+                                                // value={values.numberOfShares}
                                                 style={{ outline: 'none' }}
                                                 className="rounded rounded-1 p-2 outline form-control-outline w-100 border border-1 border-grey"
                                                 id='numberOfShares' name='numberOfShares' />
@@ -204,16 +226,16 @@ const EditBMOOwnerCoperateModal: React.FC<any> = ({ show, off,owner,parentInf })
 
                                     <div className="d-flex  justify-content-between my-3  gap-3 w-100">
                                         <div className="w-50">
-                                            <label className="" htmlFor="userEmail">
-                                                BVN
+                                            <label className="" htmlFor="Ticker">
+                                               Ticker
                                             </label>
                                             <Field
-                                                value={values.bvn}
+                                                // value={values.Ticker}
                                                 style={{ outline: 'none' }}
                                                 className="rounded rounded-1 p-2 outline form-control-outline w-100 border border-1 border-grey"
-                                                id='bvn' name='bvn' />
+                                                id='Ticker' name='Ticker' />
                                             <ErrorMessage
-                                                name="bvn"
+                                                name="Ticker"
                                                 component="div"
                                                 className="text-danger fw-medium" />
                                         </div>
@@ -227,9 +249,9 @@ const EditBMOOwnerCoperateModal: React.FC<any> = ({ show, off,owner,parentInf })
                                                 style={{ outline: 'none' }}
                                                 className="rounded rounded-1 p-2 outline form-control-outline w-100 border border-1 border-grey"
                                                 id='isPEP' name='isPEP'>
-                                                <option value={''}>Select</option>
+                                                <option value={''}>{values.isPEP?'True':'False'}</option>
                                                 <option value={'yes'}>Yes</option>
-                                                <option value={'no'}>No</option>
+                                                <option value={'no'} >No</option>
 
                                             </Field>
                                             <ErrorMessage
@@ -242,38 +264,23 @@ const EditBMOOwnerCoperateModal: React.FC<any> = ({ show, off,owner,parentInf })
 
                                     <div className="d-flex justify-content-between my-3  gap-3 w-100">
                                         <div className="w-50">
-                                            <label className="" htmlFor="userEmail">
-                                                ID Type
+                                        <label className="" htmlFor="userEmail">
+                                        RC Number/CAC/BN
                                             </label>
                                             <Field
-                                                as="select"
+                                                value={values.rcNumber}
                                                 style={{ outline: 'none' }}
-                                                className="rounded rounded-1 p-2 outline form-control-outline w-100 border border-1 border-grey"
-                                                id='idType' name='idType'>
-                                                <option value={''}>Select</option>
-                                                <option value={'yes'}>NIN</option>
-                                                <option value={'no'}>BVN</option>
-
-                                            </Field>
+                                                className="rounded rounded-1 p-2 w-100 border border-1 border-grey"
+                                                id='rcNumber' name='rcNumber' />
+                                           
                                             <ErrorMessage
-                                                name="idType"
+                                                name="rcNumber"
                                                 component="div"
                                                 className="text-danger fw-medium" />
                                         </div>
 
                                         <div className="w-50">
-                                            <label className="" htmlFor="userEmail">
-                                                ID Number
-                                            </label>
-                                            <Field
-                                                value={values.idNumber}
-                                                style={{ outline: 'none' }}
-                                                className="rounded rounded-1 p-2 w-100 border border-1 border-grey"
-                                                id='idNumber' name='idNumber' />
-                                            <ErrorMessage
-                                                name="idNumber"
-                                                component="div"
-                                                className="text-danger fw-medium" />
+                                         
                                         </div>
                                     </div>
 
@@ -283,7 +290,7 @@ const EditBMOOwnerCoperateModal: React.FC<any> = ({ show, off,owner,parentInf })
                                         </div>
 
                                         <div className="w-50">
-                                            <Button className="w-100 rounded rounded-1" type="submit" variant="primary mt-3">Submit for Approval </Button>
+                                            <Button disabled={loading} className="w-100 rounded rounded-1" type="submit" variant="primary mt-3">{loading? <Spinner size="sm"/>:'Submit for Approval'}</Button>
                                         </div>
                                     </div>
                                 </Form>)

@@ -30,23 +30,53 @@ import { saveAs } from "file-saver";
 import { useDispatch, useSelector } from "react-redux";
 import { clearNav, reduceNavLink, updateNav } from "../../store/slices/userSlice";
 import UnAuthBOOwnwerList from "../../components/paginations/ubo/un-auth-ubo-owners-list";
+import { pushTounAuthUserNavArray, reduceUnAuthUserNavArray, removeFromUnAuthUserNavArray, setUnAuthUserBMOOwnerProfile } from "../../store/slices/unAuthserSlice";
+import { IBMCustomersPublic, IBMOwnersPublic, IUnAuthUserNavLink } from "../../interfaces/bmOwner";
 
 
 
 
-const UnAuthUserBmoLevelView = () => {
-    const [bmoList, setBmoList] = useState<IOwner[]>([]);
-    const [bmoOwner, setBmoOwner] = useState<IOwner>();
-    const [parentInfo, setParentInfo] = useState<IParent>();
-    const { level,curstomerNumber } = useParams()
+const UnAuthBmoOwnerView = () => {
+    const [bmoList, setBmoList] = useState<IBMOwnersPublic[]>([]);
+    const [bmoOwner, setBmoOwner] = useState<IBMOwnersPublic>();
+    const [parentInfo, setParentInfo] = useState<IBMOwnersPublic>();
+    const { level, ownerId } = useParams()
     const [loading, setLoading] = useState(false);
     const [viewChartModal, setViewChartModal] = useState(false);
     const [viewMoreInfotModal, setViewMoreInfoModal] = useState(false);
     const [userSearch, setUserSearch] = useState('');
     const [refreshComponent, setRefreshComponent] = useState(false);
     const navigate = useNavigate();
-    const navArray = useSelector((state:any)=>state.userSlice.userNav);
-    const dispatch = useDispatch()
+    
+    const dispatch = useDispatch();
+    const [ref, setRef] = useState(false);
+
+    
+    const unAvOwner = useSelector((state:any)=>state.unAuthUserSlice.unAuthUserBmoOwnerProfile);
+    const navArray = useSelector((state: any) => state.unAuthUserSlice.unAuthUserNavigationArray);
+
+  useEffect(() => {
+    const handlePopState = () => {
+        // console.log("Back button detected");
+       
+      if (navArray.length > 0) {
+        const newArray = [...navArray];
+        newArray.pop();
+        // Dispatch the modified array back to the reducer
+        dispatch(reduceUnAuthUserNavArray(newArray));
+        navigate(-1)
+      }
+    };
+
+    // Add event listener for browser back action
+    window.addEventListener('popstate', handlePopState);
+
+    // Cleanup the event listener when component unmounts
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [navArray.length, dispatch, navArray]);
+
 
     type Column = {
         header: string;
@@ -101,7 +131,7 @@ const UnAuthUserBmoLevelView = () => {
         { label: 'Ticker', key: 'Ticker' }
     ];
 
-    const generateCSV = (data: IOwner[], headers: { label: string; key: keyof IOwner }[]) => {
+    const generateCSV = (data: IBMOwnersPublic[], headers: { label: string; key: keyof IBMOwnersPublic }[]) => {
         // Map data to match the headers
         const csvData = data.map((item, index) => ({
             BusinessName: item.BusinessName,
@@ -143,21 +173,31 @@ const UnAuthUserBmoLevelView = () => {
         setLoading(true)
         // toast.error('Await')
         try {
-            const res = await apiUnAuth.get(`owner/level/navigate/approved?ownerIdr=${curstomerNumber}`);
+            const res = await apiUnAuth.get(`owner/level/navigate/approved?OwnerId=${ownerId}`);
+            console.log({seeMe:res})
             if (res.data) {
                 setBmoList(res?.data?.Owners);
                 setParentInfo(res?.data?.Parent)
                 setLoading(false)
-            } else {
+            }
+            else if(res.status=404){
+                setParentInfo(unAvOwner);
+                setBmoList([]);
+                setLoading(false)
+            }
+            else {
+                setParentInfo(unAvOwner);
+                setBmoList([]);
                 setLoading(false)
             }
         } catch (error) {
             console.log({ seeError: error })
-            // setBmoList([])
+            setBmoList([])
             setLoading(false)
         }
     }
 
+    console.log({seeMe:unAvOwner})
     const handleClear = () => {
         // setBySearch(false);
         setUserSearch('')
@@ -165,7 +205,7 @@ const UnAuthUserBmoLevelView = () => {
         // setRefreshData(!refreshData)
     }
 
-    const handleShowInfoModal = (owner: IOwner) => {
+    const handleShowInfoModal = (owner: IBMOwnersPublic) => {
         setBmoOwner(owner);
         setViewMoreInfoModal(!viewMoreInfotModal);
     }
@@ -174,40 +214,94 @@ const UnAuthUserBmoLevelView = () => {
         setViewChartModal(!viewChartModal);
     }
 
-    const handleNavigateNavs = (currentNav:any,navIndex:number)=>{
-        console.log({currentNavList:navArray})
-        const slicedNavList = navArray.slice(0,navIndex);
-        console.log({slicedResultt:slicedNavList});
-        dispatch(reduceNavLink(slicedNavList));
-        navigate(-1)
-        // navigate(`/custormer-details/${level&& +level +1}/${currentNav?.id}`)
+    const handleNavigateNavs = (currentNav: any, navIndex: number) => {
+        console.log({ currentNavList: navArray })
+        const slicedNavList = navArray.slice(0, navIndex + 1);
+        console.log({ slicedResultt: slicedNavList });
+        dispatch(removeFromUnAuthUserNavArray(slicedNavList));
+        // navigate(-1)
+        if(navIndex ==0){
+            navigate(`/custormer-details/${1}/${currentNav?.customerNumber}`)
+        } else{
+            navigate(`/owner-details/${level && +level - 1}/${currentNav?.ownerId}`)
+        }
+       
 
     }
 
-    const handleBackToHomePage=()=>{
+    const handleBackToHomePage = () => {
         dispatch(clearNav([]))
-    navigate('/')
+        navigate('/')
+    }
+
+    const handleNavigateToOwner = (owner: IBMOwnersPublic) => {
+        let payload: IUnAuthUserNavLink = {
+            name: owner.BusinessName,
+            customerNumber: owner?.CustomerNumber,
+            ownerId: owner?.CustomerNumber
+        }
+        let unAvOwner = {
+            AuthorizeBy: owner.AuthorizeBy,
+            AuthorizeDate: owner.AuthorizeDate,
+            BVN: owner.BVN,
+            BusinessName: owner.BusinessName,
+            Category: owner.Category,
+            CategoryDescription: owner.CategoryDescription,
+            Comments: owner.Comments,
+            CountryId: owner.CountryId,
+            CountryName: owner.CountryName,
+            CreatedBy: owner.CreatedBy,
+            CreatedDate: owner.CreatedDate,
+            CustomerNumber: owner.CustomerNumber            ,
+            Id: owner.Id,
+            IdNumber: owner.IdNumber,
+            IdType: owner.IdType,
+            IsAuthorized: owner.IsAuthorized,
+            IsPEP: owner.IsPEP,
+            IsRejected: owner.IsRejected,
+            Level: owner.Level,
+            NumberOfShares: owner.NumberOfShares,
+            ParentId: owner.ParentId,
+            PercentageHolding: owner.PercentageHolding,
+            RcNumber: owner.RcNumber,
+            RejectedBy: owner.RejectedBy,
+            RejectedDate: owner.RejectedDate,
+            RiskLevel: owner.RiskLevel,
+            RiskScore: owner.RiskScore,
+            Ticker:owner.Ticker
+        }
+        dispatch(pushTounAuthUserNavArray(payload));
+        dispatch(setUnAuthUserBMOOwnerProfile(unAvOwner))
+        window.history.pushState({}, '', `/owner-details/${level && +level + 1}/${owner.Id}`);
+        navigate(`/owner-details/${level && +level + 1}/${owner.Id}`)
     }
 
     useEffect(() => {
         fetch();
-    }, [])
+    }, [ref])
     return (
         <div className="w-100 p-0">
             {bmoList.length > 0 && <ChartModal bmoList={bmoList} profile={parentInfo} show={viewChartModal} off={() => setViewChartModal(false)} />}
-            <MoreInfoModal info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} />
+            <MoreInfoModal lev={level} info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} />
             <Button className="d-flex gap-2" onClick={handleBackToHomePage} variant="outline border border-primary">
                 <i className="bi bi-arrow-left text-primary"></i>
                 <p className="p-0 m-0 text-primary">Back To Homepage</p>
 
             </Button>
-            <div className=" mt-2 d-flex align-items-center">
             {
-                    navArray.map((page:any,index:number)=>(<p role="button" onClick={()=>handleNavigateNavs(page,index)}>{`${page.name}>`}</p>))
-                }
-                {/* <p role="button" onClick={()=>navigate(-1)} className="p-0 m-0">{`Level-${level&& +level -1}`}</p> */}
-            </div>
-            <p className="p-0 m-0 text-primary fw-bold mt-3">{parentInfo?.BusinessName}</p>
+                level && +level >= 1 &&
+                <div className=" mt-2 d-flex align-items-center">
+                    {
+                        navArray.map((page: any, index: number) => 
+                            (<Button onClick={()=>handleNavigateNavs(page,index)} 
+                        style={{outline:'none'}} 
+                        disabled={navArray.length === index +1} 
+                        className="p-0 m-0 border text-uppercase border-0" variant="outline">{navArray.length === index +1?page.name:`${page.name}>`}</Button>))
+                    }
+                    {/* <p role="button" onClick={()=>navigate(-1)} className="p-0 m-0">{`Level-${level&& +level -1}`}</p> */}
+                </div>
+            }
+            {/* <p className="p-0 m-0 text-primary fw-bold mt-3">{parentInfo?.BusinessName}</p> */}
             <div className="w-100 d-flex justify-content-between">
                 <div className="d-flex gap-2 align-items-center mt-3">
                     {
@@ -221,7 +315,7 @@ const UnAuthUserBmoLevelView = () => {
                     {/* <Button className="d-flex gap-2" style={{ minWidth: '15em' }}>
                         <i className="bi bi-plus-circle"></i>
                         <p className="p-0 m-0" >Add New Beneficial Owner</p></Button> */}
-                    {bmoList.length>0 && <FormSelect style={{ maxWidth: '8em' }} onChange={(e) => handleListDownload(e.currentTarget.value)}>
+                    {bmoList.length > 0 && <FormSelect style={{ maxWidth: '8em' }} onChange={(e) => handleListDownload(e.currentTarget.value)}>
                         <option>Download</option>
                         <option value={'csv'}>CSV</option>
                         <option value={'pdf'}>PDf</option>
@@ -281,7 +375,7 @@ const UnAuthUserBmoLevelView = () => {
                                     </td>
                                     <td className="text-primary">
                                         {
-                                            bmoList.length > 0 && bmoList.length
+                                            bmoList.length
                                         }
                                     </td>
                                 </tr>
@@ -295,7 +389,7 @@ const UnAuthUserBmoLevelView = () => {
 
 
             <div className="d-flex flex-column w-100 justify-content-center mt-4">
-                {parentInfo && <div className="d-flex justify-content-between w-100">
+                {bmoList.length >0 && <div className="d-flex justify-content-between w-100">
                     <p className="fw-bold text-primary text-capitalize">{`${parentInfo?.BusinessName} Beneficial Owners`}</p>
                     <Button onClick={() => handleViewChart()} variant="outline border  d-flex gap-2 border-primary text-primary">
                         <i className="bi bi-pie-chart p-0 m-0"></i>
@@ -342,57 +436,59 @@ const UnAuthUserBmoLevelView = () => {
                                     </thead>
                                     <tbody>
                                         {
-                                            bmoList && bmoList.length > 0 ? < UnAuthBOOwnwerList lv={parentInfo?.Level} data={bmoList}/>
-                                            //  bmoList && bmoList.map((bmoOwner: IOwner, index: number) => (
-                                            //     <tr key={index}
-                                            //         role="button"
-                                            //         onClick={bmoOwner.CategoryDescription == 'Corporate' ? () => navigate(`/ubo-portal/custormer-details/${parentInfo && parentInfo?.Level + 1}/${bmoOwner.Id}`) : () => handleShowInfoModal(bmoOwner)}
-                                            //     >
-                                            //         <th scope="row">{index + 1}</th>
-                                            //         <td className="">{bmoOwner.BusinessName}</td>
-                                            //         <td>{bmoOwner.CategoryDescription}</td>
-                                            //         <td>{bmoOwner.CountryName}</td>
-                                            //         <td>{bmoOwner.PercentageHolding}%</td>
-                                            //         <td>{bmoOwner.NumberOfShares}</td>
-                                            //         <td>{bmoOwner.IsPEP ? 'Yes' : 'No'}</td>
-                                            //         <td>{bmoOwner.Ticker ? bmoOwner.Ticker : 'N/A'}</td>
-                                            //         <td className="table-icon" >
-                                            //             <i className=" bi bi-three-dots" onClick={(e) => e.stopPropagation()}></i>
-                                            //             <div className="content ml-5" style={{ position: 'relative', zIndex: 1500 }}>
-                                            //                 <Card className="p-2  shadow-sm rounded border-0"
-                                            //                     style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
+                                            bmoList && bmoList.length > 0 ? 
+                                            // < UnAuthBOOwnwerList refPar={() => setRef(!ref)} lv={parentInfo?.Level} data={bmoList} />
+                                                 bmoList && bmoList.map((bmoOwner: IBMOwnersPublic, index: number) => (
+                                                    <tr key={index}
+                                                        role="button"
+                                                        onClick={bmoOwner.CategoryDescription == 'Corporate' ? () => handleNavigateToOwner(bmoOwner) 
+                                                            : () => handleShowInfoModal(bmoOwner)}
+                                                    >
+                                                        <th scope="row">{index + 1}</th>
+                                                        <td className="">{bmoOwner.BusinessName}</td>
+                                                        <td>{bmoOwner.CategoryDescription}</td>
+                                                        <td>{bmoOwner.CountryName}</td>
+                                                        <td>{bmoOwner.PercentageHolding}%</td>
+                                                        <td>{bmoOwner.NumberOfShares}</td>
+                                                        <td>{bmoOwner.IsPEP ? 'Yes' : 'No'}</td>
+                                                        <td>{bmoOwner.Ticker ? bmoOwner.Ticker : 'N/A'}</td>
+                                                        <td className="table-icon" >
+                                                            <i className=" bi bi-three-dots" onClick={(e) => e.stopPropagation()}></i>
+                                                            <div className="content ml-5" style={{ position: 'relative', zIndex: 1500 }}>
+                                                                <Card className="p-2  shadow-sm rounded border-0"
+                                                                    style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
 
-                                            //                     <ListGroup>
-                                            //                     <ListGroupItem className="multi-layer"
-                                            //                                 // onClick={(e) => handleGetAttestersList(e, policy)}
-                                            //                                 >
-                                            //                                     <span className="w-100 d-flex justify-content-between">
-                                            //                                         <div className="d-flex gap-2">
-                                            //                                             <i className="bi bi-eye"></i>
-                                            //                                             View More
-                                            //                                         </div>
+                                                                    <ListGroup>
+                                                                    <ListGroupItem className="multi-layer"
+                                                                                // onClick={(e) => handleGetAttestersList(e, policy)}
+                                                                                >
+                                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                                        <div className="d-flex gap-2">
+                                                                                            <i className="bi bi-eye"></i>
+                                                                                            View More
+                                                                                        </div>
 
-                                            //                                         {/* <i className="bi bi-chevron-right"></i> */}
-                                            //                                     </span>
+                                                                                        {/* <i className="bi bi-chevron-right"></i> */}
+                                                                                    </span>
 
-                                            //                     </ListGroupItem>
-                                                                    
-                                            //                     </ListGroup>
+                                                                    </ListGroupItem>
 
-                                            //                 </Card>
+                                                                    </ListGroup>
 
-                                            //             </div>
+                                                                </Card>
 
-                                            //         </td>
+                                                            </div>
+
+                                                        </td>
 
 
-                                            //     </tr>
-                                            // )) 
-                                            : <tr className="text-center">
-                                                <td colSpan={9}>
-                                                    No Data Available
-                                                </td>
-                                            </tr>
+                                                    </tr>
+                                                )) 
+                                                : <tr className="text-center">
+                                                    <td colSpan={9}>
+                                                        No Data Available
+                                                    </td>
+                                                </tr>
                                         }
                                     </tbody>
 
@@ -413,4 +509,4 @@ const UnAuthUserBmoLevelView = () => {
 
 }
 
-export default UnAuthUserBmoLevelView;
+export default UnAuthBmoOwnerView;

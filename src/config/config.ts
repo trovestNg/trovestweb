@@ -7,7 +7,7 @@ export const Identity = {
 	ClientSecrets: process.env.REACT_APP_SECRET,
 	redirect_uri: process.env.REACT_APP_CALLBACK,
 	response_type: 'code',
-	scope: 'openid profile roles work_info policy-viewer-api-scope',
+	scope: 'openid profile roles work_info beneficialowner-api-scope',
 	post_logout_redirect_uri: process.env.REACT_APP_HOME + 'logout',
 	userStore: new Oidc.WebStorageStateStore({ store: window.localStorage }),
 	automaticSilentRenew: true,

@@ -1,19 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { Button, FormControl, FormSelect, Modal, ProgressBar } from "react-bootstrap";
+import { Button, FormControl, FormSelect, Modal, ProgressBar, Spinner } from "react-bootstrap";
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { object, string, number, date, InferType } from 'yup';
 import api from "../../config/api";
 import { getUserInfo } from "../../controllers/auth";
 import { getCountries } from "../../utils/helpers";
-import { ICountry } from "../../interfaces/country";
+import { ICountr, ICountry } from "../../interfaces/country";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
-const CreateBMOOwnerIndModal: React.FC<any> = ({ show, off }) => {
-    const [countries, setCountries] = useState<ICountry[]>()
+const CreateBMOOwnerIndModal: React.FC<any> = ({ show, off,lev, parent,custormerNumb,ownerId }) => {
+    const [countries, setCountries] = useState<ICountr[]>()
+    const [idTypes, setIdTypes] = useState<string[]>();
+    const [loading,setLoading] = useState(false);
+    const navigate = useNavigate();
+
+    console.log({hereisParent:parent,hereIdNumber:custormerNumb})
     const initialVal = {
-        "id": '',
         "businessName": "",
-        "customerNumber": "",
         "bvn": "",
         "idType": "",
         "idNumber": "",
@@ -21,9 +25,7 @@ const CreateBMOOwnerIndModal: React.FC<any> = ({ show, off }) => {
         "percentageHolding": '',
         "numberOfShares": '',
         "isPEP": "",
-        "categoryId": "",
-        "rcNumber": "",
-        "ticker": ""
+        "categoryId": "I",
     }
 
 
@@ -36,7 +38,8 @@ const CreateBMOOwnerIndModal: React.FC<any> = ({ show, off }) => {
         bvn: number().typeError('Must be a number').required().label('Bvn'),
         isPEP: string().required().label('Politicaly Exposed Status'),
         idType: string().required().label('ID Type'),
-        idNumber: number().typeError('Must be a number').required().label('ID Number'),
+        idNumber: string().required().label('ID Number'),
+        // ticker: string().required().label('Ticker'),
 
         // policyDocument: string().required('Kindly upload a file'),
 
@@ -48,43 +51,118 @@ const CreateBMOOwnerIndModal: React.FC<any> = ({ show, off }) => {
         // createdOn: date().default(() => new Date()),
     });
 
-    const handleCreateNewBMO = () => {
-
-
-    }
 
     const createNewBMO = async (body: any) => {
-        console.log({seeBody:body})
+        setLoading(true)
+        // console.log({ seeBody: body })
         let userInfo = await getUserInfo();
 
 
 
         if (userInfo) {
 
+            let parentInfo = {
+                AuthorizeBy
+                    :
+                    parent?.AuthorizeBy,
+                AuthorizeDate
+                    :
+                    parent?.AuthorizeDate,
+                BVN
+                    :
+                    parent?.BVN,
+                BusinessName
+                    :
+                    parent?.BusinessName,
+                Category
+                    :
+                    parent?.Category,
+                CategoryDescription
+                    :
+                    parent?.CategoryDescription,
+                Comments
+                    :
+                    parent?. Comments,
+                CountryId
+                    :
+                    parent?. CountryId,
+                CountryName
+                    :
+                    parent?.CountryName,
+                CreatedBy
+                    :
+                    parent?. CreatedBy,
+                CreatedDate
+                    :
+                   parent?.CreatedDate,
+                Id
+                    :
+                    parent?.Id,
+                IdNumber
+                    :
+                    parent?.IdNumber,
+                IdType
+                    :
+                    parent?.IdType,
+                IsAuthorized
+                    :
+                    parent?.IsAuthorized,
+                IsPEP
+                    :
+                    parent?.IsPEP,
+                IsRejected
+                    :
+                    parent?.IsRejected,
+                LastUpdatedBy
+                    :
+                    parent?.LastUpdatedBy,
+                LastUpdatedDate
+                    :
+                    parent?.LastUpdatedDate,
+                Level
+                    :
+                    parent?.Level,
+                NumberOfShares
+                    :
+                    parent?.NumberOfShares,
+                ParentId
+                    :
+                    parent?.ParentId,
+                PercentageHolding
+                    :
+                    parent?.PercentageHolding,
+                RcNumber
+                    :
+                    parent?.RcNumber,
+                RejectedBy
+                    :
+                    parent?.RejectedBy,
+                RejectedDate
+                    :
+                    parent?.RejectedDate,
+                RiskLevel
+                    :
+                    parent?.RiskLevel,
+                RiskScore
+                    :
+                    parent?.RiskScore,
+                Ticker
+                    :
+                    parent?.Ticker,
+            }
+
             const apiBody = {
                 "requesterName": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
-                "parent": {
-                    
-                    //   "id": 0,
-                    //   "businessName": "string",
-                    //   "customerNumber": "string",
-                    //   "bvn": "string",
-                    //   "idType": "string",
-                    //   "idNumber": "string",
-                    //   "countryId": "string",
-                    //   "percentageHolding": 0,
-                    //   "numberOfShares": 0,
-                    //   "isPEP": true,
-                    //   "categoryId": "string",
-                    //   "rcNumber": "string",
-                    //   "ticker": "string",
-                    //   "originalId": 0,
-                    //   "navigation": "string"
-                },
+                "parent": { ...parentInfo, originalId: custormerNumb?custormerNumb:ownerId, CategoryId: 'I', CountryId: "NG", Level: +lev },
                 "beneficialOwners": [
-                    body
+                    {
+                        ...body,
+                        "categoryId": "I",
+                        "isPEP":body?.isPEP=='yes'?true:false,
+                        
+                    }
+                   
                     // {
-                    //     "id": 0,
                     //     "businessName": "string",
                     //     "customerNumber": "string",
                     //     "bvn": "string",
@@ -102,26 +180,47 @@ const CreateBMOOwnerIndModal: React.FC<any> = ({ show, off }) => {
             }
 
             const res = await api.post(`BeneficialOwner`, apiBody, `${userInfo?.access_token}`)
-            if(res?.data.success){
-                toast.success('BMO added succesfully')
-            } else{
-                toast.error('Operation failed! Check your network')
+            if (res?.status==200) {
+                setLoading(false);
+                toast.success('BMO added succesfully');
+                off()
+            } else {
+                toast.error('Operation failed! Check your network');
+                setLoading(false);
             }
 
         }
     }
 
     const handleGetCountries = async () => {
-        const res = await getCountries();
-        const sortedCountries = res.data.sort((a: any, b: any) =>
-            a.name.common.localeCompare(b.name.common)
-        );
-        setCountries(sortedCountries)
+        try {
+            let userInfo = await getUserInfo();
+            const res = await api.get(`countries?requesterName=${userInfo?.profile.given_name}`, `${userInfo?.access_token}`);
+            console.log({countHere:res})
+            // const sortedCountries = res?.data.sort((a: any, b: any) =>
+            //     a.name.common.localeCompare(b.name.common)
+            // );
+            setCountries(res?.data)
+        } catch (error) {
+
+        }
+    }
+
+    const handleGetIdTypes = async () => {
+        try {
+            let userInfo = await getUserInfo();
+            const res = await api.get(`idTypes?requesterName=${userInfo?.profile.given_name}`, `${userInfo?.access_token}`)
+           
+            setIdTypes(res?.data)
+        } catch (error) {
+
+        }
     }
 
 
     useEffect(() => {
-        handleGetCountries()
+        handleGetCountries();
+        handleGetIdTypes()
     }, [])
 
     return (
@@ -173,8 +272,8 @@ const CreateBMOOwnerIndModal: React.FC<any> = ({ show, off }) => {
                                                 id='countryId' name='countryId'>
                                                 <option value={''}>Select</option>
                                                 {
-                                                    countries && countries.map((country: ICountry) => (
-                                                        <option value={country.idd.suffixes}>{country.name.common}</option>
+                                                    countries && countries.map((country: ICountr,index:number) => (
+                                                        <option key={index} value={country.id}>{country.displayName}</option>
                                                     ))
                                                 }
                                             </Field>
@@ -266,8 +365,10 @@ const CreateBMOOwnerIndModal: React.FC<any> = ({ show, off }) => {
                                                 className="rounded rounded-1 p-2 outline form-control-outline w-100 border border-1 border-grey"
                                                 id='idType' name='idType'>
                                                 <option value={''}>Select</option>
-                                                <option value={'yes'}>NIN</option>
-                                                <option value={'no'}>BVN</option>
+                                                {
+                                                    idTypes?.map((idType:string)=>(<option value={idType}>{idType}</option>)
+                                                    )
+                                                }
 
                                             </Field>
                                             <ErrorMessage
@@ -298,7 +399,7 @@ const CreateBMOOwnerIndModal: React.FC<any> = ({ show, off }) => {
                                         </div>
 
                                         <div className="w-50">
-                                            <Button className="w-100 rounded rounded-1" type="submit" variant="primary mt-3">Submit for Approval </Button>
+                                            <Button disabled={loading} className="w-100 rounded rounded-1" type="submit" variant="primary mt-3">{loading? <Spinner size="sm"/>:'Submit for Approval'}</Button>
                                         </div>
                                     </div>
                                 </Form>)

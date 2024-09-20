@@ -2,12 +2,18 @@ import React, { useCallback, useEffect, useState } from "react";
 import logoIcon from "../../assets/images/fsdh-logo-blue.png";
 import { Button, Card, ListGroup, ListGroupItem, Modal, Spinner } from "react-bootstrap";
 import { getUserInfo, loginUser, logoutUser, refreshToken } from "../../controllers/auth";
+import { useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { clearNav } from "../../store/slices/userSlice";
+import { emptyUnAuthUserNavArray } from "../../store/slices/unAuthserSlice";
 
 
 
 
 const TopBarUnAuth: React.FC<any> = ({ payload }) => {
     const [loading,setLoading] = useState(false)
+    const currentPath = useLocation().pathname;
+    const dispatch = useDispatch()
     // const [userType, setUserType] = useState('');
     // const [userName, setUserName] = useState('');
     // const initialTime = 250;
@@ -93,6 +99,19 @@ const TopBarUnAuth: React.FC<any> = ({ payload }) => {
     // useEffect(() => {
     //     getUserType();
     // }, [])
+
+    const handleClearNav = ()=>{
+        if(currentPath.includes("details")){
+            return
+        } else {
+            dispatch(emptyUnAuthUserNavArray());
+        }
+       
+    }
+
+    useEffect(()=>{
+        handleClearNav()
+    },[currentPath])
     return (
         <div
             className="d-flex align-items-center justify-content-between bg-light shadow-sm w-100 px-4 py-3" style={{ fontFamily: 'title' }}>

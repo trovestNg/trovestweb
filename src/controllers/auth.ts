@@ -1,6 +1,7 @@
 import { UserManager } from 'oidc-client';
 import { Identity } from '../config/config';
 import { toast } from 'react-toastify';
+import { persistor } from '../store/store';
 
 const userManager = new UserManager(Identity);
 
@@ -100,7 +101,9 @@ export const refreshToken = async () => {
 
 // Function to sign out
 export const logoutUser = async () => {
+ 
   try {
+    persistor.purge()
     window.history.pushState(null, '', window.location.href='/');
     await userManager.signoutRedirect();
     //      window.onpopstate = function(event) {

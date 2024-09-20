@@ -3,22 +3,52 @@ import { IBMO, IOwner } from "../../../interfaces/bmo"
 import { useNavigate } from "react-router-dom"
 import { Card, ListGroup, ListGroupItem, Modal } from "react-bootstrap"
 import { useDispatch } from "react-redux"
-import { updateNav } from "../../../store/slices/userSlice"
+import { handleSetBmoOwner, updateNav } from "../../../store/slices/userSlice"
 import MoreInfoModal from "../../modals/moreInfoModal"
-const AuthBOList: React.FC<any> = ({ data, lv, handleEditUBOOwner,handDel }) => {
+const AuthBOList: React.FC<any> = ({ data, lv, handleEditUBOOwner, handDel }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [viewMoreInfotModal, setViewMoreInfoModal] = useState(false);
     const [bmoOwner, setBmoOwner] = useState<IOwner>();
 
-    const handleNavigateToLevel = (owner: IOwner, id: number) => {
+    const handleNavigateToOwner = (owner: IOwner) => {
         let payload = {
             name: owner.BusinessName,
             id: owner.Id
         }
-        dispatch(updateNav(payload))
-        navigate(`/ubo-portal/custormer-details/${+lv + 1}/${id}`)
-
+        let unAvOwner = {
+            AuthorizeBy: owner.AuthorizeBy,
+            AuthorizeDate: owner.AuthorizeDate,
+            BVN: owner.BVN,
+            BusinessName: owner.BusinessName,
+            Category: owner.Category,
+            CategoryDescription: owner.CategoryDescription,
+            Comments: owner.Comments,
+            CountryId: owner.CountryId,
+            CountryName: owner.CountryName,
+            CreatedBy: owner.CreatedBy,
+            CreatedDate: owner.CreatedDate,
+            CustomerNumber: owner.CustomerNumber,
+            Id: owner.Id,
+            IdNumber: owner.IdNumber,
+            IdType: owner.IdType,
+            IsAuthorized: owner.IsAuthorized,
+            IsPEP: owner.IsPEP,
+            IsRejected: owner.IsRejected,
+            Level: owner.Level,
+            NumberOfShares: owner.NumberOfShares,
+            ParentId: owner.ParentId,
+            PercentageHolding: owner.PercentageHolding,
+            RcNumber: owner.RcNumber,
+            RejectedBy: owner.RejectedBy,
+            RejectedDate: owner.RejectedDate,
+            RiskLevel: owner.RiskLevel,
+            RiskScore: owner.RiskScore,
+            Ticker:owner.Ticker
+        }
+        dispatch(updateNav(payload));
+        dispatch(handleSetBmoOwner(unAvOwner))
+        navigate(`/ubo-portal/owner-details/${+lv + 1}/${owner.Id}`)
     }
 
     const handleUpdateOwner = (owner: IOwner) => {
@@ -42,7 +72,7 @@ const AuthBOList: React.FC<any> = ({ data, lv, handleEditUBOOwner,handDel }) => 
                 <MoreInfoModal info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} />
                 <tr key={index}
                     role="button"
-                    onClick={bmoOwner.CategoryDescription == 'Corporate' ? () => handleNavigateToLevel(bmoOwner, bmoOwner.Id) : () => handleShowInfoModal(bmoOwner)}
+                    onClick={bmoOwner.CategoryDescription == 'Corporate' ? () => handleNavigateToOwner(bmoOwner) : () => handleShowInfoModal(bmoOwner)}
                 >
                     <th scope="row">{index + 1}</th>
                     <td className="">{bmoOwner.BusinessName}</td>
@@ -75,7 +105,7 @@ const AuthBOList: React.FC<any> = ({ data, lv, handleEditUBOOwner,handDel }) => 
                                     {
                                         <div onClick={(e) => e.stopPropagation()}>
                                             <ListGroupItem
-                                            onClick={(e) => handleUpdateOwner(bmoOwner)}
+                                                onClick={(e) => handleUpdateOwner(bmoOwner)}
                                             >
                                                 <span className="w-100 d-flex justify-content-between">
                                                     <div className="d-flex gap-2">
@@ -86,8 +116,8 @@ const AuthBOList: React.FC<any> = ({ data, lv, handleEditUBOOwner,handDel }) => 
                                             </ListGroupItem>
                                             <ListGroupItem
                                                 className="text-danger"
-                                            // disabled={policy?.markedForDeletion}
-                                            onClick={(e) => handleDelOwner(bmoOwner.IdNumber)}
+                                                // disabled={policy?.markedForDeletion}
+                                                onClick={(e) => handleDelOwner(bmoOwner.IdNumber)}
                                             >
                                                 <span className="w-100 d-flex justify-content-between">
                                                     <div className="d-flex gap-2">

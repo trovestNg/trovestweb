@@ -1,17 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { Button, FormControl, FormSelect, Modal, ProgressBar } from "react-bootstrap";
+import { Button, FormControl, FormSelect, Modal, ProgressBar, Spinner } from "react-bootstrap";
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { object, string, number, date, InferType } from 'yup';
 import api from "../../config/api";
 import { getUserInfo } from "../../controllers/auth";
 import { getCountries } from "../../utils/helpers";
-import { ICountry } from "../../interfaces/country";
+import { ICountr, ICountry } from "../../interfaces/country";
 import { toast } from "react-toastify";
 
-const EditBMOOwnerIndModal: React.FC<any> = ({ show, off, parentInf,owner }) => {
-    const [countries, setCountries] = useState<ICountry[]>()
-    const initialVal = owner
+const EditeBMOOwnerIndModal: React.FC<any> = ({ show, off, parentInf,custormerNumb,lev, ownerInfo}) => {
+    const [countries, setCountries] = useState<ICountr[]>()
+    const [idTypes, setIdTypes] = useState<string[]>();
+    const [loading,setLoading] = useState(false);
 
+    // console.log({hereisParent:parent,hereIdNumber:custormerNumb})
+    const initialVal = {
+        "businessName": ownerInfo?.BusinessName || '',
+        "bvn": ownerInfo?.bvn || '',
+        "idType": ownerInfo?.idType || ownerInfo?.IdType,
+        "idNumber": ownerInfo?.IdNumber || false,
+        "countryId": ownerInfo?.CountryId || '',
+        "percentageHolding": ownerInfo?.PercentageHolding || '',
+        "numberOfShares": ownerInfo?.NumberOfShares || '',
+        "isPEP": ownerInfo?.IsPEP ? 'Yes': 'No',
+        "categoryId": "I",
+        "Id": ownerInfo?.Id || '',
+    }
 
 
 
@@ -23,7 +37,8 @@ const EditBMOOwnerIndModal: React.FC<any> = ({ show, off, parentInf,owner }) => 
         bvn: number().typeError('Must be a number').required().label('Bvn'),
         isPEP: string().required().label('Politicaly Exposed Status'),
         idType: string().required().label('ID Type'),
-        idNumber: number().typeError('Must be a number').required().label('ID Number'),
+        idNumber: string().required().label('ID Number'),
+        // ticker: string().required().label('Ticker'),
 
         // policyDocument: string().required('Kindly upload a file'),
 
@@ -35,8 +50,10 @@ const EditBMOOwnerIndModal: React.FC<any> = ({ show, off, parentInf,owner }) => 
         // createdOn: date().default(() => new Date()),
     });
 
+
     const createNewBMO = async (body: any) => {
-        console.log({seeBody:body})
+        setLoading(true)
+        // console.log({ seeBody: body })
         let userInfo = await getUserInfo();
 
 
@@ -45,28 +62,18 @@ const EditBMOOwnerIndModal: React.FC<any> = ({ show, off, parentInf,owner }) => 
 
             const apiBody = {
                 "requesterName": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
-                "parent": {
-                    
-                    //   "id": 0,
-                    //   "businessName": "string",
-                    //   "customerNumber": "string",
-                    //   "bvn": "string",
-                    //   "idType": "string",
-                    //   "idNumber": "string",
-                    //   "countryId": "string",
-                    //   "percentageHolding": 0,
-                    //   "numberOfShares": 0,
-                    //   "isPEP": true,
-                    //   "categoryId": "string",
-                    //   "rcNumber": "string",
-                    //   "ticker": "string",
-                    //   "originalId": 0,
-                    //   "navigation": "string"
-                },
+                "parent": {...parentInf,originalId:custormerNumb,CategoryId:'I',CountryId:"NG", Level:+lev},
                 "beneficialOwners": [
-                    body
+                    {
+                        ...body,
+                        "customerNumber": custormerNumb,
+                        "rcNumber": "",
+                        "categoryId": "I",
+                        "isPEP":body?.isPEP=='yes'?true:false,
+                        
+                    }
+                   
                     // {
-                    //     "id": 0,
                     //     "businessName": "string",
                     //     "customerNumber": "string",
                     //     "bvn": "string",
@@ -84,26 +91,47 @@ const EditBMOOwnerIndModal: React.FC<any> = ({ show, off, parentInf,owner }) => 
             }
 
             const res = await api.post(`BeneficialOwner`, apiBody, `${userInfo?.access_token}`)
-            if(res?.data.success){
-                toast.success('BMO added succesfully')
-            } else{
-                toast.error('Operation failed! Check your network')
+            if (res?.status==200) {
+                setLoading(false);
+                toast.success('BMO added succesfully');
+                off()
+            } else {
+                toast.error('Operation failed! Check your network');
+                setLoading(false);
             }
 
         }
     }
 
     const handleGetCountries = async () => {
-        const res = await getCountries();
-        const sortedCountries = res.data.sort((a: any, b: any) =>
-            a.name.common.localeCompare(b.name.common)
-        );
-        setCountries(sortedCountries)
+        try {
+            let userInfo = await getUserInfo();
+            const res = await api.get(`countries?requesterName=${userInfo?.profile.given_name}`, `${userInfo?.access_token}`);
+            console.log({countHere:res})
+            // const sortedCountries = res?.data.sort((a: any, b: any) =>
+            //     a.name.common.localeCompare(b.name.common)
+            // );
+            setCountries(res?.data)
+        } catch (error) {
+
+        }
+    }
+
+    const handleGetIdTypes = async () => {
+        try {
+            let userInfo = await getUserInfo();
+            const res = await api.get(`idTypes?requesterName=${userInfo?.profile.given_name}`, `${userInfo?.access_token}`)
+           
+            setIdTypes(res?.data)
+        } catch (error) {
+
+        }
     }
 
 
     useEffect(() => {
-        handleGetCountries()
+        handleGetCountries();
+        handleGetIdTypes()
     }, [])
 
     return (
@@ -111,7 +139,7 @@ const EditBMOOwnerIndModal: React.FC<any> = ({ show, off, parentInf,owner }) => 
             <Modal size="lg" show={show} centered>
                 <Modal.Header className="d-flex justify-content-between"
                     style={{ fontFamily: 'title' }}>
-                    <p className="p-0 m-0 text-primary">Update Individual Beneficial Owner </p>
+                    <p className="p-0 m-0 text-primary">Edit Beneficial Owner Individual </p>
                     <i className="bi bi-x-circle" onClick={() => off()}></i>
                 </Modal.Header>
                 <Modal.Body >
@@ -132,10 +160,10 @@ const EditBMOOwnerIndModal: React.FC<any> = ({ show, off, parentInf,owner }) => 
                                                 Name
                                             </label>
                                             <Field
-                                                value={values.BusinessName}
+                                                value={values.businessName}
                                                 style={{ outline: 'none' }}
                                                 className="rounded rounded-1 p-2  w-100 border border-1 border-grey"
-                                                id='BusinessName' name='BusinessName'
+                                                id='businessName' name='businessName'
                                             />
                                             <ErrorMessage
                                                 name="businessName"
@@ -153,10 +181,10 @@ const EditBMOOwnerIndModal: React.FC<any> = ({ show, off, parentInf,owner }) => 
                                                 style={{ outline: 'none' }}
                                                 className="rounded rounded-1 p-2 outline form-control-outline w-100 border border-1 border-grey"
                                                 id='countryId' name='countryId'>
-                                                <option value={''}>{values.Nationality}</option>
+                                                <option value={''}>Select</option>
                                                 {
-                                                    countries && countries.map((country: ICountry) => (
-                                                        <option value={country.idd.suffixes}>{country.name.common}</option>
+                                                    countries && countries.map((country: ICountr,index:number) => (
+                                                        <option key={index} value={country.id}>{country.displayName}</option>
                                                     ))
                                                 }
                                             </Field>
@@ -173,7 +201,7 @@ const EditBMOOwnerIndModal: React.FC<any> = ({ show, off, parentInf,owner }) => 
                                                 Holding %
                                             </label>
                                             <Field
-                                                value={values.PercentageHolding}
+                                                // value={values.percentageHolding}
                                                 style={{ outline: 'none' }}
                                                 className="rounded rounded-1 p-2 outline form-control-outline w-100 border border-1 border-grey"
                                                 id='percentageHolding' name='percentageHolding' />
@@ -188,7 +216,7 @@ const EditBMOOwnerIndModal: React.FC<any> = ({ show, off, parentInf,owner }) => 
                                                 No of Shares
                                             </label>
                                             <Field
-                                                value={values.NumberOfShares}
+                                                value={values.numberOfShares}
                                                 style={{ outline: 'none' }}
                                                 className="rounded rounded-1 p-2 outline form-control-outline w-100 border border-1 border-grey"
                                                 id='numberOfShares' name='numberOfShares' />
@@ -205,10 +233,10 @@ const EditBMOOwnerIndModal: React.FC<any> = ({ show, off, parentInf,owner }) => 
                                                 BVN
                                             </label>
                                             <Field
-                                                value={values.Bvn}
+                                                // value={values.bvn}
                                                 style={{ outline: 'none' }}
                                                 className="rounded rounded-1 p-2 outline form-control-outline w-100 border border-1 border-grey"
-                                                id='Bvn' name='Bvn' />
+                                                id='bvn' name='bvn' />
                                             <ErrorMessage
                                                 name="bvn"
                                                 component="div"
@@ -224,7 +252,7 @@ const EditBMOOwnerIndModal: React.FC<any> = ({ show, off, parentInf,owner }) => 
                                                 style={{ outline: 'none' }}
                                                 className="rounded rounded-1 p-2 outline form-control-outline w-100 border border-1 border-grey"
                                                 id='isPEP' name='isPEP'>
-                                                <option value={''}>{values.isPEP}</option>
+                                                <option value={values.isPEP?'yes':'no'}>{values.isPEP?'Yes':'No'}</option>
                                                 <option value={'yes'}>Yes</option>
                                                 <option value={'no'}>No</option>
 
@@ -247,9 +275,11 @@ const EditBMOOwnerIndModal: React.FC<any> = ({ show, off, parentInf,owner }) => 
                                                 style={{ outline: 'none' }}
                                                 className="rounded rounded-1 p-2 outline form-control-outline w-100 border border-1 border-grey"
                                                 id='idType' name='idType'>
-                                                <option value={''}>{values.idType}</option>
-                                                <option value={'yes'}>NIN</option>
-                                                <option value={'no'}>BVN</option>
+                                                <option value={values.idType}>{values.idType}</option>
+                                                {
+                                                    idTypes?.map((idType:string,index:number)=>(<option key={index}  value={idType}>{idType}</option>)
+                                                    )
+                                                }
 
                                             </Field>
                                             <ErrorMessage
@@ -263,7 +293,7 @@ const EditBMOOwnerIndModal: React.FC<any> = ({ show, off, parentInf,owner }) => 
                                                 ID Number
                                             </label>
                                             <Field
-                                                value={values.IdNumber}
+                                                value={values.idNumber}
                                                 style={{ outline: 'none' }}
                                                 className="rounded rounded-1 p-2 w-100 border border-1 border-grey"
                                                 id='idNumber' name='idNumber' />
@@ -280,7 +310,7 @@ const EditBMOOwnerIndModal: React.FC<any> = ({ show, off, parentInf,owner }) => 
                                         </div>
 
                                         <div className="w-50">
-                                            <Button className="w-100 rounded rounded-1" type="submit" variant="primary mt-3">Submit for Approval </Button>
+                                            <Button disabled={loading} className="w-100 rounded rounded-1" type="submit" variant="primary mt-3">{loading? <Spinner size="sm"/>:'Submit for Approval'}</Button>
                                         </div>
                                     </div>
                                 </Form>)
@@ -291,4 +321,4 @@ const EditBMOOwnerIndModal: React.FC<any> = ({ show, off, parentInf,owner }) => 
         </div>
     )
 }
-export default EditBMOOwnerIndModal;
+export default EditeBMOOwnerIndModal;

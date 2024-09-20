@@ -1,11 +1,13 @@
 export interface IBMO {
 customerName:string,
 customerNumber: string,
+CustomerNumber:string,
 customerType: string,
 kycReferenceNumber: string,
 level: string,
 rating: number,
 rcNumber: string,
+RcNumber:string,
 riskLevel: string,
 }
 
@@ -73,4 +75,5 @@ RejectedDate: null,
 RiskLevel:null,
 RiskScore:null,
 Ticker: string,
+ownerId:any
 }

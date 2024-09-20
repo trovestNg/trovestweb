@@ -4,7 +4,7 @@ import alertIcon from "../../assets/icons/switch-icon.png";
 import { useNavigate } from "react-router-dom";
 import Chart from 'chart.js/auto';
 import { Doughnut } from "react-chartjs-2";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, ChartOptions } from 'chart.js';
 import { IOwner } from "../../interfaces/bmo";
 
 // Register necessary components for Chart.js
@@ -44,9 +44,21 @@ const ChartModal: React.FC<any> = ({ show, off, action, profile,bmoList }) => {
         ],
     };
 
-    const options = {
+    const options : ChartOptions<'doughnut'>= {
         responsive: true,
         maintainAspectRatio: false,
+
+        plugins: {
+            legend: {
+              position: 'left', // Correctly typed as 'right'
+              align: 'center',   // Align the legend in the center
+            },
+          },
+          layout: {
+            padding: {
+              left: 0, // Add space on the right for the legend
+            },
+          },
     };
 
 
@@ -61,7 +73,7 @@ const ChartModal: React.FC<any> = ({ show, off, action, profile,bmoList }) => {
                 </Modal.Header>
                 <Modal.Body>
                     <div className="py-2 d-flex justify-content-center align-items-center flex-column">
-                        <div style={{ width: '300px', height: '300px' }}>
+                        <div className="w-100">
                             <Doughnut className="m-2 d-flex gap-2" data={data} options={options} />
                         </div>
                         <p className="text-primary p-0 m-0" style={{ fontFamily: 'title' }}>

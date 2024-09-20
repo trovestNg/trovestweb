@@ -1,52 +1,73 @@
 import React, { useEffect, useState } from "react";
 import { Container, Modal, Card, Button, Spinner, FormControl } from "react-bootstrap";
-import DashboardCard from "../../components/cards/dashboard-card";
-import openBook from '../../assets/images/open-book.png'
-import checked from '../../assets/images/check.png';
-import timer from '../../assets/images/deadline.png';
-import error from '../../assets/images/error.png';
-import { Tabs, Tab } from "react-bootstrap";
-import UserAllPoliciesTab from "../../components/tabs/userTabs/user-all-policies-tab";
-import UserNotAttestedPoliciesTab from "../../components/tabs/userTabs/user-not-attested-policies-tab";
-import UserAttestedPoliciesTab from "../../components/tabs/userTabs/attested-policies-tab";
-import { getPolicies } from "../../controllers/policy";
-import { IPolicy } from "../../interfaces/policy";
-import { IUserDashboard } from "../../interfaces/user";
-import { IDept } from "../../interfaces/dept";
 import { toast } from "react-toastify";
 import { getUserInfo, loginUser, logoutUser } from "../../controllers/auth";
 import api from "../../config/api";
 import UnAuthorizedBMOListTab from "../../components/tabs/users-unauth-tabs/unAuthorizedBMOListTab";
 import styles from './unAuth.module.css'
-import { IBMO } from "../../interfaces/bmo";
+import { IBMO, IOwner } from "../../interfaces/bmo";
 import apiUnAuth from "../../config/apiUnAuth";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { handleUserSearch, handleUserSearchResult } from "../../store/slices/userSlice";
+import {
+    setUnAuthUserBMOSearchWord,
+    setUnAuthUserBMOSearchResult,
+    emptyUnAuthUserBMOSearchResult,
+    pushTounAuthUserNavArray,
+    removeFromUnAuthUserNavArray,
+    emptyUnAuthUserNavArray,
+    clearUnAuthUserBmoSearchWord,
+    setUnAuthUserBmoCustormerProfile,
+    setUnAuthUserBMOOwnerProfile
+} from "../../store/slices/unAuthserSlice";
+import { IBMCustomersPublic, IBMOwnersPublic, IUnAuthUserNavLink } from "../../interfaces/bmOwner";
+import { setAuthUserBMOSearchResult } from "../../store/slices/authUserSlice";
 
 
 const UboUnAuthUserDashboardpage = () => {
-    const bmoList:IBMO[] = useSelector((state:any)=>state.userSlice.userBMOSearch.searchResult)
+    const bmoList: IBMCustomersPublic[] = useSelector((state: any) => state.unAuthUserSlice.unAuthUserBMOSearch.unAuthUserBMOCustomerSearchResult)
+    const unAuthUserBmoSearchWord = useSelector((state: any) => state.unAuthUserSlice.unAuthUserBMOSearch.unAuthUserSearchWord)
+
     const [loading, setLoading] = useState(false);
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
     // const [userSearch, setUserSearch] = useState('');
     const [refreshComponent, setRefreshComponent] = useState(false)
     const navigate = useNavigate()
-    const userSearch = useSelector((state:any)=>state.userSlice.userBMOSearch.searchWords)
+    
+    
 
-
+    const handleNavigateToLevel = (owner: IBMCustomersPublic) => {
+        let payload: IUnAuthUserNavLink = {
+            name: owner.customerName,
+            customerNumber: owner?.customerNumber,
+            ownerId: owner?.ownerId
+        }
+        let unAvOwner: IBMOwnersPublic = {
+            BusinessName: owner.customerName,
+            CustomerNumber: owner.customerNumber,
+            IdType: "CORPORATE",
+            IdNumber: owner.kycReferenceNumber,
+            Level: owner.level,
+            RiskScore: owner.rating,
+            RcNumber: owner.rcNumber,
+            RiskLevel: owner.riskLevel
+        }
+        dispatch(pushTounAuthUserNavArray(payload));
+        dispatch(setUnAuthUserBmoCustormerProfile(unAvOwner))
+        navigate(`custormer-details/${1}/${owner.customerNumber}`)
+    }
 
     const handleSearchByBmoNameOrNumber = async (e: any) => {
         e.preventDefault()
         setLoading(true);
-       
+
         // toast.error('Await')
         try {
-            const res = await apiUnAuth.get(`customers?search=${userSearch}`);
+            const res = await apiUnAuth.get(`customers?search=${unAuthUserBmoSearchWord}`);
             console.log(res)
             if (res.data) {
                 setLoading(false);
-                dispatch(handleUserSearchResult(res?.data?.customerAccounts))
+                dispatch(setUnAuthUserBMOSearchResult(res?.data?.customerAccounts))
                 // setBmoList(res?.data?.customerAccounts);
                 if (res?.data?.customerAccounts?.length <= 0) {
                     toast.error('No Custormer by that Name/ID')
@@ -65,8 +86,8 @@ const UboUnAuthUserDashboardpage = () => {
 
     const handleClear = () => {
         // setBySearch(false);
-        dispatch(handleUserSearch(''))
-        dispatch(handleUserSearchResult([]))
+        dispatch(clearUnAuthUserBmoSearchWord())
+        dispatch(emptyUnAuthUserBMOSearchResult())
         // setBmoList([])
         // setRefreshData(!refreshData)
     }
@@ -95,21 +116,21 @@ const UboUnAuthUserDashboardpage = () => {
                 <form onSubmit={handleSearchByBmoNameOrNumber} className="d-flex align-items-center w-75 justify-content-center mt-3 gap-3">
 
                     <FormControl
-                        onChange={(e) => dispatch(handleUserSearch(e.target.value))}
+                        onChange={(e) => dispatch(setUnAuthUserBMOSearchWord(e.target.value))}
                         placeholder="Search by Name, Company, Assets...."
-                        value={userSearch}
+                        value={unAuthUserBmoSearchWord}
                         className="py-2 w-50" />
                     <i
                         className="bi bi-x-lg"
                         onClick={handleClear}
-                        style={{ marginLeft: '400px', display: userSearch == '' ? 'none' : 'flex', cursor: 'pointer', float: 'right', position: 'absolute' }}></i>
+                        style={{ marginLeft: '400px', display: unAuthUserBmoSearchWord == '' ? 'none' : 'flex', cursor: 'pointer', float: 'right', position: 'absolute' }}></i>
 
                     <Button
-                        disabled={userSearch == '' || loading}
+                        disabled={unAuthUserBmoSearchWord == '' || loading}
                         type="submit"
                         variant="primary" style={{ minWidth: '6em', marginRight: '-5px', minHeight: '2.4em' }}>{loading ? <Spinner size="sm" /> : 'Search'}</Button>
 
-                  
+
                 </form>
 
             </div>
@@ -117,9 +138,9 @@ const UboUnAuthUserDashboardpage = () => {
             <div className="d-flex w-100 justify-content-center mt-2" style={{ height: '45vh', overflowY: 'scroll' }}>
 
                 {bmoList.length > 0 && <ul className="w-50 rounded border rounded-3 m-0 p-0" style={{ listStyle: 'none' }}>{
-                    bmoList.map((bmo: IBMO, index: number) => (
+                    bmoList.map((bmo: IBMCustomersPublic, index: number) => (
 
-                        <li key={index} onClick={() => navigate(`accountdetails/${bmo.customerNumber}`)} role="button" className="p-2 m-0 border px-3">{bmo.customerName}</li>
+                        <li key={index} onClick={() => handleNavigateToLevel(bmo)} role="button" className="p-2 m-0 border px-3">{bmo.customerName}</li>
 
 
                     ))
