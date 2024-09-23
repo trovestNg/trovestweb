@@ -12,16 +12,20 @@ import { Button, Card, FormControl, ListGroup, ListGroupItem, Spinner } from "re
 import apiUnAuth from "../../config/apiUnAuth";
 import { useDispatch, useSelector } from "react-redux";
 import { handleUserSearch, handleUserSearchResult } from "../../store/slices/userSlice";
-import { IApprovedBMOOwner, IBMOwnersPublic } from "../../interfaces/bmOwner";
+import { IApprovedBMOOwner, IBMOwnersPublic, IUnAuthUserNavLink } from "../../interfaces/bmOwner";
 import moment from "moment";
 import EditBMOOwnerCoperateModal from "../../components/modals/editBMOOwnerCoperateModal";
 import SureToDeleteBmoModal from "../../components/modals/sureToDeleteBmoModal";
+import { pushTounAuthUserNavArray, setUnAuthUserBMOOwnerProfile } from "../../store/slices/unAuthserSlice";
+import { setAuthUserBMOOwnerProfile } from "../../store/slices/authUserSlice";
+import { useNavigate, useParams } from "react-router-dom";
+import MoreInfoModal from "../../components/modals/moreInfoModal";
 
 
 const AuthRejectedBmoPage = () => {
     const [bmoList, setBmoList] = useState<IApprovedBMOOwner[]>([]);
     const [parentInfo, setParentInfo] = useState<IApprovedBMOOwner>();
-
+    const { curstomerNumber, level } = useParams()
     const [loading, setLoading] = useState(false);
     const [sloading, setSLoading] = useState(false);
     const [refreshComponent, setRefreshComponent] = useState(false);
@@ -30,16 +34,18 @@ const AuthRejectedBmoPage = () => {
     const [editBenefOwnerCoperateModal, setEditBenefOwnerCoperateModal] = useState(false);
     const [editBenefOwnerIndividualModal, setEditBenefOwnerIndividualModal] = useState(false);
     const [deleteBmOwner, setDeleteBmOwner] = useState(false);
+    const navigate = useNavigate();
 
     const [totalBmoCount, setTotalBmoCount] = useState(0);
     const [bySearch, setBySearch] = useState(false);
     const [searchedWord, setSearchedWord] = useState('');
     const [bmoId, setBmoId] = useState('');
+    const [viewMoreInfotModal, setViewMoreInfoModal] = useState(false);
 
     const dispatch = useDispatch()
     // const userSearch = useSelector((state:any)=>state.userSlice.userBMOSearch.searchWords);
 
-    const handleSearchByName=(e:any)=>{
+    const handleSearchByName = (e: any) => {
         e.preventDefault();
         setBySearch(true);
         setRefreshComponent(!refreshComponent)
@@ -59,13 +65,13 @@ const AuthRejectedBmoPage = () => {
         if (userInfo) {
             try {
 
-                const res = await api.get(`authorized?requesterName=${userInfo.profile.given_name}&&Name=${searchedWord}`, userInfo?.access_token);
+                const res = await api.get(`authorized?requesterName=${userInfo.profile.given_name}&Name=${searchedWord}`, userInfo?.access_token);
                 console.log({ heree: res })
                 if (res?.data) {
                     setBmoList(res?.data?.Data.reverse());
                     setTotalBmoCount(res?.data?.Data.length)
                     // calculatePercent(res?.data?.Owners)
-                    setParentInfo(res?.data?.Parent)
+                    setParentInfo({ ...res?.data.Data, Id: res?.data?.Data?.BeneficiaryOwnerDetailMapId })
                     setLoading(false)
                     setSLoading(false)
                 }
@@ -91,10 +97,61 @@ const AuthRejectedBmoPage = () => {
         }
     }
 
-    const handleUpdateBenefOwnerType = (e: IApprovedBMOOwner) => {
+    const handleShowInfoModal = (owner: IApprovedBMOOwner) => {
+        setBmoOwner(owner);
+        setViewMoreInfoModal(!viewMoreInfotModal);
+    }
 
+    const handleNavigateToOwner = (owner: IApprovedBMOOwner) => {
+        let payload: any = {
+            name: owner.BusinessName,
+            customerNumber: owner?.CustomerNumber,
+            ownerId: owner?.CustomerNumber
+        }
+        let unAvOwner = {
+            AuthorizeBy: owner.AuthorizeBy,
+            AuthorizeDate: owner.AuthorizeDate,
+            BVN: owner.BVN,
+            BusinessName: owner.BusinessName,
+            Category: owner.Category,
+            CategoryDescription: owner.CategoryDescription,
+            Comments: owner.Comments,
+            CountryId: owner.CountryId,
+            CountryName: owner.CountryName,
+            CreatedBy: owner.CreatedBy,
+            CreatedDate: owner.CreatedDate,
+            CustomerNumber: owner.CustomerNumber,
+            Id: owner.Id,
+            IdNumber: owner.IdNumber,
+            IdType: owner.IdType,
+            IsAuthorized: owner.IsAuthorized,
+            IsPEP: owner.IsPEP,
+            IsRejected: owner.IsRejected,
+            Level: owner.Level,
+            NumberOfShares: owner.NumberOfShares,
+            ParentId: owner.ParentId,
+            PercentageHolding: owner.PercentageHolding,
+            RcNumber: owner.RcNumber,
+            RejectedBy: owner.RejectedBy,
+            RejectedDate: owner.RejectedDate,
+            RiskLevel: owner.RiskLevel,
+            RiskScore: owner.RiskScore,
+            Ticker: owner.Ticker
+        }
+        dispatch(pushTounAuthUserNavArray(payload));
+        dispatch(setAuthUserBMOOwnerProfile(unAvOwner))
+
+        // window.history.pushState({}, '', `/owner-details/${level && +level + 1}/${owner.Id}`);
+        // navigate(`/owner-details/${level && +level + 1}/${owner.Id}`);
+
+    }
+
+    const handleUpdateBenefOwner = (e: IApprovedBMOOwner) => {
+        console.log({ editingThisGuy: e })
+        setBmoOwner({ ...e, Id: e.BeneficiaryOwnerMasterId });
+        setParentInfo({ ...e})
         setEditBenefOwnerCoperateModal(true);
-        setBmoOwner(e)
+
         // setAddNewBenefOwnerModal(false)
     }
 
@@ -152,15 +209,27 @@ const AuthRejectedBmoPage = () => {
 
     return (
         <div className="w-100">
+            <EditBMOOwnerCoperateModal
+                parentInf={parentInfo}
+                ownerInfo={bmoOwner}
+                off={() => {
+                    setEditBenefOwnerCoperateModal(false);
+                    setRefreshComponent(!refreshComponent)
+
+                }} show={editBenefOwnerCoperateModal} />
+            <MoreInfoModal lev={level} info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} />
+            <SureToDeleteBmoModal show={deleteBmOwner} off={() => setDeleteBmOwner(false)} />
+
             <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Rejected Beneficial {`(${totalBmoCount})`} </h5>
             <p>Here, you'll find rejected beneficial owners please view reasons and reupload.</p>
     
-            <div className="w-100 d-flex align-items-center">
+
+           <div className="w-100 d-flex align-items-center">
                 <form
-                    onSubmit={(e)=>handleSearchByName(e)} 
+                    onSubmit={(e) => handleSearchByName(e)}
                     className="d-flex w-100 mt-3 gap-3 align-items-center"
                     style={{ position: 'relative' }}
-                    >
+                >
 
                     <FormControl
                         onChange={(e) => setSearchedWord(e.target.value)}
@@ -185,6 +254,8 @@ const AuthRejectedBmoPage = () => {
                 </form>
 
             </div>
+
+
             <div className="w-100 mt-5">
 
                 <div className="d-flex flex-column w-100 justify-content-center mt-4">
@@ -222,7 +293,7 @@ const AuthRejectedBmoPage = () => {
                                                 <th scope="col" className="bg-primary text-light">BO Level </th>
                                                 <th scope="col" className="bg-primary text-light">Beneficial Owner</th>
                                                 <th scope="col" className="bg-primary text-light">Authorizer</th>
-                                                <th scope="col" className="bg-primary text-light">Date Approved</th>
+                                                <th scope="col" className="bg-primary text-light">Date Rejected</th>
                                                 <th scope="col" className="bg-primary text-light">Action</th>
                                             </tr>
                                         </thead>
@@ -231,24 +302,24 @@ const AuthRejectedBmoPage = () => {
                                                 bmoList && bmoList.length > 0 ? bmoList && bmoList.map((bmoOwner: IApprovedBMOOwner, index: number) => (
                                                     <tr key={index}
                                                         role="button"
-                                                    // onClick={bmoOwner.CategoryDescription == 'Corporate' ? ()=>handleNavigateToLevel(bmoOwner) : () => handleShowInfoModal(bmoOwner)}
+                                                        onClick={(e) => handleShowInfoModal(bmoOwner)}
                                                     >
                                                         <th scope="row">{index + 1}</th>
-                                                        <td className="">{bmoOwner.BusinessName}</td>
-                                                        <td>{bmoOwner.CustomerNumber?bmoOwner.CustomerNumber:"N/A"}</td>
-                                                        <td>{bmoOwner.Level?bmoOwner.Level:'N/A'}</td>
-                                                        <td>{bmoOwner.BeneficiaryOwnerDetails[0].BusinessName}</td>
+                                                        <td className="">{bmoOwner?.BusinessName}</td>
+                                                        <td>{bmoOwner?.CustomerNumber ? bmoOwner?.CustomerNumber : "N/A"}</td>
+                                                        <td>{bmoOwner.Level ? bmoOwner.Level : 'N/A'}</td>
+                                                        <td>{bmoOwner.BeneficiaryOwnerDetails[0]?.BusinessName}</td>
                                                         <td>{bmoOwner.AuthorizeBy}</td>
-                                                        <td>{moment(bmoOwner.AuthorizeDate).format('MMM DD YYYY')}</td>
+                                                        <td>{moment(bmoOwner.CreatedDate).format('MMM DD YYYY')}</td>
                                                         <td className="table-icon" >
                                                             <i className=" bi bi-three-dots" onClick={(e) => e.stopPropagation()}></i>
                                                             <div className="content ml-5" style={{ position: 'relative', zIndex: 1500 }}>
-                                                            <Card className="p-2  shadow-sm rounded border-0"
+                                                                <Card className="p-2  shadow-sm rounded border-0"
                                                                     style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
 
                                                                     <ListGroup>
                                                                         <ListGroupItem className="multi-layer"
-                                                                        // onClick={(e) => handleGetAttestersList(e, policy)}
+                                                                            onClick={(e) => handleShowInfoModal(bmoOwner)}
                                                                         >
                                                                             <span className="w-100 d-flex justify-content-between">
                                                                                 <div className="d-flex gap-2">
@@ -263,7 +334,7 @@ const AuthRejectedBmoPage = () => {
                                                                         {
                                                                             <div onClick={(e) => e.stopPropagation()}>
                                                                                 <ListGroupItem
-                                                                                    onClick={(e) => handleUpdateBenefOwnerType(bmoOwner)}
+                                                                                    onClick={(e) => handleUpdateBenefOwner(bmoOwner)}
                                                                                 >
                                                                                     <span className="w-100 d-flex justify-content-between">
                                                                                         <div className="d-flex gap-2">

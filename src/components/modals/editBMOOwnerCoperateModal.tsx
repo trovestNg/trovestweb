@@ -91,7 +91,7 @@ const EditBMOOwnerCoperateModal: React.FC<any> = ({ show, off, parentInf,custorm
             if (res?.status==200) {
                 setLoading(false);
                 off()
-                toast.success('BMO added succesfully');
+                toast.success('BMO Updated succesfully');
             } else {
                 toast.error('Operation failed! Check your network');
                 setLoading(false);

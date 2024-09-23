@@ -64,7 +64,7 @@ export default function () {
 
         <Routes>
             <Route path="/" element={<UnAuthUserDashboardContainer />}>
-                <Route index element={<UboUnAuthUserDashboardpage />} />
+                <Route index element={<UboUnAuthUserDashboardpage/>} />
                 <Route path="custormer-details/:level/:curstomerNumber" element={<UnAuthUserViewBmoPage />} />
                 <Route path="owner-details/:level/:ownerId" element={<UnAuthBmoOwnerView />} />
             </Route>

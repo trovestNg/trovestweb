@@ -44,12 +44,16 @@ export interface IBMOwnersPublic {
 }
 
 export interface IApprovedBMOOwner {
+    name:string
+    customerNumber:string
     AuthorizeBy?: string
     AuthorizeDate?: string
+    ownerId:string
     BeneficiaryOwnerDetailMapId:number
     BeneficiaryOwnerDetails:[
         IBMOwnersPublic
     ]
+    BeneficiaryOwnerMasterId:number,
     BVN?: string
     BusinessName: string
     Category?: string
@@ -60,7 +64,7 @@ export interface IApprovedBMOOwner {
     CreatedBy?: string
     CreatedDate?: string
     CustomerNumber: string
-    Id?: number
+    Id: number
     IdNumber?: string
     IdType: string
     IsAuthorized?: boolean

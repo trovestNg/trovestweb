@@ -64,7 +64,6 @@ const UnAuthBmoOwnerView = () => {
         newArray.pop();
         // Dispatch the modified array back to the reducer
         dispatch(reduceUnAuthUserNavArray(newArray));
-        navigate(-1)
       }
     };
 
@@ -169,33 +168,77 @@ const UnAuthBmoOwnerView = () => {
     }
 
 
+    // const fetchi = async () => {
+    //     setLoading(true)
+    //     // toast.error('Await')
+    //     try {
+    //         const res = await apiUnAuth.get(`owner/level/navigate/approved?OwnerId=${ownerId}`);
+    //         console.log({seeMe:res})
+    //         if (res.data) {
+    //             setBmoList(res?.data?.Owners);
+    //             setParentInfo(res?.data?.Parent)
+    //             setLoading(false)
+    //         }
+    //         else if(res.status=404){
+    //             setParentInfo(unAvOwner);
+    //             setBmoList([]);
+    //             setLoading(false)
+    //         }
+    //         else {
+    //             setParentInfo(unAvOwner);
+    //             setBmoList([]);
+    //             setLoading(false)
+    //         }
+    //     } catch (error) {
+    //         console.log({ seeError: error })
+    //         setBmoList([])
+    //         setLoading(false)
+    //     }
+    // }
+
+
+
+
+
+
+
     const fetch = async () => {
-        setLoading(true)
-        // toast.error('Await')
-        try {
-            const res = await apiUnAuth.get(`owner/level/navigate/approved?OwnerId=${ownerId}`);
-            console.log({seeMe:res})
-            if (res.data) {
-                setBmoList(res?.data?.Owners);
-                setParentInfo(res?.data?.Parent)
-                setLoading(false)
-            }
-            else if(res.status=404){
+        setLoading(true)// toast.error('Await')
+        
+            try {
+                
+                const res = await apiUnAuth.get(`owner/level/navigate/approved?OwnerId=${ownerId}`);
+                if (res?.data) {
+                    setBmoList(res?.data?.Owners.reverse());
+                    // calculatePercent(res?.data?.Owners)
+                    setParentInfo(res?.data?.Parent)
+                    setLoading(false)
+                }
+                else if(res?.status == 400){
+                    setParentInfo(unAvOwner);
+                    setBmoList([]);
+                    setLoading(false)
+                }
+                else {
+                    setParentInfo(unAvOwner);
+                    setBmoList([]);
+                    setLoading(false)
+                }
+            } catch (error) {
                 setParentInfo(unAvOwner);
                 setBmoList([]);
+                // setBmoList([])
                 setLoading(false)
             }
-            else {
-                setParentInfo(unAvOwner);
-                setBmoList([]);
-                setLoading(false)
-            }
-        } catch (error) {
-            console.log({ seeError: error })
-            setBmoList([])
-            setLoading(false)
-        }
+
+        
+       
     }
+
+
+
+
+
 
     console.log({seeMe:unAvOwner})
     const handleClear = () => {
@@ -214,16 +257,35 @@ const UnAuthBmoOwnerView = () => {
         setViewChartModal(!viewChartModal);
     }
 
+    // const handleNavigateNavs = (currentNav: any, navIndex: number) => {
+    //     setRef(!ref)
+    //     console.log({ currentNavList: navArray })
+    //     const slicedNavList = navArray.slice(0, navIndex + 1);
+    //     console.log({ slicedResultt: slicedNavList });
+    //     dispatch(removeFromUnAuthUserNavArray(slicedNavList));
+    //     // navigate(-1)
+    //     if(navIndex ==0){
+    //         navigate(`/custormer-details/${1}/${currentNav?.customerNumber}`)
+    //     } else{
+    //         navigate(`/owner-details/${level && +level - 1}/${currentNav?.ownerId}`)
+    //     }
+       
+
+    // }
+
     const handleNavigateNavs = (currentNav: any, navIndex: number) => {
-        console.log({ currentNavList: navArray })
+        // console.log({ currentNavList: navArray });
+        // console.log({clickedNav:currentNav, itsIndex:navIndex})
+
         const slicedNavList = navArray.slice(0, navIndex + 1);
-        console.log({ slicedResultt: slicedNavList });
+        // console.log({ slicedResultt: slicedNavList });
         dispatch(removeFromUnAuthUserNavArray(slicedNavList));
-        // navigate(-1)
+        
         if(navIndex ==0){
             navigate(`/custormer-details/${1}/${currentNav?.customerNumber}`)
         } else{
-            navigate(`/owner-details/${level && +level - 1}/${currentNav?.ownerId}`)
+            navigate(`/owner-details/${level && +level - 1}/${currentNav?.ownerId}`);
+            setRef(!ref)
         }
        
 
@@ -273,7 +335,8 @@ const UnAuthBmoOwnerView = () => {
         dispatch(pushTounAuthUserNavArray(payload));
         dispatch(setUnAuthUserBMOOwnerProfile(unAvOwner))
         window.history.pushState({}, '', `/owner-details/${level && +level + 1}/${owner.Id}`);
-        navigate(`/owner-details/${level && +level + 1}/${owner.Id}`)
+        navigate(`/owner-details/${level && +level + 1}/${owner.Id}`);
+        setRef(!ref);
     }
 
     useEffect(() => {
