@@ -24,32 +24,36 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { handleUserSearch, handleUserSearchResult } from "../../../store/slices/userSlice";
 import CreateBMOOwnerImportModal from "../../../components/modals/createBMOOwnerImportModal";
+import { IBMCustomersPublic, IBMOwnersPublic, IUnAuthUserNavLink } from "../../../interfaces/bmOwner";
 
 
 const UboRiskAdminInitDashboardpage = () => {
     // const bmoList:IBMO[] = useSelector((state:any)=>state.userSlice.userBMOSearch.searchResult)
     const [loading, setLoading] = useState(false);
-   
+    const [sloading, setsLoading] = useState(false);
+
     // const [userSearch, setUserSearch] = useState('');
     const [refreshComponent, setRefreshComponent] = useState(false)
     const navigate = useNavigate()
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
+    const [userSearchWord, setUserSearchWord] = useState('')
     // const userSearch = useSelector((state:any)=>state.userSlice.userBMOSearch.searchWords);
     const [addNewBenefOwnerImportModal, setAddNewBenefOwnerImportModal] = useState(false);
+    const [bmoList,setBmoList] = useState<IBMCustomersPublic[]>()
 
 
 
     const handleSearchByBmoNameOrNumber = async (e: any) => {
         e.preventDefault()
         setLoading(true);
-       
+
         // toast.error('Await')
         try {
-            const res = await apiUnAuth.get(`customers?search=${'userSearch'}`);
+            const res = await apiUnAuth.get(`customers?search=${userSearchWord}`);
             console.log(res)
             if (res.data) {
                 setLoading(false);
-                dispatch(handleUserSearchResult(res?.data?.customerAccounts))
+                setBmoList(res?.data?.customerAccounts)
                 // setBmoList(res?.data?.customerAccounts);
                 if (res?.data?.customerAccounts?.length <= 0) {
                     toast.error('No Custormer by that Name/ID')
@@ -64,30 +68,44 @@ const UboRiskAdminInitDashboardpage = () => {
 
             setLoading(false)
         }
-        // try {
-        //     
-        //     console.log({ listHere: res?.data })
-        //     
-        //         
-        //        
-        //     }
-        // }
-        // catch (error) {
-        //     console.log(error)
-        // }
     }
 
+    const handleNavigateToLevel = (owner: IBMCustomersPublic) => {
+        let payload: IUnAuthUserNavLink = {
+            name: owner.customerName,
+            customerNumber: owner?.customerNumber,
+            ownerId: owner?.ownerId
+        }
+        let unAvOwner: IBMOwnersPublic = {
+            BusinessName: owner.customerName,
+            CustomerNumber: owner.customerNumber,
+            IdType: "CORPORATE",
+            IdNumber: owner.kycReferenceNumber,
+            Level: 1,
+            RiskScore: owner.rating,
+            RcNumber: owner.rcNumber,
+            RiskLevel: owner.riskLevel,
+            Id:0
+        }
+        // dispatch(pushToAuthUserNavArray(payload));
+        // dispatch(setAuthUserBmoCustormerProfile(unAvOwner))
+        navigate(`/bo-risk-portal/custormer-details/${1}/${owner.customerNumber}`)
+    }
+
+  
+
     const handleClear = () => {
-        // setBySearch(false);
-        dispatch(handleUserSearch(''))
-        dispatch(handleUserSearchResult([]))
+        setUserSearchWord('')
+        setRefreshComponent(!refreshComponent)
+        // dispatch(handleUserSearch(''))
+        // dispatch(handleUserSearchResult([]))
         // setBmoList([])
         // setRefreshData(!refreshData)
     }
 
-    // useEffect(() => {
-    //     setBmoList([])
-    // }, [userSearch == ""])
+    useEffect(() => {
+        setBmoList([])
+    }, [userSearchWord == ""])
 
     return (
         <div className="w-100 p-0">
@@ -110,39 +128,39 @@ const UboRiskAdminInitDashboardpage = () => {
                 <form onSubmit={handleSearchByBmoNameOrNumber} className="d-flex align-items-center w-75 justify-content-center mt-3 gap-3">
 
                     <FormControl
-                        onChange={(e) => dispatch(handleUserSearch(e.target.value))}
+                        onChange={(e) => setUserSearchWord(e.target.value)}
                         placeholder="Search by Name, Company, Assets...."
-                        // value={userSearch}
+                        value={userSearchWord}
                         className="py-2" />
-                    {/* <i
+                    <i
                         className="bi bi-x-lg"
                         onClick={handleClear}
-                        style={{ marginLeft: '320px', display: userSearch == '' ? 'none' : 'flex', cursor: 'pointer', float: 'right', position: 'absolute' }}></i> */}
+                        style={{ marginLeft: '270px', display: userSearchWord == '' ? 'none' : 'flex', cursor: 'pointer', float: 'right', position: 'absolute' }}></i>
 
                     <Button
-                        // disabled={userSearch == ''}
+                        disabled={userSearchWord == ''}
                         type="submit"
                         variant="primary" style={{ minWidth: '6em', marginRight: '-5px', minHeight: '2.4em' }}>{loading ? <Spinner size="sm" /> : 'Search'}</Button>
 
                     <Button
-                    onClick={()=>setAddNewBenefOwnerImportModal(true)}
+                        onClick={() => setAddNewBenefOwnerImportModal(true)}
                         variant="outline border  d-flex gap-2 border-primary text-primary" style={{ minWidth: '9em', marginRight: '-5px', minHeight: '2.4em' }}>{<div className="d-flex w-100 gap-2 justify-content-center"> <i className="bi bi-file-earmark-arrow-up"></i>
-                        <p className="p-0 m-0" >Bulk Upload</p></div>}</Button>
+                            <p className="p-0 m-0" >Bulk Upload</p></div>}</Button>
                 </form>
 
             </div>
 
             <div className="d-flex w-100 justify-content-center mt-2" style={{ height: '45vh', overflowY: 'scroll' }}>
 
-                {/* {bmoList.length > 0 && <ul className="w-75 rounded border rounded-3 m-0 p-0" style={{ listStyle: 'none' }}>{
-                    bmoList.map((bmo: IBMO, index: number) => (
+                {bmoList &&bmoList.length > 0 && <ul className="w-75 rounded border rounded-3 m-0 p-0" style={{ listStyle: 'none' }}>{
+                    bmoList.map((bmo: IBMCustomersPublic, index: number) => (
 
-                        <li key={index} onClick={() => navigate(`accountdetails/${bmo.customerNumber}`)} role="button" className="p-2 m-0 border px-3">{bmo.customerName}</li>
+                        <li key={index} onClick={() => handleNavigateToLevel(bmo)} role="button" className="p-2 m-0 border px-3">{bmo.customerName}</li>
 
 
                     ))
                 }
-                </ul>} */}
+                </ul>}
 
             </div>
             {/* <UnAuthorizedBMOListTab/> */}

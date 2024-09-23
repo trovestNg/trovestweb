@@ -54,6 +54,8 @@ import AuthPendingBmoPage from "./pages/user/auth-pending-bmo-page copy";
 import AuthRejectedBmoPage from "./pages/user/auth-rejected-bmo-page";
 import AuthReportBmoPage from "./pages/user/auth-report-bmo-page";
 import AuthHistoryBmoPage from "./pages/user/auth-history-bmo-page";
+import UserViewRiskBMOOwnerPage from "./pages/user/ubo-risk/auth-user-view-risk-bmo-custormer";
+import UserViewRiskBMOPage from "./pages/user/ubo-risk/user-view-risk-bmo-owner";
 
 // const UserDBC = React.lazy(() => import("./pages/user/dashboard"));
 
@@ -86,8 +88,10 @@ export default function () {
 
             <Route path="bo-risk-portal" element={< UboAdminRiskDashboardContainer />}>
                 <Route index element={<UboRiskAdminInitDashboardpage />} />
-                <Route path="accountdetails/:curstomerNumber" element={<AuthBmoViewPage />} />
-                <Route path="custormer-details/:level/:curstomerNumber" element={<AuthBmoLevelView />} />
+                <Route path="custormer-details/:level/:curstomerNumber" element={<UserViewRiskBMOOwnerPage />} />
+                <Route path="owner-details/:level/:ownerId" element={<UserViewRiskBMOPage />} />
+
+
                 <Route path="bo-risk-assessment" element={<AuthApprovedBmoPage />} />
                 <Route path="approved-bo" element={<AuthApprovedBmoPage />} />
             </Route>
