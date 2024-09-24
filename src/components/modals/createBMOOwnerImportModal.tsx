@@ -185,7 +185,6 @@ const CreateBMOOwnerImportModal: React.FC<any> = ({ show, off }) => {
                                             style={{ backgroundColor: 'rgba(0,73,135,0.05)' }}></i>
                                         <p className="text-primary p-0 m-0">
                                             {fileName == '' ? 'Drag & drop file here or click to upload' : ' Click to Replace File'}
-
                                         </p>
                                         <p className="p-0 m-0">CSV format only</p>
                                     </label>

@@ -419,7 +419,9 @@ const AuthOwnerViewPage = () => {
                 }
                 </div>
                 <div className="d-flex gap-2">
-                    <Button disabled={dontAllowAdd} onClick={handleAddNewBenefOwner} className="d-flex gap-2" style={{ minWidth: '15em' }}>
+                    <Button 
+                    
+                    disabled={dontAllowAdd || !parentInfo?.IsAuthorized} onClick={handleAddNewBenefOwner} className="d-flex gap-2" style={{ minWidth: '15em' }}>
                         <i className="bi bi-plus-circle"></i>
                         <p className="p-0 m-0" >Add New Beneficial Owner</p></Button>
                     {bmoList.length > 0 && <FormSelect style={{ maxWidth: '8em' }} onChange={(e) => handleListDownload(e.currentTarget.value)}>
@@ -461,6 +463,7 @@ const AuthOwnerViewPage = () => {
                                     <th scope="col" className="fw-medium">Customer Number</th>
                                     <th scope="col" className="fw-medium">RC Number/BN/CAC</th>
                                     <th scope="col" className="fw-medium">No Of Beneficial Owners</th>
+                                    <th scope="col" className="fw-medium">Status</th>
                                 </tr>
                             </thead>
                             <tbody>{
@@ -483,6 +486,13 @@ const AuthOwnerViewPage = () => {
                                     <td className="text-primary">
                                         {
                                            bmoList.length
+                                        }
+                                    </td>
+
+                                    <td className={`text-${parentInfo?.IsAuthorized?'success':'danger'}`}>
+                                        {
+                                            parentInfo?.IsAuthorized?'Authorized':'UnAuthorized'
+                                            
                                         }
                                     </td>
                                 </tr>

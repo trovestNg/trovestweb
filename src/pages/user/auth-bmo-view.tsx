@@ -401,7 +401,7 @@ const AuthCustomerViewPage = () => {
                 </div>
                 <div className="d-flex gap-2">
                     <Button
-                    disabled={dontAllowAdd}
+                    disabled={dontAllowAdd || !parentInfo?.IsAuthorized}
                         onClick={handleAddNewBenefOwner} className="d-flex gap-2" style={{ minWidth: '15em' }}>
                         <i className="bi bi-plus-circle"></i>
                         <p className="p-0 m-0" >Add New Beneficial Owner</p></Button>
@@ -444,6 +444,7 @@ const AuthCustomerViewPage = () => {
                                     <th scope="col" className="fw-medium">Customer Number</th>
                                     <th scope="col" className="fw-medium">RC Number/BN/CAC</th>
                                     <th scope="col" className="fw-medium">No Of Beneficial Owners</th>
+                                    <th scope="col" className="fw-medium">Status</th>
                                 </tr>
                             </thead>
                             <tbody>{
@@ -466,6 +467,13 @@ const AuthCustomerViewPage = () => {
                                     <td className="text-primary">
                                         {
                                             bmoList && bmoList.length
+                                        }
+                                    </td>
+
+                                    <td className={`text-${parentInfo?.IsAuthorized?'success':'danger'}`}>
+                                        {
+                                            parentInfo?.IsAuthorized?'Authorized':'UnAuthorized'
+                                            
                                         }
                                     </td>
                                 </tr>
@@ -521,6 +529,7 @@ const AuthCustomerViewPage = () => {
                                             <th scope="col" className="bg-primary text-light">No of Shares  </th>
                                             <th scope="col" className="bg-primary text-light">PEP</th>
                                             <th scope="col" className="bg-primary text-light">Ticker</th>
+                                            <th scope="col" className="bg-primary text-light">Status</th>
                                             <th scope="col" className="bg-primary text-light">Action</th>
                                         </tr>
                                     </thead>
@@ -542,6 +551,7 @@ const AuthCustomerViewPage = () => {
                                                         <td>{bmoOwner.NumberOfShares}</td>
                                                         <td>{bmoOwner.IsPEP ? 'Yes' : 'No'}</td>
                                                         <td>{bmoOwner.Ticker ? bmoOwner.Ticker : 'N/A'}</td>
+                                                        <td className={`text-${bmoOwner.IsAuthorized?'success':'danger'}`}>{bmoOwner.IsAuthorized?'Authorised':'UnAuthorised'}</td>
                                                         <td className="table-icon" >
                                                             <i className=" bi bi-three-dots" onClick={(e) => e.stopPropagation()}></i>
                                                             <div className="content ml-5" style={{ position: 'relative', zIndex: 1500 }}>
