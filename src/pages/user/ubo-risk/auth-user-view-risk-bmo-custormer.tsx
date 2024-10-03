@@ -335,6 +335,9 @@ const UserViewRiskBMOOwnerPage = () => {
 
     }
 
+
+    
+
     const handleShowInfoModal = (owner: IBMOwnersPublic) => {
         setBmoOwner(owner);
         setViewMoreInfoModal(!viewMoreInfotModal);
@@ -408,12 +411,12 @@ const UserViewRiskBMOOwnerPage = () => {
                     }
                 </div>
                 <div className="d-flex gap-2 ">
-                    <Button
+                    {/* <Button
                     
                     // disabled={dontAllowAdd}
                         onClick={()=>handleAddRiskLevel(bmoOwner)} className="d-flex gap-2 justify-content-center" style={{ minWidth: '18em' }}>
                         <i className="bi bi-plus-circle"></i>
-                        <p className="p-0 m-0" >Add New BO Risk Assessment </p></Button>
+                        <p className="p-0 m-0" >Add New BO Risk Assessment </p></Button> */}
                     {
                     bmoList.length > 0 &&
                     <FormSelect style={{ maxWidth: '8em' }} onChange={(e) => handleListDownload(e.currentTarget.value)}>
@@ -540,7 +543,7 @@ const UserViewRiskBMOOwnerPage = () => {
                                                         <th scope="row">{index + 1}</th>
                                                         <td className="">{bmoOwner.BusinessName}</td>
                                                         <td>{bmoOwner.CategoryDescription}</td>
-                                                        <td className={`text-${bmoOwner.RiskScore?'success':'danger'}`}>{bmoOwner.RiskScore?'Low':'High'}</td>
+                                                        <td className={`text-${bmoOwner.RiskScore==1?'success':'danger'}`}>{bmoOwner.RiskLevel}</td>
                                                         <td className="table-icon" >
                                                             <i className=" bi bi-three-dots" onClick={(e) => e.stopPropagation()}></i>
                                                             <div className="content ml-5" style={{ position: 'relative', zIndex: 1500 }}>
@@ -563,7 +566,7 @@ const UserViewRiskBMOOwnerPage = () => {
                                                                         </ListGroupItem>
                                                                         {
                                                                             <div onClick={(e) => e.stopPropagation()}>
-                                                                                <ListGroupItem
+                                                                                {/* <ListGroupItem
                                                                                     onClick={(e) => handleUpdateBenefOwnerType(bmoOwner)}
                                                                                 >
                                                                                     <span className="w-100 d-flex justify-content-between">
@@ -572,8 +575,19 @@ const UserViewRiskBMOOwnerPage = () => {
                                                                                             Edit
                                                                                         </div>
                                                                                     </span>
-                                                                                </ListGroupItem>
+                                                                                </ListGroupItem> */}
+
                                                                                 <ListGroupItem
+                                                                                    onClick={(e) => handleAddRiskLevel(bmoOwner)}
+                                                                                >
+                                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                                        <div className="d-flex gap-2">
+                                                                                        <i className="bi bi-node-plus"></i>
+                                                                                            Add Risk Assesment
+                                                                                        </div>
+                                                                                    </span>
+                                                                                </ListGroupItem>
+                                                                                {/* <ListGroupItem
                                                                                     className="text-danger"
                                                                                     onClick={(e) => handleDeleteBmoOwner(bmoOwner.Id)}
                                                                                 >
@@ -583,7 +597,7 @@ const UserViewRiskBMOOwnerPage = () => {
                                                                                             Delete
                                                                                         </div>
                                                                                     </span>
-                                                                                </ListGroupItem>
+                                                                                </ListGroupItem> */}
                                                                             </div>
                                                                         }
                                                                     </ListGroup>

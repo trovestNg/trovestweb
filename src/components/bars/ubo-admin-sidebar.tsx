@@ -5,6 +5,8 @@ import { useLocation, useNavigate, useNavigation } from "react-router-dom";
 import { getUserInfo, loginUser, logoutUser } from "../../controllers/auth";
 import PromptModal from "../modals/promptModal";
 import SureToLogoutModal from "../modals/sureToLogoutModal";
+import { useDispatch } from "react-redux";
+import { setUserClass } from "../../store/slices/authUserSlice";
 
 const UboAdminSideBar: React.FC<any> = ({ payload }) => {
     const currentPath = useLocation().pathname;
@@ -13,7 +15,8 @@ const UboAdminSideBar: React.FC<any> = ({ payload }) => {
     const [showApproverPrompt, setApproverPrompt] = useState(false);
     const [userType, setUserType] = useState('');
     const [showlogout,setShowlogout] = useState(false);
-    const [loading,setLoading] = useState(false)
+    const [loading,setLoading] = useState(false);
+    const dispatch = useDispatch()
 
 
 
@@ -78,12 +81,15 @@ const UboAdminSideBar: React.FC<any> = ({ payload }) => {
         try {
             let userInfo = await getUserInfo();
             if (userInfo?.profile.role?.includes("DOMAIN1\\GROUP_POLICY_INIT")) {
-                setUserType('initiator')
+                setUserType('initiator');
+                dispatch(setUserClass('Initiator'))
             }
             else if (userInfo?.profile.role?.includes("DOMAIN1\\GROUP_POLICY_AUTH")) {
-                setUserType('authorizer')
+                setUserType('authorizer');
+                dispatch(setUserClass('Approver'))
             } else {
                 setUserType('user')
+                dispatch(setUserClass('Approver'))
             }
 
         } catch (error) {

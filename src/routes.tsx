@@ -6,41 +6,9 @@ import PolicyViewPage from "./pages/user/policyviewpage";
 import Landingpage from "./pages/landingpage";
 import LoggedOutPage from "./pages/loggedoutpage";
 import SigninCallBackPage from "./pages/signinCallBackPage";
-import UserAllPolicyPage from "./pages/user/userAllPolicyPage";
-import UserAttestedPoliciesTab from "./components/tabs/userTabs/attested-policies-tab";
-import UserAttestedPolicyPage from "./pages/user/userAttestedPolicyPage";
-import UserUnAttestedPolicyPage from "./pages/user/userUnAttestedPolicyPage";
-
-import AdminDashboardContainer from "./pages/admin/dashboard";
-import AdminDashboardPage from "./pages/admin/dashboardpage";
-import CreateNewPolicyPage from "./pages/admin/createNewPolicyPage";
-import AdminUploadedPoliciesPage from "./pages/admin/adminUploadedPolicyPage";
-import AdminApprovedPoliciesPage from "./pages/admin/adminApprovedPoliciesPage";
-import AdminPendingPoliciesPage from "./pages/admin/adminPendingPoliciesPage";
-import AdminRejectedPoliciesPage from "./pages/admin/adminRejectedPoliciesPage";
-import AdminDeletedPoliciesPage from "./pages/admin/adminDeletedPoliciesPage";
-import EditPolicyPage from "./pages/admin/editPolicyPage";
-import AdminPolicyviewpage from "./pages/admin/adminPolicyviewpage";
-import AdminAttestersListPage from "./pages/admin/adminAttestersListPage";
-import AdminDefaultersListPage from "./pages/admin/adminDefaultersListPage";
-
-import ApproverDashboardContainer from "./pages/approver/dashboard";
-import ApproverDashboardPage from "./pages/approver/dashboardpage";
-import ApproverAllPoliciesPage from "./pages/approver/approverAllPoliciesPage";
-import ApproverPendingPoliciesPage from "./pages/approver/approverPendingPoliciesPage";
-import ApproverApprovedPoliciesPage from "./pages/approver/approverApprovedPoliciesPage";
-import ApproverRejectedPoliciesPage from "./pages/approver/approverRejectedPoliciesPage";
 import ErrorPage from "./pages/errorPage";
-import ApproverPolicyviewpage from "./pages/approver/approverPolicyviewpage";
-import ApproverAttestersListPage from "./pages/approver/approverAttestersListPage";
-import ApproverDefaultersListPage from "./pages/approver/approverDefaultersListPage";
-import ApproverDeletedPoliciesPage from "./pages/approver/approverDeletedPoliciesPage";
-import AdminViewDelPolicyPage from "./pages/admin/adminViewDelPolicyPage";
-import UnAuthBmoView2 from "./pages/unauth-user/unAuthBmoView2";
 import UboAdminDashboardContainer from "./pages/user/ubo-dashboard-container";
 import UboAdminInitDashboardpage from "./pages/user/ubo-admin-init-dashboardpage";
-import AuthBmoViewPage from "./pages/user/auth-bmo-view";
-import AuthBmoLevelView from "./pages/user/auth-bmo-level-view";
 import UboUnAuthUserDashboardpage from "./pages/unauth-user/ubo-un-auth-user-dashboardpage";
 import UnAuthUserViewBmoPage from "./pages/unauth-user/un-auth-user-view-bmo-page";
 import UnAuthUserBmoLevelView from "./pages/unauth-user/un-auth-user-bmo-level-view";
@@ -56,6 +24,7 @@ import AuthReportBmoPage from "./pages/user/auth-report-bmo-page";
 import AuthHistoryBmoPage from "./pages/user/auth-history-bmo-page";
 import UserViewRiskBMOOwnerPage from "./pages/user/ubo-risk/auth-user-view-risk-bmo-custormer";
 import UserViewRiskBMOPage from "./pages/user/ubo-risk/user-view-risk-bmo-owner";
+import UserPage from "./pages/unauth-user/testPage";
 
 // const UserDBC = React.lazy(() => import("./pages/user/dashboard"));
 
@@ -65,6 +34,7 @@ export default function () {
     return (
 
         <Routes>
+            {/* <Route path="/test" element={<UserPage/>} /> */}
             <Route path="/" element={<UnAuthUserDashboardContainer />}>
                 <Route index element={<UboUnAuthUserDashboardpage/>} />
                 <Route path="custormer-details/:level/:curstomerNumber" element={<UnAuthUserViewBmoPage />} />

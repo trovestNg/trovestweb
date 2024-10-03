@@ -7,13 +7,19 @@ const initialState = {
     },
     authUserNavigationArray: [],
     authUserBmoCustormerProfile:{},
-    authUserBmoOwnerProfile:{}
+    authUserBmoOwnerProfile:{},
+    authUserProfile:{
+        UserClass:''
+    },
 }
 
 const authUserSlice = createSlice({
     name: 'authUserSlice',
     initialState,
     reducers: {
+        setUserClass:(state,action)=>{
+            state.authUserProfile.UserClass =action.payload
+        },
         setAuthUserBMOSearchWord: (state, action) => {
             state.authUserBMOSearch.authUserSearchWord= action.payload
         },
@@ -50,6 +56,7 @@ const authUserSlice = createSlice({
 })
 
 export const {
+    setUserClass,
     setAuthUserBMOSearchWord,
     setAuthUserBMOSearchResult,
     emptyAuthUserBMOSearchResult,

@@ -15,9 +15,11 @@ const CreateBMOOwnerIndModal: React.FC<any> = ({ show, off,lev, parent,custormer
     const [loading,setLoading] = useState(false);
     const navigate = useNavigate();
 
-    console.log({hereisParent:parent,hereIdNumber:custormerNumb})
+    // console.log({hereisParent:parent,hereIdNumber:custormerNumb})
     const initialVal = {
         "businessName": "",
+        "sourceOfWealth": "",
+        "remark":'',
         "bvn": "",
         "idType": "",
         "idNumber": "",
@@ -26,6 +28,7 @@ const CreateBMOOwnerIndModal: React.FC<any> = ({ show, off,lev, parent,custormer
         "numberOfShares": '',
         "isPEP": "",
         "categoryId": "I",
+        
     }
 
 
@@ -36,9 +39,11 @@ const CreateBMOOwnerIndModal: React.FC<any> = ({ show, off,lev, parent,custormer
         percentageHolding: number().typeError('Must be a number').required().label('Percentage holding'),
         numberOfShares: number().typeError('Must be a number').required().label('No of share'),
         bvn: number().typeError('Must be a number').required().label('Bvn'),
-        isPEP: string().required().label('Politicaly Exposed Status'),
+        // isPEP: string().required().label('Politicaly Exposed Status'),
         idType: string().required().label('ID Type'),
         idNumber: string().required().label('ID Number'),
+        sourceOfWealth: string().required().label('Source of wealth'),
+        remark: string().required().label('Remark'),
         // ticker: string().required().label('Ticker'),
 
         // policyDocument: string().required('Kindly upload a file'),
@@ -179,10 +184,10 @@ const CreateBMOOwnerIndModal: React.FC<any> = ({ show, off,lev, parent,custormer
                 ]
             }
 
-            const res = await api.post(`BeneficialOwner`, apiBody, `${userInfo?.access_token}`)
+            const res = await api.post(``, apiBody, `${userInfo?.access_token}`)
             if (res?.status==200) {
                 setLoading(false);
-                toast.success('BMO added succesfully');
+                toast.success('BO successfully created');
                 off()
             } else {
                 toast.error('Operation failed! Check your network');
@@ -388,6 +393,41 @@ const CreateBMOOwnerIndModal: React.FC<any> = ({ show, off,lev, parent,custormer
                                                 id='idNumber' name='idNumber' />
                                             <ErrorMessage
                                                 name="idNumber"
+                                                component="div"
+                                                className="text-danger fw-medium" />
+                                        </div>
+                                    </div>
+
+                                    <div className="d-flex justify-content-between my-3  gap-3 w-100">
+                                        <div className="w-50">
+                                            <label className="" htmlFor="userEmail">
+                                                Source of Wealth
+                                            </label>
+                                            <Field
+                                                
+                                                style={{ outline: 'none' }}
+                                                className="rounded rounded-1 p-2 outline form-control-outline w-100 border border-1 border-grey"
+                                                id='soruceOfWealth' name='sourceOfWealth'>
+
+                                            </Field>
+                                            <ErrorMessage
+                                                name="sourceOfWealth"
+                                                component="div"
+                                                className="text-danger fw-medium" />
+                                        </div>
+
+                                        <div className="w-50">
+                                            <label className="" htmlFor="userEmail">
+                                                Remark
+                                            </label>
+                                            <Field
+                                            as='textarea'
+                                                // value={values.idNumber}
+                                                style={{ outline: 'none' }}
+                                                className="rounded rounded-1 p-2 w-100 border border-1 border-grey"
+                                                id='remark' name='remark' />
+                                            <ErrorMessage
+                                                name="remark"
                                                 component="div"
                                                 className="text-danger fw-medium" />
                                         </div>

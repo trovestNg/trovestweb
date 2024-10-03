@@ -7,11 +7,13 @@ import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { IOwner } from "../../interfaces/bmo";
 import moment from "moment";
+import { useSelector } from "react-redux";
 
 // Register necessary components for Chart.js
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const MoreInfoModal: React.FC<any> = ({ show, off, action, info,lev }) => {
+const MoreInfoModal: React.FC<any> = ({ show, off, action, info, lev,handleApprv }) => {
+    const userClass = useSelector((state: any) => state.authUserSlice.authUserProfile.UserClass);
     const navigate = useNavigate();
 
     let userInfo: any = {
@@ -23,6 +25,7 @@ const MoreInfoModal: React.FC<any> = ({ show, off, action, info,lev }) => {
         "PEP": info?.isPep ? 'Yes' : 'No',
         "BVN": info?.BVN ? info?.BVN : '-',
         "ID Type": info?.IdType ? info?.IdType : '-',
+        "ID Number": info?.IdNumber ? info?.IdNumber : '-',
         "Ticker": info?.Ticker ? info?.Ticker : 'N/A',
         "Source of Wealth": 'N/A',
     }
@@ -127,7 +130,8 @@ const MoreInfoModal: React.FC<any> = ({ show, off, action, info,lev }) => {
                         </div>
 
 
-                        <div className="py-3 w-50" style={{ height: '35%' }}>
+                        <div className="py-3 w-50 d-flex flex-column justify-content-between" >
+                            <div>
                             <table className="table table-striped text-start text-dark">
                                 <tr >
                                     <td>Initiator Name</td>
@@ -150,6 +154,8 @@ const MoreInfoModal: React.FC<any> = ({ show, off, action, info,lev }) => {
                                     <td>Authorizers Name</td>
                                     <td>Date Authorized</td>
                                 </tr>
+
+
                                 <tr>
                                     <td className="fw-bold">
                                         {info?.AuthorizeBy
@@ -158,14 +164,42 @@ const MoreInfoModal: React.FC<any> = ({ show, off, action, info,lev }) => {
                                     </td>
                                     <td className="fw-bold">
                                         {
-                                          info?.AuthorizeDate?  moment(info?.AuthorizeDate).format('DD-M-Y'):'-'
+                                            info?.AuthorizeDate ? moment(info?.AuthorizeDate).format('DD-M-Y') : '-'
                                         }
                                     </td>
 
                                 </tr>
+
                             </table>
+                            <div className="">
+                                <p className="p-0 m-0 fw-bold">Status</p>
+                                <p className={`p-0 m-0 text-${info?.IsAuthorized?'success':'danger'}`}>{info?.IsAuthorized?'Authorized':'Pending'}</p>
+                            </div>
+
+                            </div>
+
+                            {
+                                userClass=='Initiator'&&
+                                <div className=" d-flex justify-content-center gap-2">
+                                <Button variant="outline p-2 px-3 border text-primary border-1 border-primary">Edit BO </Button>
+                                <Button variant="outline border text-danger border-1 border-danger">Delete BO</Button>
+                                
+                            </div>}
+
+                            {
+                                userClass=='Approver'&& !info?.IsAuthorized &&
+                                <div className=" d-flex justify-content-center gap-2">
+                                    <Button variant="outline border text-danger border-1 border-danger">Reject</Button>
+                                <Button onClick={handleApprv} variant="success p-2 px-3 text-light">Approve</Button>
+                                
+                                
+                            </div>}
+                            
                         </div>
+
                     </div>
+
+
                 </Modal.Body>
             </Modal>
         </div>

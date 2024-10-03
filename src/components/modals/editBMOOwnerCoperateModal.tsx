@@ -24,6 +24,8 @@ const EditBMOOwnerCoperateModal: React.FC<any> = ({ show, off, parentInf,custorm
         "rcNumber": ownerInfo?.RcNumber || '',
         "Ticker": ownerInfo?.Ticker || '',
         "Id": ownerInfo?.Id || '',
+        "SourceOfWealth": ownerInfo?.sourceOfWealth || '',
+        "Remark":ownerInfo?.remark || '',
     }
 
 
@@ -33,9 +35,12 @@ const EditBMOOwnerCoperateModal: React.FC<any> = ({ show, off, parentInf,custorm
         countryId: string().required().label('Country'),
         percentageHolding: number().typeError('Must be a number').required().label('Percentage holding'),
         numberOfShares: number().typeError('Must be a number').required().label('No of share'),
-        isPEP: string().required().label('Politicaly Exposed Status'),
+        // isPEP: string().required().label('Politicaly Exposed Status'),
         rcNumber: string().required().label('Reg Number'),
         Ticker: string().required().label('Ticker'),
+
+        SourceOfWealth: string().required().label('Source of wealth'),
+        Remark: string().required().label('Remark'),
 
         // policyDocument: string().required('Kindly upload a file'),
 
@@ -87,11 +92,11 @@ const EditBMOOwnerCoperateModal: React.FC<any> = ({ show, off, parentInf,custorm
 
             console.log({sending:apiBody})
 
-            const res = await api.post(`BeneficialOwner`, apiBody, `${userInfo?.access_token}`)
+            const res = await api.post(``, apiBody, `${userInfo?.access_token}`)
             if (res?.status==200) {
                 setLoading(false);
                 off()
-                toast.success('BMO Updated succesfully');
+                toast.success('BO Updated succesfully');
             } else {
                 toast.error('Operation failed! Check your network');
                 setLoading(false);
@@ -249,7 +254,7 @@ const EditBMOOwnerCoperateModal: React.FC<any> = ({ show, off, parentInf,custorm
                                                 style={{ outline: 'none' }}
                                                 className="rounded rounded-1 p-2 outline form-control-outline w-100 border border-1 border-grey"
                                                 id='isPEP' name='isPEP'>
-                                                <option value={''}>{values.isPEP?'True':'False'}</option>
+                                                <option value={values.isPEP}>{values.isPEP?'Yes':'No'}</option>
                                                 <option value={'yes'}>Yes</option>
                                                 <option value={'no'} >No</option>
 
@@ -260,7 +265,6 @@ const EditBMOOwnerCoperateModal: React.FC<any> = ({ show, off, parentInf,custorm
                                                 className="text-danger fw-medium" />
                                         </div>
                                     </div>
-
 
                                     <div className="d-flex justify-content-between my-3  gap-3 w-100">
                                         <div className="w-50">
@@ -280,7 +284,43 @@ const EditBMOOwnerCoperateModal: React.FC<any> = ({ show, off, parentInf,custorm
                                         </div>
 
                                         <div className="w-50">
-                                         
+                                            <label className="" htmlFor="userEmail">
+                                                Source of Wealth
+                                            </label>
+                                            <Field
+                                                
+                                                style={{ outline: 'none' }}
+                                                className="rounded rounded-1 p-2 outline form-control-outline w-100 border border-1 border-grey"
+                                                id='SourceOfWealth' name='SourceOfWealth'>
+
+                                            </Field>
+                                            <ErrorMessage
+                                                name="SourceOfWealth"
+                                                component="div"
+                                                className="text-danger fw-medium" />
+                                        </div>
+                                    </div>
+
+                                    <div className="d-flex justify-content-between my-3  gap-3 w-100">
+
+                                    <div className="w-50">
+                                            
+                                        </div>
+
+                                        <div className="w-50">
+                                            <label className="" htmlFor="userEmail">
+                                                Remark
+                                            </label>
+                                            <Field
+                                            as='textarea'
+                                                // value={values.idNumber}
+                                                style={{ outline: 'none' }}
+                                                className="rounded rounded-1 p-2 w-100 border border-1 border-grey"
+                                                id='Remark' name='Remark' />
+                                            <ErrorMessage
+                                                name="Remark"
+                                                component="div"
+                                                className="text-danger fw-medium" />
                                         </div>
                                     </div>
 

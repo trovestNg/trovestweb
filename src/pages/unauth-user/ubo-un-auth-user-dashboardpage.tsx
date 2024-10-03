@@ -98,6 +98,7 @@ const UboUnAuthUserDashboardpage = () => {
 
     return (
         <div className="w-100 p-0">
+          
             <div className={`w-100 p-3 rounded rounded-3 py-4 ${styles.jumbo}`}
             >
                 <Card className={`rounded rounded-3 bg-primary py-4 text-light px-3 ${styles.jumbo2}`}>

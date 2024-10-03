@@ -31,6 +31,7 @@ import { IBMCustomersPublic, IBMOwnersPublic, IUnAuthUserNavLink } from "../../i
 const UboAdminInitDashboardpage = () => {
     const bmoList: IBMCustomersPublic[] = useSelector((state: any) => state.authUserSlice.authUserBMOSearch.authUserBMOCustomerSearchResult);
     const authUserBmoSearchWord = useSelector((state: any) => state.authUserSlice.authUserBMOSearch.authUserSearchWord);
+    const userClass = useSelector((state: any) => state.authUserSlice.authUserProfile.UserClass);
     
     const [loading, setLoading] = useState(false);
 
@@ -109,6 +110,7 @@ const UboAdminInitDashboardpage = () => {
 
     return (
         <div className="w-100 p-0">
+            {/* <p>{userClass}</p> */}
             <CreateBMOOwnerImportModal off={() => setAddNewBenefOwnerImportModal(false)} show={addNewBenefOwnerImportModal} />
             <div className={`w-100 p-3 rounded rounded-3 py-4 ${styles.jumbo}`}
             >

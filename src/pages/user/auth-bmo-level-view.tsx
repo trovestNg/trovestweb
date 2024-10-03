@@ -36,17 +36,18 @@ import CreateBMOOwnerFundsManagerModal from "../../components/modals/createBMOOw
 import CreateBMOOwnerImportModal from "../../components/modals/createBMOOwnerImportModal";
 import { userInfo } from "os";
 import { pushToAuthUserNavArray, reduceAuthUserNavArray, removeFromAuthUserNavArray, setAuthUserBMOOwnerProfile } from "../../store/slices/authUserSlice";
-import { IUnAuthUserNavLink } from "../../interfaces/bmOwner";
+import { IBMOwnersPublic, IUnAuthUserNavLink } from "../../interfaces/bmOwner";
 import EditBMOOwnerIndModal from "../../components/modals/editBMOOwnerIndModal";
 import EditBMOOwnerCoperateModal from "../../components/modals/editBMOOwnerCoperateModal";
 import SureToDeleteBmoModal from "../../components/modals/sureToDeleteBmoModal";
+import SureToApproveBOModal from "../../components/modals/sureToApproveBOModal";
 
 
 
 
 const AuthOwnerViewPage = () => {
-    const [bmoList, setBmoList] = useState<IOwner[]>([]);
-    const [bmoOwner, setBmoOwner] = useState<IOwner>();
+    const [bmoList, setBmoList] = useState<IBMOwnersPublic[]>([]);
+    const [bmoOwner, setBmoOwner] = useState<IBMOwnersPublic>();
     const [parentInfo, setParentInfo] = useState<IParent>();
     const { level,ownerId } = useParams()
     const [loading, setLoading] = useState(false);
@@ -54,6 +55,9 @@ const AuthOwnerViewPage = () => {
     const [viewMoreInfotModal, setViewMoreInfoModal] = useState(false);
     const [userSearch, setUserSearch] = useState('');
     const [refData, setRefData] = useState(false);
+
+    const userClass = useSelector((state: any) => state.authUserSlice.authUserProfile.UserClass);
+    const [bmoId, setBmoId] = useState('');
 
     const navigate = useNavigate();
    
@@ -67,6 +71,7 @@ const AuthOwnerViewPage = () => {
     const [editBenefOwnerIndividualModal, setEditBenefOwnerIndividualModal] = useState(false);
     const [editBenefOwnerCoperateModal, setEditBenefOwnerCoperateModal] = useState(false);
     const [deleteBmOwner, setDeleteBmOwner] = useState(false);
+    const [approveBmOwner, setApproveBmOwner] = useState(false);
     const [dontAllowAdd, setDontAllowAd] = useState(false);
 
 
@@ -163,7 +168,7 @@ const AuthOwnerViewPage = () => {
         { label: 'Ticker', key: 'Ticker' }
     ];
 
-    const generateCSV = (data: IOwner[], headers: { label: string; key: keyof IOwner }[]) => {
+    const generateCSV = (data: IBMOwnersPublic[], headers: { label: string; key: keyof IBMOwnersPublic }[]) => {
         // Map data to match the headers
         const csvData = data.map((item, index) => ({
             BusinessName: item.BusinessName,
@@ -266,7 +271,32 @@ const AuthOwnerViewPage = () => {
         setAddNewBenefOwnerModal(false)
     }
 
-    const handleShowInfoModal = (owner: IOwner) => {
+
+    const handleUpdateBenefOwnerType = (e: IBMOwnersPublic) => {
+
+        switch (e.CategoryDescription) {
+            case e.CategoryDescription = 'Individual':
+
+                setEditBenefOwnerIndividualModal(true);
+                setBmoOwner(e)
+                break;
+            case e.CategoryDescription = 'Coperate':
+
+                setEditBenefOwnerCoperateModal(true);
+                setBmoOwner(e)
+                break;
+            default:
+                break;
+        }
+        setAddNewBenefOwnerModal(false)
+    }
+
+    const handleDeleteBmoOwner = (bmoId: any) => {
+        setDeleteBmOwner(true);
+        setBmoId(bmoId);
+    }
+
+    const handleShowInfoModal = (owner: IBMOwnersPublic) => {
         setBmoOwner(owner);
         setViewMoreInfoModal(!viewMoreInfotModal);
     }
@@ -291,7 +321,40 @@ const AuthOwnerViewPage = () => {
         setViewChartModal(!viewChartModal)
     }
 
-    const handleNavigateToLevel = (owner: IOwner) => {
+    const handleApproveBo = async () => {
+        setLoading(true)
+        // console.log({ seeBody: body })
+        let userInfo = await getUserInfo();
+
+
+
+        if (userInfo) {
+
+            const bodyApprove= {
+                // "requestorUsername": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
+                "requestorUsername": `Computer`,
+                "comment": "Testing Approve",
+                "ids": [
+                parentInfo?.Id == 0? parentInfo.ParentId:parentInfo?.Id
+                ]
+              }
+
+            const res = await api.post(`authorize`, bodyApprove, `${userInfo?.access_token}`)
+            if (res?.status==200) {
+                setLoading(false);
+                toast.success('BO Approved succesfully');
+                setApproveBmOwner(false);
+                setDontAllowAd(false);
+                setRefData(!refData);
+            } else {
+                toast.error('Operation failed! Check your network');
+                setLoading(false);
+            }
+
+        }
+    }
+
+    const handleNavigateToLevel = (owner: IBMOwnersPublic) => {
         console.log({
             path:owner
         })
@@ -312,7 +375,7 @@ const AuthOwnerViewPage = () => {
             CountryName: owner.CountryName,
             CreatedBy: owner.CreatedBy,
             CreatedDate: owner.CreatedDate,
-            CustomerNumber: owner.CustomerNumber            ,
+            CustomerNumber: owner.CustomerNumber,
             Id: 0,
             IdNumber: owner.IdNumber,
             IdType: owner.IdType,
@@ -335,6 +398,7 @@ const AuthOwnerViewPage = () => {
 
         window.history.pushState({}, '', `/ubo-portal/owner-details/${level && +level + 1}/${owner.Id}`);
         navigate(`/ubo-portal/owner-details/${ level&& +level + 1}/${owner.Id}`);
+        // window.location.reload()
     }
 
     const handleBackToHomePage = () => {
@@ -350,6 +414,8 @@ const AuthOwnerViewPage = () => {
             <MoreInfoModal lev={level} info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} />
             <AddNewBenefOwnerTypeModal action={handleAddNewBenefOwnerType} off={() => setAddNewBenefOwnerModal(false)} show={addNewBenefOwnerModal} />
             <SureToDeleteBmoModal show={deleteBmOwner} off={() => setDeleteBmOwner(false)} />
+
+            <SureToApproveBOModal loading={loading} show={approveBmOwner} off={() => setApproveBmOwner(false)} action={handleApproveBo}/>
 
             <CreateBMOOwnerIndModal
                 parent={parentInfo}
@@ -367,6 +433,7 @@ const AuthOwnerViewPage = () => {
                     setRefData(!refData)
                 }}
                 show={addNewBenefOwnerCoperateModal} />
+            
 
             <CreateBMOOwnerFundsManagerModal off={() => { setAddNewBenefOwnerFundsManagerModal(false); setRefData(!refData) }} show={addNewBenefOwnerFundsManagerModal} />
 
@@ -464,6 +531,7 @@ const AuthOwnerViewPage = () => {
                                     <th scope="col" className="fw-medium">RC Number/BN/CAC</th>
                                     <th scope="col" className="fw-medium">No Of Beneficial Owners</th>
                                     <th scope="col" className="fw-medium">Status</th>
+                                    <th scope="col" className="fw-medium"></th>
                                 </tr>
                             </thead>
                             <tbody>{
@@ -494,6 +562,14 @@ const AuthOwnerViewPage = () => {
                                             parentInfo?.IsAuthorized?'Authorized':'UnAuthorized'
                                             
                                         }
+                                        
+                                    </td>
+                                    <td>
+                                    {
+                                        !parentInfo?.IsAuthorized && userClass=='Approver'&&
+                                        <Button onClick={()=>setApproveBmOwner(true)} variant="outline text-success border border-1 border-success">Authorize</Button>
+                                    }
+                                    
                                     </td>
                                 </tr>
                             }
@@ -528,12 +604,13 @@ const AuthOwnerViewPage = () => {
                                             <th scope="col" className="bg-primary text-light">No of Shares  </th>
                                             <th scope="col" className="bg-primary text-light">PEP</th>
                                             <th scope="col" className="bg-primary text-light">Ticker</th>
+                                            <th scope="col" className="bg-primary text-light">Status</th>
                                             <th scope="col" className="bg-primary text-light">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {
-                                            <tr className="fw-bold"><td className="text-center" colSpan={9}><Spinner /></td></tr>
+                                            <tr className="fw-bold"><td className="text-center" colSpan={10}><Spinner /></td></tr>
                                         }
                                     </tbody>
                                 </> :
@@ -548,12 +625,13 @@ const AuthOwnerViewPage = () => {
                                             <th scope="col" className="bg-primary text-light">No of Shares  </th>
                                             <th scope="col" className="bg-primary text-light">PEP</th>
                                             <th scope="col" className="bg-primary text-light">Ticker</th>
+                                            <th scope="col" className="bg-primary text-light">Status</th>
                                             <th scope="col" className="bg-primary text-light">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {
-                                            bmoList && bmoList.length > 0 ? bmoList && bmoList.map((bmoOwner: IOwner, index: number) => (
+                                            bmoList && bmoList.length > 0 ? bmoList && bmoList.map((bmoOwner: IBMOwnersPublic, index: number) => (
                                                 <tr key={index}
                                                     role="button"
                                                     onClick={bmoOwner.CategoryDescription == 'Corporate' ? ()=>handleNavigateToLevel(bmoOwner) : () => handleShowInfoModal(bmoOwner)}
@@ -566,6 +644,7 @@ const AuthOwnerViewPage = () => {
                                                     <td>{bmoOwner.NumberOfShares}</td>
                                                     <td>{bmoOwner.IsPEP ? 'Yes' : 'No'}</td>
                                                     <td>{bmoOwner.Ticker ? bmoOwner.Ticker : 'N/A'}</td>
+                                                    <td className={`text-${bmoOwner.IsAuthorized?'success':'danger'}`}>{bmoOwner.IsAuthorized?'Authorised':'UnAuthorised'}</td>
                                                     <td className="table-icon" >
                                                         <i className=" bi bi-three-dots" onClick={(e) => e.stopPropagation()}></i>
                                                         <div className="content ml-5" style={{ position: 'relative', zIndex: 1500 }}>
@@ -587,31 +666,31 @@ const AuthOwnerViewPage = () => {
 
                                                                     </ListGroupItem>
                                                                     {
-                                                                        <div onClick={(e) => e.stopPropagation()}>
-                                                                            <ListGroupItem
-                                                                            // onClick={(e) => handleUpdate(e, policy)}
-                                                                            >
-                                                                                <span className="w-100 d-flex justify-content-between">
-                                                                                    <div className="d-flex gap-2">
-                                                                                        <i className="bi bi-calendar-event"></i>
-                                                                                        Edit
-                                                                                    </div>
-                                                                                </span>
-                                                                            </ListGroupItem>
-                                                                            <ListGroupItem
-                                                                                className="text-danger"
-                                                                            // disabled={policy?.markedForDeletion}
-                                                                            // onClick={(e) => handleDelete(e, policy)}
-                                                                            >
-                                                                                <span className="w-100 d-flex justify-content-between">
-                                                                                    <div className="d-flex gap-2">
-                                                                                        <i className="bi bi-trash"></i>
-                                                                                        Delete
-                                                                                    </div>
-                                                                                </span>
-                                                                            </ListGroupItem>
-                                                                        </div>
-                                                                    }
+                                                                        userClass=='Initiator'&&
+                                                                            <div onClick={(e) => e.stopPropagation()}>
+                                                                                <ListGroupItem
+                                                                                    onClick={(e) => handleUpdateBenefOwnerType(bmoOwner)}
+                                                                                >
+                                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                                        <div className="d-flex gap-2">
+                                                                                            <i className="bi bi-calendar-event"></i>
+                                                                                            Edit
+                                                                                        </div>
+                                                                                    </span>
+                                                                                </ListGroupItem>
+                                                                                <ListGroupItem
+                                                                                    className="text-danger"
+                                                                                    onClick={(e) => handleDeleteBmoOwner(bmoOwner.Id)}
+                                                                                >
+                                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                                        <div className="d-flex gap-2">
+                                                                                            <i className="bi bi-trash"></i>
+                                                                                            Delete
+                                                                                        </div>
+                                                                                    </span>
+                                                                                </ListGroupItem>
+                                                                            </div>
+                                                                        }
                                                                 </ListGroup>
 
                                                             </Card>
@@ -623,7 +702,7 @@ const AuthOwnerViewPage = () => {
 
                                                 </tr>
                                             )) : <tr className="text-center">
-                                                <td colSpan={9}>
+                                                <td colSpan={10}>
                                                     No Data Available
                                                 </td>
                                             </tr>

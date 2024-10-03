@@ -1,37 +1,30 @@
 import React, { useEffect, useState } from "react";
-import { Button, FormControl, FormSelect, Modal, ProgressBar } from "react-bootstrap";
+import { Button, FormControl, FormSelect, Modal, ProgressBar, Spinner } from "react-bootstrap";
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { object, string, number, date, InferType } from 'yup';
-import api from "../../config/api";
 import { getUserInfo } from "../../controllers/auth";
 import { getCountries } from "../../utils/helpers";
 import { ICountry } from "../../interfaces/country";
 import { toast } from "react-toastify";
+import apiUnAuth from "../../config/apiUnAuth";
+import api from "../../config/api";
 
-const AddRiskLevelModal: React.FC<any> = ({ show, off }) => {
-    const [countries, setCountries] = useState<ICountry[]>()
+const AddRiskLevelModal: React.FC<any> = ({ userData,show, off }) => {
+    const [countries, setCountries] = useState<ICountry[]>();
+    const [loading,setLoading] = useState(false);
     const initialVal = {
-        "id": '',
-        "businessName": "",
-        "riskRating": "",
-        "bvn": "",
-        "idType": "",
-        "idNumber": "",
-        "countryId": "",
-        "percentageHolding": '',
-        "numberOfShares": '',
-        "isPEP": "",
-        "categoryId": "",
-        "rcNumber": "",
-        "ticker": ""
+        "id": userData?.Id,
+        "businessName": userData?.BusinessName || '',
+        "riskLevel": userData?.RiskLevel,
+        
     }
 
 
 
     let validationSchem = object({
         businessName: string().required().label('Business name'),
-        idNumber: number().typeError('Must be a number').required().label('ID Number'),
-        riskRating: string().required('Rating is required').label('Risk Rating'),
+        // id: number().typeError('Must be a number').required().label('ID Number'),
+        riskLevel: string().required().label('Risk Level'),
 
         // policyDocument: string().required('Kindly upload a file'),
 
@@ -43,64 +36,33 @@ const AddRiskLevelModal: React.FC<any> = ({ show, off }) => {
         // createdOn: date().default(() => new Date()),
     });
 
-    const handleCreateNewBMO = () => {
-
-
-    }
 
     const createNewBMO = async (body: any) => {
-        console.log({seeBody:body})
+        // toast.error('Hit!')
+        setLoading(true)
+        // console.log({seeBody:body})
         let userInfo = await getUserInfo();
 
-
-
         if (userInfo) {
-
-            const apiBody = {
+            let apiBody = {
                 "requesterName": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
-                "parent": {
-                    
-                    //   "id": 0,
-                    //   "businessName": "string",
-                    //   "customerNumber": "string",
-                    //   "bvn": "string",
-                    //   "idType": "string",
-                    //   "idNumber": "string",
-                    //   "countryId": "string",
-                    //   "percentageHolding": 0,
-                    //   "numberOfShares": 0,
-                    //   "isPEP": true,
-                    //   "categoryId": "string",
-                    //   "rcNumber": "string",
-                    //   "ticker": "string",
-                    //   "originalId": 0,
-                    //   "navigation": "string"
-                },
-                "beneficialOwners": [
-                    body
-                    // {
-                    //     "id": 0,
-                    //     "businessName": "string",
-                    //     "customerNumber": "string",
-                    //     "bvn": "string",
-                    //     "idType": "string",
-                    //     "idNumber": "string",
-                    //     "countryId": "string",
-                    //     "percentageHolding": 0,
-                    //     "numberOfShares": 0,
-                    //     "isPEP": true,
-                    //     "categoryId": "string",
-                    //     "rcNumber": "string",
-                    //     "ticker": "string"
-                    // }
+                "data": [
+                  {
+                    "beneficialOwnerId": body?.id,
+                    "riskScore":body?.riskLevel=='LOW'?1:body?.riskLevel=='MEDIUM'?2:3
+                  }
                 ]
-            }
+              }
 
-            const res = await api.post(`BeneficialOwner`, apiBody, `${userInfo?.access_token}`)
-            if(res?.data.success){
-                toast.success('BMO added succesfully')
+            const res = await api.post(`riskLevel`, apiBody, `${userInfo?.access_token}`)
+            if(res?.status==200){
+                toast.success('Risk Level added succesfully');
+                setLoading(false);
+                off()
             } else{
-                toast.error('Operation failed! Check your network')
+                toast.error('Operation failed! Check your network');
+                setLoading(false);
+                
             }
 
         }
@@ -145,7 +107,8 @@ const AddRiskLevelModal: React.FC<any> = ({ show, off }) => {
                                                 Name
                                             </label>
                                             <Field
-                                                value={values.businessName}
+                                            disabled
+                                                // value={values.businessName}
                                                 style={{ outline: 'none' }}
                                                 className="rounded rounded-1 p-2  w-100 border border-1 border-grey"
                                                 id='businessName' name='businessName'
@@ -165,13 +128,14 @@ const AddRiskLevelModal: React.FC<any> = ({ show, off }) => {
                                                 as="select"
                                                 style={{ outline: 'none' }}
                                                 className="rounded rounded-1 p-2 outline form-control-outline w-100 border border-1 border-grey"
-                                                id='countryId' name='countryId'>
-                                                <option className="text-success" value={'Low'}>Low</option>
-                                                <option className="text-warning" value={'Medium'}>Medium</option>
-                                                <option className="text-danger" value={'High'}>High</option>
+                                                id='riskLevel' name='riskLevel'>
+                                                <option className="text-success" value={values.riskLevel}>{values.riskLevel?values.riskLevel:'Select'}</option>
+                                                <option className="text-success" value={'LOW'}>Low</option>
+                                                <option className="text-warning" value={'MEDIUM'}>Medium</option>
+                                                <option className="text-danger" value={'HIGH'}>High</option>
                                             </Field>
                                             <ErrorMessage
-                                                name="countryId"
+                                                name="riskLevel"
                                                 component="div"
                                                 className="text-danger fw-medium" />
                                         </div>
@@ -186,7 +150,7 @@ const AddRiskLevelModal: React.FC<any> = ({ show, off }) => {
                                         </div> */}
 
                                         <div className="w-50">
-                                            <Button className="w-100 rounded rounded-1" type="submit" variant="primary mt-3">Update Risk Assessment</Button>
+                                            <Button className="w-100 rounded rounded-1" type="submit" variant="primary mt-3">{loading?<Spinner size="sm"/>:`Update Risk Assessment`}</Button>
                                         </div>
                                     </div>
                                 </Form>)

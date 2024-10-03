@@ -101,7 +101,7 @@ const CreateBMOOwnerFundsManagerModal: React.FC<any> = ({ show, off }) => {
                 ]
             }
 
-            const res = await api.post(`BeneficialOwner`, apiBody, `${userInfo?.access_token}`)
+            const res = await api.post(``, apiBody, `${userInfo?.access_token}`)
             if(res?.data.success){
                 toast.success('BMO added succesfully')
             } else{

@@ -27,6 +27,7 @@ import EditBMOOwnerCoperateModal from "../../components/modals/editBMOOwnerCoper
 import SureToDeleteBmoModal from "../../components/modals/sureToDeleteBmoModal";
 import { IBMOwnersPublic, IUnAuthUserNavLink } from "../../interfaces/bmOwner";
 import { emptyAuthUserNavArray, pushToAuthUserNavArray, reduceAuthUserNavArray, setAuthUserBMOOwnerProfile } from "../../store/slices/authUserSlice";
+import SureToApproveBOModal from "../../components/modals/sureToApproveBOModal";
 
 
 
@@ -46,6 +47,7 @@ const AuthCustomerViewPage = () => {
     const navigate = useNavigate();
     const [refData, setRefData] = useState(false);
     const [addNewBenefOwnerModal, setAddNewBenefOwnerModal] = useState(false);
+    const userClass = useSelector((state: any) => state.authUserSlice.authUserProfile.UserClass);
 
     const [addNewBenefOwnerIndividualModal, setAddNewBenefOwnerIndividualModal] = useState(false);
     const [addNewBenefOwnerCoperateModal, setAddNewBenefOwnerCoperateModal] = useState(false);
@@ -55,6 +57,7 @@ const AuthCustomerViewPage = () => {
     const [editBenefOwnerIndividualModal, setEditBenefOwnerIndividualModal] = useState(false);
     const [editBenefOwnerCoperateModal, setEditBenefOwnerCoperateModal] = useState(false);
     const [deleteBmOwner, setDeleteBmOwner] = useState(false);
+    const [approveBmOwner, setApproveBmOwner] = useState(false);
 
     const [bmoId, setBmoId] = useState('');
 
@@ -189,29 +192,38 @@ const AuthCustomerViewPage = () => {
 
 
     const fetch = async () => {
-        setLoading(true)
-        // toast.error('Await')
-        try {
-            const res = await apiUnAuth.get(`level/approved?customerNumber=${curstomerNumber}`);
-            if (res.data) {
-                setBmoList(res?.data?.Owners.reverse());
-                calculatePercent(res?.data?.Owners)
-                setParentInfo(res?.data?.Parent)
-                setLoading(false)
-            } else if (res.status = 404) {
+        setLoading(true)// toast.error('Await')
+        let userInfo = await getUserInfo();
+        if(userInfo){
+            try {
+                
+                const res = await api.get(`level/approved?requesterName=${userInfo.profile.given_name}&customerNumber=${curstomerNumber}`,userInfo?.access_token);
+                if (res?.data) {
+                    setBmoList(res?.data?.Owners.reverse());
+                    calculatePercent(res?.data?.Owners)
+                    setParentInfo(res?.data?.Parent)
+                    setLoading(false)
+                    
+                }
+                else if(res?.status == 400){
+                    setParentInfo(unAvOwner);
+                    setBmoList([]);
+                    setLoading(false)
+                }
+                else {
+                    setParentInfo(unAvOwner);
+                    setBmoList([]);
+                    setLoading(false)
+                }
+            } catch (error) {
                 setParentInfo(unAvOwner);
                 setBmoList([]);
+                // setBmoList([])
                 setLoading(false)
             }
-            else {
-                setBmoList([]);
-                setLoading(false)
-            }
-        } catch (error) {
-            console.log({ seeError: error })
-            setBmoList([]);
-            setLoading(false)
+
         }
+       
     }
 
     const handleClear = () => {
@@ -270,11 +282,40 @@ const AuthCustomerViewPage = () => {
         setBmoId(bmoId);
     }
 
-    const deleteBmoOwner = async () => {
-        try {
-            let userInfo = await getUserInfo();
-            const res = await api.post(`BeneficialOwner`, {}, `${userInfo?.access_token}`)
-        } catch (error) {
+    const handleApproveBo =()=>{
+        setViewMoreInfoModal(false);
+        setApproveBmOwner(true)
+    }
+
+    const approveBo = async () => {
+        setLoading(true)
+        // console.log({ seeBody: body })
+        let userInfo = await getUserInfo();
+
+
+
+        if (userInfo) {
+
+            const bodyApprove= {
+                // "requestorUsername": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
+                "requestorUsername": `Computer`,
+                "comment": "Testing Approve",
+                "ids": [
+                parentInfo?.Id == 0? +`${parentInfo.ParentId}`:parentInfo?.Id
+                ]
+              }
+
+            const res = await api.post(`authorize`, bodyApprove, `${userInfo?.access_token}`)
+            if (res?.status==200) {
+                setLoading(false);
+                toast.success('BO Approved succesfully');
+                setApproveBmOwner(false);
+                setDontAllowAd(false);
+                setRefData(!refData);
+            } else {
+                toast.error('Operation failed! Check your network');
+                setLoading(false);
+            }
 
         }
     }
@@ -322,9 +363,11 @@ const AuthCustomerViewPage = () => {
         }
         dispatch(pushToAuthUserNavArray(payload));
         dispatch(setAuthUserBMOOwnerProfile(unAvOwner));
-
+        
         window.history.pushState({}, '', `/ubo-portal/owner-details/${level && +level + 1}/${owner.Id}`);
         navigate(`/ubo-portal/owner-details/${level && +level + 1}/${owner.Id}`);
+        // window.location.reload()
+        
 
     }
 
@@ -344,9 +387,11 @@ const AuthCustomerViewPage = () => {
     return (
         <div className="w-100 p-0">
             {bmoList.length > 0 && <ChartModal bmoList={bmoList} profile={parentInfo} show={viewChartModal} off={() => setViewChartModal(false)} />}
-            <MoreInfoModal lev={level} info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} />
+            <MoreInfoModal handleApprv={handleApproveBo} lev={level} info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} />
             <AddNewBenefOwnerTypeModal action={handleAddNewBenefOwnerType} off={() => setAddNewBenefOwnerModal(false)} show={addNewBenefOwnerModal} />
-            <SureToDeleteBmoModal show={deleteBmOwner} off={() => setDeleteBmOwner(false)} />
+            <SureToDeleteBmoModal show={deleteBmOwner} off={() => setDeleteBmOwner(false)} action={()=>{toast.error('deleting')}}/>
+            <SureToApproveBOModal show={approveBmOwner} off={() => setApproveBmOwner(false)} 
+            action={approveBo}/>
 
             <CreateBMOOwnerIndModal
                 parent={parentInfo}
@@ -445,6 +490,7 @@ const AuthCustomerViewPage = () => {
                                     <th scope="col" className="fw-medium">RC Number/BN/CAC</th>
                                     <th scope="col" className="fw-medium">No Of Beneficial Owners</th>
                                     <th scope="col" className="fw-medium">Status</th>
+                                    <th scope="col" className="fw-medium"></th>
                                 </tr>
                             </thead>
                             <tbody>{
@@ -475,6 +521,14 @@ const AuthCustomerViewPage = () => {
                                             parentInfo?.IsAuthorized?'Authorized':'UnAuthorized'
                                             
                                         }
+                                    </td>
+
+                                    <td>
+                                    {
+                                        !parentInfo?.IsAuthorized && userClass=='Approver'&&
+                                        <Button onClick={handleApproveBo} variant="outline text-success border border-1 border-success">Authorize</Button>
+                                    }
+                                    
                                     </td>
                                 </tr>
                             }
@@ -514,7 +568,7 @@ const AuthCustomerViewPage = () => {
                                     </thead>
                                     <tbody>
                                         {
-                                            <tr className="fw-bold"><td className="text-center" colSpan={9}><Spinner /></td></tr>
+                                            <tr className="fw-bold"><td className="text-center" colSpan={10}><Spinner /></td></tr>
                                         }
                                     </tbody>
                                 </> :
@@ -610,7 +664,7 @@ const AuthCustomerViewPage = () => {
                                                 ))
 
                                                 : <tr className="text-center">
-                                                    <td colSpan={9}>
+                                                    <td colSpan={10}>
                                                         No Data Available
                                                     </td>
                                                 </tr>

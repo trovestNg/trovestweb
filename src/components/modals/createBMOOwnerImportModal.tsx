@@ -69,7 +69,7 @@ const CreateBMOOwnerImportModal: React.FC<any> = ({ show, off }) => {
   const triggerFileDownload = (url: string) => {
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', 'Template.xml'); // You can name the file anything you want
+    link.setAttribute('download', 'Template.csv'); // You can name the file anything you want
     document.body.appendChild(link);
     link.click();
 
@@ -100,22 +100,6 @@ const CreateBMOOwnerImportModal: React.FC<any> = ({ show, off }) => {
             const apiBody = {
                 "requesterName": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
                 "parent": {
-
-                    //   "id": 0,
-                    //   "businessName": "string",
-                    //   "customerNumber": "string",
-                    //   "bvn": "string",
-                    //   "idType": "string",
-                    //   "idNumber": "string",
-                    //   "countryId": "string",
-                    //   "percentageHolding": 0,
-                    //   "numberOfShares": 0,
-                    //   "isPEP": true,
-                    //   "categoryId": "string",
-                    //   "rcNumber": "string",
-                    //   "ticker": "string",
-                    //   "originalId": 0,
-                    //   "navigation": "string"
                 },
                 "beneficialOwners": [
                     body
@@ -143,7 +127,6 @@ const CreateBMOOwnerImportModal: React.FC<any> = ({ show, off }) => {
             } else {
                 toast.error('Operation failed! Check your network')
             }
-
         }
     }
 

@@ -300,7 +300,7 @@ const UnAuthBmoOwnerView = () => {
         let payload: IUnAuthUserNavLink = {
             name: owner.BusinessName,
             customerNumber: owner?.CustomerNumber,
-            ownerId: owner?.CustomerNumber
+            ownerId: owner?.Id
         }
         let unAvOwner = {
             AuthorizeBy: owner.AuthorizeBy,
@@ -397,6 +397,7 @@ const UnAuthBmoOwnerView = () => {
                                     <th scope="col" className="fw-medium">Customer Number</th>
                                     <th scope="col" className="fw-medium">RC Number/BN/CAC</th>
                                     <th scope="col" className="fw-medium">No Of Beneficial Owners</th>
+                                    <th scope="col" className="fw-medium">Status</th>
                                 </tr>
                             </thead>
                             <tbody>{
@@ -417,6 +418,7 @@ const UnAuthBmoOwnerView = () => {
                                     <th scope="col" className="fw-medium">Customer Number</th>
                                     <th scope="col" className="fw-medium">RC Number/BN/CAC</th>
                                     <th scope="col" className="fw-medium">No Of Beneficial Owners</th>
+                                    <th scope="col" className="fw-medium">Status</th>
                                 </tr>
                             </thead>
                             <tbody>{
@@ -439,6 +441,13 @@ const UnAuthBmoOwnerView = () => {
                                     <td className="text-primary">
                                         {
                                             bmoList.length
+                                        }
+                                    </td>
+
+                                    <td className={`text-${parentInfo?.IsAuthorized?'success':'danger'}`}>
+                                        {
+                                            parentInfo?.IsAuthorized?'Authorized':'UnAuthorized'
+                                            
                                         }
                                     </td>
                                 </tr>

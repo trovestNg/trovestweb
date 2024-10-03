@@ -16,15 +16,18 @@ const EditeBMOOwnerIndModal: React.FC<any> = ({ show, off, parentInf,custormerNu
     // console.log({hereisParent:parent,hereIdNumber:custormerNumb})
     const initialVal = {
         "businessName": ownerInfo?.BusinessName || '',
-        "bvn": ownerInfo?.bvn || '',
+        "bvn": ownerInfo?.BVN || null,
         "idType": ownerInfo?.idType || ownerInfo?.IdType,
-        "idNumber": ownerInfo?.IdNumber || false,
+        "idNumber": ownerInfo?.IdNumber || '',
         "countryId": ownerInfo?.CountryId || '',
         "percentageHolding": ownerInfo?.PercentageHolding || '',
         "numberOfShares": ownerInfo?.NumberOfShares || '',
         "isPEP": ownerInfo?.IsPEP ? 'Yes': 'No',
         "categoryId": "I",
         "Id": ownerInfo?.Id || '',
+        "sourceOfWealth": ownerInfo?.sourceOfWealth || '',
+        "remark":ownerInfo?.remark || '',
+        
     }
 
 
@@ -38,6 +41,8 @@ const EditeBMOOwnerIndModal: React.FC<any> = ({ show, off, parentInf,custormerNu
         isPEP: string().required().label('Politicaly Exposed Status'),
         idType: string().required().label('ID Type'),
         idNumber: string().required().label('ID Number'),
+        sourceOfWealth: string().required().label('Source of wealth'),
+        remark: string().required().label('Remark'),
         // ticker: string().required().label('Ticker'),
 
         // policyDocument: string().required('Kindly upload a file'),
@@ -70,6 +75,8 @@ const EditeBMOOwnerIndModal: React.FC<any> = ({ show, off, parentInf,custormerNu
                         "rcNumber": "",
                         "categoryId": "I",
                         "isPEP":body?.isPEP=='yes'?true:false,
+                        "IdType":'Driver License',
+                        "BVN":body?.bvn
                         
                     }
                    
@@ -90,10 +97,10 @@ const EditeBMOOwnerIndModal: React.FC<any> = ({ show, off, parentInf,custormerNu
                 ]
             }
 
-            const res = await api.post(`BeneficialOwner`, apiBody, `${userInfo?.access_token}`)
+            const res = await api.post(``, apiBody, `${userInfo?.access_token}`)
             if (res?.status==200) {
                 setLoading(false);
-                toast.success('BMO added succesfully');
+                toast.success('BO Updated succesfully');
                 off()
             } else {
                 toast.error('Operation failed! Check your network');
@@ -293,7 +300,7 @@ const EditeBMOOwnerIndModal: React.FC<any> = ({ show, off, parentInf,custormerNu
                                                 ID Number
                                             </label>
                                             <Field
-                                                value={values.idNumber}
+                                                // value={values.idNumber}
                                                 style={{ outline: 'none' }}
                                                 className="rounded rounded-1 p-2 w-100 border border-1 border-grey"
                                                 id='idNumber' name='idNumber' />
@@ -302,7 +309,49 @@ const EditeBMOOwnerIndModal: React.FC<any> = ({ show, off, parentInf,custormerNu
                                                 component="div"
                                                 className="text-danger fw-medium" />
                                         </div>
+
+                                        
                                     </div>
+
+
+                                    <div className="d-flex justify-content-between my-3  gap-3 w-100">
+                                    <div className="w-50">
+                                            <label className="" htmlFor="userEmail">
+                                                Source of Wealth
+                                            </label>
+                                            <Field
+                                                
+                                                style={{ outline: 'none' }}
+                                                className="rounded rounded-1 p-2 outline form-control-outline w-100 border border-1 border-grey"
+                                                id='sourceOfWealth' name='sourceOfWealth'>
+
+                                            </Field>
+                                            <ErrorMessage
+                                                name="sourceOfWealth"
+                                                component="div"
+                                                className="text-danger fw-medium" />
+                                        </div>
+
+                                        <div className="w-50">
+                                            <label className="" htmlFor="userEmail">
+                                                Remark
+                                            </label>
+                                            <Field
+                                            as='textarea'
+                                                // value={values.idNumber}
+                                                style={{ outline: 'none' }}
+                                                className="rounded rounded-1 p-2 w-100 border border-1 border-grey"
+                                                id='remark' name='remark' />
+                                            <ErrorMessage
+                                                name="remark"
+                                                component="div"
+                                                className="text-danger fw-medium" />
+                                        </div>
+
+                                        
+                                    </div>
+
+                                    
 
                                     <div className="d-flex  justify-content-between my-3  gap-3 w-100">
                                         <div className="w-50">

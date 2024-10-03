@@ -65,7 +65,7 @@ const AuthApprovedBmoPage = () => {
         if (userInfo) {
             try {
 
-                const res = await api.get(`authorized?requesterName=${userInfo.profile.given_name}&Name=${searchedWord}`, userInfo?.access_token);
+                const res = await api.get(`authorized?requesterName=${userInfo.profile.given_name}&Name=${searchedWord}&pageSize=100`, userInfo?.access_token);
                 console.log({ heree: res })
                 if (res?.data) {
                     setBmoList(res?.data?.Data.reverse());
@@ -104,7 +104,7 @@ const AuthApprovedBmoPage = () => {
 
     const handleNavigateToOwner = (owner: IApprovedBMOOwner) => {
         let payload: any = {
-            name: owner.BusinessName,
+            name: owner?.BusinessName,
             customerNumber: owner?.CustomerNumber,
             ownerId: owner?.CustomerNumber
         }
@@ -112,7 +112,7 @@ const AuthApprovedBmoPage = () => {
             AuthorizeBy: owner.AuthorizeBy,
             AuthorizeDate: owner.AuthorizeDate,
             BVN: owner.BVN,
-            BusinessName: owner.BusinessName,
+            BusinessName: owner?.BusinessName,
             Category: owner.Category,
             CategoryDescription: owner.CategoryDescription,
             Comments: owner.Comments,
@@ -169,7 +169,7 @@ const AuthApprovedBmoPage = () => {
             if (userInfo) {
                 try {
 
-                    const res = await api.get(`authorized?requesterName=${userInfo.profile.given_name}`, userInfo?.access_token);
+                    const res = await api.get(`authorized?requesterName=${userInfo.profile.given_name}&pageSize=10000`, userInfo?.access_token);
                     console.log({ heree: res })
                     if (res?.data) {
                         setBmoList(res?.data?.Data.reverse());
@@ -271,7 +271,7 @@ const AuthApprovedBmoPage = () => {
                                                 <th scope="col" className="bg-primary text-light">No of Shares  </th>
                                                 <th scope="col" className="bg-primary text-light">PEP</th>
                                                 <th scope="col" className="bg-primary text-light">Ticker</th>
-                                                <th scope="col" className="bg-primary text-light">Action</th>
+                                                {/* <th scope="col" className="bg-primary text-light">Action</th> */}
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -290,7 +290,7 @@ const AuthApprovedBmoPage = () => {
                                                 <th scope="col" className="bg-primary text-light">Beneficial Owner</th>
                                                 <th scope="col" className="bg-primary text-light">Authorizer</th>
                                                 <th scope="col" className="bg-primary text-light">Date Approved</th>
-                                                <th scope="col" className="bg-primary text-light">Action</th>
+                                                {/* <th scope="col" className="bg-primary text-light">Action</th> */}
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -301,64 +301,13 @@ const AuthApprovedBmoPage = () => {
                                                         onClick={(e) => handleShowInfoModal(bmoOwner)}
                                                     >
                                                         <th scope="row">{index + 1}</th>
-                                                        <td className="">{bmoOwner.BusinessName}</td>
-                                                        <td>{bmoOwner.CustomerNumber ? bmoOwner.CustomerNumber : "N/A"}</td>
+                                                        <td className="">{bmoOwner?.BusinessName}</td>
+                                                        <td>{bmoOwner.CustomerNumber ? bmoOwner?.CustomerNumber : "N/A"}</td>
                                                         <td>{bmoOwner.Level ? bmoOwner.Level : 'N/A'}</td>
-                                                        <td>{bmoOwner.BeneficiaryOwnerDetails[0].BusinessName}</td>
+                                                        <td>{bmoOwner.BeneficiaryOwnerDetails[0]?.BusinessName}</td>
                                                         <td>{bmoOwner.AuthorizeBy}</td>
                                                         <td>{moment(bmoOwner.AuthorizeDate).format('MMM DD YYYY')}</td>
-                                                        <td className="table-icon" >
-                                                            <i className=" bi bi-three-dots" onClick={(e) => e.stopPropagation()}></i>
-                                                            <div className="content ml-5" style={{ position: 'relative', zIndex: 1500 }}>
-                                                                <Card className="p-2  shadow-sm rounded border-0"
-                                                                    style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
-
-                                                                    <ListGroup>
-                                                                        <ListGroupItem className="multi-layer"
-                                                                            onClick={(e) => handleShowInfoModal(bmoOwner)}
-                                                                        >
-                                                                            <span className="w-100 d-flex justify-content-between">
-                                                                                <div className="d-flex gap-2">
-                                                                                    <i className="bi bi-eye"></i>
-                                                                                    View More
-                                                                                </div>
-
-                                                                                {/* <i className="bi bi-chevron-right"></i> */}
-                                                                            </span>
-
-                                                                        </ListGroupItem>
-                                                                        {
-                                                                            <div onClick={(e) => e.stopPropagation()}>
-                                                                                <ListGroupItem
-                                                                                    onClick={(e) => handleUpdateBenefOwner(bmoOwner)}
-                                                                                >
-                                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                                        <div className="d-flex gap-2">
-                                                                                            <i className="bi bi-calendar-event"></i>
-                                                                                            Edit
-                                                                                        </div>
-                                                                                    </span>
-                                                                                </ListGroupItem>
-                                                                                <ListGroupItem
-                                                                                    className="text-danger"
-                                                                                    onClick={(e) => handleDeleteBmoOwner(bmoOwner.Id)}
-                                                                                >
-                                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                                        <div className="d-flex gap-2">
-                                                                                            <i className="bi bi-trash"></i>
-                                                                                            Delete
-                                                                                        </div>
-                                                                                    </span>
-                                                                                </ListGroupItem>
-                                                                            </div>
-                                                                        }
-                                                                    </ListGroup>
-
-                                                                </Card>
-
-                                                            </div>
-
-                                                        </td>
+                                                        
 
 
                                                     </tr>

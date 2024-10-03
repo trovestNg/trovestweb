@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import logoIcon from "../../assets/images/fsdh-logo-blue.png";
 import { Button, Card, ListGroup, ListGroupItem, Modal, Spinner } from "react-bootstrap";
 import { getUserInfo, loginUser, logoutUser, refreshToken } from "../../controllers/auth";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { clearNav } from "../../store/slices/userSlice";
 import { emptyUnAuthUserNavArray } from "../../store/slices/unAuthserSlice";
@@ -13,6 +13,7 @@ import { emptyUnAuthUserNavArray } from "../../store/slices/unAuthserSlice";
 const TopBarUnAuth: React.FC<any> = ({ payload }) => {
     const [loading,setLoading] = useState(false)
     const currentPath = useLocation().pathname;
+    const navigate = useNavigate()
     const dispatch = useDispatch()
     // const [userType, setUserType] = useState('');
     // const [userName, setUserName] = useState('');
@@ -123,6 +124,7 @@ const TopBarUnAuth: React.FC<any> = ({ payload }) => {
 
             <div className="px-1">
                 <div className="d-flex gap-2 px-2">
+                    {/* <p onClick={()=>navigate('/test')}>Login</p> */}
                     <Button style={{minWidth:'8em'}} onClick={handleLogin} className="py-2 px-4 rounded rounded-2">{loading?<Spinner size="sm"/>:'Login'}</Button>
                     {/* <div className="table-icon m-0 p-0 d-flex align-items-center" >
                         

@@ -57,7 +57,8 @@ const UboAdminTopbar: React.FC<any> = ({ payload }) => {
             setTimer((prevTime: any) => {
                 if (prevTime <= 1) {
                     clearInterval(timer);
-                    setShowModal(true); // Show modal when time is up
+                    // setShowModal(true);
+                    // handleStay()
                     return 0;
                 }
                 return prevTime - 1;
@@ -79,15 +80,15 @@ const UboAdminTopbar: React.FC<any> = ({ payload }) => {
         logoutUser()
     }, [initialTime]);
 
-    useEffect(() => {
-        if (timer === 10) {
-            setShowModal(true); // Show modal when 10 seconds are left
-        }
-    }, [timer]);
+    // useEffect(() => {
+    //     if (timer === 10) {
+    //         setShowModal(true); // Show modal when 10 seconds are left
+    //     }
+    // }, [timer]);
 
     useEffect(() => {
         if (timer === 0) {
-            // logoutUser()
+            handleStay();
         }
     }, [timer]);
 

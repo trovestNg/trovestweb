@@ -236,7 +236,7 @@ const UnAuthUserViewBmoPage = () => {
         let payload: IUnAuthUserNavLink = {
             name: owner.BusinessName,
             customerNumber: owner?.CustomerNumber,
-            ownerId: owner?.CustomerNumber
+            ownerId: owner?.Id
         }
         let unAvOwner = {
             AuthorizeBy: owner.AuthorizeBy,
@@ -285,6 +285,7 @@ const UnAuthUserViewBmoPage = () => {
     }, [refData])
     return (
         <div className="w-100 p-0">
+            {/* <p>BO Page</p> */}
             {bmoList.length > 0 && <ChartModal bmoList={bmoList} profile={parentInfo} show={viewChartModal} off={() => setViewChartModal(false)} />}
             <MoreInfoModal info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} />
 
@@ -327,6 +328,7 @@ const UnAuthUserViewBmoPage = () => {
                                     <th scope="col" className="fw-medium">Customer Number</th>
                                     <th scope="col" className="fw-medium">RC Number/BN/CAC</th>
                                     <th scope="col" className="fw-medium">No Of Beneficial Owners</th>
+                                    <th scope="col" className="fw-medium">Status</th>
                                 </tr>
                             </thead>
                             <tbody>{

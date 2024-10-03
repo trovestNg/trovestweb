@@ -23,15 +23,17 @@ import EditBMOOwnerCoperateModal from "../../../components/modals/editBMOOwnerCo
 import SureToDeleteBmoModal from "../../../components/modals/sureToDeleteBmoModal";
 import { IBMOwnersPublic,IUnAuthUserNavLink } from "../../../interfaces/bmOwner";
 // import { emptyAuthUserNavArray, pushToAuthUserNavArray, reduceAuthUserNavArray, setAuthUserBMOOwnerProfile } from "../../store/slices/authUserSlice";
-import { emptyAuthUserNavArray, pushToAuthUserNavArray, reduceAuthUserNavArray, setAuthUserBMOOwnerProfile } from "../../../store/slices/authUserSlice";
+import { emptyAuthUserNavArray, pushToAuthUserNavArray, reduceAuthUserNavArray, removeFromAuthUserNavArray, setAuthUserBMOOwnerProfile } from "../../../store/slices/authUserSlice";
 import EditBMOOwnerIndModal from "../../../components/modals/editBMOOwnerIndModal";
+import { clearNav } from "../../../store/slices/userSlice";
+import AddRiskLevelModal from "../../../components/modals/add-risk-level-modal";
 
 
 
 
 const UserViewRiskBMOPage = () => {
-    const [bmoList, setBmoList] = useState<IOwner[]>([]);
-    const [bmoOwner, setBmoOwner] = useState<IOwner>();
+    const [bmoList, setBmoList] = useState<IBMOwnersPublic[]>([]);
+    const [bmoOwner, setBmoOwner] = useState<IBMOwnersPublic>();
     const [parentInfo, setParentInfo] = useState<IParent>();
     const { level,ownerId } = useParams()
     const [loading, setLoading] = useState(false);
@@ -39,6 +41,9 @@ const UserViewRiskBMOPage = () => {
     const [viewMoreInfotModal, setViewMoreInfoModal] = useState(false);
     const [userSearch, setUserSearch] = useState('');
     const [refData, setRefData] = useState(false);
+    const [addRiskLevelModal, setAddRiskLevelModal] = useState(false);
+
+    const [bmoId, setBmoId] = useState('');
 
     const navigate = useNavigate();
    
@@ -148,7 +153,7 @@ const UserViewRiskBMOPage = () => {
         { label: 'Ticker', key: 'Ticker' }
     ];
 
-    const generateCSV = (data: IOwner[], headers: { label: string; key: keyof IOwner }[]) => {
+    const generateCSV = (data: IBMOwnersPublic[], headers: { label: string; key: keyof IBMOwnersPublic }[]) => {
         // Map data to match the headers
         const csvData = data.map((item, index) => ({
             BusinessName: item.BusinessName,
@@ -251,7 +256,32 @@ const UserViewRiskBMOPage = () => {
         setAddNewBenefOwnerModal(false)
     }
 
-    const handleShowInfoModal = (owner: IOwner) => {
+
+    const handleUpdateBenefOwnerType = (e: IBMOwnersPublic) => {
+
+        switch (e.CategoryDescription) {
+            case e.CategoryDescription = 'Individual':
+
+                setEditBenefOwnerIndividualModal(true);
+                setBmoOwner(e)
+                break;
+            case e.CategoryDescription = 'Coperate':
+
+                setEditBenefOwnerCoperateModal(true);
+                setBmoOwner(e)
+                break;
+            default:
+                break;
+        }
+        setAddNewBenefOwnerModal(false)
+    }
+
+    const handleDeleteBmoOwner = (bmoId: any) => {
+        setDeleteBmOwner(true);
+        setBmoId(bmoId);
+    }
+
+    const handleShowInfoModal = (owner: IBMOwnersPublic) => {
         setBmoOwner(owner);
         setViewMoreInfoModal(!viewMoreInfotModal);
     }
@@ -262,28 +292,33 @@ const UserViewRiskBMOPage = () => {
 
         const slicedNavList = navArray.slice(0, navIndex + 1);
         console.log({ slicedResultt: slicedNavList });
-        // dispatch(removeFromAuthUserNavArray(slicedNavList));
+        dispatch(removeFromAuthUserNavArray(slicedNavList));
         // navigate(-1)
         if(navIndex ==0){
-            navigate(`/ubo-portal/custormer-details/${1}/${currentNav?.customerNumber}`)
+            navigate(`/bo-risk-portal/custormer-details/${1}/${currentNav?.customerNumber}`)
         } else{
-            navigate(`/ubo-portal/owner-details/${level && +level - 1}/${currentNav?.ownerId}`)
+            navigate(`/bo-risk-portal/owner-details/${level && +level - 1}/${currentNav?.ownerId}`)
         }
        
 
     }
+    
+    const handleAddRiskLevel = (e: any) => {
+        setBmoOwner(e)
+        setAddRiskLevelModal(true);
+        
+    }
+
+
     const handleViewChart = () => {
         setViewChartModal(!viewChartModal)
     }
 
-    const handleNavigateToLevel = (owner: IOwner) => {
-        console.log({
-            path:owner
-        })
+    const handleNavigateToOwner = (owner: IBMOwnersPublic) => {
         let payload: IUnAuthUserNavLink = {
             name: owner.BusinessName,
             customerNumber: owner?.CustomerNumber,
-            ownerId: ownerId
+            ownerId: owner?.Id
         }
         let unAvOwner = {
             AuthorizeBy: owner.AuthorizeBy,
@@ -297,7 +332,7 @@ const UserViewRiskBMOPage = () => {
             CountryName: owner.CountryName,
             CreatedBy: owner.CreatedBy,
             CreatedDate: owner.CreatedDate,
-            CustomerNumber: owner.CustomerNumber            ,
+            CustomerNumber: owner.CustomerNumber,
             Id: 0,
             IdNumber: owner.IdNumber,
             IdType: owner.IdType,
@@ -313,17 +348,18 @@ const UserViewRiskBMOPage = () => {
             RejectedDate: owner.RejectedDate,
             RiskLevel: owner.RiskLevel,
             RiskScore: owner.RiskScore,
-            Ticker:owner.Ticker
+            Ticker: owner.Ticker
         }
         dispatch(pushToAuthUserNavArray(payload));
         dispatch(setAuthUserBMOOwnerProfile(unAvOwner));
 
-        window.history.pushState({}, '', `/ubo-portal/owner-details/${level && +level + 1}/${owner.Id}`);
-        navigate(`/ubo-portal/owner-details/${ level&& +level + 1}/${owner.Id}`);
+        window.history.pushState({}, '', `/bo-risk-portal/owner-details/${level && +level + 1}/${owner.Id}`);
+        navigate(`/bo-risk-portal/owner-details/${level && +level + 1}/${owner.Id}`);
+
     }
 
     const handleBackToHomePage = () => {
-        dispatch(emptyAuthUserNavArray())
+        dispatch(clearNav([]))
         navigate('/bo-risk-portal')
     }
 
@@ -335,6 +371,9 @@ const UserViewRiskBMOPage = () => {
             <MoreInfoModal lev={level} info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} />
             <AddNewBenefOwnerTypeModal action={handleAddNewBenefOwnerType} off={() => setAddNewBenefOwnerModal(false)} show={addNewBenefOwnerModal} />
             <SureToDeleteBmoModal show={deleteBmOwner} off={() => setDeleteBmOwner(false)} />
+
+            <AddRiskLevelModal userData={bmoOwner} off={() => { setAddRiskLevelModal(false); setRefData(!refData) }} 
+            show={addRiskLevelModal} />
 
             <CreateBMOOwnerIndModal
                 parent={parentInfo}
@@ -404,9 +443,11 @@ const UserViewRiskBMOPage = () => {
                 }
                 </div>
                 <div className="d-flex gap-2">
-                    <Button disabled={dontAllowAdd} onClick={handleAddNewBenefOwner} className="d-flex gap-2" style={{ minWidth: '15em' }}>
+                    {/* <Button 
+                    
+                    disabled={dontAllowAdd || !parentInfo?.IsAuthorized} onClick={handleAddNewBenefOwner} className="d-flex gap-2" style={{ minWidth: '15em' }}>
                         <i className="bi bi-plus-circle"></i>
-                        <p className="p-0 m-0" >Add New Beneficial Owner</p></Button>
+                        <p className="p-0 m-0" >Add New Beneficial Owner</p></Button> */}
                     {bmoList.length > 0 && <FormSelect style={{ maxWidth: '8em' }} onChange={(e) => handleListDownload(e.currentTarget.value)}>
                         <option>Download</option>
                         <option value={'csv'}>CSV</option>
@@ -446,6 +487,7 @@ const UserViewRiskBMOPage = () => {
                                     <th scope="col" className="fw-medium">Customer Number</th>
                                     <th scope="col" className="fw-medium">RC Number/BN/CAC</th>
                                     <th scope="col" className="fw-medium">No Of Beneficial Owners</th>
+                                    <th scope="col" className="fw-medium">Status</th>
                                 </tr>
                             </thead>
                             <tbody>{
@@ -468,6 +510,13 @@ const UserViewRiskBMOPage = () => {
                                     <td className="text-primary">
                                         {
                                            bmoList.length
+                                        }
+                                    </td>
+
+                                    <td className={`text-${parentInfo?.IsAuthorized?'success':'danger'}`}>
+                                        {
+                                            parentInfo?.IsAuthorized?'Authorized':'UnAuthorized'
+                                            
                                         }
                                     </td>
                                 </tr>
@@ -513,95 +562,102 @@ const UserViewRiskBMOPage = () => {
                                     </tbody>
                                 </> :
                                 <>
-                                    <thead className="thead-dark">
+                                   <thead className="thead-dark">
                                         <tr >
                                             <th scope="col" className="bg-primary text-light">#</th>
                                             <th scope="col" className="bg-primary text-light">Beneficial Owner</th>
                                             <th scope="col" className="bg-primary text-light">Account Type</th>
-                                            <th scope="col" className="bg-primary text-light">Nationality </th>
-                                            <th scope="col" className="bg-primary text-light">% Holding </th>
-                                            <th scope="col" className="bg-primary text-light">No of Shares  </th>
-                                            <th scope="col" className="bg-primary text-light">PEP</th>
-                                            <th scope="col" className="bg-primary text-light">Ticker</th>
+                                            <th scope="col" className="bg-primary text-light">Risk Rating</th>
                                             <th scope="col" className="bg-primary text-light">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {
-                                            bmoList && bmoList.length > 0 ? bmoList && bmoList.map((bmoOwner: IOwner, index: number) => (
-                                                <tr key={index}
-                                                    role="button"
-                                                    onClick={bmoOwner.CategoryDescription == 'Corporate' ? ()=>handleNavigateToLevel(bmoOwner) : () => handleShowInfoModal(bmoOwner)}
-                                                >
-                                                    <th scope="row">{index + 1}</th>
-                                                    <td className="">{bmoOwner.BusinessName}</td>
-                                                    <td>{bmoOwner.CategoryDescription}</td>
-                                                    <td>{bmoOwner.CountryName}</td>
-                                                    <td>{bmoOwner.PercentageHolding}%</td>
-                                                    <td>{bmoOwner.NumberOfShares}</td>
-                                                    <td>{bmoOwner.IsPEP ? 'Yes' : 'No'}</td>
-                                                    <td>{bmoOwner.Ticker ? bmoOwner.Ticker : 'N/A'}</td>
-                                                    <td className="table-icon" >
-                                                        <i className=" bi bi-three-dots" onClick={(e) => e.stopPropagation()}></i>
-                                                        <div className="content ml-5" style={{ position: 'relative', zIndex: 1500 }}>
-                                                            <Card className="p-2  shadow-sm rounded border-0"
-                                                                style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
+                                            bmoList && bmoList.length > 0 ?
+                                                bmoList &&
+                                                // <AuthBOList lv={level} handleEditUBOOwner={handleUpdateBenefOwnerType} data={bmoList} handDel={handleDeleteBmoOwner} /> 
+                                                bmoList.map((bmoOwner: IBMOwnersPublic, index: number) => (
+                                                    <tr key={index}
+                                                        role="button"
+                                                        onClick={bmoOwner.CategoryDescription == 'Corporate' ? () => handleNavigateToOwner(bmoOwner) : () => handleShowInfoModal(bmoOwner)}
+                                                    >
+                                                        <th scope="row">{index + 1}</th>
+                                                        <td className="">{bmoOwner.BusinessName}</td>
+                                                        <td>{bmoOwner.CategoryDescription}</td>
+                                                        <td className={`text-${bmoOwner.RiskScore==1?'success':'danger'}`}>{bmoOwner.RiskLevel}</td>
+                                                        <td className="table-icon" >
+                                                            <i className=" bi bi-three-dots" onClick={(e) => e.stopPropagation()}></i>
+                                                            <div className="content ml-5" style={{ position: 'relative', zIndex: 1500 }}>
+                                                                <Card className="p-2  shadow-sm rounded border-0"
+                                                                    style={{ minWidth: '15em', marginLeft: '-10em', position: 'absolute' }}>
 
-                                                                <ListGroup>
-                                                                    <ListGroupItem className="multi-layer"
-                                                                    // onClick={(e) => handleGetAttestersList(e, policy)}
-                                                                    >
-                                                                        <span className="w-100 d-flex justify-content-between">
-                                                                            <div className="d-flex gap-2">
-                                                                                <i className="bi bi-eye"></i>
-                                                                                View More
+                                                                    <ListGroup>
+                                                                        <ListGroupItem className="multi-layer"
+                                                                        // onClick={(e) => handleGetAttestersList(e, policy)}
+                                                                        >
+                                                                            <span className="w-100 d-flex justify-content-between">
+                                                                                <div className="d-flex gap-2">
+                                                                                    <i className="bi bi-eye"></i>
+                                                                                    View More
+                                                                                </div>
+
+                                                                                {/* <i className="bi bi-chevron-right"></i> */}
+                                                                            </span>
+
+                                                                        </ListGroupItem>
+                                                                        {
+                                                                            <div onClick={(e) => e.stopPropagation()}>
+                                                                                {/* <ListGroupItem
+                                                                                    onClick={(e) => handleUpdateBenefOwnerType(bmoOwner)}
+                                                                                >
+                                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                                        <div className="d-flex gap-2">
+                                                                                            <i className="bi bi-calendar-event"></i>
+                                                                                            Edit
+                                                                                        </div>
+                                                                                    </span>
+                                                                                </ListGroupItem> */}
+
+                                                                                <ListGroupItem
+                                                                                    onClick={(e) => handleAddRiskLevel(bmoOwner)}
+                                                                                >
+                                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                                        <div className="d-flex gap-2">
+                                                                                        <i className="bi bi-node-plus"></i>
+                                                                                            Add Risk Assesment
+                                                                                        </div>
+                                                                                    </span>
+                                                                                </ListGroupItem>
+                                                                                {/* <ListGroupItem
+                                                                                    className="text-danger"
+                                                                                    onClick={(e) => handleDeleteBmoOwner(bmoOwner.Id)}
+                                                                                >
+                                                                                    <span className="w-100 d-flex justify-content-between">
+                                                                                        <div className="d-flex gap-2">
+                                                                                            <i className="bi bi-trash"></i>
+                                                                                            Delete
+                                                                                        </div>
+                                                                                    </span>
+                                                                                </ListGroupItem> */}
                                                                             </div>
+                                                                        }
+                                                                    </ListGroup>
 
-                                                                            {/* <i className="bi bi-chevron-right"></i> */}
-                                                                        </span>
+                                                                </Card>
 
-                                                                    </ListGroupItem>
-                                                                    {
-                                                                        <div onClick={(e) => e.stopPropagation()}>
-                                                                            <ListGroupItem
-                                                                            // onClick={(e) => handleUpdate(e, policy)}
-                                                                            >
-                                                                                <span className="w-100 d-flex justify-content-between">
-                                                                                    <div className="d-flex gap-2">
-                                                                                        <i className="bi bi-calendar-event"></i>
-                                                                                        Edit
-                                                                                    </div>
-                                                                                </span>
-                                                                            </ListGroupItem>
-                                                                            <ListGroupItem
-                                                                                className="text-danger"
-                                                                            // disabled={policy?.markedForDeletion}
-                                                                            // onClick={(e) => handleDelete(e, policy)}
-                                                                            >
-                                                                                <span className="w-100 d-flex justify-content-between">
-                                                                                    <div className="d-flex gap-2">
-                                                                                        <i className="bi bi-trash"></i>
-                                                                                        Delete
-                                                                                    </div>
-                                                                                </span>
-                                                                            </ListGroupItem>
-                                                                        </div>
-                                                                    }
-                                                                </ListGroup>
+                                                            </div>
 
-                                                            </Card>
+                                                        </td>
 
-                                                        </div>
 
+                                                    </tr>
+                                                ))
+
+                                                : <tr className="text-center">
+                                                    <td colSpan={9}>
+                                                        No Data Available
                                                     </td>
-
-
                                                 </tr>
-                                            )) : <tr className="text-center">
-                                                <td colSpan={9}>
-                                                    No Data Available
-                                                </td>
-                                            </tr>
                                         }
                                     </tbody>
 

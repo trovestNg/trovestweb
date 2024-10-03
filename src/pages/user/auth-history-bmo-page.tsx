@@ -169,12 +169,12 @@ const AuthHistoryBmoPage = () => {
                                     <div className="d-flex gap-3 mt-3 w-100 shadow-sm p-2">
 
                                         <Badge className="p-3 bg-warning rounded rounded-5">AB</Badge>
-                                        <div className=" w-50">
+                                        <div className=" w-75">
                                         <p className="p-0 m-0 text-primary fw-bold">{hist.User}</p>
                                             {/* <p className="p-0 m-0">Added new Beneficial Owner to <span className="fw-bold">OLASCO & CO Limited</span></p> */}
                                             <p className="p-0 m-0">{hist.ActionDescription}</p>
                                         </div>
-                                        <p className=" w-50 text-end">{moment(hist.TimeStamp).format('a')}</p>
+                                        <p className=" w-50 text-end">{moment(hist.TimeStamp).format('HH:mm A')}</p>
                                     </div>
                                 ))
                             }
@@ -191,7 +191,7 @@ const AuthHistoryBmoPage = () => {
                                     <div className="d-flex gap-3 mt-3 w-100 shadow-sm p-2">
 
                                         <Badge className="p-3 bg-warning rounded rounded-5">AB</Badge>
-                                        <div className=" w-50">
+                                        <div className=" w-75">
                                             <p className="p-0 m-0 text-primary fw-bold">{hist.User}</p>
                                             {/* <p className="p-0 m-0">Added new Beneficial Owner to <span className="fw-bold">OLASCO & CO Limited</span></p> */}
                                             <p className="p-0 m-0">{hist.ActionDescription}</p>

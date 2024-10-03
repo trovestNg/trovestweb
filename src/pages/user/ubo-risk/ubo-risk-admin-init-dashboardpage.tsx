@@ -25,6 +25,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { handleUserSearch, handleUserSearchResult } from "../../../store/slices/userSlice";
 import CreateBMOOwnerImportModal from "../../../components/modals/createBMOOwnerImportModal";
 import { IBMCustomersPublic, IBMOwnersPublic, IUnAuthUserNavLink } from "../../../interfaces/bmOwner";
+import { pushToAuthUserNavArray, setAuthUserBmoCustormerProfile } from "../../../store/slices/authUserSlice";
 
 
 const UboRiskAdminInitDashboardpage = () => {
@@ -87,8 +88,8 @@ const UboRiskAdminInitDashboardpage = () => {
             RiskLevel: owner.riskLevel,
             Id:0
         }
-        // dispatch(pushToAuthUserNavArray(payload));
-        // dispatch(setAuthUserBmoCustormerProfile(unAvOwner))
+        dispatch(pushToAuthUserNavArray(payload));
+        dispatch(setAuthUserBmoCustormerProfile(unAvOwner))
         navigate(`/bo-risk-portal/custormer-details/${1}/${owner.customerNumber}`)
     }
 
