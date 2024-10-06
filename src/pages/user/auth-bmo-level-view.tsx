@@ -41,6 +41,7 @@ import EditBMOOwnerIndModal from "../../components/modals/editBMOOwnerIndModal";
 import EditBMOOwnerCoperateModal from "../../components/modals/editBMOOwnerCoperateModal";
 import SureToDeleteBmoModal from "../../components/modals/sureToDeleteBmoModal";
 import SureToApproveBOModal from "../../components/modals/sureToApproveBOModal";
+import { baseUrl } from "../../config/config";
 
 
 
@@ -73,6 +74,13 @@ const AuthOwnerViewPage = () => {
     const [deleteBmOwner, setDeleteBmOwner] = useState(false);
     const [approveBmOwner, setApproveBmOwner] = useState(false);
     const [dontAllowAdd, setDontAllowAd] = useState(false);
+
+    const [selectedOwner, setSelectedOwner] = useState<any>();
+
+    const [isLoaded,setIsloaded] = useState(false);
+
+
+    const [dloading, setDLoading] = useState(false);
 
 
     const dispatch = useDispatch()
@@ -110,9 +118,16 @@ const AuthOwnerViewPage = () => {
         }
 
         if(total >= 100){
-            setDontAllowAd(true)
+            toast.error('Already 100% no more shares')
+        } else{
+            setAddNewBenefOwnerModal(true)
         }
         return total
+    }
+
+    const handleDeleteBmoOwner = (bmOwner: any) => {
+        setDeleteBmOwner(true);
+        setSelectedOwner(bmOwner);
     }
 
     type Column = {
@@ -195,18 +210,66 @@ const AuthOwnerViewPage = () => {
         saveAs(blob, `${parentInfo?.BusinessName} BMO List}-.csv`);
     };
 
-    const handleListDownload = (val: string) => {
-        if (val == 'pdf') {
-            downloadPdf()
-        } else if (val == 'csv') {
-            generateCSV(bmoList, headers)
-        } else {
-            return
+    const downloadExcelReport = async()=>{
+        try {
+            setDLoading(true)
+            let userInfo = await getUserInfo();
+            // const res = await api.get(`report?format=xlsx&&customerNumber=${curstomerNumber}&&`, );
+
+            // const res= await fetch(`${baseUrl}/report?format=xlsx&&customerNumber=${curstomerNumber}&&requesterName=${`Public`}`)
+
+            const res= await fetch(`${baseUrl}/report/level?format=xlsx&&parentIid=${parentInfo?.Id}&&requesterName=${`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`}`)
+            if(res.status==200){
+                res.blob().then(blob=>{
+                    let a=document.createElement('a');
+                    a.href=window.URL.createObjectURL(blob);
+                    a.download=parentInfo?.BusinessName+' Owners List.' + 'xlsx';
+                    a.click();
+                   })
+                   setDLoading(false)
+               }
+    
+               if(res.status==404){
+                toast.error('Fail to fetch report')
+                   setDLoading(false)
+               }
+          
+        } catch (error) {
+
+        }
+    }
+
+    const downloadPdfReport = async()=>{
+        try {
+            setDLoading(true)
+            let userInfo = await getUserInfo();
+            // const res = await api.get(`report?format=xlsx&&customerNumber=${curstomerNumber}&&`, );
+
+            // const res= await fetch(`${baseUrl}/report?format=xlsx&&customerNumber=${curstomerNumber}&&requesterName=${`Public`}`)
+
+            const res= await fetch(`${baseUrl}/report/otherLevels/pdf?parentId=${parentInfo?.Id}&&requesterName=${`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`}`)
+            if(res.status==200){
+                res.blob().then(blob=>{
+                    let a=document.createElement('a');
+                    a.href=window.URL.createObjectURL(blob);
+                    a.download=parentInfo?.BusinessName+' Owners List.' + 'xlsx';
+                    a.click();
+                   })
+                   setDLoading(false)
+               }
+    
+               if(res.status==404){
+                toast.error('Fail to fetch report')
+                   setDLoading(false)
+               }
+          
+        } catch (error) {
+
         }
     }
 
 
-    const fetch = async () => {
+    const fetched = async () => {
         setLoading(true)// toast.error('Await')
         let userInfo = await getUserInfo();
         if(userInfo){
@@ -215,25 +278,29 @@ const AuthOwnerViewPage = () => {
                 const res = await api.get(`owner/level/navigate/approved?requesterName=${userInfo.profile.given_name}&ownerId=${ownerId}`,userInfo?.access_token);
                 if (res?.data) {
                     setBmoList(res?.data?.Owners.reverse());
-                    calculatePercent(res?.data?.Owners)
+                    // calculatePercent(res?.data?.Owners)
                     setParentInfo(res?.data?.Parent)
                     setLoading(false)
+                    setIsloaded(true)
                 }
                 else if(res?.status == 400){
                     setParentInfo(unAvOwner);
                     setBmoList([]);
                     setLoading(false)
+                    setIsloaded(true)
                 }
                 else {
                     setParentInfo(unAvOwner);
                     setBmoList([]);
                     setLoading(false)
+                    setIsloaded(true)
                 }
             } catch (error) {
                 setParentInfo(unAvOwner);
                 setBmoList([]);
                 // setBmoList([])
                 setLoading(false)
+                    setIsloaded(true)
             }
 
         }
@@ -291,34 +358,41 @@ const AuthOwnerViewPage = () => {
         setAddNewBenefOwnerModal(false)
     }
 
-    const handleDeleteBmoOwner = (bmoId: any) => {
-        setDeleteBmOwner(true);
-        setBmoId(bmoId);
-    }
-
     const handleShowInfoModal = (owner: IBMOwnersPublic) => {
         setBmoOwner(owner);
         setViewMoreInfoModal(!viewMoreInfotModal);
     }
 
     const handleNavigateNavs = (currentNav: any, navIndex: number) => {
-        console.log({ currentNavList: navArray });
-        console.log({clickedNav:currentNav, itsIndex:navIndex})
+        // console.log({ currentNavList: navArray });
+        // console.log({clickedNav:currentNav, itsIndex:navIndex})
 
         const slicedNavList = navArray.slice(0, navIndex + 1);
-        console.log({ slicedResultt: slicedNavList });
+        // console.log({ slicedResultt: slicedNavList });
         dispatch(removeFromAuthUserNavArray(slicedNavList));
         // navigate(-1)
         if(navIndex ==0){
             navigate(`/ubo-portal/custormer-details/${1}/${currentNav?.customerNumber}`)
+            setIsloaded(!isLoaded)
         } else{
             navigate(`/ubo-portal/owner-details/${level && +level - 1}/${currentNav?.ownerId}`)
+            setIsloaded(!isLoaded)
         }
        
 
     }
     const handleViewChart = () => {
         setViewChartModal(!viewChartModal)
+    }
+
+    const handleListDownload = (val: string) => {
+        if (val == 'pdf') {
+            downloadPdfReport()
+        } else if (val == 'csv') {
+            downloadExcelReport()
+        } else {
+            return
+        }
     }
 
     const handleApproveBo = async () => {
@@ -354,14 +428,11 @@ const AuthOwnerViewPage = () => {
         }
     }
 
-    const handleNavigateToLevel = (owner: IBMOwnersPublic) => {
-        console.log({
-            path:owner
-        })
+    const handleNavigateToOwner = (owner: IBMOwnersPublic) => {
         let payload: IUnAuthUserNavLink = {
             name: owner.BusinessName,
             customerNumber: owner?.CustomerNumber,
-            ownerId: ownerId
+            ownerId: owner?.Id
         }
         let unAvOwner = {
             AuthorizeBy: owner.AuthorizeBy,
@@ -391,29 +462,43 @@ const AuthOwnerViewPage = () => {
             RejectedDate: owner.RejectedDate,
             RiskLevel: owner.RiskLevel,
             RiskScore: owner.RiskScore,
-            Ticker:owner.Ticker
+            Ticker: owner.Ticker
         }
         dispatch(pushToAuthUserNavArray(payload));
         dispatch(setAuthUserBMOOwnerProfile(unAvOwner));
-
+        setIsloaded(false)
         window.history.pushState({}, '', `/ubo-portal/owner-details/${level && +level + 1}/${owner.Id}`);
-        navigate(`/ubo-portal/owner-details/${ level&& +level + 1}/${owner.Id}`);
+        navigate(`/ubo-portal/owner-details/${level && +level + 1}/${owner.Id}`);
         // window.location.reload()
+        
+
     }
 
     const handleBackToHomePage = () => {
         dispatch(clearNav([]))
         navigate('/ubo-portal')
     }
-
     useEffect(() => {
-        fetch();
-    }, [refData,ownerId])
+        if(!isLoaded){
+            fetched()
+        }
+        
+    }, [refData, ownerId,isLoaded,level])
     return (
         <div className="w-100 p-0">
-            <MoreInfoModal lev={level} info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} />
-            <AddNewBenefOwnerTypeModal action={handleAddNewBenefOwnerType} off={() => setAddNewBenefOwnerModal(false)} show={addNewBenefOwnerModal} />
-            <SureToDeleteBmoModal show={deleteBmOwner} off={() => setDeleteBmOwner(false)} />
+            <MoreInfoModal handleApprv={handleApproveBo} lev={level} info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} />
+            <AddNewBenefOwnerTypeModal action={handleAddNewBenefOwnerType} 
+            off={() => setAddNewBenefOwnerModal(false)} show={addNewBenefOwnerModal} />
+            <SureToDeleteBmoModal
+            parentInfo={parentInfo}
+            clickedOwner={selectedOwner}
+            show={deleteBmOwner} 
+            off={() => {
+                setDeleteBmOwner(false);
+                setRefData(!refData);
+                setIsloaded(!isLoaded);
+            }} 
+            />
 
             <SureToApproveBOModal loading={loading} show={approveBmOwner} off={() => setApproveBmOwner(false)} action={handleApproveBo}/>
 
@@ -421,7 +506,10 @@ const AuthOwnerViewPage = () => {
                 parent={parentInfo}
                 ownerId={ownerId}
                 lev={level}
-                off={() => { setAddNewBenefOwnerIndividualModal(false); setRefData(!refData) }}
+                off={() => { setAddNewBenefOwnerIndividualModal(false); 
+                    setRefData(!refData);
+                    setIsloaded(!isLoaded);
+                 }}
                 show={addNewBenefOwnerIndividualModal} />
 
             <CreateBMOOwnerCoperateModal
@@ -430,19 +518,23 @@ const AuthOwnerViewPage = () => {
                 lev={level}
                 off={() => {
                     setAddNewBenefOwnerCoperateModal(false);
-                    setRefData(!refData)
+                    setRefData(!refData);
+                setIsloaded(!isLoaded);
                 }}
                 show={addNewBenefOwnerCoperateModal} />
             
 
-            <CreateBMOOwnerFundsManagerModal off={() => { setAddNewBenefOwnerFundsManagerModal(false); setRefData(!refData) }} show={addNewBenefOwnerFundsManagerModal} />
+            <CreateBMOOwnerFundsManagerModal off={() => { setAddNewBenefOwnerFundsManagerModal(false); setRefData(!refData);
+                setIsloaded(!isLoaded); }} show={addNewBenefOwnerFundsManagerModal} />
 
             <CreateBMOOwnerImportModal
-                off={() => { setAddNewBenefOwnerImportModal(false); setRefData(!refData) }}
+                off={() => { setAddNewBenefOwnerImportModal(false); setRefData(!refData);
+                    setIsloaded(!isLoaded); }}
                 show={addNewBenefOwnerImportModal} />
 
             <EditBMOOwnerIndModal parentInf={parentInfo} ownerInfo={bmoOwner}
-                off={() => { setEditBenefOwnerIndividualModal(false); setRefData(!refData) }} 
+                off={() => { setEditBenefOwnerIndividualModal(false);setRefData(!refData);
+                    setIsloaded(!isLoaded); }} 
                 show={editBenefOwnerIndividualModal} />
 
             <EditBMOOwnerCoperateModal
@@ -450,13 +542,14 @@ const AuthOwnerViewPage = () => {
                 ownerInfo={bmoOwner}
                 off={() => {
                     setEditBenefOwnerCoperateModal(false);
-                    setRefData(!refData)
+                    setRefData(!refData);
+                setIsloaded(!isLoaded);
 
                 }} show={editBenefOwnerCoperateModal} />
 
 
             {bmoList.length > 0 && <ChartModal bmoList={bmoList} profile={parentInfo} show={viewChartModal} off={() => setViewChartModal(false)} />}
-            <MoreInfoModal info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} />
+            {/* <MoreInfoModal info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} /> */}
             
             <Button className="d-flex gap-2" onClick={handleBackToHomePage} variant="outline border border-primary">
                 <i className="bi bi-arrow-left text-primary"></i>
@@ -486,16 +579,18 @@ const AuthOwnerViewPage = () => {
                 }
                 </div>
                 <div className="d-flex gap-2">
-                    <Button 
+                <Button 
                     
-                    disabled={dontAllowAdd || !parentInfo?.IsAuthorized} onClick={handleAddNewBenefOwner} className="d-flex gap-2" style={{ minWidth: '15em' }}>
+                    disabled={!parentInfo?.IsAuthorized} onClick={()=>calculatePercent(bmoList)} className="d-flex gap-2" style={{ minWidth: '15em' }}>
                         <i className="bi bi-plus-circle"></i>
                         <p className="p-0 m-0" >Add New Beneficial Owner</p></Button>
-                    {bmoList.length > 0 && <FormSelect style={{ maxWidth: '8em' }} onChange={(e) => handleListDownload(e.currentTarget.value)}>
+
+                        {bmoList.length>0 && <FormSelect style={{ maxWidth: '8em' }} onChange={(e) => handleListDownload(e.currentTarget.value)}>
                         <option>Download</option>
                         <option value={'csv'}>CSV</option>
                         <option value={'pdf'}>PDf</option>
-                    </FormSelect>}
+                    </FormSelect>
+                    }
                 </div>
 
             </div>
@@ -634,7 +729,9 @@ const AuthOwnerViewPage = () => {
                                             bmoList && bmoList.length > 0 ? bmoList && bmoList.map((bmoOwner: IBMOwnersPublic, index: number) => (
                                                 <tr key={index}
                                                     role="button"
-                                                    onClick={bmoOwner.CategoryDescription == 'Corporate' ? ()=>handleNavigateToLevel(bmoOwner) : () => handleShowInfoModal(bmoOwner)}
+                                                    onClick={bmoOwner.CategoryDescription == 'Corporate' ? () =>
+                                                        {bmoOwner?.IsAuthorized?handleNavigateToOwner(bmoOwner):toast.error('Un Approved Bo')} : 
+                                                        () => handleShowInfoModal(bmoOwner)}
                                                 >
                                                     <th scope="row">{index + 1}</th>
                                                     <td className="">{bmoOwner.BusinessName}</td>
@@ -666,7 +763,7 @@ const AuthOwnerViewPage = () => {
 
                                                                     </ListGroupItem>
                                                                     {
-                                                                        userClass=='Initiator'&&
+                                                                        // userClass=='Initiator'&&y
                                                                             <div onClick={(e) => e.stopPropagation()}>
                                                                                 <ListGroupItem
                                                                                     onClick={(e) => handleUpdateBenefOwnerType(bmoOwner)}
@@ -680,7 +777,7 @@ const AuthOwnerViewPage = () => {
                                                                                 </ListGroupItem>
                                                                                 <ListGroupItem
                                                                                     className="text-danger"
-                                                                                    onClick={(e) => handleDeleteBmoOwner(bmoOwner.Id)}
+                                                                                    onClick={(e) => handleDeleteBmoOwner(bmoOwner)}
                                                                                 >
                                                                                     <span className="w-100 d-flex justify-content-between">
                                                                                         <div className="d-flex gap-2">

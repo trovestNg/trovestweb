@@ -27,6 +27,7 @@ import { emptyAuthUserNavArray, pushToAuthUserNavArray, reduceAuthUserNavArray, 
 import EditBMOOwnerIndModal from "../../../components/modals/editBMOOwnerIndModal";
 import { clearNav } from "../../../store/slices/userSlice";
 import AddRiskLevelModal from "../../../components/modals/add-risk-level-modal";
+import { baseUrl } from "../../../config/config";
 
 
 
@@ -59,6 +60,7 @@ const UserViewRiskBMOPage = () => {
     const [deleteBmOwner, setDeleteBmOwner] = useState(false);
     const [dontAllowAdd, setDontAllowAd] = useState(false);
 
+    const [dloading, setDLoading] = useState(false);
 
     const dispatch = useDispatch()
     
@@ -191,7 +193,7 @@ const UserViewRiskBMOPage = () => {
     }
 
 
-    const fetch = async () => {
+    const fetchAll = async () => {
         setLoading(true)// toast.error('Await')
         let userInfo = await getUserInfo();
         if(userInfo){
@@ -314,6 +316,35 @@ const UserViewRiskBMOPage = () => {
         setViewChartModal(!viewChartModal)
     }
 
+    const downloadExcelReport = async()=>{
+        try {
+            setDLoading(true)
+            let userInfo = await getUserInfo();
+            // const res = await api.get(`report?format=xlsx&&customerNumber=${curstomerNumber}&&`, );
+
+            // const res= await fetch(`${baseUrl}/report?format=xlsx&&customerNumber=${curstomerNumber}&&requesterName=${`Public`}`)
+
+            const res= await fetch(`${baseUrl}/report/level?format=xlsx&&parentIid=${parentInfo?.Id}&&requesterName=${`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`}`)
+            if(res.status==200){
+                res.blob().then(blob=>{
+                    let a=document.createElement('a');
+                    a.href=window.URL.createObjectURL(blob);
+                    a.download=parentInfo?.BusinessName+' Owners List.' + 'xlsx';
+                    a.click();
+                   })
+                   setDLoading(false)
+               }
+    
+               if(res.status==404){
+                toast.error('Fail to fetch report')
+                   setDLoading(false)
+               }
+          
+        } catch (error) {
+
+        }
+    }
+
     const handleNavigateToOwner = (owner: IBMOwnersPublic) => {
         let payload: IUnAuthUserNavLink = {
             name: owner.BusinessName,
@@ -364,7 +395,7 @@ const UserViewRiskBMOPage = () => {
     }
 
     useEffect(() => {
-        fetch();
+        fetchAll();
     }, [refData,ownerId])
     return (
         <div className="w-100 p-0">
@@ -448,11 +479,14 @@ const UserViewRiskBMOPage = () => {
                     disabled={dontAllowAdd || !parentInfo?.IsAuthorized} onClick={handleAddNewBenefOwner} className="d-flex gap-2" style={{ minWidth: '15em' }}>
                         <i className="bi bi-plus-circle"></i>
                         <p className="p-0 m-0" >Add New Beneficial Owner</p></Button> */}
-                    {bmoList.length > 0 && <FormSelect style={{ maxWidth: '8em' }} onChange={(e) => handleListDownload(e.currentTarget.value)}>
-                        <option>Download</option>
-                        <option value={'csv'}>CSV</option>
-                        <option value={'pdf'}>PDf</option>
-                    </FormSelect>}
+                    {
+                        bmoList.length>0 && !loading &&
+                        <Button 
+                        style={{minWidth:'8em'}}
+                        disabled={dloading}
+                        variant="outline border border-1" 
+                        onClick={downloadExcelReport}>{dloading?<Spinner size="sm"/>:'Download List'}</Button>
+                    }
                 </div>
 
             </div>

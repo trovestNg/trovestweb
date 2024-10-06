@@ -26,6 +26,7 @@ import { IBMOwnersPublic,IUnAuthUserNavLink } from "../../../interfaces/bmOwner"
 import { emptyAuthUserNavArray, pushToAuthUserNavArray, reduceAuthUserNavArray, setAuthUserBMOOwnerProfile } from "../../../store/slices/authUserSlice";
 import EditBMOOwnerIndModal from "../../../components/modals/editBMOOwnerIndModal";
 import AddRiskLevelModal from "../../../components/modals/add-risk-level-modal";
+import { baseUrl } from "../../../config/config";
 
 
 
@@ -63,6 +64,8 @@ const UserViewRiskBMOOwnerPage = () => {
     const navArray = useSelector((state: any) => state.authUserSlice.authUserNavigationArray);
 
     const [dontAllowAdd, setDontAllowAd] = useState(false);
+
+    const [dloading, setDLoading] = useState(false);
 
     useEffect(() => {
         const handlePopState = () => {
@@ -189,7 +192,7 @@ const UserViewRiskBMOOwnerPage = () => {
     }
 
 
-    const fetch = async () => {
+    const fetchAll = async () => {
         setLoading(true)
         // toast.error('Await')
         try {
@@ -335,6 +338,32 @@ const UserViewRiskBMOOwnerPage = () => {
 
     }
 
+    const downloadExcelReport = async()=>{
+        try {
+            setDLoading(true)
+            let userInfo = await getUserInfo();
+            // const res = await api.get(``, );
+            const res= await fetch(`${baseUrl}/report?format=xlsx&&customerNumber=${curstomerNumber}&&requesterName=${`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`}`)
+            if(res.status==200){
+                res.blob().then(blob=>{
+                    let a=document.createElement('a');
+                    a.href=window.URL.createObjectURL(blob);
+                    a.download=parentInfo?.BusinessName+' Owners List.' + 'xlsx';
+                    a.click();
+                   })
+                   setDLoading(false)
+               }
+    
+               if(res.status==404){
+                toast.error('Fail to fetch report')
+                   setDLoading(false)
+               }
+          
+        } catch (error) {
+
+        }
+    }
+
 
     
 
@@ -349,7 +378,7 @@ const UserViewRiskBMOOwnerPage = () => {
     }
 
     useEffect(() => {
-        fetch();
+        fetchAll();
     }, [refData, curstomerNumber])
     return (
         <div className="w-100 p-0">
@@ -418,12 +447,13 @@ const UserViewRiskBMOOwnerPage = () => {
                         <i className="bi bi-plus-circle"></i>
                         <p className="p-0 m-0" >Add New BO Risk Assessment </p></Button> */}
                     {
-                    bmoList.length > 0 &&
-                    <FormSelect style={{ maxWidth: '8em' }} onChange={(e) => handleListDownload(e.currentTarget.value)}>
-                        <option>Download</option>
-                        <option value={'csv'}>CSV</option>
-                        <option value={'pdf'}>PDf</option>
-                    </FormSelect>}
+                        bmoList.length>0 && !loading &&
+                        <Button 
+                        style={{minWidth:'8em'}}
+                        disabled={dloading}
+                        variant="outline border border-1" 
+                        onClick={downloadExcelReport}>{dloading?<Spinner size="sm"/>:'Download List'}</Button>
+                    }
                 </div>
 
             </div>

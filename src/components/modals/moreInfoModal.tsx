@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 // Register necessary components for Chart.js
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const MoreInfoModal: React.FC<any> = ({ show, off, action, info, lev,handleApprv }) => {
+const MoreInfoModal: React.FC<any> = ({ show, off, action, info, lev, handleApprv }) => {
     const userClass = useSelector((state: any) => state.authUserSlice.authUserProfile.UserClass);
     const navigate = useNavigate();
 
@@ -20,14 +20,14 @@ const MoreInfoModal: React.FC<any> = ({ show, off, action, info, lev,handleApprv
         "Account Type": info?.CategoryDescription,
         "Beneficial Owner Name": info?.BusinessName,
         "Nationality": info?.CountryName ? info?.CountryName : '-',
-        "% Holdings": `${info?.PercentageHolding} %`,
+        "% Holdings": `${info?.PercentageHolding}%`,
         "No of Shares": info?.NumberOfShares,
-        "PEP": info?.isPep ? 'Yes' : 'No',
+        "PEP": info?.IsPEP ? 'Yes' : 'No',
         "BVN": info?.BVN ? info?.BVN : '-',
         "ID Type": info?.IdType ? info?.IdType : '-',
         "ID Number": info?.IdNumber ? info?.IdNumber : '-',
         "Ticker": info?.Ticker ? info?.Ticker : 'N/A',
-        "Source of Wealth": 'N/A',
+        "Source of Wealth": info?.SourceOfWealth?info?.SourceOfWealth:'N/A',
     }
     // const returnTableData = (userData:any) => {
     //     Object.keys(userData).forEach(key => {
@@ -132,69 +132,81 @@ const MoreInfoModal: React.FC<any> = ({ show, off, action, info, lev,handleApprv
 
                         <div className="py-3 w-50 d-flex flex-column justify-content-between" >
                             <div>
-                            <table className="table table-striped text-start text-dark">
-                                <tr >
-                                    <td>Initiator Name</td>
-                                    <td>Date Initiated</td>
-                                </tr>
-                                <tr >
-                                    <td className="fw-bold">
-                                        {info?.CreatedBy}
+                                <table className="table table-striped text-start text-dark">
+                                    <tr >
+                                        <td>Initiator Name</td>
+                                        <td>Date Initiated</td>
+                                    </tr>
+                                    <tr >
+                                        <td className="fw-bold">
+                                            {info?.CreatedBy}
 
-                                    </td>
-                                    <td className="fw-bold">
-                                        {
-                                            moment(info?.CreatedDate).format('DD-M-Y')
-                                        }
-                                    </td>
+                                        </td>
+                                        <td className="fw-bold">
+                                            {
+                                                moment(info?.CreatedDate).format('DD-M-Y')
+                                            }
+                                        </td>
 
-                                </tr>
+                                    </tr>
 
-                                <tr>
-                                    <td>Authorizers Name</td>
-                                    <td>Date Authorized</td>
-                                </tr>
+                                    <tr>
+                                        <td>Authorizers Name</td>
+                                        <td>Date Authorized</td>
+                                    </tr>
 
 
-                                <tr>
-                                    <td className="fw-bold">
-                                        {info?.AuthorizeBy
-                                        }
+                                    <tr>
+                                        <td className="fw-bold">
+                                            {info?.AuthorizeBy
+                                            }
 
-                                    </td>
-                                    <td className="fw-bold">
-                                        {
-                                            info?.AuthorizeDate ? moment(info?.AuthorizeDate).format('DD-M-Y') : '-'
-                                        }
-                                    </td>
+                                        </td>
+                                        <td className="fw-bold">
+                                            {
+                                                info?.AuthorizeDate ? moment(info?.AuthorizeDate).format('DD-M-Y') : '-'
+                                            }
+                                        </td>
 
-                                </tr>
+                                    </tr>
 
-                            </table>
-                            <div className="">
-                                <p className="p-0 m-0 fw-bold">Status</p>
-                                <p className={`p-0 m-0 text-${info?.IsAuthorized?'success':'danger'}`}>{info?.IsAuthorized?'Authorized':'Pending'}</p>
+                                </table>
+                                <div className="">
+                                    <p className="p-0 m-0 fw-bold">Status</p>
+                                    <p className={`p-0 m-0 text-${info?.IsAuthorized ? 'success' : 'danger'}`}>{info?.IsAuthorized ? 'Authorized' : 'Pending'}</p>
+                                </div>
+
+                                {
+                                info?.Remark &&
+                                <div className="mt-3 gap-2">
+                                    <p className="p-0 m-0 fw-bold text-primary">Remark</p>
+                                    <p>{info?.Remark}</p>
+
+                                </div>
+                            }
+
                             </div>
 
-                            </div>
+                           
 
                             {
-                                userClass=='Initiator'&&
+                                userClass == 'Initiator' &&
                                 <div className=" d-flex justify-content-center gap-2">
-                                <Button variant="outline p-2 px-3 border text-primary border-1 border-primary">Edit BO </Button>
-                                <Button variant="outline border text-danger border-1 border-danger">Delete BO</Button>
-                                
-                            </div>}
+                                    <Button variant="outline p-2 px-3 border text-primary border-1 border-primary">Edit BO </Button>
+                                    <Button variant="outline border text-danger border-1 border-danger">Delete BO</Button>
+
+                                </div>
+                            }
 
                             {
-                                userClass=='Approver'&& !info?.IsAuthorized &&
+                                userClass == 'Approver' && !info?.IsAuthorized &&
                                 <div className=" d-flex justify-content-center gap-2">
                                     <Button variant="outline border text-danger border-1 border-danger">Reject</Button>
-                                <Button onClick={handleApprv} variant="success p-2 px-3 text-light">Approve</Button>
-                                
-                                
-                            </div>}
-                            
+                                    <Button onClick={handleApprv} variant="success p-2 px-3 text-light">Approve</Button>
+
+
+                                </div>}
+
                         </div>
 
                     </div>

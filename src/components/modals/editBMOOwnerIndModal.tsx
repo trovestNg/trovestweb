@@ -25,8 +25,8 @@ const EditeBMOOwnerIndModal: React.FC<any> = ({ show, off, parentInf,custormerNu
         "isPEP": ownerInfo?.IsPEP ? 'Yes': 'No',
         "categoryId": "I",
         "Id": ownerInfo?.Id || '',
-        "sourceOfWealth": ownerInfo?.sourceOfWealth || '',
-        "remark":ownerInfo?.remark || '',
+        "sourceOfWealth": ownerInfo?.sourceOfWealth || ownerInfo?.SourceOfWealth || '',
+        "remark":ownerInfo?.remark || ownerInfo?.Remark ||'',
         
     }
 
@@ -75,7 +75,7 @@ const EditeBMOOwnerIndModal: React.FC<any> = ({ show, off, parentInf,custormerNu
                         "rcNumber": "",
                         "categoryId": "I",
                         "isPEP":body?.isPEP=='yes'?true:false,
-                        "IdType":'Driver License',
+                        "IdType":body?.idType,
                         "BVN":body?.bvn
                         
                     }

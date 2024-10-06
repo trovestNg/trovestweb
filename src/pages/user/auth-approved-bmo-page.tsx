@@ -217,7 +217,7 @@ const AuthApprovedBmoPage = () => {
                     setRefreshComponent(!refreshComponent)
 
                 }} show={editBenefOwnerCoperateModal} />
-            <MoreInfoModal lev={level} info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} />
+            <MoreInfoModal lev={bmoOwner?.Level} info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} />
             <SureToDeleteBmoModal show={deleteBmOwner} off={() => setDeleteBmOwner(false)} />
             <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Approved Beneficial Owners {`(${totalBmoCount})`} </h5>
             <p>Here, you'll find approved Beneficial Owners.</p>

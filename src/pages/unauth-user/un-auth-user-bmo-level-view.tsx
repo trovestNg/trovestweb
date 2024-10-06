@@ -32,6 +32,7 @@ import { clearNav, reduceNavLink, updateNav } from "../../store/slices/userSlice
 import UnAuthBOOwnwerList from "../../components/paginations/ubo/un-auth-ubo-owners-list";
 import { pushTounAuthUserNavArray, reduceUnAuthUserNavArray, removeFromUnAuthUserNavArray, setUnAuthUserBMOOwnerProfile } from "../../store/slices/unAuthserSlice";
 import { IBMCustomersPublic, IBMOwnersPublic, IUnAuthUserNavLink } from "../../interfaces/bmOwner";
+import { baseUrl } from "../../config/config";
 
 
 
@@ -50,6 +51,9 @@ const UnAuthBmoOwnerView = () => {
     
     const dispatch = useDispatch();
     const [ref, setRef] = useState(false);
+
+    const [currentLev,setCurrentLev] = useState(2)
+    const [dloading, setDLoading] = useState(false);
 
     
     const unAvOwner = useSelector((state:any)=>state.unAuthUserSlice.unAuthUserBmoOwnerProfile);
@@ -202,7 +206,7 @@ const UnAuthBmoOwnerView = () => {
 
 
 
-    const fetch = async () => {
+    const fetchAll = async () => {
         setLoading(true)// toast.error('Await')
         
             try {
@@ -332,6 +336,7 @@ const UnAuthBmoOwnerView = () => {
             RiskScore: owner.RiskScore,
             Ticker:owner.Ticker
         }
+        setCurrentLev(lev => lev+1)
         dispatch(pushTounAuthUserNavArray(payload));
         dispatch(setUnAuthUserBMOOwnerProfile(unAvOwner))
         window.history.pushState({}, '', `/owner-details/${level && +level + 1}/${owner.Id}`);
@@ -339,8 +344,37 @@ const UnAuthBmoOwnerView = () => {
         setRef(!ref);
     }
 
+
+    const downloadExcelReport = async()=>{
+        try {
+            setDLoading(true)
+            let userInfo = await getUserInfo();
+            // const res = await api.get(`report?format=xlsx&&customerNumber=${curstomerNumber}&&requesterName=${`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`}`, );
+
+            const res= await fetch(`${baseUrl}/report/level?format=xlsx&&parentIid=${parentInfo?.Id}&&requesterName=${`Public`}`)
+           if(res.status==200){
+            res.blob().then(blob=>{
+                let a=document.createElement('a');
+                a.href=window.URL.createObjectURL(blob);
+                a.download=parentInfo?.BusinessName+' Owners List.' + 'xlsx';
+                a.click();
+               })
+               setDLoading(false)
+           }
+
+           if(res.status==404){
+            toast.error('Fail to fetch report')
+               setDLoading(false)
+           }
+          
+        } catch (error:any) {
+toast.error(error?.message);
+setDLoading(false);
+        }
+    }
+
     useEffect(() => {
-        fetch();
+        fetchAll();
     }, [ref])
     return (
         <div className="w-100 p-0">
@@ -375,14 +409,24 @@ const UnAuthBmoOwnerView = () => {
                     }
                 </div>
                 <div className="d-flex gap-2">
-                    {/* <Button className="d-flex gap-2" style={{ minWidth: '15em' }}>
+                    {/* <Button onClick={handleAddNewBenefOwner} className="d-flex gap-2" style={{ minWidth: '15em' }}>
                         <i className="bi bi-plus-circle"></i>
                         <p className="p-0 m-0" >Add New Beneficial Owner</p></Button> */}
-                    {bmoList.length > 0 && <FormSelect style={{ maxWidth: '8em' }} onChange={(e) => handleListDownload(e.currentTarget.value)}>
+                    {/* {bmoList.length>0 && <FormSelect style={{ maxWidth: '8em' }} onChange={(e) => handleListDownload(e.currentTarget.value)}>
                         <option>Download</option>
                         <option value={'csv'}>CSV</option>
                         <option value={'pdf'}>PDf</option>
-                    </FormSelect>}
+                    </FormSelect>
+                    } */}
+
+                    {
+                        bmoList.length>0 && !loading &&
+                        <Button 
+                        style={{minWidth:'8em'}}
+                        disabled={dloading}
+                        variant="outline border border-1" 
+                        onClick={downloadExcelReport}>{dloading?<Spinner size="sm"/>:'Download List'}</Button>
+                    }
                 </div>
 
             </div>

@@ -25,6 +25,7 @@ import AuthBOList from "../../components/paginations/ubo/un-auth-ubo-list";
 import UnAuthBOList from "../../components/paginations/ubo/un-auth-ubo-list";
 import { emptyUnAuthUserNavArray, pushTounAuthUserNavArray, reduceUnAuthUserNavArray, setUnAuthUserBMOOwnerProfile } from "../../store/slices/unAuthserSlice";
 import { IBMOwnersPublic, IUnAuthUserNavLink } from "../../interfaces/bmOwner";
+import { baseUrl } from "../../config/config";
 
 
 
@@ -37,6 +38,7 @@ const UnAuthUserViewBmoPage = () => {
     const [parentInfo, setParentInfo] = useState<IBMOwnersPublic>();
     const { curstomerNumber,level } = useParams()
     const [loading, setLoading] = useState(false);
+    const [dloading, setDLoading] = useState(false);
     const [viewChartModal, setViewChartModal] = useState(false);
     const [viewMoreInfotModal, setViewMoreInfoModal] = useState(false);
     const [userSearch, setUserSearch] = useState('');
@@ -44,11 +46,11 @@ const UnAuthUserViewBmoPage = () => {
     const navigate = useNavigate();
     const [refData, setRefData] = useState(false)
     const [addNewBenefOwnerModal, setAddNewBenefOwnerModal] = useState(false);
+    const [isLoaded,setIsloaded] = useState(false);
 
-    const [addNewBenefOwnerIndividualModal, setAddNewBenefOwnerIndividualModal] = useState(false);
-    const [addNewBenefOwnerCoperateModal, setAddNewBenefOwnerCoperateModal] = useState(false);
-    const [addNewBenefOwnerFundsManagerModal, setAddNewBenefOwnerFundsManagerModal] = useState(false);
-    const [addNewBenefOwnerImportModal, setAddNewBenefOwnerImportModal] = useState(false);
+   
+
+    const [currentLev,setCurrentLev] = useState(1)
     
     const unAvOwner = useSelector((state:any)=>state.unAuthUserSlice.unAuthUserBmoCustormerProfile);
     const navArray = useSelector((state: any) => state.unAuthUserSlice.unAuthUserNavigationArray);
@@ -115,6 +117,72 @@ const UnAuthUserViewBmoPage = () => {
         doc.save(`${parentInfo?.BusinessName} BMO List.pdf`);
     };
 
+    const downloadExcelReport = async()=>{
+        try {
+            setDLoading(true)
+            let userInfo = await getUserInfo();
+            // const res = await api.get(`report?format=xlsx&&customerNumber=${curstomerNumber}&&requesterName=${`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`}`, );
+
+            const res= await fetch(`${baseUrl}/report?format=xlsx&&customerNumber=${curstomerNumber}&&requesterName=${`Public`}`)
+            if(res.status==200){
+                res.blob().then(blob=>{
+                    let a=document.createElement('a');
+                    a.href=window.URL.createObjectURL(blob);
+                    a.download=parentInfo?.BusinessName+' Owners List.' + 'xlsx';
+                    a.click();
+                   })
+                   setDLoading(false)
+               }
+    
+               if(res.status==404){
+                toast.error('Fail to fetch report')
+                   setDLoading(false)
+               }
+          
+        } catch (error) {
+
+        }
+    }
+
+    const downloadPdfReport = async()=>{
+        try {
+            setDLoading(true)
+            let userInfo = await getUserInfo();
+            // const res = await api.get(`report?format=xlsx&&customerNumber=${curstomerNumber}&&requesterName=${`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`}`, );
+
+            const res= await fetch(`${baseUrl}/report/customer/pdf?customerNumber=${curstomerNumber}&&requesterName=${`Public`}`)
+            if(res.status==200){
+                res.blob().then(blob=>{
+                    let a=document.createElement('a');
+                    a.href=window.URL.createObjectURL(blob);
+                    a.download=parentInfo?.BusinessName+' Owners List.' + 'pdf';
+                    a.click();
+                   })
+                   setDLoading(false)
+               }
+    
+               if(res.status==404){
+                toast.error('Fail to fetch report')
+                   setDLoading(false)
+               }
+          
+        } catch (error) {
+
+        }
+    }
+
+    const handleListDownload = (val: string) => {
+        if (val == 'pdf') {
+            downloadPdfReport()
+        } else if (val == 'csv') {
+            downloadExcelReport()
+        } else {
+            return
+        }
+    }
+
+    
+
     const headers: any = [
 
         { label: 'S/N', key: 'serialNumber' },
@@ -127,53 +195,16 @@ const UnAuthUserViewBmoPage = () => {
         { label: 'Ticker', key: 'Ticker' }
     ];
 
-    const generateCSV = (data: IBMOwnersPublic[], headers: { label: string; key: keyof IBMOwnersPublic }[]) => {
-        // Map data to match the headers
-        const csvData = data.map((item, index) => ({
-            BusinessName: item.BusinessName,
-            CategoryDescription: item.CategoryDescription,
-            CountryName: item.CountryName,
-            PercentageHolding: item.PercentageHolding,
-            CustomerNumber: item.BVN,
-            NumberOfShares: item.NumberOfShares,
-            IsPEP: item.IsPEP,
-            Ticker: item.Ticker,
-            serialNumber: index + 1
-        }));
-
-        // Convert the data to CSV format with headers
-        const csv = Papa.unparse({
-            fields: headers.map(header => header.label),
-            data: csvData.map((item: any) => headers.map(header => item[header.key]))
-        });
-
-        // Create a Blob from the CSV string
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-
-        // Use FileSaver.js to save the file
-        saveAs(blob, `${parentInfo?.BusinessName} BMO List}-.csv`);
-    };
-
-    const handleListDownload = (val: string) => {
-        if (val == 'pdf') {
-            downloadPdf()
-        } else if (val == 'csv') {
-            generateCSV(bmoList, headers)
-        } else {
-            return
-        }
-    }
-
-
-    const fetch = async () => {
-        setLoading(true)
-        // toast.error('Await')
+    const fetchAll = async () => {
+       
         try {
+            setLoading(true)
             const res = await apiUnAuth.get(`level/approved?customerNumber=${curstomerNumber}`);
             if (res.data) {
                 setBmoList(res?.data?.Owners);
                 setParentInfo(res?.data?.Parent)
-                setLoading(false)
+                setLoading(false);
+                setIsloaded(true)
             } 
             else if(res.status=404){
                 setParentInfo(unAvOwner);
@@ -201,26 +232,6 @@ const UnAuthUserViewBmoPage = () => {
 
     const handleAddNewBenefOwner = () => {
         setAddNewBenefOwnerModal(true)
-    }
-
-    const handleAddNewBenefOwnerType = (e: any) => {
-        switch (e) {
-            case 1:
-                setAddNewBenefOwnerIndividualModal(true);
-                break;
-            case 2:
-                setAddNewBenefOwnerCoperateModal(true);
-                break;
-            case 3:
-                setAddNewBenefOwnerFundsManagerModal(true);
-                break;
-            case 4:
-                setAddNewBenefOwnerImportModal(true);
-                break;
-            default:
-                break;
-        }
-        setAddNewBenefOwnerModal(false)
     }
 
     const handleShowInfoModal = (owner: IBMOwnersPublic) => {
@@ -281,13 +292,15 @@ const UnAuthUserViewBmoPage = () => {
     }
 
     useEffect(() => {
-        fetch();
-    }, [refData])
+       if(!isLoaded){
+        fetchAll();
+       }
+    }, [refData,isLoaded])
     return (
         <div className="w-100 p-0">
             {/* <p>BO Page</p> */}
             {bmoList.length > 0 && <ChartModal bmoList={bmoList} profile={parentInfo} show={viewChartModal} off={() => setViewChartModal(false)} />}
-            <MoreInfoModal info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} />
+            <MoreInfoModal lev={currentLev} info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} />
 
             <Button className="d-flex gap-2" onClick={handleBackToHomePage} variant="outline border border-primary">
                 <i className="bi bi-arrow-left text-primary"></i>
@@ -313,7 +326,17 @@ const UnAuthUserViewBmoPage = () => {
                         <option>Download</option>
                         <option value={'csv'}>CSV</option>
                         <option value={'pdf'}>PDf</option>
-                    </FormSelect>}
+                    </FormSelect>
+                    }
+
+                    {/* {
+                        bmoList.length>0 && !loading &&
+                        <Button 
+                        style={{minWidth:'8em'}}
+                        disabled={dloading}
+                        variant="outline border border-1" 
+                        onClick={downloadExcelReport}>{dloading?<Spinner size="sm"/>:'Download List'}</Button>
+                    } */}
                 </div>
 
             </div>
@@ -333,7 +356,7 @@ const UnAuthUserViewBmoPage = () => {
                             </thead>
                             <tbody>{
                                 <tr className="fw-bold text-center">
-                                    <td colSpan={4}>
+                                    <td colSpan={6}>
                                         {/* No Data Available */}
                                     </td>
 
@@ -349,6 +372,7 @@ const UnAuthUserViewBmoPage = () => {
                                     <th scope="col" className="fw-medium">Customer Number</th>
                                     <th scope="col" className="fw-medium">RC Number/BN/CAC</th>
                                     <th scope="col" className="fw-medium">No Of Beneficial Owners</th>
+                                    <th scope="col" className="fw-medium">Status</th>
                                 </tr>
                             </thead>
                             <tbody>{
@@ -371,6 +395,13 @@ const UnAuthUserViewBmoPage = () => {
                                     <td className="text-primary">
                                         {
                                             bmoList&& bmoList.length
+                                        }
+                                    </td>
+
+                                    <td className={`text-${parentInfo?.IsAuthorized?'success':'danger'}`}>
+                                        {
+                                            parentInfo?.IsAuthorized?'Authorized':'UnAuthorized'
+                                            
                                         }
                                     </td>
                                 </tr>
@@ -437,7 +468,9 @@ const UnAuthUserViewBmoPage = () => {
                                                  
                                                         <tr key={index}
                                                             role="button"
-                                                            onClick={bmoOwner.CategoryDescription == 'Corporate' ? () => handleNavigateToOwner(bmoOwner) : () => handleShowInfoModal(bmoOwner)}
+                                                            onClick={bmoOwner.CategoryDescription == 'Corporate' ? () =>
+                                                                 {bmoOwner?.IsAuthorized?handleNavigateToOwner(bmoOwner):toast.error('Un Approved Bo')} : 
+                                                                 () => handleShowInfoModal(bmoOwner)}
                                                         >
                                                             <th scope="row">{index + 1}</th>
                                                             <td className="">{bmoOwner.BusinessName}</td>

@@ -41,6 +41,7 @@ export interface IBMOwnersPublic {
     RiskLevel?: string
     RiskScore?: number
     Ticker?: string
+    // BeneficiaryOwnerDetails?:IBMCustomersPublic[]
 }
 
 export interface IApprovedBMOOwner {
@@ -50,9 +51,7 @@ export interface IApprovedBMOOwner {
     AuthorizeDate?: string
     ownerId:string
     BeneficiaryOwnerDetailMapId:number
-    BeneficiaryOwnerDetails:[
-        IBMOwnersPublic
-    ]
+    BeneficiaryOwnerDetails: any[]
     BeneficiaryOwnerMasterId:number,
     BVN?: string
     BusinessName: string

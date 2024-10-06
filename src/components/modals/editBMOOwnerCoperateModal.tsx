@@ -24,8 +24,8 @@ const EditBMOOwnerCoperateModal: React.FC<any> = ({ show, off, parentInf,custorm
         "rcNumber": ownerInfo?.RcNumber || '',
         "Ticker": ownerInfo?.Ticker || '',
         "Id": ownerInfo?.Id || '',
-        "SourceOfWealth": ownerInfo?.sourceOfWealth || '',
-        "Remark":ownerInfo?.remark || '',
+        "sourceOfWealth": ownerInfo?.sourceOfWealth || ownerInfo?.SourceOfWealth || '',
+        "remark":ownerInfo?.remark || ownerInfo?.Remark ||'',
     }
 
 
@@ -39,8 +39,8 @@ const EditBMOOwnerCoperateModal: React.FC<any> = ({ show, off, parentInf,custorm
         rcNumber: string().required().label('Reg Number'),
         Ticker: string().required().label('Ticker'),
 
-        SourceOfWealth: string().required().label('Source of wealth'),
-        Remark: string().required().label('Remark'),
+        sourceOfWealth: string().required().label('Source of wealth'),
+        remark: string().required().label('Remark'),
 
         // policyDocument: string().required('Kindly upload a file'),
 
@@ -291,11 +291,11 @@ const EditBMOOwnerCoperateModal: React.FC<any> = ({ show, off, parentInf,custorm
                                                 
                                                 style={{ outline: 'none' }}
                                                 className="rounded rounded-1 p-2 outline form-control-outline w-100 border border-1 border-grey"
-                                                id='SourceOfWealth' name='SourceOfWealth'>
+                                                id='sourceOfWealth' name='sourceOfWealth'>
 
                                             </Field>
                                             <ErrorMessage
-                                                name="SourceOfWealth"
+                                                name="sourceOfWealth"
                                                 component="div"
                                                 className="text-danger fw-medium" />
                                         </div>
@@ -316,9 +316,9 @@ const EditBMOOwnerCoperateModal: React.FC<any> = ({ show, off, parentInf,custorm
                                                 // value={values.idNumber}
                                                 style={{ outline: 'none' }}
                                                 className="rounded rounded-1 p-2 w-100 border border-1 border-grey"
-                                                id='Remark' name='Remark' />
+                                                id='remark' name='remark' />
                                             <ErrorMessage
-                                                name="Remark"
+                                                name="remark"
                                                 component="div"
                                                 className="text-danger fw-medium" />
                                         </div>
