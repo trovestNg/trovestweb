@@ -168,7 +168,7 @@ const AuthHistoryBmoPage = () => {
                                 history.map((hist: IHistory) => (
                                     <div className="d-flex gap-3 mt-3 w-100 shadow-sm p-2">
 
-                                        <Badge className="p-3 bg-warning rounded rounded-5">AB</Badge>
+                                        <Badge className="p-3 bg-primary text-center d-flex align-items-center justify-content-center " style={{maxHeight:'3em', maxWidth:'3em', borderRadius:'6em'}}>{hist.User[0]}{hist.User[1]}</Badge>
                                         <div className=" w-75">
                                         <p className="p-0 m-0 text-primary fw-bold">{hist.User}</p>
                                             {/* <p className="p-0 m-0">Added new Beneficial Owner to <span className="fw-bold">OLASCO & CO Limited</span></p> */}
@@ -190,7 +190,7 @@ const AuthHistoryBmoPage = () => {
                                 history.map((hist: IHistory) => (
                                     <div className="d-flex gap-3 mt-3 w-100 shadow-sm p-2">
 
-                                        <Badge className="p-3 bg-warning rounded rounded-5">AB</Badge>
+<Badge className="p-3 bg-primary text-center d-flex align-items-center justify-content-center " style={{maxHeight:'3em', maxWidth:'3em', borderRadius:'6em'}}>AB</Badge>
                                         <div className=" w-75">
                                             <p className="p-0 m-0 text-primary fw-bold">{hist.User}</p>
                                             {/* <p className="p-0 m-0">Added new Beneficial Owner to <span className="fw-bold">OLASCO & CO Limited</span></p> */}

@@ -144,10 +144,13 @@ const UboAdminInitDashboardpage = () => {
                         type="submit"
                         variant="primary" style={{ minWidth: '6em', marginRight: '-5px', minHeight: '2.4em' }}>{loading ? <Spinner size="sm" /> : 'Search'}</Button>
                         
+                    {
+                        userClass == 'Initiator' &&
                         <Button
-                    onClick={()=>setAddNewBenefOwnerImportModal(true)}
-                        variant="outline border  d-flex gap-2 border-primary text-primary" style={{ minWidth: '9em', marginRight: '-5px', minHeight: '2.4em' }}>{<div className="d-flex w-100 gap-2 justify-content-center"> <i className="bi bi-file-earmark-arrow-up"></i>
-                        <p className="p-0 m-0" >Bulk Upload</p></div>}</Button>
+                onClick={()=>setAddNewBenefOwnerImportModal(true)}
+                    variant="outline border  d-flex gap-2 border-primary text-primary" style={{ minWidth: '9em', marginRight: '-5px', minHeight: '2.4em' }}>{<div className="d-flex w-100 gap-2 justify-content-center"> <i className="bi bi-file-earmark-arrow-up"></i>
+                    <p className="p-0 m-0" >Bulk Upload</p></div>}
+                    </Button>}
                 </form>
                 
 

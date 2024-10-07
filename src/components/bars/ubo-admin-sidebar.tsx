@@ -51,17 +51,17 @@ const UboAdminSideBar: React.FC<any> = ({ payload }) => {
             path: '/bo-risk-portal',
         },
         {
-            title: 'Approved BO (30)',
+            title: 'Approved BO',
             icon: "bi bi-journal-check",
             path: '/ubo-portal/approved-bo',
         },
         {
-            title: 'Pending BO (15)',
+            title: 'Pending BO',
             icon: 'bi bi-hourglass',
             path: '/ubo-portal/pending-bo',
         },
         {
-            title: 'Rejected BO (9)',
+            title: 'Rejected BO',
             icon: 'bi bi-journal-x',
             path: '/ubo-portal/rejected-bo',
         },
@@ -74,6 +74,11 @@ const UboAdminSideBar: React.FC<any> = ({ payload }) => {
             title: 'Reports',
             icon: 'bi bi-journal-x',
             path: '/ubo-portal/reports',
+        },
+        {
+            title: 'Deleted',
+            icon: 'bi bi-trash',
+            path: '/ubo-portal/deleted',
         }
     ]
 
@@ -89,7 +94,7 @@ const UboAdminSideBar: React.FC<any> = ({ payload }) => {
                 dispatch(setUserClass('Approver'))
             } else {
                 setUserType('user')
-                dispatch(setUserClass('Approver'))
+                dispatch(setUserClass('Initiator'))
             }
 
         } catch (error) {

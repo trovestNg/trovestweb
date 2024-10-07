@@ -10,7 +10,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { baseUrl } from "../../config/config";
 
-const CreateBMOOwnerImportModal: React.FC<any> = ({ show, off }) => {
+const CreateBMOOwnerImportNodeModal:  React.FC<any> = ({ show, off,cusNum }) => {
 
     const navigate = useNavigate()
     const [fileName, setFileName] = useState('');
@@ -47,7 +47,7 @@ const CreateBMOOwnerImportModal: React.FC<any> = ({ show, off }) => {
             setDLoading(true)
             let userInfo = await getUserInfo();
             // const res = await api.get(``, );
-            const res= await fetch(`${baseUrl}/upload/template/download?requesterName=${`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`}`)
+            const res= await fetch(`${baseUrl}/node/upload/template/download?requesterName=${`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`}`)
             if(res.status==200){
                 res.blob().then(blob=>{
                     let a=document.createElement('a');
@@ -104,18 +104,19 @@ const CreateBMOOwnerImportModal: React.FC<any> = ({ show, off }) => {
 
             formData.append('file', body?.file)
             formData.append('RequesterName', `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`)
+            formData.append('OwnerId', cusNum)
             // const apiBody = {
             //     "RequesterName": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
             //     "file":formData
             // }
 
-            const res = await api.post(`upload`, formData, `${userInfo?.access_token}`)
+            const res = await api.post(`node/upload/otherLevel`, formData, `${userInfo?.access_token}`)
             if (res?.status==200) {
                 toast.success('BO Uploaded succesfully');
                 setLoading(false)
                 off()
             } else {
-                toast.error('Operation failed! Check your network');
+                toast.error('Operation failed! record already exist!');
                 setLoading(false)
             }
         }
@@ -209,4 +210,4 @@ const CreateBMOOwnerImportModal: React.FC<any> = ({ show, off }) => {
         </div>
     )
 }
-export default CreateBMOOwnerImportModal;
+export default CreateBMOOwnerImportNodeModal;

@@ -42,6 +42,8 @@ import EditBMOOwnerCoperateModal from "../../components/modals/editBMOOwnerCoper
 import SureToDeleteBmoModal from "../../components/modals/sureToDeleteBmoModal";
 import SureToApproveBOModal from "../../components/modals/sureToApproveBOModal";
 import { baseUrl } from "../../config/config";
+import CreateBMOOwnerImportNodeModal from "../../components/modals/createBMOOwnerImportNodeModal";
+import SureToRejectBOModal from "../../components/modals/sureToRejectBOModal";
 
 
 
@@ -74,6 +76,7 @@ const AuthOwnerViewPage = () => {
     const [deleteBmOwner, setDeleteBmOwner] = useState(false);
     const [approveBmOwner, setApproveBmOwner] = useState(false);
     const [dontAllowAdd, setDontAllowAd] = useState(false);
+    const [rejectBmOwner, setRejectBmOwner] = useState(false);
 
     const [selectedOwner, setSelectedOwner] = useState<any>();
 
@@ -88,6 +91,10 @@ const AuthOwnerViewPage = () => {
     const unAvOwner = useSelector((state:any)=>state.authUserSlice.authUserBmoOwnerProfile);
     const navArray = useSelector((state: any) => state.authUserSlice.authUserNavigationArray);
 
+    const handleRejectBo = () => {
+        setViewMoreInfoModal(false);
+        setRejectBmOwner(true)
+    }
     // useEffect(() => {
     //     const handlePopState = () => {
     //         toast.error("Ok!")
@@ -500,7 +507,21 @@ const AuthOwnerViewPage = () => {
             }} 
             />
 
-            <SureToApproveBOModal loading={loading} show={approveBmOwner} off={() => setApproveBmOwner(false)} action={handleApproveBo}/>
+<SureToApproveBOModal show={approveBmOwner}
+                off={() => {
+                    setApproveBmOwner(false);
+                    setRefData(!refData);
+                    setIsloaded(!isLoaded);
+                }}
+                parentInfo={parentInfo} />
+
+            <SureToRejectBOModal show={rejectBmOwner}
+                off={() => {
+                    setRejectBmOwner(false);
+                    setRefData(!refData);
+                    setIsloaded(!isLoaded);
+                }}
+                parentInfo={parentInfo} />
 
             <CreateBMOOwnerIndModal
                 parent={parentInfo}
@@ -527,8 +548,9 @@ const AuthOwnerViewPage = () => {
             <CreateBMOOwnerFundsManagerModal off={() => { setAddNewBenefOwnerFundsManagerModal(false); setRefData(!refData);
                 setIsloaded(!isLoaded); }} show={addNewBenefOwnerFundsManagerModal} />
 
-            <CreateBMOOwnerImportModal
-                off={() => { setAddNewBenefOwnerImportModal(false); setRefData(!refData);
+<CreateBMOOwnerImportNodeModal
+            cusNum={ownerId}
+                off={() => { setAddNewBenefOwnerImportModal(false);setRefData(!refData);
                     setIsloaded(!isLoaded); }}
                 show={addNewBenefOwnerImportModal} />
 
@@ -579,11 +601,14 @@ const AuthOwnerViewPage = () => {
                 }
                 </div>
                 <div className="d-flex gap-2">
-                <Button 
+                {
+                    userClass =='Initiator' &&
+                    <Button 
                     
                     disabled={!parentInfo?.IsAuthorized} onClick={()=>calculatePercent(bmoList)} className="d-flex gap-2" style={{ minWidth: '15em' }}>
                         <i className="bi bi-plus-circle"></i>
-                        <p className="p-0 m-0" >Add New Beneficial Owner</p></Button>
+                        <p className="p-0 m-0" >Add New Beneficial Owner</p>
+                </Button>}
 
                         {bmoList.length>0 && <FormSelect style={{ maxWidth: '8em' }} onChange={(e) => handleListDownload(e.currentTarget.value)}>
                         <option>Download</option>
@@ -660,11 +685,14 @@ const AuthOwnerViewPage = () => {
                                         
                                     </td>
                                     <td>
-                                    {
-                                        !parentInfo?.IsAuthorized && userClass=='Approver'&&
-                                        <Button onClick={()=>setApproveBmOwner(true)} variant="outline text-success border border-1 border-success">Authorize</Button>
-                                    }
-                                    
+                                        {
+                                            !parentInfo?.IsAuthorized && userClass == 'Approver' &&
+                                            <div className="d-flex gap-2">
+                                                <Button onClick={handleApproveBo} variant="outline text-success border border-1 border-success">Authorize</Button>
+                                                <Button onClick={handleRejectBo} variant="outline text-danger border border-1 border-danger">Reject</Button>
+                                            </div>
+                                        }
+
                                     </td>
                                 </tr>
                             }
@@ -729,8 +757,8 @@ const AuthOwnerViewPage = () => {
                                             bmoList && bmoList.length > 0 ? bmoList && bmoList.map((bmoOwner: IBMOwnersPublic, index: number) => (
                                                 <tr key={index}
                                                     role="button"
-                                                    onClick={bmoOwner.CategoryDescription == 'Corporate' ? () =>
-                                                        {bmoOwner?.IsAuthorized?handleNavigateToOwner(bmoOwner):toast.error('Un Approved Bo')} : 
+                                                    onClick={bmoOwner.CategoryDescription == 'Corporate' ? 
+                                                        () => { bmoOwner?.IsAuthorized ? handleNavigateToOwner(bmoOwner) : userClass=='Approver'?handleNavigateToOwner(bmoOwner): toast.error('Un Approved Bo') } :
                                                         () => handleShowInfoModal(bmoOwner)}
                                                 >
                                                     <th scope="row">{index + 1}</th>
@@ -763,7 +791,7 @@ const AuthOwnerViewPage = () => {
 
                                                                     </ListGroupItem>
                                                                     {
-                                                                        // userClass=='Initiator'&&y
+                                                                        userClass=='Initiator'&&
                                                                             <div onClick={(e) => e.stopPropagation()}>
                                                                                 <ListGroupItem
                                                                                     onClick={(e) => handleUpdateBenefOwnerType(bmoOwner)}

@@ -9,8 +9,9 @@ import { ICountry } from "../../interfaces/country";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { baseUrl } from "../../config/config";
+import readXlsxFile from "read-excel-file";
 
-const CreateBMOOwnerImportModal: React.FC<any> = ({ show, off }) => {
+const CreateBMOOwnerImportRootModal:  React.FC<any> = ({ show, off,cusNum }) => {
 
     const navigate = useNavigate()
     const [fileName, setFileName] = useState('');
@@ -52,7 +53,7 @@ const CreateBMOOwnerImportModal: React.FC<any> = ({ show, off }) => {
                 res.blob().then(blob=>{
                     let a=document.createElement('a');
                     a.href=window.URL.createObjectURL(blob);
-                    a.download='Upload Template.' + 'xlsx';
+                    a.download='Customer Upload Template.' + 'xlsx';
                     a.click();
                    })
                    setDLoading(false)
@@ -104,18 +105,19 @@ const CreateBMOOwnerImportModal: React.FC<any> = ({ show, off }) => {
 
             formData.append('file', body?.file)
             formData.append('RequesterName', `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`)
+            formData.append('CustomerNo', cusNum)
             // const apiBody = {
             //     "RequesterName": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
             //     "file":formData
             // }
 
-            const res = await api.post(`upload`, formData, `${userInfo?.access_token}`)
+            const res = await api.post(`node/upload/rootLevel`, formData, `${userInfo?.access_token}`)
             if (res?.status==200) {
                 toast.success('BO Uploaded succesfully');
                 setLoading(false)
                 off()
             } else {
-                toast.error('Operation failed! Check your network');
+                toast.error('Network error');
                 setLoading(false)
             }
         }
@@ -198,7 +200,7 @@ const CreateBMOOwnerImportModal: React.FC<any> = ({ show, off }) => {
                                         </div>
 
                                         <div className="w-50">
-                                            <Button className="w-100 rounded rounded-1" type="submit" variant="primary mt-3">{loading?<Spinner size="sm"/>:'Submit for Approval '}</Button>
+                                            <Button disabled={loading} className="w-100 rounded rounded-1" type="submit" variant="primary mt-3">{loading?<Spinner size="sm"/>:'Submit for Approval '}</Button>
                                         </div>
                                     </div>
                                 </Form>)
@@ -209,4 +211,4 @@ const CreateBMOOwnerImportModal: React.FC<any> = ({ show, off }) => {
         </div>
     )
 }
-export default CreateBMOOwnerImportModal;
+export default CreateBMOOwnerImportRootModal;

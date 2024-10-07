@@ -29,6 +29,8 @@ import { IBMOwnersPublic, IUnAuthUserNavLink } from "../../interfaces/bmOwner";
 import { emptyAuthUserNavArray, pushToAuthUserNavArray, reduceAuthUserNavArray, setAuthUserBMOOwnerProfile } from "../../store/slices/authUserSlice";
 import SureToApproveBOModal from "../../components/modals/sureToApproveBOModal";
 import { baseUrl } from "../../config/config";
+import CreateBMOOwnerImportRootModal from "../../components/modals/createBMOOwnerImportRootModal";
+import SureToRejectBOModal from "../../components/modals/sureToRejectBOModal";
 
 
 
@@ -59,11 +61,12 @@ const AuthCustomerViewPage = () => {
     const [editBenefOwnerCoperateModal, setEditBenefOwnerCoperateModal] = useState(false);
     const [deleteBmOwner, setDeleteBmOwner] = useState(false);
     const [approveBmOwner, setApproveBmOwner] = useState(false);
+    const [rejectBmOwner, setRejectBmOwner] = useState(false);
 
 
     const [dloading, setDLoading] = useState(false);
-    
-    const [isLoaded,setIsloaded] = useState(false);
+
+    const [isLoaded, setIsloaded] = useState(false);
     const [selectedOwner, setSelectedOwner] = useState<any>();
 
     const unAvOwner = useSelector((state: any) => state.authUserSlice.authUserBmoCustormerProfile);
@@ -91,22 +94,22 @@ const AuthCustomerViewPage = () => {
         };
     }, [navArray.length, dispatch, navArray]);
 
-    const calculatePercent = (ownersShares:any[]) => {
-        
+    const calculatePercent = (ownersShares: any[]) => {
+
         let total = 0;
         for (let x = 0; x < ownersShares.length; x++) {
-            total = total + (ownersShares[x].PercentageHolding?ownersShares[x].PercentageHolding:0) || 0
+            total = total + (ownersShares[x].PercentageHolding ? ownersShares[x].PercentageHolding : 0) || 0
         }
 
-        if(total >= 100){
+        if (total >= 100) {
             toast.error('Already 100% no more shares')
-        } else{
+        } else {
             setAddNewBenefOwnerModal(true)
         }
         return total
     }
 
-    
+
     type Column = {
         header: string;
         dataKey: keyof IOwner;
@@ -193,58 +196,58 @@ const AuthCustomerViewPage = () => {
         link.setAttribute('download', 'Template.csv'); // You can name the file anything you want
         document.body.appendChild(link);
         link.click();
-    
+
         // Clean up the DOM by removing the link
         // link.remove();
-      };
+    };
 
-      const downloadExcelReport = async()=>{
+    const downloadExcelReport = async () => {
         try {
             setDLoading(true)
             let userInfo = await getUserInfo();
             // const res = await api.get(``, );
-            const res= await fetch(`${baseUrl}/report?format=xlsx&&customerNumber=${curstomerNumber}&&requesterName=${`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`}`)
-            if(res.status==200){
-                res.blob().then(blob=>{
-                    let a=document.createElement('a');
-                    a.href=window.URL.createObjectURL(blob);
-                    a.download=parentInfo?.BusinessName+' Owners List.' + 'xlsx';
+            const res = await fetch(`${baseUrl}/report?format=xlsx&&customerNumber=${curstomerNumber}&&requesterName=${`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`}`)
+            if (res.status == 200) {
+                res.blob().then(blob => {
+                    let a = document.createElement('a');
+                    a.href = window.URL.createObjectURL(blob);
+                    a.download = parentInfo?.BusinessName + ' Owners List.' + 'xlsx';
                     a.click();
-                   })
-                   setDLoading(false)
-               }
-    
-               if(res.status==404){
+                })
+                setDLoading(false)
+            }
+
+            if (res.status == 404) {
                 toast.error('Fail to fetch report')
-                   setDLoading(false)
-               }
-          
+                setDLoading(false)
+            }
+
         } catch (error) {
 
         }
     }
 
-    const downloadPdfReport = async()=>{
+    const downloadPdfReport = async () => {
         try {
             setDLoading(true)
             let userInfo = await getUserInfo();
             // const res = await api.get(``, );
-            const res= await fetch(`${baseUrl}/report/customer/pdf?customerNumber=${curstomerNumber}&&requesterName=${`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`}`)
-            if(res.status==200){
-                res.blob().then(blob=>{
-                    let a=document.createElement('a');
-                    a.href=window.URL.createObjectURL(blob);
-                    a.download=parentInfo?.BusinessName+' Owners List.' + 'pdf';
+            const res = await fetch(`${baseUrl}/report/customer/pdf?customerNumber=${curstomerNumber}&&requesterName=${`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`}`)
+            if (res.status == 200) {
+                res.blob().then(blob => {
+                    let a = document.createElement('a');
+                    a.href = window.URL.createObjectURL(blob);
+                    a.download = parentInfo?.BusinessName + ' Owners List.' + 'pdf';
                     a.click();
-                   })
-                   setDLoading(false)
-               }
-    
-               if(res.status==404){
+                })
+                setDLoading(false)
+            }
+
+            if (res.status == 404) {
                 toast.error('Fail to fetch report')
-                   setDLoading(false)
-               }
-          
+                setDLoading(false)
+            }
+
         } catch (error) {
 
         }
@@ -260,18 +263,18 @@ const AuthCustomerViewPage = () => {
     //         // Create a Blob from the response data
     //         const blob = new Blob([response.data], { type: response.data.type });
     //         const fileUrl = window.URL.createObjectURL(blob);
-      
+
     //         // Create a link element and trigger the download
     //         const link = document.createElement('a');
     //         link.href = fileUrl;
     //         link.download = fileName;
-      
+
     //         // Append the link to the body
     //         document.body.appendChild(link);
-      
+
     //         // Programmatically click the link to trigger the download
     //         link.click();
-      
+
     //         // Clean up by removing the link and revoking the object URL
     //         document.body.removeChild(link);
     //         window.URL.revokeObjectURL(fileUrl);
@@ -334,19 +337,19 @@ const AuthCustomerViewPage = () => {
     const fetched = async () => {
         setLoading(true)// toast.error('Await')
         let userInfo = await getUserInfo();
-        if(userInfo){
+        if (userInfo) {
             try {
-                
-                const res = await api.get(`level/approved?requesterName=${userInfo.profile.given_name}&customerNumber=${curstomerNumber}`,userInfo?.access_token);
+
+                const res = await api.get(`level/approved?requesterName=${userInfo.profile.given_name}&customerNumber=${curstomerNumber}`, userInfo?.access_token);
                 if (res?.data) {
                     setBmoList(res?.data?.Owners.reverse());
                     // calculatePercent(res?.data?.Owners)
                     setParentInfo(res?.data?.Parent)
                     setLoading(false);
                     setIsloaded(true)
-                    
+
                 }
-                else if(res?.status == 400){
+                else if (res?.status == 400) {
                     setParentInfo(unAvOwner);
                     setBmoList([]);
                     setLoading(false)
@@ -364,7 +367,7 @@ const AuthCustomerViewPage = () => {
             }
 
         }
-       
+
     }
 
     const handleClear = () => {
@@ -376,7 +379,7 @@ const AuthCustomerViewPage = () => {
 
     const handleAddNewBenefOwner = () => {
         setAddNewBenefOwnerModal(true);
-        
+
     }
 
     const handleAddNewBenefOwnerType = (e: any) => {
@@ -423,43 +426,17 @@ const AuthCustomerViewPage = () => {
         setSelectedOwner(bmOwner);
     }
 
-    const handleApproveBo =()=>{
+    const handleApproveBo = () => {
         setViewMoreInfoModal(false);
         setApproveBmOwner(true)
     }
 
-    const approveBo = async () => {
-        setLoading(true)
-        // console.log({ seeBody: body })
-        let userInfo = await getUserInfo();
-
-
-
-        if (userInfo) {
-
-            const bodyApprove= {
-                // "requestorUsername": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
-                "requestorUsername": `Computer`,
-                "comment": "Testing Approve",
-                "ids": [
-                parentInfo?.Id == 0? +`${parentInfo.ParentId}`:parentInfo?.Id
-                ]
-              }
-
-            const res = await api.post(`authorize`, bodyApprove, `${userInfo?.access_token}`)
-            if (res?.status==200) {
-                setLoading(false);
-                toast.success('BO Approved succesfully');
-                setApproveBmOwner(false);
-                setDontAllowAd(false);
-                setRefData(!refData);
-            } else {
-                toast.error('Operation failed! Check your network');
-                setLoading(false);
-            }
-
-        }
+    const handleRejectBo = () => {
+        setViewMoreInfoModal(false);
+        setRejectBmOwner(true)
     }
+
+
 
     const handleViewChart = () => {
         setViewChartModal(!viewChartModal)
@@ -504,11 +481,11 @@ const AuthCustomerViewPage = () => {
         }
         dispatch(pushToAuthUserNavArray(payload));
         dispatch(setAuthUserBMOOwnerProfile(unAvOwner));
-        
+
         window.history.pushState({}, '', `/ubo-portal/owner-details/${level && +level + 1}/${owner.Id}`);
         navigate(`/ubo-portal/owner-details/${level && +level + 1}/${owner.Id}`);
         // window.location.reload()
-        
+
 
     }
 
@@ -523,28 +500,42 @@ const AuthCustomerViewPage = () => {
     }
 
     useEffect(() => {
-        if(!isLoaded){
+        if (!isLoaded) {
             fetched()
         }
-        
-    }, [refData, curstomerNumber,isLoaded])
+
+    }, [refData, curstomerNumber, isLoaded])
     return (
         <div className="w-100 p-0">
-            {bmoList.length > 0 && <ChartModal bmoList={bmoList} profile={parentInfo} show={viewChartModal} off={() => setViewChartModal(false)} />}
+            {bmoList.length > 0 && <ChartModal bmoList={bmoList} profile={parentInfo} show={viewChartModal}
+                off={() => setViewChartModal(false)} />}
             <MoreInfoModal handleApprv={handleApproveBo} lev={level} info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} />
             <AddNewBenefOwnerTypeModal action={handleAddNewBenefOwnerType} off={() => setAddNewBenefOwnerModal(false)} show={addNewBenefOwnerModal} />
             <SureToDeleteBmoModal
-            parentInfo={parentInfo}
-            clickedOwner={selectedOwner}
-            show={deleteBmOwner} 
-            off={() => {
-                setDeleteBmOwner(false);
-                setRefData(!refData);
-                setIsloaded(!isLoaded);
-            }} 
+                parentInfo={parentInfo}
+                clickedOwner={selectedOwner}
+                show={deleteBmOwner}
+                off={() => {
+                    setDeleteBmOwner(false);
+                    setRefData(!refData);
+                    setIsloaded(!isLoaded);
+                }}
             />
-            <SureToApproveBOModal show={approveBmOwner} off={() => setApproveBmOwner(false)} 
-            action={approveBo}/>
+            <SureToApproveBOModal show={approveBmOwner}
+                off={() => {
+                    setApproveBmOwner(false);
+                    setRefData(!refData);
+                    setIsloaded(!isLoaded);
+                }}
+                parentInfo={parentInfo} />
+
+            <SureToRejectBOModal show={rejectBmOwner}
+                off={() => {
+                    setRejectBmOwner(false);
+                    setRefData(!refData);
+                    setIsloaded(!isLoaded);
+                }}
+                parentInfo={parentInfo} />
 
             <CreateBMOOwnerIndModal
                 parent={parentInfo}
@@ -564,19 +555,26 @@ const AuthCustomerViewPage = () => {
                 }}
                 show={addNewBenefOwnerCoperateModal} />
 
-            <CreateBMOOwnerFundsManagerModal 
-            off={() => { setAddNewBenefOwnerFundsManagerModal(false);
-                setRefData(!refData);
-                setIsloaded(!isLoaded); }} show={addNewBenefOwnerFundsManagerModal} />
+            <CreateBMOOwnerFundsManagerModal
+                off={() => {
+                    setAddNewBenefOwnerFundsManagerModal(false);
+                    setRefData(!refData);
+                    setIsloaded(!isLoaded);
+                }} show={addNewBenefOwnerFundsManagerModal} />
 
-            <CreateBMOOwnerImportModal
-                off={() => { setAddNewBenefOwnerImportModal(false);setRefData(!refData);
-                    setIsloaded(!isLoaded); }}
+            <CreateBMOOwnerImportRootModal
+                cusNum={curstomerNumber}
+                off={() => {
+                    setAddNewBenefOwnerImportModal(false); setRefData(!refData);
+                    setIsloaded(!isLoaded);
+                }}
                 show={addNewBenefOwnerImportModal} />
 
             <EditBMOOwnerIndModal parentInf={parentInfo} ownerInfo={bmoOwner}
-                off={() => { setEditBenefOwnerIndividualModal(false); setRefData(!refData);
-                    setIsloaded(!isLoaded); }} show={editBenefOwnerIndividualModal} />
+                off={() => {
+                    setEditBenefOwnerIndividualModal(false); setRefData(!refData);
+                    setIsloaded(!isLoaded);
+                }} show={editBenefOwnerIndividualModal} />
 
             <EditBMOOwnerCoperateModal
                 parentInf={parentInfo}
@@ -605,13 +603,17 @@ const AuthCustomerViewPage = () => {
                     }
                 </div>
                 <div className="d-flex gap-2">
-                <Button 
-                    
-                    disabled={!parentInfo?.IsAuthorized} onClick={()=>calculatePercent(bmoList)} className="d-flex gap-2" style={{ minWidth: '15em' }}>
-                        <i className="bi bi-plus-circle"></i>
-                        <p className="p-0 m-0" >Add New Beneficial Owner</p></Button>
+                    {
+                        userClass == 'Initiator' &&
+                        <Button
 
-                        {bmoList.length>0 && <FormSelect style={{ maxWidth: '8em' }} onChange={(e) => handleListDownload(e.currentTarget.value)}>
+                            disabled={!parentInfo?.IsAuthorized} onClick={() => calculatePercent(bmoList)} className="d-flex gap-2" style={{ minWidth: '15em' }}>
+                            <i className="bi bi-plus-circle"></i>
+                            <p className="p-0 m-0" >Add New Beneficial Owner</p>
+                        </Button>
+                    }
+
+                    {bmoList.length > 0 && <FormSelect style={{ maxWidth: '8em' }} onChange={(e) => handleListDownload(e.currentTarget.value)}>
                         <option>Download</option>
                         <option value={'csv'}>CSV</option>
                         <option value={'pdf'}>PDf</option>
@@ -678,19 +680,22 @@ const AuthCustomerViewPage = () => {
                                         }
                                     </td>
 
-                                    <td className={`text-${parentInfo?.IsAuthorized?'success':'danger'}`}>
+                                    <td className={`text-${parentInfo?.IsAuthorized ? 'success' : 'danger'}`}>
                                         {
-                                            parentInfo?.IsAuthorized?'Authorized':'UnAuthorized'
-                                            
+                                            parentInfo?.IsAuthorized ? 'Authorized' : 'UnAuthorized'
+
                                         }
                                     </td>
 
                                     <td>
-                                    {
-                                        !parentInfo?.IsAuthorized && userClass=='Approver'&&
-                                        <Button onClick={handleApproveBo} variant="outline text-success border border-1 border-success">Authorize</Button>
-                                    }
-                                    
+                                        {
+                                            !parentInfo?.IsAuthorized && userClass == 'Approver' &&
+                                            <div className="d-flex gap-2">
+                                                <Button onClick={handleApproveBo} variant="outline text-success border border-1 border-success">Authorize</Button>
+                                                <Button onClick={handleRejectBo} variant="outline text-danger border border-1 border-danger">Reject</Button>
+                                            </div>
+                                        }
+
                                     </td>
                                 </tr>
                             }
@@ -757,8 +762,7 @@ const AuthCustomerViewPage = () => {
                                                 bmoList.map((bmoOwner: IBMOwnersPublic, index: number) => (
                                                     <tr key={index}
                                                         role="button"
-                                                        onClick={bmoOwner.CategoryDescription == 'Corporate' ? () =>
-                                                            {bmoOwner?.IsAuthorized?handleNavigateToOwner(bmoOwner):toast.error('Un Approved Bo')} : 
+                                                        onClick={bmoOwner.CategoryDescription == 'Corporate' ? () => { bmoOwner?.IsAuthorized ? handleNavigateToOwner(bmoOwner) : userClass=='Approver'?handleNavigateToOwner(bmoOwner): toast.error('Un Approved Bo') } :
                                                             () => handleShowInfoModal(bmoOwner)}
                                                     >
                                                         <th scope="row">{index + 1}</th>
@@ -769,7 +773,7 @@ const AuthCustomerViewPage = () => {
                                                         <td>{bmoOwner.NumberOfShares}</td>
                                                         <td>{bmoOwner.IsPEP ? 'Yes' : 'No'}</td>
                                                         <td>{bmoOwner.Ticker ? bmoOwner.Ticker : 'N/A'}</td>
-                                                        <td className={`text-${bmoOwner.IsAuthorized?'success':'danger'}`}>{bmoOwner.IsAuthorized?'Authorised':'UnAuthorised'}</td>
+                                                        <td className={`text-${bmoOwner.IsAuthorized ? 'success' : 'danger'}`}>{bmoOwner.IsAuthorized ? 'Authorised' : 'UnAuthorised'}</td>
                                                         <td className="table-icon" >
                                                             <i className=" bi bi-three-dots" onClick={(e) => e.stopPropagation()}></i>
                                                             <div className="content ml-5" style={{ position: 'relative', zIndex: 1500 }}>
@@ -791,6 +795,7 @@ const AuthCustomerViewPage = () => {
 
                                                                         </ListGroupItem>
                                                                         {
+                                                                            userClass == 'Initiator' &&
                                                                             <div onClick={(e) => e.stopPropagation()}>
                                                                                 <ListGroupItem
                                                                                     onClick={(e) => handleUpdateBenefOwnerType(bmoOwner)}

@@ -189,17 +189,17 @@ const MoreInfoModal: React.FC<any> = ({ show, off, action, info, lev, handleAppr
 
                            
 
-                            {
+                            {/* {
                                 userClass == 'Initiator' &&
                                 <div className=" d-flex justify-content-center gap-2">
                                     <Button variant="outline p-2 px-3 border text-primary border-1 border-primary">Edit BO </Button>
                                     <Button variant="outline border text-danger border-1 border-danger">Delete BO</Button>
 
                                 </div>
-                            }
+                            } */}
 
                             {
-                                userClass == 'Approver' && !info?.IsAuthorized &&
+                                userClass == 'Initiator' && !info?.IsAuthorized &&
                                 <div className=" d-flex justify-content-center gap-2">
                                     <Button variant="outline border text-danger border-1 border-danger">Reject</Button>
                                     <Button onClick={handleApprv} variant="success p-2 px-3 text-light">Approve</Button>

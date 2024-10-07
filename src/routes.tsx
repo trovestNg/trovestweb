@@ -25,6 +25,7 @@ import AuthHistoryBmoPage from "./pages/user/auth-history-bmo-page";
 import UserViewRiskBMOOwnerPage from "./pages/user/ubo-risk/auth-user-view-risk-bmo-custormer";
 import UserViewRiskBMOPage from "./pages/user/ubo-risk/user-view-risk-bmo-owner";
 import UserPage from "./pages/unauth-user/testPage";
+import AuthDeletedBmoPage from "./pages/user/auth-deleted-bmo-page";
 
 // const UserDBC = React.lazy(() => import("./pages/user/dashboard"));
 
@@ -36,7 +37,7 @@ export default function () {
         <Routes>
             {/* <Route path="/test" element={<UserPage/>} /> */}
             <Route path="/" element={<UnAuthUserDashboardContainer />}>
-                <Route index element={<UboUnAuthUserDashboardpage/>} />
+                <Route index element={<UboUnAuthUserDashboardpage />} />
                 <Route path="custormer-details/:level/:curstomerNumber" element={<UnAuthUserViewBmoPage />} />
                 <Route path="owner-details/:level/:ownerId" element={<UnAuthBmoOwnerView />} />
             </Route>
@@ -51,9 +52,10 @@ export default function () {
                 <Route path="bo-risk-assessment" element={<AuthApprovedBmoPage />} />
                 <Route path="approved-bo" element={<AuthApprovedBmoPage />} />
                 <Route path="pending-bo" element={<AuthPendingBmoPage />} />
-                <Route path="rejected-bo" element={<AuthRejectedBmoPage/>} />
-                <Route path="history" element={<AuthHistoryBmoPage/>} />
-                <Route path="reports" element={<AuthReportBmoPage/>} />
+                <Route path="rejected-bo" element={<AuthRejectedBmoPage />} />
+                <Route path="history" element={<AuthHistoryBmoPage />} />
+                <Route path="reports" element={<AuthReportBmoPage />} />
+                <Route path="deleted" element={<AuthDeletedBmoPage />} />
             </Route>
 
             <Route path="bo-risk-portal" element={< UboAdminRiskDashboardContainer />}>
