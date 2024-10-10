@@ -29,6 +29,7 @@ const AuthReportBmoPage = () => {
     const [totalBmoCount, setTotalBmoCount] = useState(0);
 
     const [dloading, setDLoading] = useState(false);
+    const [oloading, setOLoading] = useState(false);
     const [bySearch, setBySearch] = useState(false);
 
 
@@ -43,14 +44,14 @@ const AuthReportBmoPage = () => {
 
     const handleSearchByBmoNameOrNumber = async (e: any) => {
         e.preventDefault()
-        setLoading(true);
+        setOLoading(true);
 
         // toast.error('Await')
         try {
             const res = await apiUnAuth.get(`customers?search=${searchedWord}`);
             console.log(res)
             if (res.data) {
-                setLoading(false);
+                setOLoading(false);
                 // dispatch(setAuthUserBMOSearchResult(res?.data?.customerAccounts))
                 setBmoList(res?.data?.customerAccounts);
                 if (res?.data?.customerAccounts?.length <= 0) {
@@ -59,7 +60,7 @@ const AuthReportBmoPage = () => {
                 setLoading(false);
             }
             else {
-                setLoading(false)
+                setOLoading(false);
 
             }
         } catch (error) {
@@ -177,8 +178,31 @@ const AuthReportBmoPage = () => {
         }
     }
 
-     const handleGetReportByOwner = async(owner:any)=>{
+     const handleGetReportByOwner = async(bmo:any)=>{
+        try {
+            setOLoading(true)
+            let userInfo = await getUserInfo();
+            // const res = await api.get(``, );
+            const res = await fetch(`${baseUrl}/report?format=xlsx&&customerNumber=${bmo.customerNumber}&&requesterName=${`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`}`)
 
+            if (res.status == 200) {
+                res.blob().then(blob => {
+                    let a = document.createElement('a');
+                    a.href = window.URL.createObjectURL(blob);
+                    a.download = `${bmo.customerName} UBO Report.xlsx`;
+                    a.click();
+                })
+                setOLoading(false)
+            }
+
+            if (res.status == 404) {
+                toast.error('Fail to fetch report')
+                setDLoading(false)
+            }
+
+        } catch (error) {
+
+        }
      }
 
 
@@ -190,7 +214,7 @@ const AuthReportBmoPage = () => {
         <div className="w-100">
             <div className="w-75 justify-content-between d-flex">
                 <div className="">
-                    <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Generate Report</h5>
+                    <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>General Report</h5>
                     <p>Here, you can spool and download reports of beneficial owners and their risk assessment.</p>
                 </div>
 
@@ -241,9 +265,9 @@ const AuthReportBmoPage = () => {
                         }}></i>
 
                     <Button
-                        disabled={searchedWord == '' || sloading}
+                        disabled={searchedWord == '' || oloading}
                         type="submit"
-                        variant="primary" style={{ minWidth: '6em', marginRight: '-5px', minHeight: '2.4em' }}>{sloading ? <Spinner size="sm" /> : 'Search'}</Button>
+                        variant="primary" style={{ minWidth: '6em', marginRight: '-5px', minHeight: '2.4em' }}>{oloading ? <Spinner size="sm" /> : 'Search'}</Button>
                 </form>
 
             </div>
@@ -265,87 +289,6 @@ const AuthReportBmoPage = () => {
                 </ul>}
 
             </div>
-
-            {/* <div className="w-100 d-flex" style={{ position: 'relative' }}>
-                <form 
-                // onSubmit={handleSearchByBmoNameOrNumber} 
-                className="d-flex w-100 mt-3 gap-3">
-
-                    <FormControl
-                        onChange={(e) => dispatch(handleUserSearch(e.target.value))}
-                        placeholder="Search by Name, Company, Assets...."
-                        // value={userSearch}
-                        className="py-2 w-50" />
-                    <i
-                        className="bi bi-x-lg"
-                        onClick={handleClear}
-                        style={{ marginLeft: '400px', 
-                        // display: userSearch == '' ? 'none' : 'flex', 
-                        display: 'none', 
-                        cursor: 'pointer', float: 'right', position: 'absolute' }}></i>
-
-                    <Button
-                        disabled={searchedWord == '' || sloading}
-                        type="submit"
-                        variant="primary" style={{ minWidth: '6em', marginRight: '-5px', minHeight: '2.4em' }}>{sloading ? <Spinner size="sm" /> : 'Search'}</Button>
-
-
-                </form>
-
-            </div> */}
-            {/* <div className="w-100 mt-5">
-
-                <div className="">
-                    <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Customize report:</h5>
-                    <p>Customize your report by adjusting the filter options below to choose the data you want in your downloaded Excel or PDF file</p>
-                </div>
-
-                <div className="w-100 d-flex flex-column gap-3">
-                    <div className="d-flex gap-2">
-
-                        <FormSelect style={{ maxWidth: '12em', maxHeight: '3em' }}
-                        // onChange={(e) => handleListDownload(e.currentTarget.value)}
-                        >
-                            <option>BO Category</option>
-                            <option value={'csv'}>All</option>
-                            <option value={'csv'}>Individual BO</option>
-                            <option value={'pdf'}>Corporate BO</option>
-                        </FormSelect>
-                    </div>
-
-                    <div className="d-flex gap-2">
-
-                        <FormSelect style={{ maxWidth: '12em', maxHeight: '3em' }}
-                        // onChange={(e) => handleListDownload(e.currentTarget.value)}
-                        >
-                            <option>Country</option>
-                            <option value={'csv'}>All</option>
-                            <option value={'csv'}>Nigeria</option>
-                            <option value={'pdf'}>Other</option>
-                        </FormSelect>
-                    </div>
-
-                    <div className="d-flex gap-2">
-
-                        <FormSelect style={{ maxWidth: '12em', maxHeight: '3em' }}
-                        // onChange={(e) => handleListDownload(e.currentTarget.value)}
-                        >
-                            <option>PEP</option>
-                            <option value={'csv'}>Yes</option>
-                            <option value={'csv'}>No</option>
-                        </FormSelect>
-                    </div>
-
-                    <div className="d-flex gap-2">
-
-                    <Button className="border border-primary p-2" style={{ maxWidth: '12em', maxHeight: '3em' }}
-                        // onChange={(e) => handleListDownload(e.currentTarget.value)}
-                        >Generate Report
-                        </Button>
-                    </div>
-                </div>
-
-            </div> */}
         </div>
     )
 

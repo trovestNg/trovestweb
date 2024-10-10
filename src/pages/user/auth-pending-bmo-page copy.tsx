@@ -20,6 +20,7 @@ import { pushTounAuthUserNavArray, setUnAuthUserBMOOwnerProfile } from "../../st
 import { setAuthUserBMOOwnerProfile } from "../../store/slices/authUserSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import MoreInfoModal from "../../components/modals/moreInfoModal";
+import SureToApproveBOModal from "../../components/modals/sureToApproveBOModal";
 
 
 const AuthPendingBmoPage = () => {
@@ -36,7 +37,7 @@ const AuthPendingBmoPage = () => {
     const [bmoOwner, setBmoOwner] = useState<IApprovedBMOOwner>();
     const [editBenefOwnerCoperateModal, setEditBenefOwnerCoperateModal] = useState(false);
     const [editBenefOwnerIndividualModal, setEditBenefOwnerIndividualModal] = useState(false);
-    const [deleteBmOwner, setDeleteBmOwner] = useState(false);
+    const [approveBmOwner, setApproveBmOwner] = useState(false);
     const navigate = useNavigate();
 
     const [totalBmoCount, setTotalBmoCount] = useState(0);
@@ -44,6 +45,8 @@ const AuthPendingBmoPage = () => {
     const [searchedWord, setSearchedWord] = useState('');
     const [bmoId, setBmoId] = useState('');
     const [viewMoreInfotModal, setViewMoreInfoModal] = useState(false);
+
+    const userClass = useSelector((state: any) => state.authUserSlice.authUserProfile.UserClass);
 
     const dispatch = useDispatch()
     // const userSearch = useSelector((state:any)=>state.userSlice.userBMOSearch.searchWords);
@@ -158,9 +161,17 @@ const AuthPendingBmoPage = () => {
         // setAddNewBenefOwnerModal(false)
     }
 
-    const handleDeleteBmoOwner = (bmoId: any) => {
-        setDeleteBmOwner(true);
-        setBmoId(bmoId);
+    const handleApproveBO = (bmoId: any) => {
+        console.log({ clciked: bmoId })
+        setParentInfo({ ...bmoId, Id: bmoId?.BeneficiaryOwnerMasterId });
+        setShowChildrenModal(false);
+        setApproveBmOwner(true)
+
+
+    }
+
+    const handleNudgeAuthorizer = (bmoId: any) => {
+        toast.success('Authorizer Nudged!')
     }
 
     const fetch = async () => {
@@ -175,7 +186,7 @@ const AuthPendingBmoPage = () => {
                     const res = await api.get(`pending?requesterName=${userInfo.profile.given_name}&pageSize=100`, userInfo?.access_token);
                     console.log({ heree: res })
                     if (res?.data) {
-                        setBmoList(res?.data?.Data.reverse());
+                        setBmoList(res?.data?.Data);
                         setTotalBmoCount(res?.data?.Data.length)
                         // calculatePercent(res?.data?.Owners)
                         setParentInfo(res?.data?.Parent)
@@ -221,9 +232,20 @@ const AuthPendingBmoPage = () => {
                 </Modal.Header>
                 <Modal.Body>
                     <div>
-                        <h5>
-                            Attached Children List
-                        </h5>
+                        <div className="d-flex w-100 justify-content-between">
+                            <h5>
+                                Attached Children List
+                            </h5>
+                            {
+                                userClass == 'Approver' &&
+                                <Button onClick={() => handleApproveBO(bmoChildrenList[0])} variant="outline border border-success text-success">Approve BO</Button>
+                            }
+
+                            {
+                                userClass == 'Initiator' &&
+                                <Button onClick={() => handleNudgeAuthorizer(bmoId)} variant="outline border border-success text-success">Nudge Authorizer</Button>
+                            }
+                        </div>
                         {
                             <>
                                 <table className="table table-striped mt-3" >
@@ -282,7 +304,10 @@ const AuthPendingBmoPage = () => {
 
                 }} show={editBenefOwnerCoperateModal} />
             <MoreInfoModal lev={bmoOwner?.Level} info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} />
-            <SureToDeleteBmoModal show={deleteBmOwner} off={() => setDeleteBmOwner(false)} />
+            <SureToApproveBOModal
+                show={approveBmOwner}
+                parentInfo={parentInfo}
+                off={() => { setApproveBmOwner(false); setRefreshComponent(!refreshComponent) }} />
 
             <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Pending Beneficial Owners {`(${totalBmoCount})`} </h5>
             <p>Here, you'll find pending beneficial owners yet to be approved.</p>

@@ -33,7 +33,7 @@ console.log({delThis:clickedOwner})
             if (res?.status==200) {
                 setLoading(false);
                 setShowCommentBox(false)
-                toast.success('Delete request sent for approval');
+                toast.success('Delete request sent for approval and BO moved to deleted');
                 off()
             } else {
                 toast.error('Operation failed! Check your network');
@@ -57,7 +57,7 @@ return (
                     <div className="py-2 d-flex justify-content-center align-items-center flex-column">
                         <img src={alertIcon} height={'114px'} />
                         <p className="text-primary mt-2" style={{ fontFamily: 'title' }}>Are you sure?</p>
-                        <p className="text-center px-3">You are about to delete a Bmo Owner.</p>
+                        <p className="text-center px-3">You are about to delete a Beneficial Owner.</p>
                         
                         {
                             !showCommentBox &&

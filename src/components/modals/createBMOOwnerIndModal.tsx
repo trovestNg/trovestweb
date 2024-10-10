@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 const CreateBMOOwnerIndModal: React.FC<any> = ({ show, off,lev, parent,custormerNumb,ownerId }) => {
+    console.log({hereIsP:parent})
     const [countries, setCountries] = useState<ICountr[]>()
     const [idTypes, setIdTypes] = useState<string[]>();
     const [loading,setLoading] = useState(false);
@@ -67,6 +68,7 @@ const CreateBMOOwnerIndModal: React.FC<any> = ({ show, off,lev, parent,custormer
         if (userInfo) {
 
             let parentInfo = {
+                ...parent,
                 AuthorizeBy
                     :
                     parent?.AuthorizeBy,
@@ -88,9 +90,6 @@ const CreateBMOOwnerIndModal: React.FC<any> = ({ show, off,lev, parent,custormer
                 Comments
                     :
                     parent?. Comments,
-                CountryId
-                    :
-                    parent?. CountryId,
                 CountryName
                     :
                     parent?.CountryName,
@@ -154,11 +153,12 @@ const CreateBMOOwnerIndModal: React.FC<any> = ({ show, off,lev, parent,custormer
                 Ticker
                     :
                     parent?.Ticker,
+                    CategoryId:'I',
             }
 
             const apiBody = {
                 "requesterName": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
-                "parent": { ...parentInfo, originalId: custormerNumb?custormerNumb:ownerId, CategoryId: 'I', CountryId: "NG", Level: +lev },
+                "parent": { ...parentInfo},
                 "beneficialOwners": [
                     {
                         ...body,
@@ -190,7 +190,7 @@ const CreateBMOOwnerIndModal: React.FC<any> = ({ show, off,lev, parent,custormer
                 toast.success('BO successfully created');
                 off()
             } else {
-                toast.error('Operation failed! Check your network');
+                toast.error('User with that record already exist');
                 setLoading(false);
             }
 

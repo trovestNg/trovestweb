@@ -49,7 +49,7 @@ export default function () {
                 <Route index element={<UboAdminInitDashboardpage />} />
                 <Route path="custormer-details/:level/:curstomerNumber" element={<AuthCustomerViewPage />} />
                 <Route path="owner-details/:level/:ownerId" element={<AuthOwnerViewPage />} />
-                <Route path="bo-risk-assessment" element={<AuthApprovedBmoPage />} />
+                <Route path="bo-risk-assessment" element={<AuthApprovedBmoPage/>} />
                 <Route path="approved-bo" element={<AuthApprovedBmoPage />} />
                 <Route path="pending-bo" element={<AuthPendingBmoPage />} />
                 <Route path="rejected-bo" element={<AuthRejectedBmoPage />} />

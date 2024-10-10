@@ -16,7 +16,6 @@ import { IDept } from "../../interfaces/dept";
 import { toast } from "react-toastify";
 import { getUserInfo, loginUser, logoutUser } from "../../controllers/auth";
 import api from "../../config/api";
-import UnAuthorizedBMOListTab from "../../components/tabs/users-unauth-tabs/unAuthorizedBMOListTab";
 import styles from './unAuth.module.css'
 import { IBMO, IOwner, IParent } from "../../interfaces/bmo";
 import apiUnAuth from "../../config/apiUnAuth";
@@ -95,27 +94,7 @@ const AuthOwnerViewPage = () => {
         setViewMoreInfoModal(false);
         setRejectBmOwner(true)
     }
-    // useEffect(() => {
-    //     const handlePopState = () => {
-    //         toast.error("Ok!")
-           
-    //       if (navArray.length > 0) {
-    //         const newArray = [...navArray];
-    //         newArray.pop();
-    //         // Dispatch the modified array back to the reducer
-    //         dispatch(reduceAuthUserNavArray(newArray));
-    //         navigate(-1)
-    //       }
-    //     };
     
-    //     // Add event listener for browser back action
-    //     window.addEventListener('popstate', handlePopState);
-    
-    //     // Cleanup the event listener when component unmounts
-    //     return () => {
-    //       window.removeEventListener('popstate', handlePopState);
-    //     };
-    //   }, [navArray.length, dispatch, navArray]);
 
     const calculatePercent = (ownersShares:any[]) => {
         
@@ -283,8 +262,9 @@ const AuthOwnerViewPage = () => {
             try {
                 
                 const res = await api.get(`owner/level/navigate/approved?requesterName=${userInfo.profile.given_name}&ownerId=${ownerId}`,userInfo?.access_token);
-                if (res?.data) {
-                    setBmoList(res?.data?.Owners.reverse());
+                if (res?.status==200) {
+                    const filter= res?.data?.Owners.filter((bo:IBMOwnersPublic)=>!bo.IsMarkedForDelete)
+                    setBmoList(filter.reverse());
                     // calculatePercent(res?.data?.Owners)
                     setParentInfo(res?.data?.Parent)
                     setLoading(false)
@@ -435,6 +415,40 @@ const AuthOwnerViewPage = () => {
         }
     }
 
+    const handleNudgeAuthorizer = async () => {
+        toast.success('Authorizer Nudged')
+        setViewMoreInfoModal(false)
+        // // console.log({ seeBody: body })
+        // let userInfo = await getUserInfo();
+
+
+
+        // if (userInfo) {
+
+        //     const bodyApprove= {
+        //         // "requestorUsername": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
+        //         "requestorUsername": `Computer`,
+        //         "comment": "Testing Approve",
+        //         "ids": [
+        //         parentInfo?.Id == 0? parentInfo.ParentId:parentInfo?.Id
+        //         ]
+        //       }
+
+        //     const res = await api.post(`authorize`, bodyApprove, `${userInfo?.access_token}`)
+        //     if (res?.status==200) {
+        //         setLoading(false);
+        //         toast.success('BO Approved succesfully');
+        //         setApproveBmOwner(false);
+        //         setDontAllowAd(false);
+        //         setRefData(!refData);
+        //     } else {
+        //         toast.error('Operation failed! Check your network');
+        //         setLoading(false);
+        //     }
+
+        // }
+    }
+
     const handleNavigateToOwner = (owner: IBMOwnersPublic) => {
         let payload: IUnAuthUserNavLink = {
             name: owner.BusinessName,
@@ -523,24 +537,24 @@ const AuthOwnerViewPage = () => {
                 }}
                 parentInfo={parentInfo} />
 
-            <CreateBMOOwnerIndModal
-                parent={parentInfo}
-                ownerId={ownerId}
+<CreateBMOOwnerIndModal
+                parent={{...parentInfo,originalId:ownerId}}
                 lev={level}
-                off={() => { setAddNewBenefOwnerIndividualModal(false); 
-                    setRefData(!refData);
+                off={() => { 
+                    setAddNewBenefOwnerIndividualModal(false); 
+                    setRefData(!refData); 
                     setIsloaded(!isLoaded);
-                 }}
+                }
+                }
                 show={addNewBenefOwnerIndividualModal} />
 
             <CreateBMOOwnerCoperateModal
-                parent={parentInfo}
-                ownerId={ownerId}
+                parent={{...parentInfo,originalId:ownerId}}
                 lev={level}
                 off={() => {
                     setAddNewBenefOwnerCoperateModal(false);
                     setRefData(!refData);
-                setIsloaded(!isLoaded);
+                    setIsloaded(!isLoaded);
                 }}
                 show={addNewBenefOwnerCoperateModal} />
             
@@ -605,7 +619,7 @@ const AuthOwnerViewPage = () => {
                     userClass =='Initiator' &&
                     <Button 
                     
-                    disabled={!parentInfo?.IsAuthorized} onClick={()=>calculatePercent(bmoList)} className="d-flex gap-2" style={{ minWidth: '15em' }}>
+                     onClick={()=>calculatePercent(bmoList)} className="d-flex gap-2" style={{ minWidth: '15em' }}>
                         <i className="bi bi-plus-circle"></i>
                         <p className="p-0 m-0" >Add New Beneficial Owner</p>
                 </Button>}
@@ -690,6 +704,14 @@ const AuthOwnerViewPage = () => {
                                             <div className="d-flex gap-2">
                                                 <Button onClick={handleApproveBo} variant="outline text-success border border-1 border-success">Authorize</Button>
                                                 <Button onClick={handleRejectBo} variant="outline text-danger border border-1 border-danger">Reject</Button>
+                                            </div>
+                                        }
+
+{
+                                            !parentInfo?.IsAuthorized && userClass == 'Initiator' &&
+                                            <div className="d-flex gap-2">
+                                                <Button onClick={handleNudgeAuthorizer} variant="outline text-success border border-1 border-success">Nudge Authorizer</Button>
+                                                
                                             </div>
                                         }
 

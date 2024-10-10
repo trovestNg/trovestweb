@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 // Register necessary components for Chart.js
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const MoreInfoModal: React.FC<any> = ({ show, off, action, info, lev, handleApprv }) => {
+const MoreInfoModal: React.FC<any> = ({ show, off, action, info, lev, handleApprv,handleReject, handleNudge }) => {
     const userClass = useSelector((state: any) => state.authUserSlice.authUserProfile.UserClass);
     const navigate = useNavigate();
 
@@ -27,7 +27,7 @@ const MoreInfoModal: React.FC<any> = ({ show, off, action, info, lev, handleAppr
         "ID Type": info?.IdType ? info?.IdType : '-',
         "ID Number": info?.IdNumber ? info?.IdNumber : '-',
         "Ticker": info?.Ticker ? info?.Ticker : 'N/A',
-        "Source of Wealth": info?.SourceOfWealth?info?.SourceOfWealth:'N/A',
+        "Source of Wealth": info?.SourceOfWealth ? info?.SourceOfWealth : 'N/A',
     }
     // const returnTableData = (userData:any) => {
     //     Object.keys(userData).forEach(key => {
@@ -177,17 +177,17 @@ const MoreInfoModal: React.FC<any> = ({ show, off, action, info, lev, handleAppr
                                 </div>
 
                                 {
-                                info?.Remark &&
-                                <div className="mt-3 gap-2">
-                                    <p className="p-0 m-0 fw-bold text-primary">Remark</p>
-                                    <p>{info?.Remark}</p>
+                                    info?.Remark &&
+                                    <div className="mt-3 gap-2">
+                                        <p className="p-0 m-0 fw-bold text-primary">Remark</p>
+                                        <p>{info?.Remark}</p>
 
-                                </div>
-                            }
+                                    </div>
+                                }
 
                             </div>
 
-                           
+
 
                             {/* {
                                 userClass == 'Initiator' &&
@@ -199,10 +199,18 @@ const MoreInfoModal: React.FC<any> = ({ show, off, action, info, lev, handleAppr
                             } */}
 
                             {
-                                userClass == 'Initiator' && !info?.IsAuthorized &&
+                                userClass == 'Approver' && !info?.IsAuthorized &&
                                 <div className=" d-flex justify-content-center gap-2">
-                                    <Button variant="outline border text-danger border-1 border-danger">Reject</Button>
+                                    <Button onClick={handleReject} variant="outline border text-danger border-1 border-danger">Reject</Button>
                                     <Button onClick={handleApprv} variant="success p-2 px-3 text-light">Approve</Button>
+
+
+                                </div>}
+
+                            {
+                                userClass == 'Initiator' && !info?.IsAuthorized &&
+                                <div className=" d-flex justify-content-end gap-2">
+                                    <Button onClick={handleNudge} variant="outline border-success text-success p-2 px-3">Nudge Authorizer</Button>
 
 
                                 </div>}

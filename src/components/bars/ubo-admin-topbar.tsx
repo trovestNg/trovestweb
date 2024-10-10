@@ -5,7 +5,7 @@ import { getUserInfo, logoutUser, refreshToken } from "../../controllers/auth";
 import { useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { clearNav } from "../../store/slices/userSlice";
-import { emptyAuthUserNavArray } from "../../store/slices/authUserSlice";
+import { emptyAuthUserNavArray, setUserClass } from "../../store/slices/authUserSlice";
 
 
 
@@ -21,6 +21,8 @@ const UboAdminTopbar: React.FC<any> = ({ payload }) => {
     const [showModal, setShowModal] = useState(false);
 
     const getUserType = async () => {
+        let userInfo = await getUserInfo();
+        console.log({userType:userInfo?.profile.role})
         try {
             let userInfo = await getUserInfo();
             // console.log({him:userInfo})
@@ -35,13 +37,16 @@ const UboAdminTopbar: React.FC<any> = ({ payload }) => {
                 setUserName(`${userInfo?.profile?.given_name} ${userInfo?.profile?.family_name}`)
                 console.log(userInfo.access_token)
             }
-            if (userInfo?.profile.role?.includes("DOMAIN1\\GROUP_POLICY_INIT")) {
-                setUserType('Initiator')
+            if (userInfo?.profile.role?.includes('DOMAIN1\\CUSTOMER_RISK_INIT_TEST')) {
+                setUserType('Initiator');
+                dispatch(setUserClass('Initiator'))
             }
-            else if (userInfo?.profile.role?.includes("DOMAIN1\\GROUP_POLICY_AUTH")) {
-                setUserType('Authorizer')
+            else if (userInfo?.profile.role?.includes('DOMAIN1\\CUSTOMER_RISK_AUTH_TEST')) {
+                setUserType('Approver');
+                dispatch(setUserClass('Approver'))
             } else {
                 setUserType('User')
+                dispatch(setUserClass('Initiator'))
             }
 
         } catch (error) {

@@ -62,10 +62,10 @@ const UserSideBar: React.FC<any> = ({ payload }) => {
     const getUserType = async () => {
         try {
             let userInfo = await getUserInfo();
-            if (userInfo?.profile.role?.includes("DOMAIN1\\GROUP_POLICY_INIT")) {
+            if (userInfo?.profile.role?.includes('DOMAIN1\\CUSTOMER_RISK_INIT')) {
                 setUserType('initiator')
             }
-            else if (userInfo?.profile.role?.includes("DOMAIN1\\GROUP_POLICY_AUTH")) {
+            else if (userInfo?.profile.role?.includes('DOMAIN1\\CUSTOMER_RISK_AUTH')) {
                 setUserType('authorizer')
             } else {
                 setUserType('user')

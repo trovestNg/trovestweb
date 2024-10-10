@@ -16,8 +16,7 @@ import { IDept } from "../../interfaces/dept";
 import { toast } from "react-toastify";
 import { getUserInfo, loginUser, logoutUser } from "../../controllers/auth";
 import api from "../../config/api";
-import UnAuthorizedBMOListTab from "../../components/tabs/users-unauth-tabs/unAuthorizedBMOListTab";
-import UnAuthorizedFirstLayerBMOListTab from "../../components/tabs/users-unauth-tabs/unAuthorizedFirstLayerBMOListTab";
+// import UnAuthorizedFirstLayerBMOListTab from "../../components/tabs/users-unauth-tabs/unAuthorizedFirstLayerBMOListTab";
 
 
 const UserUnAuthFirstLayerPage = () => {
@@ -117,7 +116,7 @@ const UserUnAuthFirstLayerPage = () => {
     return (
         <div className="w-100 p-0">
            
-            <UnAuthorizedFirstLayerBMOListTab/>
+            {/* <UnAuthorizedFirstLayerBMOListTab/> */}
            
         </div>
     )

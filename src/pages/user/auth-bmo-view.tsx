@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Container, Modal, Card, Button, Spinner, FormControl, Badge, FormSelect, ListGroup, ListGroupItem } from "react-bootstrap";
 import { getUserInfo, loginUser, logoutUser } from "../../controllers/auth";
 import api from "../../config/api";
-import UnAuthorizedBMOListTab from "../../components/tabs/users-unauth-tabs/unAuthorizedBMOListTab";
 import styles from './unAuth.module.css'
 import { IBMO, IOwner, IParent } from "../../interfaces/bmo";
 import apiUnAuth from "../../config/apiUnAuth";
@@ -342,7 +341,8 @@ const AuthCustomerViewPage = () => {
 
                 const res = await api.get(`level/approved?requesterName=${userInfo.profile.given_name}&customerNumber=${curstomerNumber}`, userInfo?.access_token);
                 if (res?.data) {
-                    setBmoList(res?.data?.Owners.reverse());
+                    const filter= res?.data?.Owners.filter((bo:IBMOwnersPublic)=>!bo.IsMarkedForDelete)
+                    setBmoList(filter.reverse());
                     // calculatePercent(res?.data?.Owners)
                     setParentInfo(res?.data?.Parent)
                     setLoading(false);
@@ -430,10 +430,43 @@ const AuthCustomerViewPage = () => {
         setViewMoreInfoModal(false);
         setApproveBmOwner(true)
     }
-
     const handleRejectBo = () => {
         setViewMoreInfoModal(false);
         setRejectBmOwner(true)
+    }
+
+    const handleNudgeAuthorizer = async () => {
+        toast.success('Authorizer Nudged')
+        setViewMoreInfoModal(false)
+        // // console.log({ seeBody: body })
+        // let userInfo = await getUserInfo();
+
+
+
+        // if (userInfo) {
+
+        //     const bodyApprove= {
+        //         // "requestorUsername": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
+        //         "requestorUsername": `Computer`,
+        //         "comment": "Testing Approve",
+        //         "ids": [
+        //         parentInfo?.Id == 0? parentInfo.ParentId:parentInfo?.Id
+        //         ]
+        //       }
+
+        //     const res = await api.post(`authorize`, bodyApprove, `${userInfo?.access_token}`)
+        //     if (res?.status==200) {
+        //         setLoading(false);
+        //         toast.success('BO Approved succesfully');
+        //         setApproveBmOwner(false);
+        //         setDontAllowAd(false);
+        //         setRefData(!refData);
+        //     } else {
+        //         toast.error('Operation failed! Check your network');
+        //         setLoading(false);
+        //     }
+
+        // }
     }
 
 
@@ -503,13 +536,23 @@ const AuthCustomerViewPage = () => {
         if (!isLoaded) {
             fetched()
         }
-
-    }, [refData, curstomerNumber, isLoaded])
+    }, [refData,curstomerNumber,isLoaded])
     return (
         <div className="w-100 p-0">
             {bmoList.length > 0 && <ChartModal bmoList={bmoList} profile={parentInfo} show={viewChartModal}
                 off={() => setViewChartModal(false)} />}
-            <MoreInfoModal handleApprv={handleApproveBo} lev={level} info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} />
+            <MoreInfoModal 
+            handleApprv={handleApproveBo} 
+            handleReject={handleRejectBo} 
+            handleNudge={handleNudgeAuthorizer}
+            lev={level} info={bmoOwner} show={viewMoreInfotModal} 
+            off={() => {
+                setViewMoreInfoModal(false);
+                setRefData(!refData);
+                    setIsloaded(!isLoaded);
+                    window.location.reload()
+
+            }} />
             <AddNewBenefOwnerTypeModal action={handleAddNewBenefOwnerType} off={() => setAddNewBenefOwnerModal(false)} show={addNewBenefOwnerModal} />
             <SureToDeleteBmoModal
                 parentInfo={parentInfo}
@@ -519,6 +562,7 @@ const AuthCustomerViewPage = () => {
                     setDeleteBmOwner(false);
                     setRefData(!refData);
                     setIsloaded(!isLoaded);
+                    window.location.reload()
                 }}
             />
             <SureToApproveBOModal show={approveBmOwner}
@@ -526,6 +570,7 @@ const AuthCustomerViewPage = () => {
                     setApproveBmOwner(false);
                     setRefData(!refData);
                     setIsloaded(!isLoaded);
+                    window.location.reload()
                 }}
                 parentInfo={parentInfo} />
 
@@ -534,24 +579,32 @@ const AuthCustomerViewPage = () => {
                     setRejectBmOwner(false);
                     setRefData(!refData);
                     setIsloaded(!isLoaded);
+                    window.location.reload()
                 }}
                 parentInfo={parentInfo} />
 
             <CreateBMOOwnerIndModal
-                parent={parentInfo}
+                parent={{...parentInfo,customerNumber:curstomerNumber,CountryId:"NG",}}
                 custormerNumb={curstomerNumber}
                 lev={level}
-                off={() => { setAddNewBenefOwnerIndividualModal(false); setRefData(!refData); setIsloaded(!isLoaded) }}
+                off={() => { 
+                    setAddNewBenefOwnerIndividualModal(false); 
+                    setRefData(!refData); 
+                    setIsloaded(!isLoaded);
+                    window.location.reload()
+                }
+                }
                 show={addNewBenefOwnerIndividualModal} />
 
             <CreateBMOOwnerCoperateModal
-                parent={parentInfo}
+                parent={{...parentInfo,customerNumber:curstomerNumber,CountryId:"NG",}}
                 custormerNumb={curstomerNumber}
                 lev={level}
                 off={() => {
                     setAddNewBenefOwnerCoperateModal(false);
                     setRefData(!refData);
                     setIsloaded(!isLoaded);
+                    window.location.reload()
                 }}
                 show={addNewBenefOwnerCoperateModal} />
 
@@ -560,20 +613,25 @@ const AuthCustomerViewPage = () => {
                     setAddNewBenefOwnerFundsManagerModal(false);
                     setRefData(!refData);
                     setIsloaded(!isLoaded);
+                    window.location.reload()
                 }} show={addNewBenefOwnerFundsManagerModal} />
 
             <CreateBMOOwnerImportRootModal
                 cusNum={curstomerNumber}
                 off={() => {
                     setAddNewBenefOwnerImportModal(false); setRefData(!refData);
+                    setRefData(!refData);
                     setIsloaded(!isLoaded);
+                    window.location.reload()
                 }}
                 show={addNewBenefOwnerImportModal} />
 
             <EditBMOOwnerIndModal parentInf={parentInfo} ownerInfo={bmoOwner}
                 off={() => {
                     setEditBenefOwnerIndividualModal(false); setRefData(!refData);
+                    setRefData(!refData);
                     setIsloaded(!isLoaded);
+                    window.location.reload()
                 }} show={editBenefOwnerIndividualModal} />
 
             <EditBMOOwnerCoperateModal
@@ -583,6 +641,7 @@ const AuthCustomerViewPage = () => {
                     setEditBenefOwnerCoperateModal(false);
                     setRefData(!refData);
                     setIsloaded(!isLoaded);
+                    window.location.reload()
 
                 }} show={editBenefOwnerCoperateModal} />
 
@@ -607,7 +666,7 @@ const AuthCustomerViewPage = () => {
                         userClass == 'Initiator' &&
                         <Button
 
-                            disabled={!parentInfo?.IsAuthorized} onClick={() => calculatePercent(bmoList)} className="d-flex gap-2" style={{ minWidth: '15em' }}>
+                            onClick={() => calculatePercent(bmoList)} className="d-flex gap-2" style={{ minWidth: '15em' }}>
                             <i className="bi bi-plus-circle"></i>
                             <p className="p-0 m-0" >Add New Beneficial Owner</p>
                         </Button>
@@ -693,6 +752,14 @@ const AuthCustomerViewPage = () => {
                                             <div className="d-flex gap-2">
                                                 <Button onClick={handleApproveBo} variant="outline text-success border border-1 border-success">Authorize</Button>
                                                 <Button onClick={handleRejectBo} variant="outline text-danger border border-1 border-danger">Reject</Button>
+                                            </div>
+                                        }
+
+{
+                                            !parentInfo?.IsAuthorized && userClass == 'Initiator' &&
+                                            <div className="d-flex gap-2">
+                                                <Button onClick={handleNudgeAuthorizer} variant="outline text-success border border-1 border-success">Nudge Authorizer</Button>
+                                                
                                             </div>
                                         }
 

@@ -3,7 +3,6 @@ import { Container, Modal, Card, Button, Spinner, FormControl } from "react-boot
 import { toast } from "react-toastify";
 import { getUserInfo, loginUser, logoutUser } from "../../controllers/auth";
 import api from "../../config/api";
-import UnAuthorizedBMOListTab from "../../components/tabs/users-unauth-tabs/unAuthorizedBMOListTab";
 import styles from './unAuth.module.css'
 import { IBMO, IOwner } from "../../interfaces/bmo";
 import apiUnAuth from "../../config/apiUnAuth";

@@ -60,6 +60,7 @@ const CreateBMOOwnerCoperateModal: React.FC<any> = ({ show, off, parent, custorm
 
         if (userInfo) {
             let parentInfo = {
+                ...parent,
                 AuthorizeBy
                     :
                     parent?.AuthorizeBy,
@@ -81,9 +82,6 @@ const CreateBMOOwnerCoperateModal: React.FC<any> = ({ show, off, parent, custorm
                 Comments
                     :
                     parent?. Comments,
-                CountryId
-                    :
-                    parent?. CountryId,
                 CountryName
                     :
                     parent?.CountryName,
@@ -147,19 +145,20 @@ const CreateBMOOwnerCoperateModal: React.FC<any> = ({ show, off, parent, custorm
                 Ticker
                     :
                     parent?.Ticker,
+                    CategoryId:'C',
             }
 
             const apiBody = {
                 "requesterName": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
-                "parent": { ...parentInfo, originalId: custormerNumb?custormerNumb:ownerId, CategoryId: 'C', CountryId: "NG", Level: +lev },
+                "parent": { ...parentInfo},
                 "beneficialOwners": [
                     {
                         ...body,
                         "categoryId": "C",
-                        "isPEP": body?.isPEP == 'yes' ? true : false,
-
+                        "isPEP":body?.isPEP=='yes'?true:false,
+                        
                     }
-
+                   
                     // {
                     //     "businessName": "string",
                     //     "customerNumber": "string",
@@ -185,7 +184,7 @@ const CreateBMOOwnerCoperateModal: React.FC<any> = ({ show, off, parent, custorm
                 toast.success('BO added succesfully');
                 off()
             } else {
-                toast.error('Operation failed! Check your network');
+                toast.error('Bo with that name exist!');
                 setLoading(false);
             }
 

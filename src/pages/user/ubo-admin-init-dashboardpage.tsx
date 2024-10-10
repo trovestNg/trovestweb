@@ -16,7 +16,6 @@ import { IDept } from "../../interfaces/dept";
 import { toast } from "react-toastify";
 import { getUserInfo, loginUser, logoutUser } from "../../controllers/auth";
 import api from "../../config/api";
-import UnAuthorizedBMOListTab from "../../components/tabs/users-unauth-tabs/unAuthorizedBMOListTab";
 import styles from './unAuth.module.css'
 import { IBMO } from "../../interfaces/bmo";
 import apiUnAuth from "../../config/apiUnAuth";
@@ -137,20 +136,22 @@ const UboAdminInitDashboardpage = () => {
                     <i
                         className="bi bi-x-lg"
                         onClick={handleClear}
-                        style={{ marginLeft: '150px', display: authUserBmoSearchWord == '' ? 'none' : 'flex', cursor: 'pointer', float: 'right', position: 'absolute' }}></i>
+                        style={{ marginLeft: '280px', display: authUserBmoSearchWord == '' ? 'none' : 'flex', cursor: 'pointer', float: 'right', position: 'absolute' }}></i>
 
                     <Button
                         disabled={authUserBmoSearchWord == '' || loading}
                         type="submit"
                         variant="primary" style={{ minWidth: '6em', marginRight: '-5px', minHeight: '2.4em' }}>{loading ? <Spinner size="sm" /> : 'Search'}</Button>
                         
-                    {
+                    {/* {
                         userClass == 'Initiator' &&
                         <Button
                 onClick={()=>setAddNewBenefOwnerImportModal(true)}
                     variant="outline border  d-flex gap-2 border-primary text-primary" style={{ minWidth: '9em', marginRight: '-5px', minHeight: '2.4em' }}>{<div className="d-flex w-100 gap-2 justify-content-center"> <i className="bi bi-file-earmark-arrow-up"></i>
-                    <p className="p-0 m-0" >Bulk Upload</p></div>}
-                    </Button>}
+                    <p className="p-0 m-0" >Bulk Upload</p></div>
+                    }
+                    </Button>
+                    } */}
                 </form>
                 
 

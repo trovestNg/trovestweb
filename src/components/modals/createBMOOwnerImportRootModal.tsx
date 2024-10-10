@@ -117,7 +117,7 @@ const CreateBMOOwnerImportRootModal:  React.FC<any> = ({ show, off,cusNum }) => 
                 setLoading(false)
                 off()
             } else {
-                toast.error('Network error');
+                toast.error('Duplicate record entered');
                 setLoading(false)
             }
         }

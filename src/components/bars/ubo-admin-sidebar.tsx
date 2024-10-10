@@ -76,24 +76,25 @@ const UboAdminSideBar: React.FC<any> = ({ payload }) => {
             path: '/ubo-portal/reports',
         },
         {
-            title: 'Deleted',
+            title: 'Marked For Deletion',
             icon: 'bi bi-trash',
             path: '/ubo-portal/deleted',
         }
     ]
 
+
     const getUserType = async () => {
         try {
             let userInfo = await getUserInfo();
-            if (userInfo?.profile.role?.includes("DOMAIN1\\GROUP_POLICY_INIT")) {
+            if (userInfo?.profile.role?.includes('DOMAIN1\\CUSTOMER_RISK_INIT_TEST')) {
                 setUserType('initiator');
                 dispatch(setUserClass('Initiator'))
             }
-            else if (userInfo?.profile.role?.includes("DOMAIN1\\GROUP_POLICY_AUTH")) {
+            else if (userInfo?.profile.role?.includes('DOMAIN1\\CUSTOMER_RISK_AUTH_TEST')) {
                 setUserType('authorizer');
                 dispatch(setUserClass('Approver'))
             } else {
-                setUserType('user')
+                setUserType('User')
                 dispatch(setUserClass('Initiator'))
             }
 

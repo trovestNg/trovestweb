@@ -22,7 +22,8 @@ const AuthHistoryBmoPage = () => {
         ActionDescription: string,
         Id: number,
         TimeStamp: string,
-        User: string
+        User: string,
+        
     }
 
     const [history, setHistory] = useState<IHistory[]>([]);
@@ -33,6 +34,44 @@ const AuthHistoryBmoPage = () => {
 
     const [totalBmoCount, setTotalBmoCount] = useState(0);
 
+    function filterItemsFromYesterday(items:IHistory[]) {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);  // Get yesterday's date
+        yesterday.setHours(0, 0, 0, 0);  // Set time to midnight to compare only the date part
+      
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);  // Set time to midnight
+      
+        return items.filter(item => {
+          const creationDate = new Date(item.TimeStamp);
+          return creationDate >= yesterday && creationDate < today;
+        });
+      }
+
+      function filterItemsFromThreeDaysAgo(items:IHistory[]) {
+        const threeDaysAgo = new Date();
+        threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);  // Get the date for 3 days ago
+        threeDaysAgo.setHours(0, 0, 0, 0);  // Set time to midnight for accurate comparison
+      
+        return items.filter(item => {
+          const creationDate = new Date(item.TimeStamp);
+          return creationDate >= threeDaysAgo;  // Return items created 3 days ago or later
+        });
+      }
+
+      function filterItemsFromToday(items:IHistory[]) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);  // Set time to midnight at the start of today
+      
+        const tomorrow = new Date();
+        tomorrow.setDate(today.getDate() + 1);  // Get tomorrow's date
+        tomorrow.setHours(0, 0, 0, 0);  // Set time to midnight at the start of tomorrow
+      
+        return items.filter(item => {
+          const creationDate = new Date(item.TimeStamp);
+          return creationDate >= today && creationDate < tomorrow;
+        });
+      }
 
     const dispatch = useDispatch()
     // const userSearch = useSelector((state:any)=>state.userSlice.userBMOSearch.searchWords);
@@ -43,10 +82,10 @@ const AuthHistoryBmoPage = () => {
         if (userInfo) {
             try {
 
-                const res = await api.get(`history?requesterName=${userInfo.profile.given_name}`, userInfo?.access_token);
+                const res = await api.get(`history?&pageSize=${1000}&requesterName=${userInfo.profile.given_name}`, userInfo?.access_token);
                 // console.log({heree:res})
                 if (res?.data) {
-                    setHistory(res?.data?.Histories.reverse());
+                    setHistory(res?.data?.Histories);
                     // setTotalBmoCount(res?.data?.Data.length)
                     // calculatePercent(res?.data?.Owners)
                     // setParentInfo(res?.data?.Parent)
@@ -163,14 +202,14 @@ const AuthHistoryBmoPage = () => {
 
                     <div className="px-4" style={{ height: '50vh', overflowY: 'scroll' }}>
                         <div className="w-100 p-2">
-                            Today
+                        <p className="fw-bold">Today</p>
                             {
-                                history.map((hist: IHistory) => (
+                               filterItemsFromToday(history).map((hist: IHistory) => (
                                     <div className="d-flex gap-3 mt-3 w-100 shadow-sm p-2">
 
-                                        <Badge className="p-3 bg-primary text-center d-flex align-items-center justify-content-center " style={{maxHeight:'3em', maxWidth:'3em', borderRadius:'6em'}}>{hist.User[0]}{hist.User[1]}</Badge>
+                                        <Badge className="p-3 bg-primary text-center d-flex align-items-center justify-content-center " style={{ maxHeight: '3em', maxWidth: '3em', borderRadius: '6em' }}>{hist.User[0]}{hist.User[1]}</Badge>
                                         <div className=" w-75">
-                                        <p className="p-0 m-0 text-primary fw-bold">{hist.User}</p>
+                                            <p className="p-0 m-0 text-primary fw-bold">{hist.User}</p>
                                             {/* <p className="p-0 m-0">Added new Beneficial Owner to <span className="fw-bold">OLASCO & CO Limited</span></p> */}
                                             <p className="p-0 m-0">{hist.ActionDescription}</p>
                                         </div>
@@ -180,23 +219,47 @@ const AuthHistoryBmoPage = () => {
                             }
                         </div>
                     </div>
-<div className="w-100 d-flex justify-content-center">
-<hr className="w-75"/>
-</div>
+                    <div className="w-100 d-flex justify-content-center">
+                        <hr className="w-75" />
+                    </div>
                     <div className="px-4" style={{ height: '50vh', overflowY: 'scroll' }}>
                         <div className="w-100 p-2">
-                            Yesterday
+                            <p className="fw-bold">Yesterday</p>
                             {
-                                history.map((hist: IHistory) => (
+                                filterItemsFromYesterday(history).map((hist: IHistory) => (
                                     <div className="d-flex gap-3 mt-3 w-100 shadow-sm p-2">
 
-<Badge className="p-3 bg-primary text-center d-flex align-items-center justify-content-center " style={{maxHeight:'3em', maxWidth:'3em', borderRadius:'6em'}}>AB</Badge>
+                                        <Badge className="p-3 bg-primary text-center d-flex align-items-center justify-content-center " style={{ maxHeight: '3em', maxWidth: '3em', borderRadius: '6em' }}>{hist.User[0]}{hist.User[1]}</Badge>
                                         <div className=" w-75">
                                             <p className="p-0 m-0 text-primary fw-bold">{hist.User}</p>
                                             {/* <p className="p-0 m-0">Added new Beneficial Owner to <span className="fw-bold">OLASCO & CO Limited</span></p> */}
                                             <p className="p-0 m-0">{hist.ActionDescription}</p>
                                         </div>
-                                        <p className=" w-50 text-end">{`3:32 pm`}</p>
+                                        <p className=" w-50 text-end">{moment(hist.TimeStamp).format('HH:mm A')}</p>
+                                    </div>
+                                ))
+                            }
+                        </div>
+                    </div>
+
+                    <div className="w-100 d-flex justify-content-center">
+                        <hr className="w-75" />
+                    </div>
+
+                    <div className="px-4" style={{ height: '50vh', overflowY: 'scroll' }}>
+                        <div className="w-100 p-2">
+                            <p className="fw-bold">Other Days</p>
+                            {
+                                filterItemsFromThreeDaysAgo(history).map((hist: IHistory) => (
+                                    <div className="d-flex gap-3 mt-3 w-100 shadow-sm p-2">
+
+                                        <Badge className="p-3 bg-primary text-center d-flex align-items-center justify-content-center " style={{ maxHeight: '3em', maxWidth: '3em', borderRadius: '6em' }}>{hist.User[0]}{hist.User[1]}</Badge>
+                                        <div className=" w-75">
+                                            <p className="p-0 m-0 text-primary fw-bold">{hist.User}</p>
+                                            {/* <p className="p-0 m-0">Added new Beneficial Owner to <span className="fw-bold">OLASCO & CO Limited</span></p> */}
+                                            <p className="p-0 m-0">{hist.ActionDescription}</p>
+                                        </div>
+                                        <p className=" w-50 text-end">{moment(hist.TimeStamp).format('HH:mm A')}</p>
                                     </div>
                                 ))
                             }

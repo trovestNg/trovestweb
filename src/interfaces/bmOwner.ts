@@ -41,6 +41,7 @@ export interface IBMOwnersPublic {
     RiskLevel?: string
     RiskScore?: number
     Ticker?: string
+    IsMarkedForDelete?:boolean
     // BeneficiaryOwnerDetails?:IBMCustomersPublic[]
 }
 

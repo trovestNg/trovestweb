@@ -22,8 +22,8 @@ const SureToApproveBOModal : React.FC<any> = ({show, off,parentInfo})=>{
 
             const bodyApprove= {
                 // "requestorUsername": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
-                "requestorUsername": `Computer`,
-                "comment": "Testing Approve",
+                "requestorUsername":`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
+                "comment": "Approved by system",
                 "ids": [
                 parentInfo?.Id == 0? +`${parentInfo.ParentId}`:parentInfo?.Id
                 ]

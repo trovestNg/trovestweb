@@ -20,6 +20,7 @@ import { pushTounAuthUserNavArray, setUnAuthUserBMOOwnerProfile } from "../../st
 import { setAuthUserBMOOwnerProfile } from "../../store/slices/authUserSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import MoreInfoModal from "../../components/modals/moreInfoModal";
+import SureToApproveDeleteBmoModal from "../../components/modals/sureToApproveDeleteBmoModal";
 
 
 const AuthDeletedBmoPage = () => {
@@ -35,15 +36,17 @@ const AuthDeletedBmoPage = () => {
 
     const [bmoOwner, setBmoOwner] = useState<IApprovedBMOOwner>();
     const [editBenefOwnerCoperateModal, setEditBenefOwnerCoperateModal] = useState(false);
-    const [editBenefOwnerIndividualModal, setEditBenefOwnerIndividualModal] = useState(false);
+    const [showDeleteApprovalModal, setShowDeleteApprovalModal] = useState(false);
     const [deleteBmOwner, setDeleteBmOwner] = useState(false);
     const navigate = useNavigate();
 
     const [totalBmoCount, setTotalBmoCount] = useState(0);
     const [bySearch, setBySearch] = useState(false);
     const [searchedWord, setSearchedWord] = useState('');
-    const [bmoId, setBmoId] = useState('');
+    const [bmoId, setBmoId] = useState<number>(6789);
     const [viewMoreInfotModal, setViewMoreInfoModal] = useState(false);
+
+    const userClass = useSelector((state: any) => state.authUserSlice.authUserProfile.UserClass);
 
     const dispatch = useDispatch()
     // const userSearch = useSelector((state:any)=>state.userSlice.userBMOSearch.searchWords);
@@ -61,6 +64,10 @@ const AuthDeletedBmoPage = () => {
 
     }
 
+    const handleDeletionApproval=()=>{
+        setShowDeleteApprovalModal(true)
+    }
+
     const searchByBmoNameOrNumber = async () => {
         setSLoading(true);
         setLoading(true)// toast.error('Await')
@@ -68,7 +75,7 @@ const AuthDeletedBmoPage = () => {
         if (userInfo) {
             try {
 
-                const res = await api.get(`delete/pending?requesterName=${userInfo.profile.given_name}&Name=${searchedWord}&pageSize=100`, userInfo?.access_token);
+                const res = await api.get(`delete/pending?requesterName=${`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`}&Name=${searchedWord}&pageSize=100`, userInfo?.access_token);
                 console.log({ heree: res })
                 if (res?.data) {
                     setBmoList(res?.data?.Data.reverse());
@@ -161,6 +168,20 @@ const AuthDeletedBmoPage = () => {
     const handleDeleteBmoOwner = (bmoId: any) => {
         setDeleteBmOwner(true);
         setBmoId(bmoId);
+        setShowChildrenModal(false)
+    }
+
+    const handleNudgeAuthorizer = (bmoId: any) => {
+        // setDeleteBmOwner(true);
+        setBmoId(bmoId);
+        setShowChildrenModal(false);
+        toast.success('Authorizer nudged for deletion')
+    }
+
+    const handleOff = () => {
+        setDeleteBmOwner(false);
+        setRefreshComponent(!refreshComponent)
+        setShowChildrenModal(false)
     }
 
     const fetch = async () => {
@@ -172,9 +193,9 @@ const AuthDeletedBmoPage = () => {
             if (userInfo) {
                 try {
 
-                    const res = await api.get(`delete/pending?requesterName=${userInfo.profile.given_name}&pageSize=100`, userInfo?.access_token);
-                    console.log({ heree: res })
-                    if (res?.data) {
+                    const res = await api.get(`delete/pending?requesterName=${`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`}&pageSize=100`, userInfo?.access_token);
+                 
+                    if (res?.status==200) {
                         setBmoList(res?.data?.Data.reverse());
                         setTotalBmoCount(res?.data?.Data.length)
                         // calculatePercent(res?.data?.Owners)
@@ -221,9 +242,20 @@ const AuthDeletedBmoPage = () => {
                 </Modal.Header>
                 <Modal.Body>
                     <div>
-                        <h5>
+                       <div className="d-flex w-100 justify-content-between">
+                       <h5>
                             Attached Children List
                         </h5>
+                        {
+                            userClass=="Approver"&&
+                            <Button onClick={()=>handleDeleteBmoOwner(bmoId)} variant="outline border border-success text-success">Approve Deletion</Button>
+                            }
+
+{
+                            userClass=="Initiator"&&
+                            <Button onClick={()=>handleNudgeAuthorizer(bmoId)} variant="outline border border-success text-success">Nudge Authorizer</Button>
+                            }
+                       </div>
                         {
                             <>
                                 <table className="table table-striped mt-3" >
@@ -238,7 +270,6 @@ const AuthDeletedBmoPage = () => {
                                             <th scope="col" className="bg-primary text-light">PEP</th>
                                             <th scope="col" className="bg-primary text-light">Ticker</th>
                                             <th scope="col" className="bg-primary text-light">Status</th>
-                                            <th scope="col" className="bg-primary text-light">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -255,8 +286,8 @@ const AuthDeletedBmoPage = () => {
                                                     <td>{bmoOwner.NumberOfShares}</td>
                                                     <td>{bmoOwner.IsPEP ? 'Yes' : 'No'}</td>
                                                     <td>{bmoOwner.Ticker ? bmoOwner.Ticker : 'N/A'}</td>
-                                                    <td className={`text-${bmoOwner.IsAuthorized ? 'success' : 'danger'}`}>{bmoOwner.IsAuthorized ? 'Authorised' : 'UnAuthorised'}</td>
-                                                    <td></td>
+                                                    <td className={`text-${bmoOwner.IsMarkedForDelete ? 'danger' : 'success'}`}>{bmoOwner.IsMarkedForDelete ? 'Marked' : 'UnAuthorised'}</td>
+                                                   
 
 
                                                 </tr>
@@ -282,9 +313,9 @@ const AuthDeletedBmoPage = () => {
 
                 }} show={editBenefOwnerCoperateModal} />
             <MoreInfoModal lev={bmoOwner?.Level} info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} />
-            <SureToDeleteBmoModal show={deleteBmOwner} off={() => setDeleteBmOwner(false)} />
+            <SureToApproveDeleteBmoModal show={deleteBmOwner} Id={bmoId} off={handleOff} />
 
-            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Pending Beneficial Owners {`(${totalBmoCount})`} </h5>
+            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Beneficial Owners Pending Deletion {`(${totalBmoCount})`} </h5>
             <p>Here, you'll find beneficial owners pending deletion.</p>
 
             <div className="w-100 d-flex align-items-center">
@@ -376,6 +407,7 @@ const AuthDeletedBmoPage = () => {
                                                             onClick={(e: any) => {
                                                                 e.stopPropagation();
                                                                 setBmoChildrenList(bmoOwner.BeneficiaryOwnerDetails)
+                                                                setBmoId(bmoOwner.BeneficiaryOwnerMasterId)
                                                                 setShowChildrenModal(true)
                                                             }}
                                                         ></i></td>
