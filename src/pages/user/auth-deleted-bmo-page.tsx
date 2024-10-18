@@ -21,6 +21,8 @@ import { setAuthUserBMOOwnerProfile } from "../../store/slices/authUserSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import MoreInfoModal from "../../components/modals/moreInfoModal";
 import SureToApproveDeleteBmoModal from "../../components/modals/sureToApproveDeleteBmoModal";
+import SureToDeclineDeleteBmoModal from "../../components/modals/sureToDeclineDeleteBmoModal";
+import SureToDeclineDeleteSingleBmoModal from "../../components/modals/sureToDeclineDeleteSingleBmoModal";
 
 
 const AuthDeletedBmoPage = () => {
@@ -38,6 +40,12 @@ const AuthDeletedBmoPage = () => {
     const [editBenefOwnerCoperateModal, setEditBenefOwnerCoperateModal] = useState(false);
     const [showDeleteApprovalModal, setShowDeleteApprovalModal] = useState(false);
     const [deleteBmOwner, setDeleteBmOwner] = useState(false);
+    const [declinedeleteBmOwner, setDeclineDeleteBmOwner] = useState(false);
+
+    const [deleteSingleBmOwner, setDeleteSingleBmOwner] = useState(false);
+    const [declinedeleteSingleBmOwner, setDeclineDeleteSingleBmOwner] = useState(false);
+
+
     const navigate = useNavigate();
 
     const [totalBmoCount, setTotalBmoCount] = useState(0);
@@ -45,6 +53,7 @@ const AuthDeletedBmoPage = () => {
     const [searchedWord, setSearchedWord] = useState('');
     const [bmoId, setBmoId] = useState<number>(6789);
     const [viewMoreInfotModal, setViewMoreInfoModal] = useState(false);
+
 
     const userClass = useSelector((state: any) => state.authUserSlice.authUserProfile.UserClass);
 
@@ -64,8 +73,15 @@ const AuthDeletedBmoPage = () => {
 
     }
 
-    const handleDeletionApproval=()=>{
-        setShowDeleteApprovalModal(true)
+    const handleSingleDeleteOperation = async (type:string,bmId:any)=>{
+        if(type=='approve'){
+            setDeleteSingleBmOwner(true)
+        } else {
+            setDeclineDeleteSingleBmOwner(true);
+            setBmoId(bmId);
+            setShowChildrenModal(false)
+        }
+
     }
 
     const searchByBmoNameOrNumber = async () => {
@@ -171,16 +187,57 @@ const AuthDeletedBmoPage = () => {
         setShowChildrenModal(false)
     }
 
-    const handleNudgeAuthorizer = (bmoId: any) => {
-        // setDeleteBmOwner(true);
+    const handleDeclineBmoOwner = (bmoId: any) => {
+        setDeclineDeleteBmOwner(true);
         setBmoId(bmoId);
-        setShowChildrenModal(false);
-        toast.success('Authorizer nudged for deletion')
+        setShowChildrenModal(false)
+    }
+
+    const handleDeleteSingleBmoOwner = (bmoId: any) => {
+        setDeleteSingleBmOwner(true);
+        setBmoId(bmoId);
+        setShowChildrenModal(false)
+    }
+
+
+    const handleNudgeAuthorizer = async (bmoId: any,owner:any) => {
+        console.log({here:bmoId})
+        let userInfo = await getUserInfo();
+        if (userInfo) {
+        try {
+            // setOLoading(true)
+            // let userInfo = await getUserInfo();
+            const res = await api.get(`delete/nudge?requsterName=${userInfo?.profile.given_name}&parentId=${bmoId}`, userInfo?.access_token);
+            if(res?.status==200){
+                setBmoId(bmoId);
+                setShowChildrenModal(false);
+                toast.success('Authorizer nudged for deletion')
+            } else {
+                toast.error('Failed to nudge Authorizer')
+            }
+            
+        } catch (error) {
+            
+        }}
+      
     }
 
     const handleOff = () => {
         setDeleteBmOwner(false);
         setRefreshComponent(!refreshComponent)
+        setShowChildrenModal(false)
+    }
+
+    const handleOffDecline = () => {
+        setDeclineDeleteBmOwner(false);
+        setRefreshComponent(!refreshComponent)
+        setShowChildrenModal(false)
+    }
+
+    const handleOffDeclineDeleteSingle = () => {
+        setDeclineDeleteSingleBmOwner(false);
+        setRefreshComponent(!refreshComponent)
+        window.location.reload()
         setShowChildrenModal(false)
     }
 
@@ -248,16 +305,24 @@ const AuthDeletedBmoPage = () => {
                         </h5>
                         {
                             userClass=="Approver"&&
-                            <Button onClick={()=>handleDeleteBmoOwner(bmoId)} variant="outline border border-success text-success">Approve Deletion</Button>
+                            <div className="d-flex gap-3">
+                            <Button onClick={()=>handleDeleteBmoOwner(bmoId)} variant="outline border border-success text-success">
+                                <i className="bi bi-trash"></i>
+                                Approve all
+                            </Button>
+                            <Button onClick={()=>handleDeclineBmoOwner(bmoId)} variant="outline border border-danger text-danger">
+                            <i className="bi bi-trash"></i>
+                            Decline All
+                            </Button>
+                            </div>
                             }
 
 {
                             userClass=="Initiator"&&
-                            <Button onClick={()=>handleNudgeAuthorizer(bmoId)} variant="outline border border-success text-success">Nudge Authorizer</Button>
+                            <Button onClick={()=>handleNudgeAuthorizer(bmoId,bmoOwner)} variant="outline border border-success text-success">Nudge Authorizer</Button>
                             }
                        </div>
-                        {
-                            <>
+                       <div className="p-2 table-responsive">
                                 <table className="table table-striped mt-3" >
                                     <thead className="thead-dark">
                                         <tr >
@@ -269,7 +334,11 @@ const AuthDeletedBmoPage = () => {
                                             <th scope="col" className="bg-primary text-light">No of Shares  </th>
                                             <th scope="col" className="bg-primary text-light">PEP</th>
                                             <th scope="col" className="bg-primary text-light">Ticker</th>
-                                            <th scope="col" className="bg-primary text-light">Status</th>
+                                            {
+                                                userClass=='Approver'&&
+                                                <th scope="col" className="bg-primary text-light">Action</th>}
+                                            {/* <th scope="col" className="bg-primary text-light"></th> */}
+
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -286,7 +355,21 @@ const AuthDeletedBmoPage = () => {
                                                     <td>{bmoOwner.NumberOfShares}</td>
                                                     <td>{bmoOwner.IsPEP ? 'Yes' : 'No'}</td>
                                                     <td>{bmoOwner.Ticker ? bmoOwner.Ticker : 'N/A'}</td>
-                                                    <td className={`text-${bmoOwner.IsMarkedForDelete ? 'danger' : 'success'}`}>{bmoOwner.IsMarkedForDelete ? 'Marked' : 'UnAuthorised'}</td>
+                                                    {/* <td className={`text-${bmoOwner.IsMarkedForDelete ? 'danger' : 'success'}`}>{bmoOwner.IsMarkedForDelete ? 'Marked' : 'UnAuthorised'}</td> */}
+                                                    {
+                                                        userClass=='Approver'&&
+                                                        <td className="">
+                                                        <div className="d-flex gap-2">
+                                                        <i className="bi bi-check2 text-success" 
+                                                        // onClick={
+                                                        //     ()=>handleSingleDeleteOperation('approve')
+                                                            
+                                                        // }
+                                                        ></i>
+                                                        <i className="bi bi-x text-danger" onClick={()=>handleSingleDeleteOperation('reject',bmoOwner?.Id)}></i>
+                                                        </div>
+                                                    
+                                                    </td>}
                                                    
 
 
@@ -299,8 +382,7 @@ const AuthDeletedBmoPage = () => {
                                         }
                                     </tbody>
                                 </table>
-                            </>
-                        }
+                        </div>
                     </div>
                 </Modal.Body>
             </Modal>
@@ -314,6 +396,10 @@ const AuthDeletedBmoPage = () => {
                 }} show={editBenefOwnerCoperateModal} />
             <MoreInfoModal lev={bmoOwner?.Level} info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} />
             <SureToApproveDeleteBmoModal show={deleteBmOwner} Id={bmoId} off={handleOff} />
+            <SureToDeclineDeleteBmoModal show={declinedeleteBmOwner} Id={bmoId} off={handleOffDecline} />
+
+            {/* <SureToApproveDeleteSingleBmoModal show={deleteSingleBmOwner} Id={bmoId} off={handleOff} /> */}
+            <SureToDeclineDeleteSingleBmoModal show={declinedeleteSingleBmOwner} Id={bmoId} off={handleOffDeclineDeleteSingle} />
 
             <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Beneficial Owners Pending Deletion {`(${totalBmoCount})`} </h5>
             <p>Here, you'll find beneficial owners pending deletion.</p>
@@ -408,6 +494,7 @@ const AuthDeletedBmoPage = () => {
                                                                 e.stopPropagation();
                                                                 setBmoChildrenList(bmoOwner.BeneficiaryOwnerDetails)
                                                                 setBmoId(bmoOwner.BeneficiaryOwnerMasterId)
+                                                                setBmoOwner(bmoOwner)
                                                                 setShowChildrenModal(true)
                                                             }}
                                                         ></i></td>

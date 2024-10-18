@@ -57,6 +57,7 @@ const AuthOwnerViewPage = () => {
     const [viewMoreInfotModal, setViewMoreInfoModal] = useState(false);
     const [userSearch, setUserSearch] = useState('');
     const [refData, setRefData] = useState(false);
+    const [bmoParentId,setBmoParentId]=useState<number>();
 
     const userClass = useSelector((state: any) => state.authUserSlice.authUserProfile.UserClass);
     const [bmoId, setBmoId] = useState('');
@@ -204,7 +205,7 @@ const AuthOwnerViewPage = () => {
 
             // const res= await fetch(`${baseUrl}/report?format=xlsx&&customerNumber=${curstomerNumber}&&requesterName=${`Public`}`)
 
-            const res= await fetch(`${baseUrl}/report/level?format=xlsx&&parentIid=${parentInfo?.Id}&&requesterName=${`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`}`)
+            const res= await fetch(`${baseUrl}/report/level?parentIid=${parentInfo?.Id}&requesterName=${`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`}`)
             if(res.status==200){
                 res.blob().then(blob=>{
                     let a=document.createElement('a');
@@ -233,12 +234,12 @@ const AuthOwnerViewPage = () => {
 
             // const res= await fetch(`${baseUrl}/report?format=xlsx&&customerNumber=${curstomerNumber}&&requesterName=${`Public`}`)
 
-            const res= await fetch(`${baseUrl}/report/otherLevels/pdf?parentId=${parentInfo?.Id}&&requesterName=${`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`}`)
+            const res= await fetch(`${baseUrl}/report/otherLevels/pdf?parentId=${parentInfo?.Id}&requesterName=${`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`}`)
             if(res.status==200){
                 res.blob().then(blob=>{
                     let a=document.createElement('a');
                     a.href=window.URL.createObjectURL(blob);
-                    a.download=parentInfo?.BusinessName+' Owners List.' + 'xlsx';
+                    a.download=parentInfo?.BusinessName+' Owners List.' + 'pdf';
                     a.click();
                    })
                    setDLoading(false)
@@ -263,8 +264,8 @@ const AuthOwnerViewPage = () => {
                 
                 const res = await api.get(`owner/level/navigate/approved?requesterName=${userInfo.profile.given_name}&ownerId=${ownerId}`,userInfo?.access_token);
                 if (res?.status==200) {
-                    const filter= res?.data?.Owners.filter((bo:IBMOwnersPublic)=>!bo.IsMarkedForDelete)
-                    setBmoList(filter.reverse());
+                    // const filter= .filter((bo:IBMOwnersPublic)=>!bo.IsMarkedForDelete)
+                    setBmoList(res?.data?.Owners.reverse());
                     // calculatePercent(res?.data?.Owners)
                     setParentInfo(res?.data?.Parent)
                     setLoading(false)
@@ -347,6 +348,7 @@ const AuthOwnerViewPage = () => {
 
     const handleShowInfoModal = (owner: IBMOwnersPublic) => {
         setBmoOwner(owner);
+        setBmoParentId(owner?.ParentId)
         setViewMoreInfoModal(!viewMoreInfotModal);
     }
 
@@ -415,38 +417,25 @@ const AuthOwnerViewPage = () => {
         }
     }
 
-    const handleNudgeAuthorizer = async () => {
-        toast.success('Authorizer Nudged')
-        setViewMoreInfoModal(false)
-        // // console.log({ seeBody: body })
-        // let userInfo = await getUserInfo();
-
-
-
-        // if (userInfo) {
-
-        //     const bodyApprove= {
-        //         // "requestorUsername": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
-        //         "requestorUsername": `Computer`,
-        //         "comment": "Testing Approve",
-        //         "ids": [
-        //         parentInfo?.Id == 0? parentInfo.ParentId:parentInfo?.Id
-        //         ]
-        //       }
-
-        //     const res = await api.post(`authorize`, bodyApprove, `${userInfo?.access_token}`)
-        //     if (res?.status==200) {
-        //         setLoading(false);
-        //         toast.success('BO Approved succesfully');
-        //         setApproveBmOwner(false);
-        //         setDontAllowAd(false);
-        //         setRefData(!refData);
-        //     } else {
-        //         toast.error('Operation failed! Check your network');
-        //         setLoading(false);
-        //     }
-
-        // }
+    const handleNudgeAuthorizer = async (bmoId: any) => {
+        // console.log({here:bmoId})
+        let userInfo = await getUserInfo();
+        if (userInfo) {
+        try {
+            // setOLoading(true)
+            // let userInfo = await getUserInfo();
+            const res = await api.get(`nudge?requsterName=${userInfo?.profile.given_name}&parentId=${bmoParentId}`, userInfo?.access_token);
+            if(res?.status==200){
+                setViewMoreInfoModal(false)
+                toast.success('Authorizer nudged for approval')
+            } else {
+                toast.error('Failed to nudge Authorizer')
+            }
+            
+        } catch (error) {
+            
+        }}
+      
     }
 
     const handleNavigateToOwner = (owner: IBMOwnersPublic) => {
@@ -559,8 +548,14 @@ const AuthOwnerViewPage = () => {
                 show={addNewBenefOwnerCoperateModal} />
             
 
-            <CreateBMOOwnerFundsManagerModal off={() => { setAddNewBenefOwnerFundsManagerModal(false); setRefData(!refData);
-                setIsloaded(!isLoaded); }} show={addNewBenefOwnerFundsManagerModal} />
+            <CreateBMOOwnerFundsManagerModal 
+            parent={{...parentInfo,originalId:ownerId}}
+            lev={level}
+            off={() => { 
+                setAddNewBenefOwnerFundsManagerModal(false); 
+                setRefData(!refData);
+                setIsloaded(!isLoaded); }} 
+                show={addNewBenefOwnerFundsManagerModal} />
 
 <CreateBMOOwnerImportNodeModal
             cusNum={ownerId}
@@ -816,7 +811,7 @@ const AuthOwnerViewPage = () => {
                                                                         userClass=='Initiator'&&
                                                                             <div onClick={(e) => e.stopPropagation()}>
                                                                                 <ListGroupItem
-                                                                                    onClick={(e) => handleUpdateBenefOwnerType(bmoOwner)}
+                                                                                     onClick={(e) => {bmoOwner.IsMarkedForDelete?toast.error('Is pending deletion'): handleUpdateBenefOwnerType(bmoOwner)}}
                                                                                 >
                                                                                     <span className="w-100 d-flex justify-content-between">
                                                                                         <div className="d-flex gap-2">
@@ -827,7 +822,7 @@ const AuthOwnerViewPage = () => {
                                                                                 </ListGroupItem>
                                                                                 <ListGroupItem
                                                                                     className="text-danger"
-                                                                                    onClick={(e) => handleDeleteBmoOwner(bmoOwner)}
+                                                                                    onClick={(e) => {bmoOwner.IsMarkedForDelete?toast.error('Already marked for delete'): handleDeleteBmoOwner(bmoOwner)}}
                                                                                 >
                                                                                     <span className="w-100 d-flex justify-content-between">
                                                                                         <div className="d-flex gap-2">

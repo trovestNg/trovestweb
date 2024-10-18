@@ -8,7 +8,7 @@ import { getUserInfo, loginUser } from "../../controllers/auth";
 import { toast } from "react-toastify";
 import api from "../../config/api";
 import { IUserPolicy } from "../../interfaces/user";
-import { Button, Card, FormControl, ListGroup, ListGroupItem, Spinner } from "react-bootstrap";
+import { Button, Card, FormControl, ListGroup, ListGroupItem, Modal, Spinner } from "react-bootstrap";
 import apiUnAuth from "../../config/apiUnAuth";
 import { useDispatch, useSelector } from "react-redux";
 import { handleUserSearch, handleUserSearchResult } from "../../store/slices/userSlice";
@@ -30,11 +30,15 @@ const AuthRejectedBmoPage = () => {
     const [sloading, setSLoading] = useState(false);
     const [refreshComponent, setRefreshComponent] = useState(false);
 
+    const [bmoChildrenList, setBmoChildrenList] = useState<IApprovedBMOOwner[]>([]);
+    const userClass = useSelector((state: any) => state.authUserSlice.authUserProfile.UserClass);
+
     const [bmoOwner, setBmoOwner] = useState<IApprovedBMOOwner>();
     const [editBenefOwnerCoperateModal, setEditBenefOwnerCoperateModal] = useState(false);
     const [editBenefOwnerIndividualModal, setEditBenefOwnerIndividualModal] = useState(false);
     const [deleteBmOwner, setDeleteBmOwner] = useState(false);
     const navigate = useNavigate();
+    const [showChildrenModal, setShowChildrenModal] = useState(false)
 
     const [totalBmoCount, setTotalBmoCount] = useState(0);
     const [bySearch, setBySearch] = useState(false);
@@ -149,7 +153,7 @@ const AuthRejectedBmoPage = () => {
     const handleUpdateBenefOwner = (e: IApprovedBMOOwner) => {
         console.log({ editingThisGuy: e })
         setBmoOwner({ ...e, Id: e.BeneficiaryOwnerMasterId });
-        setParentInfo({ ...e})
+        setParentInfo({ ...e })
         setEditBenefOwnerCoperateModal(true);
 
         // setAddNewBenefOwnerModal(false)
@@ -209,6 +213,95 @@ const AuthRejectedBmoPage = () => {
 
     return (
         <div className="w-100">
+
+            <Modal size="lg" centered data={bmoChildrenList} show={showChildrenModal} >
+                <Modal.Header className="">
+                    <i className="bi bi-x-circle text-end w-100"
+                        onClick={() => setShowChildrenModal(false)}
+                        style={{ cursor: 'pointer' }}
+                    ></i>
+                </Modal.Header>
+                <Modal.Body>
+                    <div>
+                        <div className="d-flex w-100 justify-content-between">
+                            <h5>
+                                Attached Children List
+                            </h5>
+                            {/* {
+                                userClass == "Approver" &&
+                                <div className="d-flex gap-3">
+                                    <Button
+                                        onClick={() => handleDeleteBmoOwner(bmoId)}
+                                        variant="outline border border-success text-success">Approve Deletion</Button>
+                                    <Button
+                                        // onClick={()=>handleDeclineBmoOwner(bmoId)} 
+                                        variant="outline border border-danger text-danger">Decline Deletion</Button>
+                                </div>
+                            }
+
+                            {
+                                userClass == "Initiator" &&
+                                <Button
+                                    // onClick={()=>handleNudgeAuthorizer(bmoId,bmoOwner)} 
+                                    variant="outline border border-success text-success">Nudge Authorizer</Button>
+                            } */}
+                        </div>
+                        <div className="p-2 table-responsive">
+                            <table className="table table-striped mt-3" >
+                                <thead className="thead-dark">
+                                    <tr >
+                                        <th scope="col" className="bg-primary text-light">#</th>
+                                        <th scope="col" className="bg-primary text-light">Beneficial Owner</th>
+                                        <th scope="col" className="bg-primary text-light">Account Type</th>
+                                        <th scope="col" className="bg-primary text-light">Nationality </th>
+                                        <th scope="col" className="bg-primary text-light">% Holding </th>
+                                        <th scope="col" className="bg-primary text-light">No of Shares  </th>
+                                        <th scope="col" className="bg-primary text-light">PEP</th>
+                                        <th scope="col" className="bg-primary text-light">Ticker</th>
+                                        {/* <th scope="col" className="bg-primary text-light">Status</th> */}
+                                        {/* <th scope="col" className="bg-primary text-light"></th> */}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {
+                                        bmoChildrenList.length > 0 ? bmoChildrenList.map((bmoOwner: IBMOwnersPublic, index: number) => (
+                                            <tr key={index}
+                                                role="button"
+                                            >
+                                                <th scope="row">{index + 1}</th>
+                                                <td className="">{bmoOwner.BusinessName}</td>
+                                                <td>{bmoOwner.CategoryDescription}</td>
+                                                <td>{bmoOwner.CountryName}</td>
+                                                <td>{bmoOwner.PercentageHolding}%</td>
+                                                <td>{bmoOwner.NumberOfShares}</td>
+                                                <td>{bmoOwner.IsPEP ? 'Yes' : 'No'}</td>
+                                                <td>{bmoOwner.Ticker ? bmoOwner.Ticker : 'N/A'}</td>
+                                                {/* <td className={`text-${bmoOwner.IsMarkedForDelete ? 'danger' : 'success'}`}>{bmoOwner.IsMarkedForDelete ? 'Marked' : 'UnAuthorised'}</td> */}
+                                                {/* <td><i className="bi bi-info-circle text-warning"
+                                                    onClick={(e: any) => {
+                                                        e.stopPropagation();
+                                                        // setBmoChildrenList(bmoOwner.BeneficiaryOwnerDetails);
+                                                        // setBmoId(bmoOwner.BeneficiaryOwnerMasterId)
+                                                        // setShowChildrenModal(true)
+                                                    }}
+                                                ></i></td> */}
+
+
+
+                                            </tr>
+                                        )) : <tr className="text-center">
+                                            <td colSpan={10}>
+                                                No Data Available
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </Modal.Body>
+            </Modal>
+
             <EditBMOOwnerCoperateModal
                 parentInf={parentInfo}
                 ownerInfo={bmoOwner}
@@ -220,11 +313,11 @@ const AuthRejectedBmoPage = () => {
             <MoreInfoModal lev={level} info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} />
             <SureToDeleteBmoModal show={deleteBmOwner} off={() => setDeleteBmOwner(false)} />
 
-            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Rejected Beneficial {`(${totalBmoCount})`} </h5>
+            <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Rejected Beneficial Owners {`(${totalBmoCount})`} </h5>
             <p>Here, you'll find rejected beneficial owners please view reasons and reupload.</p>
-    
 
-           <div className="w-100 d-flex align-items-center">
+
+            <div className="w-100 d-flex align-items-center">
                 <form
                     onSubmit={(e) => handleSearchByName(e)}
                     className="d-flex w-100 mt-3 gap-3 align-items-center"
@@ -294,7 +387,7 @@ const AuthRejectedBmoPage = () => {
                                                 <th scope="col" className="bg-primary text-light">Beneficial Owner</th>
                                                 <th scope="col" className="bg-primary text-light">Authorizer</th>
                                                 <th scope="col" className="bg-primary text-light">Date Rejected</th>
-                                                {/* <th scope="col" className="bg-primary text-light">Action</th> */}
+                                                <th scope="col" className="bg-primary text-light"></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -311,7 +404,15 @@ const AuthRejectedBmoPage = () => {
                                                         <td>{bmoOwner.BeneficiaryOwnerDetails[0]?.BusinessName}</td>
                                                         <td>{bmoOwner.AuthorizeBy}</td>
                                                         <td>{moment(bmoOwner.CreatedDate).format('MMM DD YYYY')}</td>
-                                                        
+                                                        <td><i className="bi bi-info-circle text-danger"
+                                                            onClick={(e: any) => {
+                                                                e.stopPropagation();
+                                                                setBmoChildrenList(bmoOwner.BeneficiaryOwnerDetails);
+                                                                // setBmoId(bmoOwner.BeneficiaryOwnerMasterId)
+                                                                setShowChildrenModal(true)
+                                                            }}
+                                                        ></i></td>
+
 
 
                                                     </tr>

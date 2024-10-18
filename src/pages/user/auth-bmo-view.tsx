@@ -50,6 +50,7 @@ const AuthCustomerViewPage = () => {
     const [refData, setRefData] = useState(false);
     const [addNewBenefOwnerModal, setAddNewBenefOwnerModal] = useState(false);
     const userClass = useSelector((state: any) => state.authUserSlice.authUserProfile.UserClass);
+    const [bmoParentId,setBmoParentId]=useState<number>();
 
     const [addNewBenefOwnerIndividualModal, setAddNewBenefOwnerIndividualModal] = useState(false);
     const [addNewBenefOwnerCoperateModal, setAddNewBenefOwnerCoperateModal] = useState(false);
@@ -341,8 +342,8 @@ const AuthCustomerViewPage = () => {
 
                 const res = await api.get(`level/approved?requesterName=${userInfo.profile.given_name}&customerNumber=${curstomerNumber}`, userInfo?.access_token);
                 if (res?.data) {
-                    const filter= res?.data?.Owners.filter((bo:IBMOwnersPublic)=>!bo.IsMarkedForDelete)
-                    setBmoList(filter.reverse());
+                    // const filter= .filter((bo:IBMOwnersPublic)=>!bo.IsMarkedForDelete)
+                    setBmoList(res?.data?.Owners.reverse());
                     // calculatePercent(res?.data?.Owners)
                     setParentInfo(res?.data?.Parent)
                     setLoading(false);
@@ -435,38 +436,25 @@ const AuthCustomerViewPage = () => {
         setRejectBmOwner(true)
     }
 
-    const handleNudgeAuthorizer = async () => {
-        toast.success('Authorizer Nudged')
-        setViewMoreInfoModal(false)
-        // // console.log({ seeBody: body })
-        // let userInfo = await getUserInfo();
-
-
-
-        // if (userInfo) {
-
-        //     const bodyApprove= {
-        //         // "requestorUsername": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
-        //         "requestorUsername": `Computer`,
-        //         "comment": "Testing Approve",
-        //         "ids": [
-        //         parentInfo?.Id == 0? parentInfo.ParentId:parentInfo?.Id
-        //         ]
-        //       }
-
-        //     const res = await api.post(`authorize`, bodyApprove, `${userInfo?.access_token}`)
-        //     if (res?.status==200) {
-        //         setLoading(false);
-        //         toast.success('BO Approved succesfully');
-        //         setApproveBmOwner(false);
-        //         setDontAllowAd(false);
-        //         setRefData(!refData);
-        //     } else {
-        //         toast.error('Operation failed! Check your network');
-        //         setLoading(false);
-        //     }
-
-        // }
+    const handleNudgeAuthorizer = async (bmoId: any) => {
+        // console.log({here:bmoId})
+        let userInfo = await getUserInfo();
+        if (userInfo) {
+        try {
+            // setOLoading(true)
+            // let userInfo = await getUserInfo();
+            const res = await api.get(`nudge?requsterName=${userInfo?.profile.given_name}&parentId=${bmoParentId}`, userInfo?.access_token);
+            if(res?.status==200){
+                setViewMoreInfoModal(false)
+                toast.success('Authorizer nudged for approval')
+            } else {
+                toast.error('Failed to nudge Authorizer')
+            }
+            
+        } catch (error) {
+            
+        }}
+      
     }
 
 
@@ -524,6 +512,7 @@ const AuthCustomerViewPage = () => {
 
     const handleShowInfoModal = (owner: IBMOwnersPublic) => {
         setBmoOwner(owner);
+        setBmoParentId(owner?.ParentId)
         setViewMoreInfoModal(!viewMoreInfotModal);
     }
 
@@ -609,6 +598,8 @@ const AuthCustomerViewPage = () => {
                 show={addNewBenefOwnerCoperateModal} />
 
             <CreateBMOOwnerFundsManagerModal
+            parent={{...parentInfo,customerNumber:curstomerNumber,CountryId:"NG",}}
+            custormerNumb={curstomerNumber}
                 off={() => {
                     setAddNewBenefOwnerFundsManagerModal(false);
                     setRefData(!refData);
@@ -865,10 +856,10 @@ const AuthCustomerViewPage = () => {
                                                                             userClass == 'Initiator' &&
                                                                             <div onClick={(e) => e.stopPropagation()}>
                                                                                 <ListGroupItem
-                                                                                    onClick={(e) => handleUpdateBenefOwnerType(bmoOwner)}
+                                                                                    onClick={(e) => {bmoOwner.IsMarkedForDelete?toast.error('Is pending deletion'): handleUpdateBenefOwnerType(bmoOwner)}}
                                                                                 >
                                                                                     <span className="w-100 d-flex justify-content-between">
-                                                                                        <div className="d-flex gap-2">
+                                                                                        <div className="d-flex gap-2" >
                                                                                             <i className="bi bi-calendar-event"></i>
                                                                                             Edit
                                                                                         </div>
@@ -876,7 +867,8 @@ const AuthCustomerViewPage = () => {
                                                                                 </ListGroupItem>
                                                                                 <ListGroupItem
                                                                                     className="text-danger"
-                                                                                    onClick={(e) => handleDeleteBmoOwner(bmoOwner)}
+                                                                                    onClick={(e) => {bmoOwner.IsMarkedForDelete?toast.error('Already marked for delete'): handleDeleteBmoOwner(bmoOwner)}}
+                                                                                   
                                                                                 >
                                                                                     <span className="w-100 d-flex justify-content-between">
                                                                                         <div className="d-flex gap-2">

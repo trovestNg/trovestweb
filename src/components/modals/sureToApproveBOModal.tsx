@@ -10,6 +10,8 @@ const SureToApproveBOModal : React.FC<any> = ({show, off,parentInfo})=>{
 
     const navigate = useNavigate();
     const [loading,setLoading] = useState(false);
+    const [showCommentBox,setShowCommentBox] = useState(false);
+    const [approveComment,setApproveComment] = useState('');
 
     const approveBo = async () => {
         setLoading(true)
@@ -23,7 +25,7 @@ const SureToApproveBOModal : React.FC<any> = ({show, off,parentInfo})=>{
             const bodyApprove= {
                 // "requestorUsername": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
                 "requestorUsername":`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
-                "comment": "Approved by system",
+                "comment": approveComment,
                 "ids": [
                 parentInfo?.Id == 0? +`${parentInfo.ParentId}`:parentInfo?.Id
                 ]
@@ -57,11 +59,30 @@ return (
                         <p className="text-primary mt-2" style={{ fontFamily: 'title' }}>Are you sure?</p>
                         <p className="text-center px-3">You are about to approve this BO.</p>
                         
-                        <Button onClick={approveBo} disabled={loading} className="py-2 mt-3"  style={{minWidth:'20em'}}>
+                        {
+                            !showCommentBox &&
+                            <Button onClick={()=>setShowCommentBox(true)} disabled={loading} className="py-2 mt-3"  style={{minWidth:'20em'}}>
                             {
-                                loading?<Spinner/> :'Yes, Please proceed'
+                            'Yes, Please proceed'
+                            }
+                            </Button>}
+
+                        {
+                            showCommentBox &&
+                            <div className="mt-2">
+                                <p className="p-0 m-0">Any Comment? (optional)</p>
+                                <input onChange={(e)=>setApproveComment(e.target.value)} className="p-3 border" type="textarea" style={{outline:'none'}}/>
+                            </div>
+                        }
+
+                        {
+                            showCommentBox &&
+                            <Button onClick={approveBo} disabled={loading} className="py-2 mt-3"  style={{minWidth:'20em'}}>
+                            {
+                                loading?<Spinner/> :'Approve'
                             }
                             </Button>
+                        }
                     </div>
                 </Modal.Body>
             </Modal>

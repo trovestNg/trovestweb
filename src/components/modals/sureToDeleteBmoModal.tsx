@@ -33,7 +33,7 @@ console.log({delThis:clickedOwner})
             if (res?.status==200) {
                 setLoading(false);
                 setShowCommentBox(false)
-                toast.success('Delete request sent for approval and BO moved to deleted');
+                toast.success('Delete request sent for approval');
                 off()
             } else {
                 toast.error('Operation failed! Check your network');

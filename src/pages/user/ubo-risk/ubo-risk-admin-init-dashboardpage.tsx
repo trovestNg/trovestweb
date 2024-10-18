@@ -135,7 +135,7 @@ const UboRiskAdminInitDashboardpage = () => {
                     <i
                         className="bi bi-x-lg"
                         onClick={handleClear}
-                        style={{ marginLeft: '270px', display: userSearchWord == '' ? 'none' : 'flex', cursor: 'pointer', float: 'right', position: 'absolute' }}></i>
+                        style={{ marginLeft: '570px', display: userSearchWord == '' ? 'none' : 'flex', cursor: 'pointer', float: 'right', position: 'absolute' }}></i>
 
                     <Button
                         disabled={userSearchWord == ''}

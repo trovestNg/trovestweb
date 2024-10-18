@@ -1,29 +1,26 @@
 import React, { useEffect, useState } from "react";
-import { Button, FormControl, FormSelect, Modal, ProgressBar } from "react-bootstrap";
+import { Button, FormControl, FormSelect, Modal, ProgressBar, Spinner } from "react-bootstrap";
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { object, string, number, date, InferType } from 'yup';
 import api from "../../config/api";
 import { getUserInfo } from "../../controllers/auth";
 import { getCountries } from "../../utils/helpers";
-import { ICountry } from "../../interfaces/country";
+import { ICountr, ICountry } from "../../interfaces/country";
 import { toast } from "react-toastify";
 
-const CreateBMOOwnerFundsManagerModal: React.FC<any> = ({ show, off }) => {
+const CreateBMOOwnerFundsManagerModal: React.FC<any> = ({ show, off,lev, parent,custormerNumb,ownerId }) => {
     const [countries, setCountries] = useState<ICountry[]>()
+    const [loading,setLoading] = useState(false);
     const initialVal = {
-        "id": '',
         "businessName": "",
-        "customerNumber": "",
-        "bvn": "",
-        "idType": "",
-        "idNumber": "",
+        "sourceOfWealth": "",
+        "remark":'',
         "countryId": "",
+        "isPEP": "",
+        "categoryId": "F",
         "percentageHolding": '',
         "numberOfShares": '',
-        "isPEP": "",
-        "categoryId": "",
-        "rcNumber": "",
-        "ticker": ""
+        
     }
 
 
@@ -31,60 +28,125 @@ const CreateBMOOwnerFundsManagerModal: React.FC<any> = ({ show, off }) => {
     let validationSchem = object({
         businessName: string().required().label('Business name'),
         countryId: string().required().label('Country'),
+        sourceOfWealth: string().required().label('Source of wealth'),
+        remark: string().required().label('Remark'),
         percentageHolding: number().typeError('Must be a number').required().label('Percentage holding'),
         numberOfShares: number().typeError('Must be a number').required().label('No of share'),
-        bvn: number().typeError('Must be a number').required().label('Bvn'),
-        isPEP: string().required().label('Politicaly Exposed Status'),
-        idType: string().required().label('ID Type'),
-        idNumber: number().typeError('Must be a number').required().label('ID Number'),
-
-        // policyDocument: string().required('Kindly upload a file'),
-
-        // fileDescription: string().required('Description cannot be empty'),
-
-        // age: number().required().positive().integer(),
-        // email: string().email(),
-        // website: string().url().nullable(),
-        // createdOn: date().default(() => new Date()),
+        
     });
 
-    const handleCreateNewBMO = () => {
-
-
-    }
+    
 
     const createNewBMO = async (body: any) => {
-        console.log({seeBody:body})
+        setLoading(true)
+        // console.log({ seeBody: body })
         let userInfo = await getUserInfo();
 
 
 
         if (userInfo) {
 
+            let parentInfo = {
+                ...parent,
+                AuthorizeBy
+                    :
+                    parent?.AuthorizeBy,
+                AuthorizeDate
+                    :
+                    parent?.AuthorizeDate,
+                BVN
+                    :
+                    parent?.BVN,
+                BusinessName
+                    :
+                    parent?.BusinessName,
+                Category
+                    :
+                    parent?.Category,
+                CategoryDescription
+                    :
+                    parent?.CategoryDescription,
+                Comments
+                    :
+                    parent?. Comments,
+                CountryName
+                    :
+                    parent?.CountryName,
+                CreatedBy
+                    :
+                    parent?. CreatedBy,
+                CreatedDate
+                    :
+                   parent?.CreatedDate,
+                Id
+                    :
+                    parent?.Id,
+                IdNumber
+                    :
+                    parent?.IdNumber,
+                IdType
+                    :
+                    parent?.IdType,
+                IsAuthorized
+                    :
+                    parent?.IsAuthorized,
+                IsPEP
+                    :
+                    parent?.IsPEP,
+                IsRejected
+                    :
+                    parent?.IsRejected,
+                LastUpdatedBy
+                    :
+                    parent?.LastUpdatedBy,
+                LastUpdatedDate
+                    :
+                    parent?.LastUpdatedDate,
+                Level
+                    :
+                    parent?.Level,
+                NumberOfShares
+                    :
+                    parent?.NumberOfShares,
+                ParentId
+                    :
+                    parent?.ParentId,
+                PercentageHolding
+                    :
+                    parent?.PercentageHolding,
+                RcNumber
+                    :
+                    parent?.RcNumber,
+                RejectedBy
+                    :
+                    parent?.RejectedBy,
+                RejectedDate
+                    :
+                    parent?.RejectedDate,
+                RiskLevel
+                    :
+                    parent?.RiskLevel,
+                RiskScore
+                    :
+                    parent?.RiskScore,
+                Ticker
+                    :
+                    parent?.Ticker,
+                    CategoryId:'C',
+            }
+
             const apiBody = {
                 "requesterName": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
-                "parent": {
-                    
-                    //   "id": 0,
-                    //   "businessName": "string",
-                    //   "customerNumber": "string",
-                    //   "bvn": "string",
-                    //   "idType": "string",
-                    //   "idNumber": "string",
-                    //   "countryId": "string",
-                    //   "percentageHolding": 0,
-                    //   "numberOfShares": 0,
-                    //   "isPEP": true,
-                    //   "categoryId": "string",
-                    //   "rcNumber": "string",
-                    //   "ticker": "string",
-                    //   "originalId": 0,
-                    //   "navigation": "string"
-                },
+                "parent": { ...parentInfo},
                 "beneficialOwners": [
-                    body
+                    {
+                        ...body,
+                        "categoryId": "F",
+                        "isPEP":body?.isPEP=='yes'?true:false,
+                        
+                    }
+                   
                     // {
-                    //     "id": 0,
                     //     "businessName": "string",
                     //     "customerNumber": "string",
                     //     "bvn": "string",
@@ -102,21 +164,30 @@ const CreateBMOOwnerFundsManagerModal: React.FC<any> = ({ show, off }) => {
             }
 
             const res = await api.post(``, apiBody, `${userInfo?.access_token}`)
-            if(res?.data.success){
-                toast.success('BMO added succesfully')
-            } else{
-                toast.error('Operation failed! Check your network')
+            if (res?.status==200) {
+                setLoading(false);
+                toast.success('BO successfully created');
+                off()
+            } else {
+                toast.error('User with that record already exist');
+                setLoading(false);
             }
 
         }
     }
 
     const handleGetCountries = async () => {
-        const res = await getCountries();
-        const sortedCountries = res.data.sort((a: any, b: any) =>
-            a.name.common.localeCompare(b.name.common)
-        );
-        setCountries(sortedCountries)
+        try {
+            let userInfo = await getUserInfo();
+            const res = await api.get(`countries?requesterName=${userInfo?.profile.given_name}`, `${userInfo?.access_token}`);
+            // console.log({countHere:res})
+            // const sortedCountries = res?.data.sort((a: any, b: any) =>
+            //     a.name.common.localeCompare(b.name.common)
+            // );
+            setCountries(res?.data)
+        } catch (error) {
+
+        }
     }
 
 
@@ -173,13 +244,45 @@ const CreateBMOOwnerFundsManagerModal: React.FC<any> = ({ show, off }) => {
                                                 id='countryId' name='countryId'>
                                                 <option value={''}>Select</option>
                                                 {
-                                                    countries && countries.map((country: ICountry) => (
-                                                        <option value={country.idd.suffixes}>{country.name.common}</option>
+                                                    countries && countries.map((country: ICountr,index:number) => (
+                                                        <option key={index} value={country.id}>{country.displayName}</option>
                                                     ))
                                                 }
                                             </Field>
                                             <ErrorMessage
                                                 name="countryId"
+                                                component="div"
+                                                className="text-danger fw-medium" />
+                                        </div>
+                                    </div>
+
+                                    <div className="d-flex  justify-content-between my-3  gap-3 w-100">
+                                        <div className="w-50">
+                                            <label className="" htmlFor="userEmail">
+                                                Holding %
+                                            </label>
+                                            <Field
+                                                // value={values.percentageHolding}
+                                                style={{ outline: 'none' }}
+                                                className="rounded rounded-1 p-2 outline form-control-outline w-100 border border-1 border-grey"
+                                                id='percentageHolding' name='percentageHolding' />
+                                            <ErrorMessage
+                                                name="percentageHolding"
+                                                component="div"
+                                                className="text-danger fw-medium" />
+                                        </div>
+
+                                        <div className="w-50">
+                                            <label className="" htmlFor="userEmail">
+                                                No of Shares
+                                            </label>
+                                            <Field
+                                                value={values.numberOfShares}
+                                                style={{ outline: 'none' }}
+                                                className="rounded rounded-1 p-2 outline form-control-outline w-100 border border-1 border-grey"
+                                                id='numberOfShares' name='numberOfShares' />
+                                            <ErrorMessage
+                                                name="numberOfShares"
                                                 component="div"
                                                 className="text-danger fw-medium" />
                                         </div>
@@ -207,7 +310,38 @@ const CreateBMOOwnerFundsManagerModal: React.FC<any> = ({ show, off }) => {
                                         </div>
 
                                         <div className="w-50">
-                                            
+                                            <label className="" htmlFor="userEmail">
+                                                Remark
+                                            </label>
+                                            <Field
+                                            as='textarea'
+                                                // value={values.idNumber}
+                                                style={{ outline: 'none' }}
+                                                className="rounded rounded-1 p-2 w-100 border border-1 border-grey"
+                                                id='remark' name='remark' />
+                                            <ErrorMessage
+                                                name="remark"
+                                                component="div"
+                                                className="text-danger fw-medium" />
+                                        </div>
+                                    </div>
+
+                                    <div className="d-flex justify-content-between my-3  gap-3 w-100">
+                                        <div className="w-50">
+                                            <label className="" htmlFor="userEmail">
+                                                Source of Wealth
+                                            </label>
+                                            <Field
+                                                
+                                                style={{ outline: 'none' }}
+                                                className="rounded rounded-1 p-2 outline form-control-outline w-100 border border-1 border-grey"
+                                                id='soruceOfWealth' name='sourceOfWealth'>
+
+                                            </Field>
+                                            <ErrorMessage
+                                                name="sourceOfWealth"
+                                                component="div"
+                                                className="text-danger fw-medium" />
                                         </div>
                                     </div>
 
@@ -218,7 +352,10 @@ const CreateBMOOwnerFundsManagerModal: React.FC<any> = ({ show, off }) => {
                                         </div>
 
                                         <div className="w-50">
-                                            <Button className="w-100 rounded rounded-1" type="submit" variant="primary mt-3">Submit for Approval </Button>
+                                            
+                                            <Button className="w-100 rounded rounded-1" type="submit" variant="primary mt-3">{
+                                                loading? <Spinner size="sm"/> :'Submit for Approval'
+                                            }</Button>
                                         </div>
                                     </div>
                                 </Form>)

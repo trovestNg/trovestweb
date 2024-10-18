@@ -214,8 +214,8 @@ const AuthReportBmoPage = () => {
         <div className="w-100">
             <div className="w-75 justify-content-between d-flex">
                 <div className="">
-                    <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>General Report</h5>
-                    <p>Here, you can spool and download reports of beneficial owners and their risk assessment.</p>
+                    <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Generate Report</h5>
+                    <p>Here, you can spool and download reports of all beneficial owners.</p>
                 </div>
 
                 <div className="d-flex gap-2">
@@ -234,7 +234,7 @@ const AuthReportBmoPage = () => {
                 <div className="w-100 justify-content-between d-flex">
                     <div className="">
                         <h5 className="font-weight-bold text-primary" style={{ fontFamily: 'title' }}>Individual report:</h5>
-                        <p>Download individual report for authorised for corporate account.</p>
+                        <p>Download Individual Report for Authorised Corporate Accounts.</p>
                     </div>
                 </div>
 

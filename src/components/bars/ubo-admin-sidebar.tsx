@@ -83,30 +83,30 @@ const UboAdminSideBar: React.FC<any> = ({ payload }) => {
     ]
 
 
-    const getUserType = async () => {
-        try {
-            let userInfo = await getUserInfo();
-            if (userInfo?.profile.role?.includes('DOMAIN1\\CUSTOMER_RISK_INIT_TEST')) {
-                setUserType('initiator');
-                dispatch(setUserClass('Initiator'))
-            }
-            else if (userInfo?.profile.role?.includes('DOMAIN1\\CUSTOMER_RISK_AUTH_TEST')) {
-                setUserType('authorizer');
-                dispatch(setUserClass('Approver'))
-            } else {
-                setUserType('User')
-                dispatch(setUserClass('Initiator'))
-            }
+    // const getUserType = async () => {
+    //     try {
+    //         let userInfo = await getUserInfo();
+    //         if (userInfo?.profile.role?.includes('DOMAIN1\\CUSTOMER_RISK_INIT_TEST')) {
+    //             setUserType('initiator');
+    //             dispatch(setUserClass('Initiator'))
+    //         }
+    //         else if (userInfo?.profile.role?.includes('DOMAIN1\\CUSTOMER_RISK_AUTH_TEST')) {
+    //             setUserType('authorizer');
+    //             dispatch(setUserClass('Approver'))
+    //         } else {
+    //             setUserType('User')
+    //             dispatch(setUserClass('Initiator'))
+    //         }
 
-        } catch (error) {
+    //     } catch (error) {
 
-        }
+    //     }
 
-    }
+    // }
 
-    useEffect(() => {
-        getUserType();
-    },[])
+    // useEffect(() => {
+    //     getUserType();
+    // },[])
     return (
         <div className={`min-vh-100 bg-primary ${styles.sidebarContainer}`} style={{ minWidth: '18em' }}>
             <SureToLogoutModal loading={loading} action={logUserOut} show={showlogout} off={()=>setShowlogout(false)}/>
@@ -137,7 +137,7 @@ const UboAdminSideBar: React.FC<any> = ({ payload }) => {
                 }
             </ul>
             <ul className="px-2 mt-5 w-100">
-                {
+                {/* {
                     userType == 'authorizer' &&
                     <li
                         className="d-flex text-light  align-items-center gap-3 p-0 m-0"
@@ -149,9 +149,9 @@ const UboAdminSideBar: React.FC<any> = ({ payload }) => {
                         <p className="py-2 m-0"
                         >Switch to Admin Portal</p>
                     </li>
-                }
+                } */}
 
-                {
+                {/* {
                     userType == 'initiator' &&
                     <li
                         className="d-flex text-light  align-items-center gap-3 p-0 m-0"
@@ -163,7 +163,7 @@ const UboAdminSideBar: React.FC<any> = ({ payload }) => {
                         <p className="py-2 m-0"
                         >Switch to Admin Portal</p>
                     </li>
-                }
+                } */}
 
                 {
                     userType == 'user' &&

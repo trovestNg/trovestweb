@@ -84,42 +84,32 @@ const UnAuthBmoOwnerView = () => {
         header: string;
         dataKey: keyof IOwner;
     };
-    const downloadPdf = () => {
-        const doc = new jsPDF();
-        // Define the columns
-        const columns: Column[] = [
+    const downloadPdfReport = async()=>{
+        try {
+            setDLoading(true)
+            let userInfo = await getUserInfo();
+            // const res = await api.get(`report?format=xlsx&&customerNumber=${curstomerNumber}&&requesterName=${`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`}`, );
 
-            { header: 'S/N', dataKey: 'serialNumber' },
-            { header: 'Beneficial Owner', dataKey: 'BusinessName' },
-            { header: 'Account Type', dataKey: 'CategoryDescription' },
-            { header: 'Nationality', dataKey: 'CountryName' },
-            { header: '% Holding', dataKey: 'PercentageHolding' },
-            { header: 'No of Shares', dataKey: 'NumberOfShares' },
-            { header: 'PEP', dataKey: 'IsPEP' },
-            { header: 'Ticker', dataKey: 'Ticker' }
-        ];
+            const res= await fetch(`${baseUrl}/report/otherLevels/pdf?parentId=${parentInfo?.Id}&requesterName=${`Public`}`)
+            if(res.status==200){
+                res.blob().then(blob=>{
+                    let a=document.createElement('a');
+                    a.href=window.URL.createObjectURL(blob);
+                    a.download=parentInfo?.BusinessName+' Owners List.' + 'pdf';
+                    a.click();
+                   })
+                   setDLoading(false)
+               }
+    
+               if(res.status==404){
+                toast.error('Fail to fetch report')
+                   setDLoading(false)
+               }
+          
+        } catch (error) {
 
-        // Create rows from the policies array
-        const rows: any = bmoList && bmoList.map((policy, index) => ({
-            BusinessName: policy.BusinessName,
-            CategoryDescription: policy.CategoryDescription,
-            CountryName: policy.CountryName,
-            PercentageHolding: policy.PercentageHolding,
-            CustomerNumber: policy.BVN,
-            NumberOfShares: policy.NumberOfShares,
-            IsPEP: policy.IsPEP,
-            Ticker: policy.Ticker,
-            serialNumber: index + 1
-        }));
-
-        autoTable(doc, {
-            head: [columns.map(col => col.header)],
-            body: rows && rows.map((row: { [x: string]: string; }) => columns.map(col => row[col.dataKey] as string)),
-            startY: 20,
-        });
-
-        doc.save(`${parentInfo?.BusinessName} BMO List.pdf`);
-    };
+        }
+    }
 
     const headers: any = [
 
@@ -162,9 +152,9 @@ const UnAuthBmoOwnerView = () => {
 
     const handleListDownload = (val: string) => {
         if (val == 'pdf') {
-            downloadPdf()
+            downloadPdfReport()
         } else if (val == 'csv') {
-            generateCSV(bmoList, headers)
+            downloadExcelReport()
         } else {
             return
         }
@@ -350,7 +340,7 @@ const UnAuthBmoOwnerView = () => {
             let userInfo = await getUserInfo();
             // const res = await api.get(`report?format=xlsx&&customerNumber=${curstomerNumber}&&requesterName=${`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`}`, );
 
-            const res= await fetch(`${baseUrl}/report/level?format=xlsx&&parentIid=${parentInfo?.Id}&&requesterName=${`Public`}`)
+            const res= await fetch(`${baseUrl}/report/level?format=xlsx&&parentIid=${parentInfo?.Id}&requesterName=${`Public`}`)
            if(res.status==200){
             res.blob().then(blob=>{
                 let a=document.createElement('a');
@@ -418,13 +408,20 @@ setDLoading(false);
                     </FormSelect>
                     } */}
 
-                    {
+                    {/* {
                         bmoList.length>0 && !loading &&
                         <Button 
                         style={{minWidth:'8em'}}
                         disabled={dloading}
                         variant="outline border border-1" 
                         onClick={downloadExcelReport}>{dloading?<Spinner size="sm"/>:'Download List'}</Button>
+                    } */}
+
+{bmoList.length>0 && <FormSelect style={{ maxWidth: '8em' }} onChange={(e) => handleListDownload(e.currentTarget.value)}>
+                        <option>Download</option>
+                        <option value={'csv'}>CSV</option>
+                        <option value={'pdf'}>PDf</option>
+                    </FormSelect>
                     }
                 </div>
 

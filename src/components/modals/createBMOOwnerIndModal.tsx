@@ -45,16 +45,7 @@ const CreateBMOOwnerIndModal: React.FC<any> = ({ show, off,lev, parent,custormer
         idNumber: string().required().label('ID Number'),
         sourceOfWealth: string().required().label('Source of wealth'),
         remark: string().required().label('Remark'),
-        // ticker: string().required().label('Ticker'),
-
-        // policyDocument: string().required('Kindly upload a file'),
-
-        // fileDescription: string().required('Description cannot be empty'),
-
-        // age: number().required().positive().integer(),
-        // email: string().email(),
-        // website: string().url().nullable(),
-        // createdOn: date().default(() => new Date()),
+        
     });
 
 

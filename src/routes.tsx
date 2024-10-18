@@ -41,7 +41,7 @@ export default function () {
                 <Route path="custormer-details/:level/:curstomerNumber" element={<UnAuthUserViewBmoPage />} />
                 <Route path="owner-details/:level/:ownerId" element={<UnAuthBmoOwnerView />} />
             </Route>
-
+8
             <Route path="callback" element={<SigninCallBackPage />} />
             <Route path="logout" element={<LoggedOutPage />} />
 
