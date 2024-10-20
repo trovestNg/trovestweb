@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Modal } from "react-bootstrap";
 import alertIcon from "../../assets/icons/switch-icon.png";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation } from "react-router-dom";
 import Chart from 'chart.js/auto';
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
@@ -15,6 +15,7 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 const MoreInfoModal: React.FC<any> = ({ show, off, action, info, lev, handleApprv,handleReject, handleNudge }) => {
     const userClass = useSelector((state: any) => state.authUserSlice.authUserProfile.UserClass);
     const navigate = useNavigate();
+    const currentLocation = useLocation().pathname;
 
     let userInfo: any = {
         "Account Type": info?.CategoryDescription,
@@ -169,12 +170,15 @@ const MoreInfoModal: React.FC<any> = ({ show, off, action, info, lev, handleAppr
                                         </td>
 
                                     </tr>
-
+{/* <p>{currentLocation}</p> */}
                                 </table>
                                 <div className="">
                                     <p className="p-0 m-0 fw-bold">Status</p>
-                                    <p className={`p-0 m-0 text-${info?.IsAuthorized ? 'success' : 'danger'}`}>{info?.IsAuthorized ? 'Authorized' : 'Pending'}</p>
+                                    <p className={`text-${info?.IsAuthorized ? 'success' : !info?.IsAuthorized && !info?.IsRejected ? 'warning' : !info?.IsAuthorized && info?.IsRejected ? 'danger' : 'primary'}`}>
+                                    {info?.IsAuthorized && 'Authorised'}{!info?.IsAuthorized && !info?.IsRejected && 'Pending'} {!info?.IsAuthorized && info?.IsRejected && 'Rejected'}
+                                    </p>
                                 </div>
+
 
                                 {
                                     info?.Remark &&
@@ -199,13 +203,14 @@ const MoreInfoModal: React.FC<any> = ({ show, off, action, info, lev, handleAppr
                             } */}
 
                             {
-                                userClass == 'Approver' && !info?.IsAuthorized &&
+                                userClass == 'Approver' && !info?.IsAuthorized && currentLocation.includes('ubo-portal')&&
                                 <div className=" d-flex justify-content-center gap-2">
                                     <Button onClick={handleReject} variant="outline border text-danger border-1 border-danger">Reject</Button>
                                     <Button onClick={handleApprv} variant="success p-2 px-3 text-light">Approve</Button>
 
 
-                                </div>}
+                                </div>
+                            }
 
                             {
                                 userClass == 'Initiator' && !info?.IsAuthorized &&

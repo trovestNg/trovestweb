@@ -268,8 +268,8 @@ const AuthPendingBmoPage = () => {
                             {
                                 userClass == 'Approver' &&
                                 <div className="d-flex gap-3">
-                                    <Button onClick={() => handleApproveBO(bmoChildrenList[0])} variant="outline border border-success text-success">Approve All</Button>
-                                    <Button onClick={() => handleRejectBmoOwner(bmoId)} variant="outline border border-danger text-danger">Reject All</Button>
+                                    <Button onClick={() => handleApproveBO(bmoChildrenList[0])} variant="outline border border-success text-success">Approve</Button>
+                                    <Button onClick={() => handleRejectBmoOwner(bmoId)} variant="outline border border-danger text-danger">Reject</Button>
                                 </div>
 
                             }
@@ -296,6 +296,7 @@ const AuthPendingBmoPage = () => {
                                             <th scope="col" className="bg-primary text-light">PEP</th>
                                             <th scope="col" className="bg-primary text-light">Ticker</th>
                                             <th scope="col" className="bg-primary text-light">Initiated By</th>
+                                            <th scope="col" className="bg-primary text-light">Date Initiated</th>
                                             <th scope="col" className="bg-primary text-light">Status</th>
                                         </tr>
                                     </thead>
@@ -314,6 +315,7 @@ const AuthPendingBmoPage = () => {
                                                     <td>{bmoOwner.IsPEP ? 'Yes' : 'No'}</td>
                                                     <td>{bmoOwner.Ticker ? bmoOwner.Ticker : 'N/A'}</td>
                                                     <td>{bmoOwner.CreatedBy}</td>
+                                                    <td>{moment(bmoOwner.CreatedDate).format('MMM DD YYYY')}</td>
                                                     <td className={`text-${bmoOwner.IsAuthorized ? 'success' : 'danger'}`}>{bmoOwner.IsAuthorized ? 'Authorised' : 'UnAuthorised'}</td>
 
 
@@ -422,9 +424,9 @@ const AuthPendingBmoPage = () => {
                                                 <th scope="col" className="bg-primary text-light">Corporate Account</th>
                                                 <th scope="col" className="bg-primary text-light">Customer Number</th>
                                                 <th scope="col" className="bg-primary text-light">BO Level </th>
-                                                <th scope="col" className="bg-primary text-light">Beneficial Owner</th>
-                                                <th scope="col" className="bg-primary text-light">Initiated By</th>
-                                                <th scope="col" className="bg-primary text-light">Date Initiated</th>
+                                                {/* <th scope="col" className="bg-primary text-light">Beneficial Owner</th> */}
+                                                {/* <th scope="col" className="bg-primary text-light">Initiated By</th> */}
+                                                {/* <th scope="col" className="bg-primary text-light">Date Initiated</th> */}
                                                 <th scope="col" className="bg-primary text-light"></th>
                                             </tr>
                                         </thead>
@@ -439,9 +441,9 @@ const AuthPendingBmoPage = () => {
                                                         <td className="">{bmoOwner?.BusinessName}</td>
                                                         <td>{bmoOwner?.CustomerNumber ? bmoOwner?.CustomerNumber : "N/A"}</td>
                                                         <td>{bmoOwner.Level ? bmoOwner.Level : 'N/A'}</td>
-                                                        <td>{bmoOwner.BeneficiaryOwnerDetails[0]?.BusinessName}</td>
+                                                        {/* <td>{bmoOwner.BeneficiaryOwnerDetails[0]?.BusinessName}</td>
                                                         <td>{bmoOwner.CreatedBy}</td>
-                                                        <td>{moment(bmoOwner.CreatedDate).format('MMM DD YYYY')}</td>
+                                                        <td>{moment(bmoOwner.CreatedDate).format('MMM DD YYYY')}</td> */}
                                                         <td><i className="bi bi-info-circle text-warning"
                                                             onClick={(e: any) => {
                                                                 e.stopPropagation();

@@ -573,7 +573,7 @@ const UserViewRiskBMOOwnerPage = () => {
                                                         <th scope="row">{index + 1}</th>
                                                         <td className="">{bmoOwner.BusinessName}</td>
                                                         <td>{bmoOwner.CategoryDescription}</td>
-                                                        <td className={`text-${bmoOwner.RiskScore==1?'success':'danger'}`}>{bmoOwner.RiskLevel}</td>
+                                                        <td className={`text-${bmoOwner.RiskScore==1?'success':bmoOwner.RiskScore==2?'warning':'danger'}`}>{bmoOwner.RiskLevel}</td>
                                                         <td className="table-icon" >
                                                             <i className=" bi bi-three-dots" onClick={(e) => e.stopPropagation()}></i>
                                                             <div className="content ml-5" style={{ position: 'relative', zIndex: 1500 }}>

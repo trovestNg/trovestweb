@@ -225,20 +225,23 @@ const AuthDeletedBmoPage = () => {
     const handleOff = () => {
         setDeleteBmOwner(false);
         setRefreshComponent(!refreshComponent)
-        setShowChildrenModal(false)
+        setShowChildrenModal(false);
+        window.location.reload()
     }
 
     const handleOffDecline = () => {
         setDeclineDeleteBmOwner(false);
-        setRefreshComponent(!refreshComponent)
-        setShowChildrenModal(false)
+        setRefreshComponent(!refreshComponent);
+        setShowChildrenModal(false);
+        window.location.reload()
     }
 
     const handleOffDeclineDeleteSingle = () => {
         setDeclineDeleteSingleBmOwner(false);
         setRefreshComponent(!refreshComponent)
         window.location.reload()
-        setShowChildrenModal(false)
+        setShowChildrenModal(false);
+        window.location.reload()
     }
 
     const fetch = async () => {
@@ -360,12 +363,12 @@ const AuthDeletedBmoPage = () => {
                                                         userClass=='Approver'&&
                                                         <td className="">
                                                         <div className="d-flex gap-2">
-                                                        <i className="bi bi-check2 text-success" 
+                                                        {/* <i className="bi bi-check2 text-success" 
                                                         // onClick={
                                                         //     ()=>handleSingleDeleteOperation('approve')
                                                             
                                                         // }
-                                                        ></i>
+                                                        ></i> */}
                                                         <i className="bi bi-x text-danger" onClick={()=>handleSingleDeleteOperation('reject',bmoOwner?.Id)}></i>
                                                         </div>
                                                     

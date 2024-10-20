@@ -50,7 +50,7 @@ const AuthCustomerViewPage = () => {
     const [refData, setRefData] = useState(false);
     const [addNewBenefOwnerModal, setAddNewBenefOwnerModal] = useState(false);
     const userClass = useSelector((state: any) => state.authUserSlice.authUserProfile.UserClass);
-    const [bmoParentId,setBmoParentId]=useState<number>();
+    const [bmoParentId, setBmoParentId] = useState<number>();
 
     const [addNewBenefOwnerIndividualModal, setAddNewBenefOwnerIndividualModal] = useState(false);
     const [addNewBenefOwnerCoperateModal, setAddNewBenefOwnerCoperateModal] = useState(false);
@@ -440,21 +440,22 @@ const AuthCustomerViewPage = () => {
         // console.log({here:bmoId})
         let userInfo = await getUserInfo();
         if (userInfo) {
-        try {
-            // setOLoading(true)
-            // let userInfo = await getUserInfo();
-            const res = await api.get(`nudge?requsterName=${userInfo?.profile.given_name}&parentId=${bmoParentId}`, userInfo?.access_token);
-            if(res?.status==200){
-                setViewMoreInfoModal(false)
-                toast.success('Authorizer nudged for approval')
-            } else {
-                toast.error('Failed to nudge Authorizer')
+            try {
+                // setOLoading(true)
+                // let userInfo = await getUserInfo();
+                const res = await api.get(`nudge?requsterName=${userInfo?.profile.given_name}&parentId=${bmoParentId}`, userInfo?.access_token);
+                if (res?.status == 200) {
+                    setViewMoreInfoModal(false)
+                    toast.success('Authorizer nudged for approval')
+                } else {
+                    toast.error('Failed to nudge Authorizer')
+                }
+
+            } catch (error) {
+
             }
-            
-        } catch (error) {
-            
-        }}
-      
+        }
+
     }
 
 
@@ -525,23 +526,23 @@ const AuthCustomerViewPage = () => {
         if (!isLoaded) {
             fetched()
         }
-    }, [refData,curstomerNumber,isLoaded])
+    }, [refData, curstomerNumber, isLoaded])
     return (
         <div className="w-100 p-0">
             {bmoList.length > 0 && <ChartModal bmoList={bmoList} profile={parentInfo} show={viewChartModal}
                 off={() => setViewChartModal(false)} />}
-            <MoreInfoModal 
-            handleApprv={handleApproveBo} 
-            handleReject={handleRejectBo} 
-            handleNudge={handleNudgeAuthorizer}
-            lev={level} info={bmoOwner} show={viewMoreInfotModal} 
-            off={() => {
-                setViewMoreInfoModal(false);
-                setRefData(!refData);
+            <MoreInfoModal
+                handleApprv={handleApproveBo}
+                handleReject={handleRejectBo}
+                handleNudge={handleNudgeAuthorizer}
+                lev={level} info={bmoOwner} show={viewMoreInfotModal}
+                off={() => {
+                    setViewMoreInfoModal(false);
+                    setRefData(!refData);
                     setIsloaded(!isLoaded);
                     window.location.reload()
 
-            }} />
+                }} />
             <AddNewBenefOwnerTypeModal action={handleAddNewBenefOwnerType} off={() => setAddNewBenefOwnerModal(false)} show={addNewBenefOwnerModal} />
             <SureToDeleteBmoModal
                 parentInfo={parentInfo}
@@ -573,12 +574,12 @@ const AuthCustomerViewPage = () => {
                 parentInfo={parentInfo} />
 
             <CreateBMOOwnerIndModal
-                parent={{...parentInfo,customerNumber:curstomerNumber,CountryId:"NG",}}
+                parent={{ ...parentInfo, customerNumber: curstomerNumber, CountryId: "NG", }}
                 custormerNumb={curstomerNumber}
                 lev={level}
-                off={() => { 
-                    setAddNewBenefOwnerIndividualModal(false); 
-                    setRefData(!refData); 
+                off={() => {
+                    setAddNewBenefOwnerIndividualModal(false);
+                    setRefData(!refData);
                     setIsloaded(!isLoaded);
                     window.location.reload()
                 }
@@ -586,7 +587,7 @@ const AuthCustomerViewPage = () => {
                 show={addNewBenefOwnerIndividualModal} />
 
             <CreateBMOOwnerCoperateModal
-                parent={{...parentInfo,customerNumber:curstomerNumber,CountryId:"NG",}}
+                parent={{ ...parentInfo, customerNumber: curstomerNumber, CountryId: "NG", }}
                 custormerNumb={curstomerNumber}
                 lev={level}
                 off={() => {
@@ -598,8 +599,8 @@ const AuthCustomerViewPage = () => {
                 show={addNewBenefOwnerCoperateModal} />
 
             <CreateBMOOwnerFundsManagerModal
-            parent={{...parentInfo,customerNumber:curstomerNumber,CountryId:"NG",}}
-            custormerNumb={curstomerNumber}
+                parent={{ ...parentInfo, customerNumber: curstomerNumber, CountryId: "NG", }}
+                custormerNumb={curstomerNumber}
                 off={() => {
                     setAddNewBenefOwnerFundsManagerModal(false);
                     setRefData(!refData);
@@ -746,11 +747,11 @@ const AuthCustomerViewPage = () => {
                                             </div>
                                         }
 
-{
+                                        {
                                             !parentInfo?.IsAuthorized && userClass == 'Initiator' &&
                                             <div className="d-flex gap-2">
                                                 <Button onClick={handleNudgeAuthorizer} variant="outline text-success border border-1 border-success">Nudge Authorizer</Button>
-                                                
+
                                             </div>
                                         }
 
@@ -820,7 +821,7 @@ const AuthCustomerViewPage = () => {
                                                 bmoList.map((bmoOwner: IBMOwnersPublic, index: number) => (
                                                     <tr key={index}
                                                         role="button"
-                                                        onClick={bmoOwner.CategoryDescription == 'Corporate' ? () => { bmoOwner?.IsAuthorized ? handleNavigateToOwner(bmoOwner) : userClass=='Approver'?handleNavigateToOwner(bmoOwner): toast.error('Un Approved Bo') } :
+                                                        onClick={bmoOwner.CategoryDescription == 'Corporate' ? () => { bmoOwner?.IsAuthorized ? handleNavigateToOwner(bmoOwner) : userClass == 'Approver' ? handleNavigateToOwner(bmoOwner) : toast.error('Un Approved Bo') } :
                                                             () => handleShowInfoModal(bmoOwner)}
                                                     >
                                                         <th scope="row">{index + 1}</th>
@@ -831,7 +832,17 @@ const AuthCustomerViewPage = () => {
                                                         <td>{bmoOwner.NumberOfShares}</td>
                                                         <td>{bmoOwner.IsPEP ? 'Yes' : 'No'}</td>
                                                         <td>{bmoOwner.Ticker ? bmoOwner.Ticker : 'N/A'}</td>
-                                                        <td className={`text-${bmoOwner.IsAuthorized ? 'success' : 'danger'}`}>{bmoOwner.IsAuthorized ? 'Authorised' : 'UnAuthorised'}</td>
+
+
+
+
+                                                        <td className={`text-${bmoOwner.IsAuthorized ? 'success' : !bmoOwner.IsAuthorized && !bmoOwner.IsRejected ? 'warning' : !bmoOwner.IsAuthorized && bmoOwner.IsRejected ? 'danger' : 'primary'}`}>
+
+                                                            <span >{bmoOwner.IsAuthorized && 'Authorised'}{!bmoOwner.IsAuthorized && !bmoOwner.IsRejected && 'Pending'} {!bmoOwner.IsAuthorized && bmoOwner.IsRejected && 'Rejected'}</span>
+                                                           
+                                                        </td>
+
+                                                        {/* <td className={`text-${bmoOwner.IsAuthorized ? 'success' : 'danger'}`}>{bmoOwner.IsAuthorized ? 'Authorised' : 'UnAuthorised'}</td> */}
                                                         <td className="table-icon" >
                                                             <i className=" bi bi-three-dots" onClick={(e) => e.stopPropagation()}></i>
                                                             <div className="content ml-5" style={{ position: 'relative', zIndex: 1500 }}>
@@ -856,7 +867,7 @@ const AuthCustomerViewPage = () => {
                                                                             userClass == 'Initiator' &&
                                                                             <div onClick={(e) => e.stopPropagation()}>
                                                                                 <ListGroupItem
-                                                                                    onClick={(e) => {bmoOwner.IsMarkedForDelete?toast.error('Is pending deletion'): handleUpdateBenefOwnerType(bmoOwner)}}
+                                                                                    onClick={(e) => { bmoOwner.IsMarkedForDelete ? toast.error('Is pending deletion') : handleUpdateBenefOwnerType(bmoOwner) }}
                                                                                 >
                                                                                     <span className="w-100 d-flex justify-content-between">
                                                                                         <div className="d-flex gap-2" >
@@ -867,8 +878,8 @@ const AuthCustomerViewPage = () => {
                                                                                 </ListGroupItem>
                                                                                 <ListGroupItem
                                                                                     className="text-danger"
-                                                                                    onClick={(e) => {bmoOwner.IsMarkedForDelete?toast.error('Already marked for delete'): handleDeleteBmoOwner(bmoOwner)}}
-                                                                                   
+                                                                                    onClick={(e) => { bmoOwner.IsMarkedForDelete ? toast.error('Already marked for delete') : handleDeleteBmoOwner(bmoOwner) }}
+
                                                                                 >
                                                                                     <span className="w-100 d-flex justify-content-between">
                                                                                         <div className="d-flex gap-2">

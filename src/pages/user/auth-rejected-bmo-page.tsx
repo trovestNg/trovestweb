@@ -258,6 +258,7 @@ const AuthRejectedBmoPage = () => {
                                         <th scope="col" className="bg-primary text-light">No of Shares  </th>
                                         <th scope="col" className="bg-primary text-light">PEP</th>
                                         <th scope="col" className="bg-primary text-light">Ticker</th>
+                                        <th scope="col" className="bg-primary text-light">Date Rejected</th>
                                         {/* <th scope="col" className="bg-primary text-light">Status</th> */}
                                         {/* <th scope="col" className="bg-primary text-light"></th> */}
                                     </tr>
@@ -276,6 +277,7 @@ const AuthRejectedBmoPage = () => {
                                                 <td>{bmoOwner.NumberOfShares}</td>
                                                 <td>{bmoOwner.IsPEP ? 'Yes' : 'No'}</td>
                                                 <td>{bmoOwner.Ticker ? bmoOwner.Ticker : 'N/A'}</td>
+                                                <td>{moment(bmoOwner.RejectedDate).format('MMM DD YYYY')}</td>
                                                 {/* <td className={`text-${bmoOwner.IsMarkedForDelete ? 'danger' : 'success'}`}>{bmoOwner.IsMarkedForDelete ? 'Marked' : 'UnAuthorised'}</td> */}
                                                 {/* <td><i className="bi bi-info-circle text-warning"
                                                     onClick={(e: any) => {
@@ -384,9 +386,9 @@ const AuthRejectedBmoPage = () => {
                                                 <th scope="col" className="bg-primary text-light">Corporate Account</th>
                                                 <th scope="col" className="bg-primary text-light">Customer Number</th>
                                                 <th scope="col" className="bg-primary text-light">BO Level </th>
-                                                <th scope="col" className="bg-primary text-light">Beneficial Owner</th>
-                                                <th scope="col" className="bg-primary text-light">Authorizer</th>
-                                                <th scope="col" className="bg-primary text-light">Date Rejected</th>
+                                                {/* <th scope="col" className="bg-primary text-light">Beneficial Owner</th> */}
+                                                {/* <th scope="col" className="bg-primary text-light">Authorizer</th> */}
+                                                {/* <th scope="col" className="bg-primary text-light">Date Rejected</th> */}
                                                 <th scope="col" className="bg-primary text-light"></th>
                                             </tr>
                                         </thead>
@@ -401,9 +403,9 @@ const AuthRejectedBmoPage = () => {
                                                         <td className="">{bmoOwner?.BusinessName}</td>
                                                         <td>{bmoOwner?.CustomerNumber ? bmoOwner?.CustomerNumber : "N/A"}</td>
                                                         <td>{bmoOwner.Level ? bmoOwner.Level : 'N/A'}</td>
-                                                        <td>{bmoOwner.BeneficiaryOwnerDetails[0]?.BusinessName}</td>
+                                                        {/* <td>{bmoOwner.BeneficiaryOwnerDetails[0]?.BusinessName}</td>
                                                         <td>{bmoOwner.AuthorizeBy}</td>
-                                                        <td>{moment(bmoOwner.CreatedDate).format('MMM DD YYYY')}</td>
+                                                        <td>{moment(bmoOwner.CreatedDate).format('MMM DD YYYY')}</td> */}
                                                         <td><i className="bi bi-info-circle text-danger"
                                                             onClick={(e: any) => {
                                                                 e.stopPropagation();

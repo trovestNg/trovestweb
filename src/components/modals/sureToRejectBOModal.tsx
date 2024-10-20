@@ -22,7 +22,7 @@ const SureToRejectBOModal : React.FC<any> = ({show,Id, off,clickedOwner})=>{
             if (userInfo) {
     
                const delBody = {
-                    "requestorUsername": `Teju Kemi`,
+                    "requestorUsername": `Kemi John`,
                     "comment": deleteComment,
                     "ids": [
                         Id
