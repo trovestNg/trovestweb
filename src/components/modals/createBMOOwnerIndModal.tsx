@@ -4,12 +4,12 @@ import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { object, string, number, date, InferType } from 'yup';
 import api from "../../config/api";
 import { getUserInfo } from "../../controllers/auth";
-import { getCountries } from "../../utils/helpers";
+import { calculatePercent, getCountries } from "../../utils/helpers";
 import { ICountr, ICountry } from "../../interfaces/country";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-const CreateBMOOwnerIndModal: React.FC<any> = ({ show, off,lev, parent,custormerNumb,ownerId }) => {
+const CreateBMOOwnerIndModal: React.FC<any> = ({ show, off,lev, parent,custormerNumb,ownerId,totalOwners }) => {
     console.log({hereIsP:parent})
     const [countries, setCountries] = useState<ICountr[]>()
     const [idTypes, setIdTypes] = useState<string[]>();
@@ -51,8 +51,10 @@ const CreateBMOOwnerIndModal: React.FC<any> = ({ show, off,lev, parent,custormer
 
     const createNewBMO = async (body: any) => {
         setLoading(true)
-        // console.log({ seeBody: body })
-        let userInfo = await getUserInfo();
+        const res = calculatePercent(totalOwners,body?.percentageHolding);
+        if(res==true){
+
+            let userInfo = await getUserInfo();
 
 
 
@@ -186,6 +188,13 @@ const CreateBMOOwnerIndModal: React.FC<any> = ({ show, off,lev, parent,custormer
             }
 
         }
+        
+        }else{
+            off()
+        }
+       
+        // console.log({ seeBody: body })
+        
     }
 
     const handleGetCountries = async () => {

@@ -30,6 +30,7 @@ import SureToApproveBOModal from "../../components/modals/sureToApproveBOModal";
 import { baseUrl } from "../../config/config";
 import CreateBMOOwnerImportRootModal from "../../components/modals/createBMOOwnerImportRootModal";
 import SureToRejectBOModal from "../../components/modals/sureToRejectBOModal";
+import { calculatePercent } from "../../utils/helpers";
 
 
 
@@ -94,20 +95,15 @@ const AuthCustomerViewPage = () => {
         };
     }, [navArray.length, dispatch, navArray]);
 
-    const calculatePercent = (ownersShares: any[]) => {
+   const handlePercentageRestriction = ()=>{
+    const res = calculatePercent(bmoList,0);
+    if(res==true){
+        setAddNewBenefOwnerModal(true)
+    }else{}
+   }
 
-        let total = 0;
-        for (let x = 0; x < ownersShares.length; x++) {
-            total = total + (ownersShares[x].PercentageHolding ? ownersShares[x].PercentageHolding : 0) || 0
-        }
 
-        if (total >= 100) {
-            toast.error('Already 100% no more shares')
-        } else {
-            setAddNewBenefOwnerModal(true)
-        }
-        return total
-    }
+   
 
 
     type Column = {
@@ -575,6 +571,7 @@ const AuthCustomerViewPage = () => {
 
             <CreateBMOOwnerIndModal
                 parent={{ ...parentInfo, customerNumber: curstomerNumber, CountryId: "NG", }}
+                totalOwners={bmoList}
                 custormerNumb={curstomerNumber}
                 lev={level}
                 off={() => {
@@ -658,7 +655,7 @@ const AuthCustomerViewPage = () => {
                         userClass == 'Initiator' &&
                         <Button
 
-                            onClick={() => calculatePercent(bmoList)} className="d-flex gap-2" style={{ minWidth: '15em' }}>
+                            onClick={handlePercentageRestriction} className="d-flex gap-2" style={{ minWidth: '15em' }}>
                             <i className="bi bi-plus-circle"></i>
                             <p className="p-0 m-0" >Add New Beneficial Owner</p>
                         </Button>

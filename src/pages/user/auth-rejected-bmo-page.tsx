@@ -67,9 +67,9 @@ const AuthRejectedBmoPage = () => {
         setLoading(true)// toast.error('Await')
         let userInfo = await getUserInfo();
         if (userInfo) {
-            try {
+            try {   
 
-                const res = await api.get(`authorized?requesterName=${userInfo.profile.given_name}&Name=${searchedWord}`, userInfo?.access_token);
+                const res = await api.get(`authorized?requesterName=${userInfo.profile.given_name}&Search=${searchedWord}`, userInfo?.access_token);
                 console.log({ heree: res })
                 if (res?.data) {
                     setBmoList(res?.data?.Data.reverse());

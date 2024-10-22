@@ -75,7 +75,7 @@ const AuthPendingBmoPage = () => {
         if (userInfo) {
             try {
 
-                const res = await api.get(`pending?requesterName=${userInfo.profile.given_name}&Name=${searchedWord}&pageSize=100`, userInfo?.access_token);
+                const res = await api.get(`pending?requesterName=${userInfo.profile.given_name}&Search=${searchedWord}&pageSize=100`, userInfo?.access_token);
                 console.log({ heree: res })
                 if (res?.data) {
                     setBmoList(res?.data?.Data.reverse());

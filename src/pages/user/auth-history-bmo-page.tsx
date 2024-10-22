@@ -44,47 +44,47 @@ const AuthHistoryBmoPage = () => {
     const [totalBmoCount, setTotalBmoCount] = useState(0);
     const [sloading, setSLoading] = useState(false);
 
-    function filterItemsFromYesterday(items: IHistory[]) {
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);  // Get yesterday's date
-        yesterday.setHours(0, 0, 0, 0);  // Set time to midnight to compare only the date part
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);  // Set time to midnight
-
-        return items.filter(item => {
-            const creationDate = new Date(item.TimeStamp);
-            return creationDate >= yesterday && creationDate < today;
-        });
-    }
+    
 
     function filterItemsFromThreeDaysAgo(items: IHistory[]) {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);  // Set time to midnight at the start of today
-    
         const threeDaysAgo = new Date();
-        threeDaysAgo.setDate(today.getDate() - 3);  // Get the date 3 days ago
-        threeDaysAgo.setHours(0, 0, 0, 0);  // Set time to midnight at the start of 3 days ago
+        threeDaysAgo.setDate(threeDaysAgo.getDate() - 1);  // Get the date for three days ago
+        threeDaysAgo.setHours(0, 0, 0, 0);  // Set time to midnight
     
         return items.filter(item => {
             const creationDate = new Date(item.TimeStamp);
-            return creationDate < today && creationDate >= threeDaysAgo;
+            return creationDate < threeDaysAgo;  // Items from three days ago and below
         });
     }
     
+
+    function filterItemsFromYesterday(items: IHistory[]) {
+        const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);  // Get yesterday's date
+    yesterday.setHours(0, 0, 0, 0);  // Set time to midnight
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);  // Set time to midnight
+
+    return items.filter(item => {
+        const creationDate = new Date(item.TimeStamp);
+        return creationDate >= yesterday && creationDate < today;
+    });
+    }
+
 
     function filterItemsFromToday(items: IHistory[]) {
         const today = new Date();
-        today.setHours(0, 0, 0, 0);  // Set time to midnight at the start of today
+    today.setHours(0, 0, 0, 0);  // Set time to midnight
 
-        const tomorrow = new Date();
-        tomorrow.setDate(today.getDate() + 1);  // Get tomorrow's date
-        tomorrow.setHours(0, 0, 0, 0);  // Set time to midnight at the start of tomorrow
+    const tomorrow = new Date();
+    tomorrow.setDate(today.getDate() + 1);  // Get tomorrow's date
+    tomorrow.setHours(0, 0, 0, 0);  // Set time to midnight
 
-        return items.filter(item => {
-            const creationDate = new Date(item.TimeStamp);
-            return creationDate >= today && creationDate < tomorrow;
-        });
+    return items.filter(item => {
+        const creationDate = new Date(item.TimeStamp);
+        return creationDate >= today && creationDate < tomorrow;
+    });
     }
 
     const dispatch = useDispatch()
