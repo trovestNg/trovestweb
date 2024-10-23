@@ -60,11 +60,11 @@ const UboAdminSideBar: React.FC<any> = ({ payload }) => {
             icon: 'bi bi-hourglass',
             path: '/ubo-portal/pending-bo',
         },
-        {
-            title: 'Rejected BO',
-            icon: 'bi bi-journal-x',
-            path: '/ubo-portal/rejected-bo',
-        },
+        // {
+        //     title: 'Rejected BO',
+        //     icon: 'bi bi-journal-x',
+        //     path: '/ubo-portal/rejected-bo',
+        // },
         {
             title: 'History',
             icon: 'bi bi-journal-x',

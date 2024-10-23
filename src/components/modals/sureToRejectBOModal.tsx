@@ -22,7 +22,7 @@ const SureToRejectBOModal : React.FC<any> = ({show,Id, off,clickedOwner})=>{
             if (userInfo) {
     
                const delBody = {
-                    "requestorUsername": `Kemi John`,
+                    "requestorUsername": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
                     "comment": deleteComment,
                     "ids": [
                         Id
@@ -36,8 +36,7 @@ const SureToRejectBOModal : React.FC<any> = ({show,Id, off,clickedOwner})=>{
                     toast.success('Rejected BO creation successfully.');
                     off()
                 } else {
-                    toast.error('Operation failed! Check your network.');
-                    setLoading(false);
+                   
                 }
     
             }

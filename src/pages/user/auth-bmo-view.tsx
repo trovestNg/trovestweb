@@ -95,15 +95,15 @@ const AuthCustomerViewPage = () => {
         };
     }, [navArray.length, dispatch, navArray]);
 
-   const handlePercentageRestriction = ()=>{
-    const res = calculatePercent(bmoList,0);
-    if(res==true){
-        setAddNewBenefOwnerModal(true)
-    }else{}
-   }
+    const handlePercentageRestriction = () => {
+        const res = calculatePercent(bmoList, 0);
+        if (res == true) {
+            setAddNewBenefOwnerModal(true)
+        } else { }
+    }
 
 
-   
+
 
 
     type Column = {
@@ -561,6 +561,7 @@ const AuthCustomerViewPage = () => {
                 parentInfo={parentInfo} />
 
             <SureToRejectBOModal show={rejectBmOwner}
+            Id={parentInfo?.Id}
                 off={() => {
                     setRejectBmOwner(false);
                     setRefData(!refData);
@@ -585,6 +586,7 @@ const AuthCustomerViewPage = () => {
 
             <CreateBMOOwnerCoperateModal
                 parent={{ ...parentInfo, customerNumber: curstomerNumber, CountryId: "NG", }}
+                totalOwners={bmoList}
                 custormerNumb={curstomerNumber}
                 lev={level}
                 off={() => {
@@ -598,6 +600,7 @@ const AuthCustomerViewPage = () => {
             <CreateBMOOwnerFundsManagerModal
                 parent={{ ...parentInfo, customerNumber: curstomerNumber, CountryId: "NG", }}
                 custormerNumb={curstomerNumber}
+                totalOwners={bmoList}
                 off={() => {
                     setAddNewBenefOwnerFundsManagerModal(false);
                     setRefData(!refData);
@@ -616,6 +619,7 @@ const AuthCustomerViewPage = () => {
                 show={addNewBenefOwnerImportModal} />
 
             <EditBMOOwnerIndModal parentInf={parentInfo} ownerInfo={bmoOwner}
+                totalOwners={bmoList}
                 off={() => {
                     setEditBenefOwnerIndividualModal(false); setRefData(!refData);
                     setRefData(!refData);
@@ -626,6 +630,7 @@ const AuthCustomerViewPage = () => {
             <EditBMOOwnerCoperateModal
                 parentInf={parentInfo}
                 ownerInfo={bmoOwner}
+                totalOwners={bmoList}
                 off={() => {
                     setEditBenefOwnerCoperateModal(false);
                     setRefData(!refData);
@@ -701,7 +706,7 @@ const AuthCustomerViewPage = () => {
                                     <th scope="col" className="fw-medium">Customer Number</th>
                                     <th scope="col" className="fw-medium">RC Number/BN/CAC</th>
                                     <th scope="col" className="fw-medium">No Of Beneficial Owners</th>
-                                    <th scope="col" className="fw-medium">Status</th>
+                                    
                                     <th scope="col" className="fw-medium"></th>
                                 </tr>
                             </thead>
@@ -725,13 +730,6 @@ const AuthCustomerViewPage = () => {
                                     <td className="text-primary">
                                         {
                                             bmoList && bmoList.length
-                                        }
-                                    </td>
-
-                                    <td className={`text-${parentInfo?.IsAuthorized ? 'success' : 'danger'}`}>
-                                        {
-                                            parentInfo?.IsAuthorized ? 'Authorized' : 'UnAuthorized'
-
                                         }
                                     </td>
 
@@ -836,7 +834,7 @@ const AuthCustomerViewPage = () => {
                                                         <td className={`text-${bmoOwner.IsAuthorized ? 'success' : !bmoOwner.IsAuthorized && !bmoOwner.IsRejected ? 'warning' : !bmoOwner.IsAuthorized && bmoOwner.IsRejected ? 'danger' : 'primary'}`}>
 
                                                             <span >{bmoOwner.IsAuthorized && 'Authorised'}{!bmoOwner.IsAuthorized && !bmoOwner.IsRejected && 'Pending'} {!bmoOwner.IsAuthorized && bmoOwner.IsRejected && 'Rejected'}</span>
-                                                           
+
                                                         </td>
 
                                                         {/* <td className={`text-${bmoOwner.IsAuthorized ? 'success' : 'danger'}`}>{bmoOwner.IsAuthorized ? 'Authorised' : 'UnAuthorised'}</td> */}
@@ -863,16 +861,18 @@ const AuthCustomerViewPage = () => {
                                                                         {
                                                                             userClass == 'Initiator' &&
                                                                             <div onClick={(e) => e.stopPropagation()}>
-                                                                                <ListGroupItem
-                                                                                    onClick={(e) => { bmoOwner.IsMarkedForDelete ? toast.error('Is pending deletion') : handleUpdateBenefOwnerType(bmoOwner) }}
-                                                                                >
-                                                                                    <span className="w-100 d-flex justify-content-between">
-                                                                                        <div className="d-flex gap-2" >
-                                                                                            <i className="bi bi-calendar-event"></i>
-                                                                                            Edit
-                                                                                        </div>
-                                                                                    </span>
-                                                                                </ListGroupItem>
+                                                                                {
+                                                                                    !bmoOwner.IsAuthorized &&
+                                                                                    <ListGroupItem
+                                                                                        onClick={(e) => { bmoOwner.IsMarkedForDelete ? toast.error('Is pending deletion') : handleUpdateBenefOwnerType(bmoOwner) }}
+                                                                                    >
+                                                                                        <span className="w-100 d-flex justify-content-between">
+                                                                                            <div className="d-flex gap-2" >
+                                                                                                <i className="bi bi-calendar-event"></i>
+                                                                                                Edit
+                                                                                            </div>
+                                                                                        </span>
+                                                                                    </ListGroupItem>}
                                                                                 <ListGroupItem
                                                                                     className="text-danger"
                                                                                     onClick={(e) => { bmoOwner.IsMarkedForDelete ? toast.error('Already marked for delete') : handleDeleteBmoOwner(bmoOwner) }}

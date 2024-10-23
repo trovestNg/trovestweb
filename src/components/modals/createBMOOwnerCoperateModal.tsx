@@ -9,10 +9,11 @@ import { ICountr, ICountry } from "../../interfaces/country";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-const CreateBMOOwnerCoperateModal: React.FC<any> = ({ show, off, parent, custormerNumb, lev, ownerId }) => {
+const CreateBMOOwnerCoperateModal: React.FC<any> = ({ show, off, parent, custormerNumb, lev, ownerId, }) => {
     const [countries, setCountries] = useState<ICountr[]>()
     const [idTypes, setIdTypes] = useState<string[]>();
     const [loading, setLoading] = useState(false);
+    const [errorMessage,setErrorMessage] = useState('')
     const navigate = useNavigate();
 
     const initialVal = {
@@ -53,142 +54,129 @@ const CreateBMOOwnerCoperateModal: React.FC<any> = ({ show, off, parent, custorm
 
     const createNewBMO = async (body: any) => {
         setLoading(true)
-        // console.log({seeBody:body})
-        let userInfo = await getUserInfo();
-
-
-
-        if (userInfo) {
-            let parentInfo = {
-                ...parent,
-                AuthorizeBy
-                    :
-                    parent?.AuthorizeBy,
-                AuthorizeDate
-                    :
-                    parent?.AuthorizeDate,
-                BVN
-                    :
-                    parent?.BVN,
-                BusinessName
-                    :
-                    parent?.BusinessName,
-                Category
-                    :
-                    parent?.Category,
-                CategoryDescription
-                    :
-                    parent?.CategoryDescription,
-                Comments
-                    :
-                    parent?. Comments,
-                CountryName
-                    :
-                    parent?.CountryName,
-                CreatedBy
-                    :
-                    parent?. CreatedBy,
-                CreatedDate
-                    :
-                   parent?.CreatedDate,
-                Id
-                    :
-                    parent?.Id,
-                IdNumber
-                    :
-                    parent?.IdNumber,
-                IdType
-                    :
-                    parent?.IdType,
-                IsAuthorized
-                    :
-                    parent?.IsAuthorized,
-                IsPEP
-                    :
-                    parent?.IsPEP,
-                IsRejected
-                    :
-                    parent?.IsRejected,
-                LastUpdatedBy
-                    :
-                    parent?.LastUpdatedBy,
-                LastUpdatedDate
-                    :
-                    parent?.LastUpdatedDate,
-                Level
-                    :
-                    parent?.Level,
-                NumberOfShares
-                    :
-                    parent?.NumberOfShares,
-                ParentId
-                    :
-                    parent?.ParentId,
-                PercentageHolding
-                    :
-                    parent?.PercentageHolding,
-                RcNumber
-                    :
-                    parent?.RcNumber,
-                RejectedBy
-                    :
-                    parent?.RejectedBy,
-                RejectedDate
-                    :
-                    parent?.RejectedDate,
-                RiskLevel
-                    :
-                    parent?.RiskLevel,
-                RiskScore
-                    :
-                    parent?.RiskScore,
-                Ticker
-                    :
-                    parent?.Ticker,
-                    CategoryId:'C',
-            }
-
-            const apiBody = {
-                "requesterName": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
-                "parent": { ...parentInfo},
-                "beneficialOwners": [
-                    {
-                        ...body,
-                        "categoryId": "C",
-                        "isPEP":body?.isPEP=='yes'?true:false,
-                        
-                    }
-                   
-                    // {
-                    //     "businessName": "string",
-                    //     "customerNumber": "string",
-                    //     "bvn": "string",
-                    //     "idType": "string",
-                    //     "idNumber": "string",
-                    //     "countryId": "string",
-                    //     "percentageHolding": 0,
-                    //     "numberOfShares": 0,
-                    //     "isPEP": true,
-                    //     "categoryId": "string",
-                    //     "rcNumber": "string",
-                    //     "ticker": "string"
-                    // }
-                ]
-            }
-
-            console.log({ sending: apiBody })
-
-            const res = await api.post(``, apiBody, `${userInfo?.access_token}`)
-            if (res?.status==200) {
-                setLoading(false);
-                toast.success('BO added succesfully');
-                off()
-            } else {
-                toast.error('Bo with that name exist!');
-                setLoading(false);
-            }
-
+        let parentInfo = {
+            ...parent,
+            AuthorizeBy
+                :
+                parent?.AuthorizeBy,
+            AuthorizeDate
+                :
+                parent?.AuthorizeDate,
+            BVN
+                :
+                parent?.BVN,
+            BusinessName
+                :
+                parent?.BusinessName,
+            Category
+                :
+                parent?.Category,
+            CategoryDescription
+                :
+                parent?.CategoryDescription,
+            Comments
+                :
+                parent?. Comments,
+            CountryName
+                :
+                parent?.CountryName,
+            CreatedBy
+                :
+                parent?. CreatedBy,
+            CreatedDate
+                :
+               parent?.CreatedDate,
+            Id
+                :
+                parent?.Id,
+            IdNumber
+                :
+                parent?.IdNumber,
+            IdType
+                :
+                parent?.IdType,
+            IsAuthorized
+                :
+                parent?.IsAuthorized,
+            IsPEP
+                :
+                parent?.IsPEP,
+            IsRejected
+                :
+                parent?.IsRejected,
+            LastUpdatedBy
+                :
+                parent?.LastUpdatedBy,
+            LastUpdatedDate
+                :
+                parent?.LastUpdatedDate,
+            Level
+                :
+                parent?.Level,
+            NumberOfShares
+                :
+                parent?.NumberOfShares,
+            ParentId
+                :
+                parent?.ParentId,
+            PercentageHolding
+                :
+                parent?.PercentageHolding,
+            RcNumber
+                :
+                parent?.RcNumber,
+            RejectedBy
+                :
+                parent?.RejectedBy,
+            RejectedDate
+                :
+                parent?.RejectedDate,
+            RiskLevel
+                :
+                parent?.RiskLevel,
+            RiskScore
+                :
+                parent?.RiskScore,
+            Ticker
+                :
+                parent?.Ticker,
+                CategoryId:'C',
         }
+
+        
+
+       try {
+        let userInfo = await getUserInfo();
+        const apiBody = {
+            "requesterName": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
+            "parent": { ...parentInfo},
+            "beneficialOwners": [
+                {
+                    ...body,
+                    "categoryId": "C",
+                    "isPEP":body?.isPEP=='yes'?true:false,
+                    
+                }
+            ]
+        }
+        const res = await api.post(``, apiBody, `${userInfo?.access_token}`)
+        setLoading(false);
+        console.log({seeError:res})
+        if (res?.status==200) {
+            setLoading(false);
+            toast.success('BO added succesfully');
+            off()
+        }
+        if(res?.status==400){
+            setLoading(false);
+            toast.error(`${res?.data}`);
+        }
+
+       } catch (error:any) {
+        console.log({seeError:error})
+        setLoading(false);
+        toast.error(`${error?.data}`)
+       }
     }
 
     const handleGetCountries = async () => {

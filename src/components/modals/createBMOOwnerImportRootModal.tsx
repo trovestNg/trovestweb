@@ -48,7 +48,7 @@ const CreateBMOOwnerImportRootModal:  React.FC<any> = ({ show, off,cusNum }) => 
             setDLoading(true)
             let userInfo = await getUserInfo();
             // const res = await api.get(``, );
-            const res= await fetch(`${baseUrl}/upload/template/download?requesterName=${`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`}`)
+            const res= await fetch(`${baseUrl}/node/upload/template/download?requesterName=${`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`}`)
             if(res.status==200){
                 res.blob().then(blob=>{
                     let a=document.createElement('a');

@@ -200,7 +200,8 @@ const UnAuthUserViewBmoPage = () => {
             setLoading(true)
             const res = await apiUnAuth.get(`level/approved?customerNumber=${curstomerNumber}`);
             if (res.data) {
-                setBmoList(res?.data?.Owners);
+                const filtered = res?.data.Owners.filter((owner:IBMOwnersPublic)=>owner.IsAuthorized)
+                setBmoList(filtered);
                 setParentInfo(res?.data?.Parent)
                 setLoading(false);
                 setIsloaded(true)

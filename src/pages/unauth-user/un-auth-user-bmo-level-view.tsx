@@ -202,7 +202,8 @@ const UnAuthBmoOwnerView = () => {
                 
                 const res = await apiUnAuth.get(`owner/level/navigate/approved?OwnerId=${ownerId}`);
                 if (res?.data) {
-                    setBmoList(res?.data?.Owners.reverse());
+                    const filtered = res?.data.Owners.filter((owner:IBMOwnersPublic)=>owner.IsAuthorized)
+                    setBmoList(filtered);
                     // calculatePercent(res?.data?.Owners)
                     setParentInfo(res?.data?.Parent)
                     setLoading(false)

@@ -677,7 +677,7 @@ const AuthOwnerViewPage = () => {
                                     <th scope="col" className="fw-medium">Customer Number</th>
                                     <th scope="col" className="fw-medium">RC Number/BN/CAC</th>
                                     <th scope="col" className="fw-medium">No Of Beneficial Owners</th>
-                                    <th scope="col" className="fw-medium">Status</th>
+                                    
                                     <th scope="col" className="fw-medium"></th>
                                 </tr>
                             </thead>
@@ -702,14 +702,6 @@ const AuthOwnerViewPage = () => {
                                         {
                                             bmoList.length
                                         }
-                                    </td>
-
-                                    <td className={`text-${parentInfo?.IsAuthorized ? 'success' : 'danger'}`}>
-                                        {
-                                            parentInfo?.IsAuthorized ? 'Authorized' : 'UnAuthorized'
-
-                                        }
-
                                     </td>
                                     <td>
                                         {

@@ -15,13 +15,12 @@ const SureToApproveBOModal : React.FC<any> = ({show, off,parentInfo})=>{
 
     const approveBo = async () => {
         setLoading(true)
-        // console.log({ seeBody: body })
-        let userInfo = await getUserInfo();
+        
+        
 
-
-
-        if (userInfo) {
-
+        try {
+            
+            let userInfo = await getUserInfo();
             const bodyApprove= {
                 // "requestorUsername": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
                 "requestorUsername":`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
@@ -31,16 +30,25 @@ const SureToApproveBOModal : React.FC<any> = ({show, off,parentInfo})=>{
                 ]
               }
 
-            const res = await api.post(`authorize`, bodyApprove, `${userInfo?.access_token}`)
+              const res = await api.post(`authorize`, bodyApprove, `${userInfo?.access_token}`)
             if (res?.status==200) {
                 setLoading(false);
                 toast.success('BO Approved succesfully');
                 off()
-            } else {
+            }
+
+            if(res?.status==400){
+                setLoading(false);
+                toast.error(`${res?.data}`);
+            }
+            
+            else {
                 toast.error('Operation failed! Check your network');
                 setLoading(false);
             }
-
+            
+        } catch (error) {
+            
         }
     }
 return (

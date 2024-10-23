@@ -38,8 +38,8 @@ const UboAdminTopbar: React.FC<any> = ({ payload }) => {
                 console.log(userInfo.access_token)
             }
             if (userInfo?.profile.role?.includes('DOMAIN1\\CUSTOMER_RISK_INIT_TEST')) {
-                setUserType('Initiator');
-                dispatch(setUserClass('Initiator'))
+                setUserType('Approver');
+                dispatch(setUserClass('Approver'))
             }
             else if (userInfo?.profile.role?.includes('DOMAIN1\\CUSTOMER_RISK_AUTH_TEST')) {
                 setUserType('Approver');

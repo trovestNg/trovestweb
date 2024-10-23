@@ -46,9 +46,9 @@ export default {
         try {
             const response = await axios.post(`${baseUrl}/${path}`,body, config);
             return response;
-        } catch (error) {
-            // Handle error
-            console.error('Error fetching data:', error);
+        } catch (error:any) {
+            return error.response
+           
         }
     }
 }
