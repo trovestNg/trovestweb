@@ -57,14 +57,9 @@ const EditeBMOOwnerIndModal: React.FC<any> = ({ show, off, parentInf,custormerNu
 
 
     const createNewBMO = async (body: any) => {
-        setLoading(true)
-        // console.log({ seeBody: body })
-        let userInfo = await getUserInfo();
-
-
-
-        if (userInfo) {
-
+        setLoading(true);
+        try {
+            let userInfo = await getUserInfo();
             const apiBody = {
                 "requesterName": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
                 "parent": {...parentInf,originalId:custormerNumb,CategoryId:'I',CountryId:"NG", Level:+lev},
@@ -79,35 +74,24 @@ const EditeBMOOwnerIndModal: React.FC<any> = ({ show, off, parentInf,custormerNu
                         "BVN":body?.bvn
                         
                     }
-                   
-                    // {
-                    //     "businessName": "string",
-                    //     "customerNumber": "string",
-                    //     "bvn": "string",
-                    //     "idType": "string",
-                    //     "idNumber": "string",
-                    //     "countryId": "string",
-                    //     "percentageHolding": 0,
-                    //     "numberOfShares": 0,
-                    //     "isPEP": true,
-                    //     "categoryId": "string",
-                    //     "rcNumber": "string",
-                    //     "ticker": "string"
-                    // }
                 ]
             }
-
             const res = await api.post(``, apiBody, `${userInfo?.access_token}`)
             if (res?.status==200) {
                 setLoading(false);
-                toast.success('BO Updated succesfully');
+                toast.success('BO updated succesfully');
                 off()
-            } else {
-                toast.error('Operation failed! Check your network');
-                setLoading(false);
             }
-
-        }
+            if(res?.status==400){
+                setLoading(false);
+                toast.error(`${res?.data}`);
+            }
+            
+        } catch (error:any) {
+            console.log({seeError:error})
+            setLoading(false);
+            toast.error(`${error?.data}`)
+           }
     }
 
     const handleGetCountries = async () => {

@@ -51,104 +51,98 @@ const CreateBMOOwnerIndModal: React.FC<any> = ({ show, off,lev, parent,custormer
 
     const createNewBMO = async (body: any) => {
         setLoading(true)
-        const res = calculatePercent(totalOwners,body?.percentageHolding);
-        if(res==true){
 
+        let parentInfo = {
+            ...parent,
+            AuthorizeBy
+                :
+                parent?.AuthorizeBy,
+            AuthorizeDate
+                :
+                parent?.AuthorizeDate,
+            BVN
+                :
+                parent?.BVN,
+            BusinessName
+                :
+                parent?.BusinessName,
+            Category
+                :
+                parent?.Category,
+            CategoryDescription
+                :
+                parent?.CategoryDescription,
+            Comments
+                :
+                parent?. Comments,
+            CountryName
+                :
+                parent?.CountryName,
+            CreatedBy
+                :
+                parent?. CreatedBy,
+            CreatedDate
+                :
+               parent?.CreatedDate,
+            Id
+                :
+                parent?.Id,
+            IdNumber
+                :
+                parent?.IdNumber,
+            IdType
+                :
+                parent?.IdType,
+            IsAuthorized
+                :
+                parent?.IsAuthorized,
+            IsPEP
+                :
+                parent?.IsPEP,
+            IsRejected
+                :
+                parent?.IsRejected,
+            LastUpdatedBy
+                :
+                parent?.LastUpdatedBy,
+            LastUpdatedDate
+                :
+                parent?.LastUpdatedDate,
+            Level
+                :
+                parent?.Level,
+            NumberOfShares
+                :
+                parent?.NumberOfShares,
+            ParentId
+                :
+                parent?.ParentId,
+            PercentageHolding
+                :
+                parent?.PercentageHolding,
+            RcNumber
+                :
+                parent?.RcNumber,
+            RejectedBy
+                :
+                parent?.RejectedBy,
+            RejectedDate
+                :
+                parent?.RejectedDate,
+            RiskLevel
+                :
+                parent?.RiskLevel,
+            RiskScore
+                :
+                parent?.RiskScore,
+            Ticker
+                :
+                parent?.Ticker,
+                CategoryId:'I',
+        }
+
+        try {
             let userInfo = await getUserInfo();
-
-
-
-        if (userInfo) {
-
-            let parentInfo = {
-                ...parent,
-                AuthorizeBy
-                    :
-                    parent?.AuthorizeBy,
-                AuthorizeDate
-                    :
-                    parent?.AuthorizeDate,
-                BVN
-                    :
-                    parent?.BVN,
-                BusinessName
-                    :
-                    parent?.BusinessName,
-                Category
-                    :
-                    parent?.Category,
-                CategoryDescription
-                    :
-                    parent?.CategoryDescription,
-                Comments
-                    :
-                    parent?. Comments,
-                CountryName
-                    :
-                    parent?.CountryName,
-                CreatedBy
-                    :
-                    parent?. CreatedBy,
-                CreatedDate
-                    :
-                   parent?.CreatedDate,
-                Id
-                    :
-                    parent?.Id,
-                IdNumber
-                    :
-                    parent?.IdNumber,
-                IdType
-                    :
-                    parent?.IdType,
-                IsAuthorized
-                    :
-                    parent?.IsAuthorized,
-                IsPEP
-                    :
-                    parent?.IsPEP,
-                IsRejected
-                    :
-                    parent?.IsRejected,
-                LastUpdatedBy
-                    :
-                    parent?.LastUpdatedBy,
-                LastUpdatedDate
-                    :
-                    parent?.LastUpdatedDate,
-                Level
-                    :
-                    parent?.Level,
-                NumberOfShares
-                    :
-                    parent?.NumberOfShares,
-                ParentId
-                    :
-                    parent?.ParentId,
-                PercentageHolding
-                    :
-                    parent?.PercentageHolding,
-                RcNumber
-                    :
-                    parent?.RcNumber,
-                RejectedBy
-                    :
-                    parent?.RejectedBy,
-                RejectedDate
-                    :
-                    parent?.RejectedDate,
-                RiskLevel
-                    :
-                    parent?.RiskLevel,
-                RiskScore
-                    :
-                    parent?.RiskScore,
-                Ticker
-                    :
-                    parent?.Ticker,
-                    CategoryId:'I',
-            }
-
             const apiBody = {
                 "requesterName": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
                 "parent": { ...parentInfo},
@@ -159,42 +153,25 @@ const CreateBMOOwnerIndModal: React.FC<any> = ({ show, off,lev, parent,custormer
                         "isPEP":body?.isPEP=='yes'?true:false,
                         
                     }
-                   
-                    // {
-                    //     "businessName": "string",
-                    //     "customerNumber": "string",
-                    //     "bvn": "string",
-                    //     "idType": "string",
-                    //     "idNumber": "string",
-                    //     "countryId": "string",
-                    //     "percentageHolding": 0,
-                    //     "numberOfShares": 0,
-                    //     "isPEP": true,
-                    //     "categoryId": "string",
-                    //     "rcNumber": "string",
-                    //     "ticker": "string"
-                    // }
                 ]
             }
-
             const res = await api.post(``, apiBody, `${userInfo?.access_token}`)
             if (res?.status==200) {
                 setLoading(false);
-                toast.success('BO successfully created');
+                toast.success('BO created succesfully');
                 off()
-            } else {
-                toast.error('User with that record already exist');
-                setLoading(false);
             }
+            if(res?.status==400){
+                setLoading(false);
+                toast.error(`${res?.data}`);
+            }
+            
+        } catch (error:any) {
+            console.log({seeError:error})
+            setLoading(false);
+            toast.error(`${error?.data}`)
+           }
 
-        }
-        
-        }else{
-            off()
-        }
-       
-        // console.log({ seeBody: body })
-        
     }
 
     const handleGetCountries = async () => {

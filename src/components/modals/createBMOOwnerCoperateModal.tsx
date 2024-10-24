@@ -161,7 +161,7 @@ const CreateBMOOwnerCoperateModal: React.FC<any> = ({ show, off, parent, custorm
         }
         const res = await api.post(``, apiBody, `${userInfo?.access_token}`)
         setLoading(false);
-        console.log({seeError:res})
+        // console.log({seeError:res})
         if (res?.status==200) {
             setLoading(false);
             toast.success('BO added succesfully');
