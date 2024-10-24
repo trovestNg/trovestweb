@@ -824,7 +824,9 @@ const AuthOwnerViewPage = () => {
                                                                     {
                                                                         userClass == 'Initiator' &&
                                                                         <div onClick={(e) => e.stopPropagation()}>
-                                                                            <ListGroupItem
+                                                                            {
+                                                                                !bmoOwner.IsAuthorized&&
+                                                                                <ListGroupItem
                                                                                 onClick={(e) => { bmoOwner.IsMarkedForDelete ? toast.error('Is pending deletion') : handleUpdateBenefOwnerType(bmoOwner) }}
                                                                             >
                                                                                 <span className="w-100 d-flex justify-content-between">
@@ -833,7 +835,7 @@ const AuthOwnerViewPage = () => {
                                                                                         Edit
                                                                                     </div>
                                                                                 </span>
-                                                                            </ListGroupItem>
+                                                                            </ListGroupItem>}
                                                                             <ListGroupItem
                                                                                 className="text-danger"
                                                                                 onClick={(e) => { bmoOwner.IsMarkedForDelete ? toast.error('Already marked for delete') : handleDeleteBmoOwner(bmoOwner) }}
