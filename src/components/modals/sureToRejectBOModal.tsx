@@ -14,32 +14,37 @@ const SureToRejectBOModal : React.FC<any> = ({show,Id, off,clickedOwner})=>{
     // console.log({delThis:clickedOwner})
     
         const deleteBo = async (body: any) => {
-            setLoading(true)
+            
+          try {
+            setLoading(true);
             let userInfo = await getUserInfo();
-    
-    
-    
-            if (userInfo) {
-    
-               const delBody = {
-                    "requestorUsername": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
-                    "comment": deleteComment,
-                    "ids": [
-                        Id
-                    ]
-                  }
-    
-                const res = await api.post(`reject`, delBody, `${userInfo?.access_token}`)
-                if (res?.status==200) {
-                    setLoading(false);
-                    setShowCommentBox(false)
-                    toast.success('Rejected BO creation successfully.');
-                    off()
-                } else {
-                   
-                }
-    
+            const delBody = {
+                "requestorUsername":`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
+                "comment": deleteComment,
+                "ids": [
+                    Id
+                ]
+              }
+            const res = await api.post(`reject`, delBody, `${userInfo?.access_token}`);
+            if (res?.status==200) {
+                setLoading(false);
+                toast.success('BO Rejected succesfully');
+                off();
             }
+
+            if(res?.status==400){
+                setLoading(false);
+                toast.error(`${res?.data}`);
+            }
+            
+            else {
+                // toast.error('Operation failed! Check your network');
+                setLoading(false);
+            }
+            
+          } catch (error) {
+            
+          }
         }
        
     return (

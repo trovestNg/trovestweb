@@ -34,7 +34,7 @@ const SureToApproveBOModal : React.FC<any> = ({show, off,parentInfo})=>{
             if (res?.status==200) {
                 setLoading(false);
                 toast.success('BO Approved succesfully');
-                off()
+                off();
             }
 
             if(res?.status==400){
@@ -43,7 +43,7 @@ const SureToApproveBOModal : React.FC<any> = ({show, off,parentInfo})=>{
             }
             
             else {
-                toast.error('Operation failed! Check your network');
+                // toast.error('Operation failed! Check your network');
                 setLoading(false);
             }
             

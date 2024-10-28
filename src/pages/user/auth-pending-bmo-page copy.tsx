@@ -22,6 +22,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import MoreInfoModal from "../../components/modals/moreInfoModal";
 import SureToApproveBOModal from "../../components/modals/sureToApproveBOModal";
 import SureToRejectBOModal from "../../components/modals/sureToRejectBOModal";
+import SureToApproveSingleBmoModal from "../../components/modals/sureToApproveSingleBmoModal";
+import SureToRejectSingleBmoModal from "../../components/modals/sureToRejectSingleBmoModal";
 
 
 const AuthPendingBmoPage = () => {
@@ -37,7 +39,10 @@ const AuthPendingBmoPage = () => {
 
     const [bmoOwner, setBmoOwner] = useState<IApprovedBMOOwner>();
     const [editBenefOwnerCoperateModal, setEditBenefOwnerCoperateModal] = useState(false);
-    const [editBenefOwnerIndividualModal, setEditBenefOwnerIndividualModal] = useState(false);
+
+    const [approveSingleBmOwnerModal,setApproveSingleBmOwnerModal] = useState(false);
+    const [rejectSingleBmOwnerModal,setRejectSingleBmOwnerModal] = useState(false);
+
     const [approveBmOwner, setApproveBmOwner] = useState(false);
     const [rejectBmOwner, setRejectBmOwner] = useState(false);
     const navigate = useNavigate();
@@ -65,6 +70,18 @@ const AuthPendingBmoPage = () => {
         setBySearch(false);
         setSLoading(false)
         setRefreshComponent(!refreshComponent)
+
+
+    }
+
+    const handleSingleApproveOperation = async (type:string,bmId:any)=>{
+        setShowChildrenModal(false);
+        setBmoId(bmId);
+        if(type=='approve'){
+            setApproveSingleBmOwnerModal(true);   
+        } else {
+            setRejectSingleBmOwnerModal(true);   
+        }
 
     }
 
@@ -268,8 +285,8 @@ const AuthPendingBmoPage = () => {
                             {
                                 userClass == 'Approver' &&
                                 <div className="d-flex gap-3">
-                                    <Button onClick={() => handleApproveBO(bmoChildrenList[0])} variant="outline border border-success text-success">Approve</Button>
-                                    <Button onClick={() => handleRejectBmoOwner(bmoId)} variant="outline border border-danger text-danger">Reject</Button>
+                                    <Button onClick={() => handleApproveBO(bmoChildrenList[0])} variant="outline border border-success text-success">Approve All</Button>
+                                    <Button onClick={() => handleRejectBmoOwner(bmoId)} variant="outline border border-danger text-danger">Reject All</Button>
                                 </div>
 
                             }
@@ -287,6 +304,7 @@ const AuthPendingBmoPage = () => {
                                 <table className="table table-striped mt-3 w-100" >
                                     <thead className="thead-dark">
                                         <tr >
+                                        <th scope="col" className="bg-primary text-light"></th>
                                             <th scope="col" className="bg-primary text-light">#</th>
                                             <th scope="col" className="bg-primary text-light">Beneficial Owner</th>
                                             <th scope="col" className="bg-primary text-light">Account Type</th>
@@ -298,6 +316,7 @@ const AuthPendingBmoPage = () => {
                                             <th scope="col" className="bg-primary text-light">Initiated By</th>
                                             <th scope="col" className="bg-primary text-light">Date Initiated</th>
                                             <th scope="col" className="bg-primary text-light">Status</th>
+
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -306,6 +325,28 @@ const AuthPendingBmoPage = () => {
                                                 <tr key={index}
                                                     role="button"
                                                 >
+                                                    {
+                                                        userClass=='Approver'&&
+                                                        <td className="">
+                                                        <div className="d-flex gap-2">
+                                                        <i className="bi bi-check2 text-success" 
+                                                        onClick={
+                                                            ()=>handleSingleApproveOperation('approve',bmoOwner?.Id)
+                                                            
+                                                        }
+                                                        ></i>
+                                                        <i className="bi bi-x text-danger" onClick={()=>handleSingleApproveOperation('reject',bmoOwner?.Id)}></i>
+                                                        </div>
+                                                    
+                                                    </td>}
+
+                                                    {
+                                                        userClass=='Initiator'&&
+                                                        <td className="">
+                                                        
+                                                    
+                                                    </td>}
+
                                                     <th scope="row">{index + 1}</th>
                                                     <td className="">{bmoOwner.BusinessName}</td>
                                                     <td>{bmoOwner.CategoryDescription}</td>
@@ -317,9 +358,6 @@ const AuthPendingBmoPage = () => {
                                                     <td>{bmoOwner.CreatedBy}</td>
                                                     <td>{moment(bmoOwner.CreatedDate).format('MMM DD YYYY')}</td>
                                                     <td className={`text-${bmoOwner.IsAuthorized ? 'success' : 'danger'}`}>{bmoOwner.IsAuthorized ? 'Authorised' : 'UnAuthorised'}</td>
-
-
-
                                                 </tr>
                                             )) : <tr className="text-center">
                                                 <td colSpan={10}>
@@ -348,6 +386,13 @@ const AuthPendingBmoPage = () => {
                 parentInfo={parentInfo}
                 off={() => { setApproveBmOwner(false); setRefreshComponent(!refreshComponent) }} />
 
+<SureToApproveSingleBmoModal show={approveSingleBmOwnerModal} Id={bmoId} off={
+    ()=>{setApproveSingleBmOwnerModal(false);setRefreshComponent(!refreshComponent) }
+    } />
+
+<SureToRejectSingleBmoModal show={rejectSingleBmOwnerModal} Id={bmoId} off={
+    ()=>{setRejectSingleBmOwnerModal(false);setRefreshComponent(!refreshComponent) }
+    } />
             <SureToRejectBOModal
                 show={rejectBmOwner}
                 Id={bmoId}

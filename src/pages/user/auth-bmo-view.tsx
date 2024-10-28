@@ -31,6 +31,7 @@ import { baseUrl } from "../../config/config";
 import CreateBMOOwnerImportRootModal from "../../components/modals/createBMOOwnerImportRootModal";
 import SureToRejectBOModal from "../../components/modals/sureToRejectBOModal";
 import { calculatePercent } from "../../utils/helpers";
+import EditBMOOwnerFundManagerModal from "../../components/modals/editBMOOwnerFundManagerModal";
 
 
 
@@ -60,6 +61,7 @@ const AuthCustomerViewPage = () => {
 
     const [editBenefOwnerIndividualModal, setEditBenefOwnerIndividualModal] = useState(false);
     const [editBenefOwnerCoperateModal, setEditBenefOwnerCoperateModal] = useState(false);
+    const [editBenefOwnerFundModal, setEditBenefOwnerFundModal] = useState(false);
     const [deleteBmOwner, setDeleteBmOwner] = useState(false);
     const [approveBmOwner, setApproveBmOwner] = useState(false);
     const [rejectBmOwner, setRejectBmOwner] = useState(false);
@@ -407,6 +409,10 @@ const AuthCustomerViewPage = () => {
                 setEditBenefOwnerIndividualModal(true);
                 setBmoOwner(e)
                 break;
+            case e.CategoryDescription = 'Fund Manager':
+                setEditBenefOwnerFundModal(true);
+                setBmoOwner(e)
+                break;
             case e.CategoryDescription = 'Coperate':
 
                 setEditBenefOwnerCoperateModal(true);
@@ -626,6 +632,15 @@ const AuthCustomerViewPage = () => {
                     setIsloaded(!isLoaded);
                     window.location.reload()
                 }} show={editBenefOwnerIndividualModal} />
+            
+            <EditBMOOwnerFundManagerModal parentInf={parentInfo} ownerInfo={bmoOwner}
+                totalOwners={bmoList}
+                off={() => {
+                    setEditBenefOwnerFundModal(false); setRefData(!refData);
+                    setRefData(!refData);
+                    setIsloaded(!isLoaded);
+                    window.location.reload()
+                }} show={editBenefOwnerFundModal} />
 
             <EditBMOOwnerCoperateModal
                 parentInf={parentInfo}
@@ -638,6 +653,8 @@ const AuthCustomerViewPage = () => {
                     window.location.reload()
 
                 }} show={editBenefOwnerCoperateModal} />
+
+            
 
             <Button className="d-flex gap-2" onClick={handleBackToHomePage} variant="outline border border-primary">
                 <i className="bi bi-arrow-left text-primary"></i>

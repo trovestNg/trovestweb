@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { clearNav } from "../../store/slices/userSlice";
 import { emptyAuthUserNavArray, setUserClass } from "../../store/slices/authUserSlice";
+import { toast } from "react-toastify";
 
 
 
@@ -15,7 +16,9 @@ const UboAdminTopbar: React.FC<any> = ({ payload }) => {
     const [userName, setUserName] = useState('');
     const currentPath = useLocation().pathname;
     const dispatch = useDispatch()
-    const initialTime = 250;
+    
+    
+    const initialTime = 15;
     // Set initial countdown time here
     const [timer, setTimer] = useState(initialTime);
     const [showModal, setShowModal] = useState(false);
@@ -35,7 +38,7 @@ const UboAdminTopbar: React.FC<any> = ({ payload }) => {
             }
             if (userInfo) {
                 setUserName(`${userInfo?.profile?.given_name} ${userInfo?.profile?.family_name}`)
-                console.log(userInfo.access_token)
+                // console.log(userInfo.access_token)
             }
             if (userInfo?.profile.role?.includes('DOMAIN1\\CUSTOMER_RISK_INIT_TEST')) {
                 setUserType('Initiator');
@@ -46,7 +49,9 @@ const UboAdminTopbar: React.FC<any> = ({ payload }) => {
                 dispatch(setUserClass('Approver'))
             } else {
                 setUserType('User')
-                dispatch(setUserClass('Initiator'))
+                dispatch(setUserClass('Initiator'));
+                toast.error('Un Authorised User!!')
+                logoutUser()
             }
 
         } catch (error) {
@@ -55,15 +60,12 @@ const UboAdminTopbar: React.FC<any> = ({ payload }) => {
 
     }
 
-
-
     useEffect(() => {
         const timer = setInterval(() => {
             setTimer((prevTime: any) => {
                 if (prevTime <= 1) {
                     clearInterval(timer);
-                    // setShowModal(true);
-                    // handleStay()
+                    setShowModal(true); // Show modal when time is up
                     return 0;
                 }
                 return prevTime - 1;
@@ -74,16 +76,28 @@ const UboAdminTopbar: React.FC<any> = ({ payload }) => {
     }, []);
 
     const handleStay = useCallback(() => {
+        // toast.error('refreshed!')
         setShowModal(false);
         setTimer(initialTime); // Reset time
         refreshToken();
     }, [initialTime]);
 
-    const handleLogout = useCallback(() => {
-        setTimer(initialTime); // Reset time
-        setShowModal(false); // Hide modal if it's shown
-        logoutUser()
-    }, [initialTime]);
+    useEffect(() => {
+        if (timer === 10) {
+            
+            handleStay()
+        }
+    }, [timer]);
+
+    useEffect(() => {
+        if (timer === 0) {
+            logoutUser()
+        }
+    }, [timer]);
+
+    useEffect(() => {
+        getUserType();
+    }, [])
 
     // useEffect(() => {
     //     if (timer === 10) {
@@ -117,7 +131,7 @@ const UboAdminTopbar: React.FC<any> = ({ payload }) => {
         <div
             className="d-flex align-items-center justify-content-between bg-light shadow-sm w-100 px-4 py-3" style={{ fontFamily: 'title' }}>
             <p className="p-0 m-0 text-primary">Beneficial Owner Portal</p>
-
+{/* <p>{timer}</p> */}
             <div className="px-1">
                 <div className="d-flex gap-2 px-2">
                     <div className="table-icon m-0 p-0 d-flex align-items-center" >
