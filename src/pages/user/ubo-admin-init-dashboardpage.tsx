@@ -130,7 +130,7 @@ const UboAdminInitDashboardpage = () => {
 
                     <FormControl
                         onChange={(e) => dispatch(setAuthUserBMOSearchWord(e.target.value))}
-                        placeholder="Search by Name, Company, Assets...."
+                        placeholder="aaaaSearch by Name, Company, Assets...."
                         value={authUserBmoSearchWord}
                         className="py-2 w-50" />
                     <i

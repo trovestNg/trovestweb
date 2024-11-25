@@ -1,5 +1,5 @@
 {
-  "name": "fsdh-ubo-portal",
+  "name": "tovmind2.0",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -45,7 +45,7 @@
     "yup": "^1.4.0"
   },
   "scripts": {
-    "start": "set PORT=9090 && react-scripts start",
+    "start": "react-scripts start",
     "build": "env-cmd -f .env.production react-scripts build",
     "build-test": "env-cmd -f .env.qa react-scripts build",
     "test": "react-scripts test",

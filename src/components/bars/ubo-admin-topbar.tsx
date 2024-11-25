@@ -40,11 +40,11 @@ const UboAdminTopbar: React.FC<any> = ({ payload }) => {
                 setUserName(`${userInfo?.profile?.given_name} ${userInfo?.profile?.family_name}`)
                 // console.log(userInfo.access_token)
             }
-            if (userInfo?.profile.role?.includes('DOMAIN1\\CUSTOMER_RISK_INIT_TEST')) {
+            if (userInfo?.profile.role?.includes('DOMAIN1\\CUSTOMER_RISK_INIT')) {
                 setUserType('Initiator');
                 dispatch(setUserClass('Initiator'))
             }
-            else if (userInfo?.profile.role?.includes('DOMAIN1\\CUSTOMER_RISK_AUTH_TEST')) {
+            else if (userInfo?.profile.role?.includes('DOMAIN1\\CUSTOMER_RISK_AUTH')) {
                 setUserType('Approver');
                 dispatch(setUserClass('Approver'))
             } else {

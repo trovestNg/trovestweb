@@ -206,8 +206,9 @@ const AuthOwnerViewPage = () => {
             // const res = await api.get(`report?format=xlsx&&customerNumber=${curstomerNumber}&&`, );
 
             // const res= await fetch(`${baseUrl}/report?format=xlsx&&customerNumber=${curstomerNumber}&&requesterName=${`Public`}`)
-
-            const res = await fetch(`${baseUrl}/report/level?parentIid=${parentInfo?.Id}&requesterName=${`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`}`)
+            // http://192.168.250.253:7230/api/BeneficialOwner/report/level?format=xlsx&&parentIid=32388&requesterName=Public
+            
+            const res= await fetch(`${baseUrl}/report/level?format=xlsx&&parentIid=${parentInfo?.Id}&requesterName=${`${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`}`)
             if (res.status == 200) {
                 res.blob().then(blob => {
                     let a = document.createElement('a');
