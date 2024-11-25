@@ -1,0 +1,71 @@
+/*  Go thorough the readme file to understand why em units is used instead of px unit for sizes. */
+@font-face {
+  font-family: "MoolBoran";
+  src: url("../src/Assets/Fonts/moolbor_0.ttf");
+}
+:root {
+  --Montserrat: 'Montserrat', sans-serif;
+  --MoolBoran: MoolBoran;
+  --tro-blue: #01065B;
+  --tro-whine: #7C1516;
+  --tro-gold: #CB601A;
+  --tro-brownish: rgba(201, 96, 39, .4);
+  --tro-brown: #7D1312;
+  --white: rgb(255, 255, 255);
+  --white-linear: rgb(255, 255, 255,.1);
+  --text-color: #242424;
+  --tro-pink: #FAF7F7;
+  --light-gray: #6F6F7E;
+  --dark-blue: #02020F;
+  --thin: 100;
+  --tro-gray: #DEDEDE;
+  --light: 300;
+  --regular: 400;
+  --medium: 500;
+  --semiBold: 600;
+  --bold: 700;
+  --error: #FF0000;
+  --cardshadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  --footer-blue: #02042E;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  outline: none;
+}
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+}
+.container {
+  background-color: var(--white);
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: flex-start;
+  padding-bottom: 2em;
+  align-items: center;
+  flex-direction: column;
+}
+
+button{
+  cursor: pointer;
+}
+
+@media screen and (min-width: 712px) {
+  .container {
+      display: flex;
+      justify-items: center;
+      align-items: center;
+  }
+
+  .container>div {
+      width: 700px;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+  }
+
+}

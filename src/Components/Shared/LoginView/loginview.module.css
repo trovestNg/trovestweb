@@ -1,0 +1,175 @@
+.login-view1 {
+    background: url('../../../Assets/Images/homelogo.png') no-repeat;
+    object-fit: fill;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+    overflow-y: hidden;
+}
+.login-view {
+    background-image: linear-gradient(180deg, var(--white), var(--tro-brownish));
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow-y: hidden;
+}
+.logintext{
+    width:100%;
+    color: var(--tro-blue);
+    font-family: var(--MoolBoran);
+    font-size: 4.6875em;
+    font-weight: var(--bold);
+}
+.dropdownlist{
+    border: none;
+    background-color: transparent;
+    color: var(--tro-brown);
+    font-family: var(--Montserrat);
+    font-size: .87m;
+    font-weight: var(--regular);
+    margin-bottom: 2em;
+}
+
+.dropdownlist option::after{
+    background-color: tomato;
+}
+
+.inputview {
+    position: relative;
+    display: flex;
+    width: 18.75em;
+}
+
+.input {
+    width: 100%;
+    padding: .8em 2em;
+    font-family: var(--Montserrat);
+    font-size: .875m;
+    font-weight: var(--semiBold);
+    border: none;
+    margin-bottom: 1.3em;
+    background: transparent !important;
+    color: var(--tro-blue);
+    border-radius: 0em;
+    border-bottom: 2px solid var(--tro-blue);
+}
+.input::placeholder {
+    color: var(--tro-blue);
+    font-size: .875em;
+}
+.inputview .absolute {
+    position: absolute;
+    top: .8em;
+    left: .3em;
+    width: .625em;
+    height: .625em;
+}
+.inputview .absolute2 {
+    position: absolute;
+    top: .8em;
+    left: .3em;
+    width: .625em;
+    height: .825em;
+}
+
+.inputview .absolute1 {
+    position: absolute;
+    top: 1.2em;
+    right: .75em;
+    height: .51125;
+    margin-left: 2em;
+}
+
+.errortext {
+    color: var(--error);
+    font-family: var(--Montserrat);
+    font-size: .75em;
+    font-weight: var(--regular);
+}
+
+.btnview {
+    margin-top: 1em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 18.75em;
+}
+
+.btnview button {
+    width: 100%;
+    height: 3.125em;
+    border: none;
+    color: var(--white);
+    background-color: var(--tro-blue);
+    font-family: var(--Montserrat);
+    font-size: .875em;
+    border-radius: .5em;
+    font-weight: var(--bold);
+    cursor: pointer;
+}
+
+.supportview{
+    margin-top: 3em;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+.download{
+    margin-top: 1em;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    background-color: var(--tro-brown);
+    padding: .7em 2em;
+    border-radius: .9em;
+}
+.download a{
+   text-decoration: none;
+   color: white;
+   font-family: var(--Montserrat);
+   font-size: 1em;
+}
+
+.contacttext {
+    color: var(--tro-blue);
+    font-family: var(--Montserrat);
+    font-size: .875em;
+    margin-bottom: .7em;
+    font-weight: var(--regular);
+}
+.contacttext1 {
+    color: var(--tro-brown);
+    font-family: var(--Montserrat);
+    font-size: .875em;
+    margin-bottom: 1em;
+    font-weight: var(--regular);
+}
+
+@media screen and (min-width: 420px) {
+    .inputview {
+        width: 22em;
+    }
+    
+}
+
+@media screen and (min-width: 520px) {
+    .inputview {
+        width: 31.25em;
+    }
+    
+}
+
+@media screen and (min-width: 1100px) {
+    .login-view {
+        margin-top: 0em;
+    }
+    
+}

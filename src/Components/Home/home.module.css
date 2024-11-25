@@ -1,0 +1,102 @@
+@keyframes slideUp {
+	0% {
+		transform: translateY(-100%);
+	}
+	100% {
+		transform: translateY(0);
+	}
+}
+
+.container {
+	background-color: #fff;
+	animation: 1s ease-out 0s 1 slideUp;
+	display: flex;
+	color: #01065b;
+}
+
+.rightCol {
+	display: flex;
+	background-image: url('../../Assets/Images/rightBg.png'),
+		linear-gradient(to bottom, #fff, #fadfd0);
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.rightCol form {
+	border: 1px solid #01065b;
+	color: #01065b;
+}
+
+.rightCol form div {
+	color: #01065b;
+}
+
+@media screen and (max-width: 547px) {
+	.container {
+		background-color: #fff;
+		flex-direction: column-reverse;
+		justify-content: center;
+		align-items: center;
+		margin: 0;
+		overflow-x: hidden;
+		transition: transform ease-in 1s;
+	}
+	.rightCol {
+		display: flex;
+		background-image: url('../../Assets/Images/rightBg.png'),
+			linear-gradient(to bottom, #fff, #fadfd0);
+		background-size: cover;
+		background-position: fixed;
+		padding-bottom: '10%';
+		min-height: 100vh;
+	}
+
+	.rightCol form div {
+		/* background-color: rgb(147, 10, 33); */
+		justify-content: center;
+		align-items: center;
+		margin: '0px';
+		padding: '0px';
+	}
+
+	.leftCol div {
+		border: unset;
+		color: #01065b;
+	}
+
+	.leftCol form div {
+		border: unset;
+		color: #01065b;
+	}
+
+	.leftCol form div {
+		background-color: #01065b;
+	}
+
+	.rightCol form {
+		border: unset;
+		color: #01065b;
+	}
+
+	.leftCol {
+		min-height: 100vh;
+		display: flex;
+		background-color: rgb(255, 255, 255);
+	}
+
+	.woman {
+		width: 90vw;
+		height: 34em;
+		margin-top: 7em;
+	}
+
+	.information {
+		width: 100%;
+		flex-direction: column;
+		display: flex;
+		justify-content: center;
+		align-content: center;
+		padding: 0em 2em;
+	}
+}

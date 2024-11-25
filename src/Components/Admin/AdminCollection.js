@@ -1,0 +1,99 @@
+import React, { useEffect, useState } from 'react'
+import styles from './agent.module.css'
+import style from './admin.module.css'
+import { useSelector } from 'react-redux'
+import { useParams, useNavigate } from 'react-router-dom';
+import { convertToThousand, defaultImage, dateFormat, user_storage_token, user_storage_type, calculateRevenueTotal } from '../../config';
+import mail from '../../Assets/Svg/mail.svg'
+import next from '../../Assets/Images/next.png'
+import nextwhite from '../../Assets/Images/nextwhite.png'
+import Card from '../Shared/Card/Card'
+import Loader from '../Modal/Loader';
+import DisplayMessage from '../Message';
+import { getCollectionHistory } from '../../Sagas/Requests';
+
+
+export default function Collection() {
+    const token = localStorage.getItem(user_storage_token)
+    const userType = localStorage.getItem(user_storage_type)
+    const navigate = useNavigate()
+    const { agentid, collectionid } = useParams();
+    const [loading, setloading] = useState(false)
+    const [collection, setcollection] = useState({})
+    const [revenue, setrevenue] = useState(0)
+
+    useEffect(() => {
+        setloading(true)
+        checkAgent()
+    }, [collectionid])
+
+    const checkAgent = async () => {
+        if (!token && userType !== 'super_admin') {
+            setloading(false)
+            DisplayMessage('Unauthorized', 'error', 'Unauthorized Access')
+            return navigate('/')
+        }
+        else {
+            await getCollection()
+        }
+    }
+
+    const getCollection = async () => {
+        try {
+            if (token) {
+                const response = await getCollectionHistory({ collection_id: collectionid, token })
+                const { success, message, data } = response.data
+                if (success === true) {
+                    setcollection(data)
+                    setloading(false)
+                }
+                else {
+                    setloading(false)
+                    DisplayMessage(message, 'warning')
+                }
+            }
+            else {
+                setloading(false)
+                DisplayMessage('Unauthorized', 'warning', 'Not authorized')
+            }
+        } catch (error) {
+            setloading(false)
+            DisplayMessage(error.message, 'warning', error.message)
+        }
+    }
+
+    return (
+        <>
+            {loading && <Loader />}
+            <div className={`${styles.container} container`} style={{
+                flexDirection: 'column',
+                marginBottom: '12em',
+            }}>
+                <div>
+                    <div className={styles.transaction}>
+                        <h3>Collection Record</h3>
+                    </div>
+                    <div className={styles.transaction1}>
+                        <h3>Artisan</h3>
+                        <h3>Amount</h3>
+                    </div>
+                    {collection?.artisans?.map((item, index) => (
+                        <Card styles={style.tabledata} key={index} style={{
+                            width: '97%'
+                        }} >
+                            <div className={style.details}>
+                                <div className={style.namedetails}>
+                                    <h3>{`${item.full_name}`}</h3>
+                                    <h3 className={style.date}>{dateFormat(item.updatedAt)}</h3>
+                                </div>
+                            </div>
+                            <div className={style.amount}>
+                                <h3>{`${convertToThousand(collection?.thrifts[index].amount || 0)}`}</h3>
+                            </div>
+                        </Card>
+                    ))}
+                </div>
+            </div>
+        </>
+    )
+}
