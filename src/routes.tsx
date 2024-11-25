@@ -26,6 +26,7 @@ import UserViewRiskBMOOwnerPage from "./pages/user/ubo-risk/auth-user-view-risk-
 import UserViewRiskBMOPage from "./pages/user/ubo-risk/user-view-risk-bmo-owner";
 import UserPage from "./pages/unauth-user/testPage";
 import AuthDeletedBmoPage from "./pages/user/auth-deleted-bmo-page";
+import LoginPage from "./pages/unauth-user/login";
 
 // const UserDBC = React.lazy(() => import("./pages/user/dashboard"));
 
@@ -35,12 +36,27 @@ export default function () {
     return (
 
         <Routes>
+            <Route path="/" element={<LoginPage />}></Route>
+
+            <Route path="/admin" element={< UboAdminDashboardContainer />}>
+                <Route index element={<UboAdminInitDashboardpage />} />
+                <Route path="custormer-details/:level/:curstomerNumber" element={<AuthCustomerViewPage />} />
+                <Route path="owner-details/:level/:ownerId" element={<AuthOwnerViewPage />} />
+                <Route path="bo-risk-assessment" element={<AuthApprovedBmoPage/>} />
+                <Route path="approved-bo" element={<AuthApprovedBmoPage />} />
+                <Route path="pending-bo" element={<AuthPendingBmoPage />} />
+                <Route path="rejected-bo" element={<AuthRejectedBmoPage />} />
+                <Route path="history" element={<AuthHistoryBmoPage />} />
+                <Route path="reports" element={<AuthReportBmoPage />} />
+                <Route path="deleted" element={<AuthDeletedBmoPage />} />
+            </Route>
+
             {/* <Route path="/test" element={<UserPage/>} /> */}
-            <Route path="/" element={<UnAuthUserDashboardContainer />}>
+            {/* <Route path="/" element={<UnAuthUserDashboardContainer />}>
                 <Route index element={<UboUnAuthUserDashboardpage />} />
                 <Route path="custormer-details/:level/:curstomerNumber" element={<UnAuthUserViewBmoPage />} />
                 <Route path="owner-details/:level/:ownerId" element={<UnAuthBmoOwnerView />} />
-            </Route>
+            </Route> */}
 8
             <Route path="callback" element={<SigninCallBackPage />} />
             <Route path="logout" element={<LoggedOutPage />} />

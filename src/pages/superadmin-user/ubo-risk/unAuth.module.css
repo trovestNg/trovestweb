@@ -1,0 +1,17 @@
+.jumbo {
+    
+    background-image: url('../../../assets/images/ubo-jumbo-bg.svg');
+    background-repeat: no-repeat;
+    background-size:   cover;
+    background-position: center center;
+    background-color: rgba(0, 73, 135, 0.1);
+}
+
+.jumbo2 {
+    
+    background-image: url('../../../assets/images/ubo-jumbobg-2.svg');
+    background-repeat: no-repeat;
+    background-size:   cover;
+    background-position: center center;
+    background-color: rgba(0, 73, 135,1);
+}
