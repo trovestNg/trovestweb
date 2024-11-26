@@ -4,7 +4,7 @@ import axios, {AxiosRequestConfig, AxiosResponse} from "axios";
 import { baseUrl,publicBaseUrl } from "./config";
 
 axiosRetry(axios, {
-    retries: 5, // Number of retry attempts
+    retries: 3, // Number of retry attempts
     retryDelay: (retryCount) => {
       console.log(`Retry attempt #${retryCount}`);
       return retryCount * 1000; // Delay between retries (in ms)
@@ -18,7 +18,7 @@ axiosRetry(axios, {
 export default {
     get : async (path: string):Promise<AxiosResponse> => {
         const config: AxiosRequestConfig = {
-            timeout:10000,
+            timeout:5000,
             headers: {
                 // Authorization: `Bearer ${token}`,
                 'Access-Control-Allow-Origin': '*', // Allow requests from any origin
@@ -37,7 +37,7 @@ export default {
     },
     getNoToken : async (url:string) => {
         const config: AxiosRequestConfig = {
-            timeout:10000,
+            timeout:5000,
             headers: {
                 // Authorization: `Bearer ${token}`,
                 'Access-Control-Allow-Origin': '*', // Allow requests from any origin
@@ -55,6 +55,7 @@ export default {
     },
     post : async (path: string,body:object)=>{
         const config: AxiosRequestConfig = {
+            timeout:5000,
             headers: {
                 // Authorization: `Bearer ${token}`,
                 'Access-Control-Allow-Origin': '*', // Allow requests from any origin
@@ -63,7 +64,7 @@ export default {
         };
     
         try {
-            const response = await axios.post(`${baseUrl}api/${path}`,body, config);
+            const response = await axios.post(`${baseUrl}/api/v1/${path}`,body, config);
             return response;
         } catch (error) {
             // Handle error

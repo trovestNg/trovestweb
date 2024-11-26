@@ -13,6 +13,8 @@ import tovmindGif from '../../assets/Gifs/troveMinds.gif';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { object, string, number, date, InferType } from 'yup';
 import style from './login.module.css'
+import api from "../../config/api";
+import apiUnAuth from "../../config/apiUnAuth";
 
 
 
@@ -71,15 +73,28 @@ const LoginPage = () => {
     //     console.log({ RedirectingTo: redUrl })
     // })
 
-    const userTypes = [
-        'Super Admin',
-        'Fincon',
-        'Admin'
+    interface IUserType {
+        title: string,
+        value: string
+    }
+    const userTypes: IUserType[] = [
+        {
+            title: 'Super Admin',
+            value: 'super_admin'
+        },
+        {
+            title: 'Admin',
+            value: 'admin'
+        },
+        {
+            title: 'Fincon',
+            value: 'fincon'
+        },
     ]
     const initialVal: LoginCred = {
         email: '',
         password: '',
-        userType: ''
+        user_type: ''
     }
 
 
@@ -87,15 +102,86 @@ const LoginPage = () => {
     let validationSchem = object({
         email: string().email().required().label('Email'),
         password: string().required().label('Password'),
-        userType: string().required().label('User Type'),
+        user_type: string().required().label('User Type'),
     });
 
     interface LoginCred {
         email: string,
         password: string,
-        userType: string
+        user_type: string
     }
     const handleUserLogin = async (loginCred: LoginCred) => {
+
+        if (loginCred.user_type == 'super_admin') {
+
+            try {
+                setLoading(true)
+                const res = await apiUnAuth.post('super/login-super-admin', loginCred);
+                
+                if (res?.data?.success) {
+                    setLoading(false)
+                    toast.success(res?.data?.message);
+                    localStorage.setItem('userInfo',JSON.stringify(res?.data?.data))
+                    navigate('/super-admin')
+                } else {
+                    setLoading(false)
+                    toast.error('Network error')
+                }
+
+            } catch (error:any) {
+                // console.log(error)
+                toast.error('Network error')
+                setLoading(false)
+            }
+
+        };
+
+        if (loginCred.user_type == 'admin') {
+
+            try {
+                setLoading(true)
+                const res = await apiUnAuth.post('admin/login-admin', loginCred);
+                console.log(res)
+                if (res?.data?.success) {
+                    setLoading(false)
+                    toast.success(res?.data?.message);
+                    localStorage.setItem('userInfo',JSON.stringify(res?.data?.data));
+                    localStorage.setItem('token',JSON.stringify(res?.data?.token));
+                    navigate('/admin')
+                } else {
+                    setLoading(false)
+                    toast.error('Network error!')
+                }
+
+            } catch (error) {
+                console.log(error)
+                setLoading(false)
+            }
+
+        }
+
+        if (loginCred.user_type == 'fincon') {
+
+            try {
+                setLoading(true)
+                const res = await apiUnAuth.post('super/login-super-admin', loginCred);
+                console.log(res)
+                if (res?.data?.success) {
+                    setLoading(false)
+                    toast.success(res?.data?.message);
+                    localStorage.setItem('userInfo',JSON.stringify(res?.data?.data))
+                    navigate('/super-admin')
+                } else {
+                    setLoading(false)
+                    toast.error(res?.data?.message)
+                }
+
+            } catch (error) {
+                console.log(error)
+                setLoading(false)
+            }
+
+        }
 
     }
 
@@ -128,16 +214,16 @@ const LoginPage = () => {
                                         as="select"
                                         style={{ outline: 'none' }}
                                         className="rounded rounded-1 p-2 outline form-control-outline w-100 border border-1 border-grey"
-                                        id='userType' name='userType'>
+                                        id='user_type' name='user_type'>
                                         <option value={''}>Select</option>
                                         {
-                                            userTypes.map((userType: string, index: number) => (
-                                                <option key={index} value={userType}>{userType}</option>
+                                            userTypes.map((userType: IUserType, index: number) => (
+                                                <option key={index} value={userType.value}>{userType.title}</option>
                                             ))
                                         }
                                     </Field>
                                     <ErrorMessage
-                                        name="userType"
+                                        name="user_type"
                                         component="div"
                                         className="text-danger fw-medium" />
                                 </div>

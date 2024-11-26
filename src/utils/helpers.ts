@@ -28,3 +28,8 @@ export const calculatePercent = (ownersShares: any[],newPecentage:number) => {
    }
    return total
 }
+export const Naira = '₦';
+export const convertToThousand = (value:any) => {
+	value = value ? value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : 0;
+	return `${Naira}${value}`;
+};

@@ -4,10 +4,11 @@ import axios, {AxiosRequestConfig} from "axios";
 import { baseUrl } from "./config";
 
 axiosRetry(axios, {
-    retries: 5, // Number of retry attempts
+    retries: 3, // Number of retry attempts
+
     retryDelay: (retryCount) => {
       console.log(`Retry attempt #${retryCount}`);
-      return retryCount * 1000; // Delay between retries (in ms)
+      return retryCount * 500; // Delay between retries (in ms)
     },
     retryCondition: (error:any) => {
       // Retry only for network errors or 5xx server errors
@@ -27,7 +28,7 @@ export default {
         };
     
         try {
-            const response = await axios.get(`${baseUrl}/${path}`, config);
+            const response = await axios.get(`${baseUrl}/api/v1/${path}`, config);
             return response;
         } catch (error) {
             // Handle error
@@ -36,6 +37,7 @@ export default {
     },
     post : async (path: string,body:object, token: string)=>{
         const config: AxiosRequestConfig = {
+            timeout:10000,
             headers: {
                 Authorization: `Bearer ${token}`,
                 'Access-Control-Allow-Origin': '*', // Allow requests from any origin

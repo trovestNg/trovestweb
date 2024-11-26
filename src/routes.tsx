@@ -13,8 +13,6 @@ import UboUnAuthUserDashboardpage from "./pages/unauth-user/ubo-un-auth-user-das
 import UnAuthUserViewBmoPage from "./pages/unauth-user/un-auth-user-view-bmo-page";
 import UnAuthUserBmoLevelView from "./pages/unauth-user/un-auth-user-bmo-level-view";
 import AuthApprovedBmoPage from "./pages/user/auth-approved-bmo-page";
-import UboAdminRiskDashboardContainer from "./pages/user/ubo-risk/ubo-risk-dashboard-container";
-import UboRiskAdminInitDashboardpage from "./pages/user/ubo-risk/ubo-risk-admin-init-dashboardpage";
 import UnAuthBmoOwnerView from "./pages/unauth-user/un-auth-user-bmo-level-view";
 import AuthCustomerViewPage from "./pages/user/auth-bmo-view";
 import AuthOwnerViewPage from "./pages/user/auth-bmo-level-view";
@@ -22,11 +20,13 @@ import AuthPendingBmoPage from "./pages/user/auth-pending-bmo-page copy";
 import AuthRejectedBmoPage from "./pages/user/auth-rejected-bmo-page";
 import AuthReportBmoPage from "./pages/user/auth-report-bmo-page";
 import AuthHistoryBmoPage from "./pages/user/auth-history-bmo-page";
-import UserViewRiskBMOOwnerPage from "./pages/user/ubo-risk/auth-user-view-risk-bmo-custormer";
-import UserViewRiskBMOPage from "./pages/user/ubo-risk/user-view-risk-bmo-owner";
 import UserPage from "./pages/unauth-user/testPage";
 import AuthDeletedBmoPage from "./pages/user/auth-deleted-bmo-page";
 import LoginPage from "./pages/unauth-user/login";
+import AdminDashboardContainer from "./pages/user/admin-dashboard-container";
+import AdminDashboardpage from "./pages/user/admin-dashboardpage";
+import AdminViewAgentInfoPage from "./pages/user/admin-view-agent-info-page";
+import AdminViewArtisanInfoPage from "./pages/user/admin-view-artisan-info-page";
 
 // const UserDBC = React.lazy(() => import("./pages/user/dashboard"));
 
@@ -38,21 +38,23 @@ export default function () {
         <Routes>
             <Route path="/" element={<LoginPage />}></Route>
 
-            <Route path="/admin" element={< UboAdminDashboardContainer />}>
-                <Route index element={<UboAdminInitDashboardpage />} />
-                <Route path="custormer-details/:level/:curstomerNumber" element={<AuthCustomerViewPage />} />
-                <Route path="owner-details/:level/:ownerId" element={<AuthOwnerViewPage />} />
+            <Route path="/admin" element={< AdminDashboardContainer />}>
+                <Route index element={<AdminDashboardpage />} />
+                <Route path="agent/:id" element={<AdminViewAgentInfoPage />} />
+                <Route path="artisan/:id" element={<AdminViewArtisanInfoPage />} />
+                {/* <Route path="custormer-details/:le/:curstomerNumber" element={<AuthCustomerViewPage />} />
+                
                 <Route path="bo-risk-assessment" element={<AuthApprovedBmoPage/>} />
                 <Route path="approved-bo" element={<AuthApprovedBmoPage />} />
                 <Route path="pending-bo" element={<AuthPendingBmoPage />} />
                 <Route path="rejected-bo" element={<AuthRejectedBmoPage />} />
                 <Route path="history" element={<AuthHistoryBmoPage />} />
                 <Route path="reports" element={<AuthReportBmoPage />} />
-                <Route path="deleted" element={<AuthDeletedBmoPage />} />
+                <Route path="deleted" element={<AuthDeletedBmoPage />} /> */}
             </Route>
 
             {/* <Route path="/test" element={<UserPage/>} /> */}
-            {/* <Route path="/" element={<UnAuthUserDashboardContainer />}>
+            {/* <Route path="/" element={<UnAuthUserDashboardContainer />}>;
                 <Route index element={<UboUnAuthUserDashboardpage />} />
                 <Route path="custormer-details/:level/:curstomerNumber" element={<UnAuthUserViewBmoPage />} />
                 <Route path="owner-details/:level/:ownerId" element={<UnAuthBmoOwnerView />} />
@@ -74,15 +76,7 @@ export default function () {
                 <Route path="deleted" element={<AuthDeletedBmoPage />} />
             </Route>
 
-            <Route path="bo-risk-portal" element={< UboAdminRiskDashboardContainer />}>
-                <Route index element={<UboRiskAdminInitDashboardpage />} />
-                <Route path="custormer-details/:level/:curstomerNumber" element={<UserViewRiskBMOOwnerPage />} />
-                <Route path="owner-details/:level/:ownerId" element={<UserViewRiskBMOPage />} />
-
-
-                <Route path="bo-risk-assessment" element={<AuthApprovedBmoPage />} />
-                <Route path="approved-bo" element={<AuthApprovedBmoPage />} />
-            </Route>
+            
             <Route path="*" element={<ErrorPage />} />
         </Routes>
 
