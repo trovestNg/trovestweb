@@ -48,28 +48,29 @@ const AdminSideBar: React.FC<any> = ({ payload }) => {
         {
             title: 'Agent Management',
             icon: 'bi bi-person-gear',
-            path: '/bo-risk-portal',
+            path: '/admin/agent-management',
         },
         {
-            title: 'Atisans Management',
+            title: 'Atisan Management',
             icon: "bi bi-journal-check",
-            path: '/ubo-portal/approved-bo',
+            path: '/admin/customer-management',
         },
         {
             title: 'Transactions',
             icon: 'bi bi-journal-x',
-            path: '/ubo-portal/history',
+            path: '/admin/transaction-management',
         },
         {
             title: 'Reports',
             icon: 'bi bi-journal-x',
-            path: '/ubo-portal/reports',
+            path: '/admin/report',
         },
         {
             title: 'Settings',
             icon: 'bi bi-gear',
-            path: '/ubo-portal/reports',
+            path: '/admin/settings',
         }
+        
     ]
 
     

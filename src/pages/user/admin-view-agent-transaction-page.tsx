@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Container, Modal, Card, Button, Spinner, FormControl, Badge, FormSelect, ListGroup, ListGroupItem, Image, Tabs, Tab } from "react-bootstrap";
+import { Container, Modal, Card, Button, Spinner, FormControl, Badge, FormSelect, ListGroup, ListGroupItem, Image, Tab, Tabs } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { getUserInfo, loginUser, logoutUser } from "../../controllers/auth";
 import api from "../../config/api";
 import styles from './unAuth.module.css'
 import { IBMO, IOwner, IParent } from "../../interfaces/bmo";
 import apiUnAuth from "../../config/apiUnAuth";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import ChartModal from "../../components/modals/chartModal";
 import MoreInfoModal from "../../components/modals/moreInfoModal";
 import jsPDF from "jspdf";
@@ -31,33 +31,39 @@ import AgentsPagination from "../../components/paginations/agents-paginations";
 import { convertToThousand } from "../../utils/helpers";
 import moment from "moment";
 import ArtisansPagination from "../../components/paginations/atisans-paginations";
+import EditAgentInfoModal from "../../components/modals/editAgentInfoModal";
+import ResetAgentPasswordModal from "../../components/modals/resetAgentPasswordModal";
 import ArtisanSavingTab from "../../components/tabs/userTabs/artisan-savings-tab";
-import ArtisanWithdrawTab from "../../components/tabs/userTabs/artisan-withdraw-tab";
-import EditArtisanInfoModal from "../../components/modals/editArtisanInfoModal";
-import DebitArtisanModal from "../../components/modals/debitArtisanModal";
+import AgentSavingsTab from "../../components/tabs/userTabs/agent-savings-tab";
+import AgentPayoutTab from "../../components/tabs/userTabs/agent-payout-tab";
 
-export interface IArtisanInfo {
-    address: string
-    agent_id: { _id: string, first_name: string, last_name: string, mobile: string }
-    approved: boolean
+export interface IAgentInfo {
+    address: string,
+    admin_id: string,
+    amount: number
+    approved: boolean,
+    artisans: string[]
+    assigned_id: string
+    collections: string[]
     createdAt: string
-    date_of_birth: string
+    designated_govt: string
+    disabled: boolean
     email: string
-    full_name: string
-    identification: { type: string, identifications: [] }
+    first_name: string
+    gender: string
     image: string
     key: string
-    liquidation_date: string
+    last_name: string
+    localgovt: string
+    location: string[]
     mobile: string
-    password: string
-    savings_amount: string
-    thrifts: string[]
-    total_balance: string
-    total_payouts: string
-    total_savings: string
+    nin: string
+    payment: []
+    payment_request: []
+    state: string
     updatedAt: string
+    updated_by: string[]
     user_type: string
-    withdrawal_due: boolean
     _id: string
 }
 export interface IThrift {
@@ -102,13 +108,13 @@ export interface IAgentPaymentRecord {
     total_remmitance: string
 }
 
-const AdminViewArtisanInfoPage = () => {
+const AdminViewAgentTransactionPage= () => {
     const userToken = localStorage.getItem('token') || '';
     const token = JSON.parse(userToken);
 
     const [userSearchedAgentCustomers, setUserSearchedAgentCustomers] = useState('');
 
-    const [artisanInfo, setArtisanInfo] = useState<IArtisanInfo>();
+    const [agentInfo, setAgentInfo] = useState<IAgentInfo>();
     const [agentArtisans, setAgentArtisans] = useState<IArtisan[]>([]);
 
     const [totalCollection, setTotalCollections] = useState('');
@@ -116,7 +122,8 @@ const AdminViewArtisanInfoPage = () => {
     const [totalPayouts, setTotalPayouts] = useState('');
 
     const [userSearchedAgent, setUserSearchedAgent] = useState('');
-
+    const [artisanSavingThrift, setArtisanSavingThrift] = useState<IThrift[]>([]);
+    const [artisanWithdrawThrift, setArtisanWithdrawThrift] = useState<IThrift[]>([]);
     const { id } = useParams()
     const [loading, setLoading] = useState(false);
     const [sloading, setSLoading] = useState(false);
@@ -135,7 +142,10 @@ const AdminViewArtisanInfoPage = () => {
 
     const [addNewBenefOwnerModal, setAddNewBenefOwnerModal] = useState(false);
 
-    const [addNewBenefOwnerIndividualModal, setAddNewBenefOwnerIndividualModal] = useState(false);
+
+    const [updateAgentModal, setUpdateAgentModal] = useState(false);
+    const [resetAgentPasswordModal, setResetAgentPasswordModal] = useState(false);
+
     const [addNewBenefOwnerCoperateModal, setAddNewBenefOwnerCoperateModal] = useState(false);
     const [addNewBenefOwnerFundsManagerModal, setAddNewBenefOwnerFundsManagerModal] = useState(false);
     const [addNewBenefOwnerImportModal, setAddNewBenefOwnerImportModal] = useState(false);
@@ -152,12 +162,6 @@ const AdminViewArtisanInfoPage = () => {
 
     const [isLoaded, setIsloaded] = useState(false);
 
-    const [artisanSavingThrift, setArtisanSavingThrift] = useState<IThrift[]>([]);
-    const [artisanWithdrawThrift, setArtisanWithdrawThrift] = useState<IThrift[]>([]);
-
-    const [updateArtisanModal, setUpdateArtisanModal] = useState(false);
-    const [debitArtisan, setDebitArtisan] = useState(false);
-
 
     const [dloading, setDLoading] = useState(false);
 
@@ -171,7 +175,7 @@ const AdminViewArtisanInfoPage = () => {
         setViewMoreInfoModal(false);
         setRejectBmOwner(true)
     }
-    const handleSearchByName = (e: any) => {
+    const handleSearchByName = (e:any) => {
         e.preventDefault()
         setBySearch(true);
         setRefData(!refData);
@@ -196,35 +200,23 @@ const AdminViewArtisanInfoPage = () => {
     }
 
 
+
+
+
+
+
+
     const fetch = async () => {
 
         try {
             setLoading(true)
-            const res = await api.get(`admin/artisan/${id}`, token);
+            const res = await api.get(`admin/agent/${id}`, token);
             if (res?.data?.success) {
-                setArtisanInfo(res.data?.data?.artisan)
-                setArtisanSavingThrift(res.data?.data?.thrifts)
+                setAgentInfo(res.data?.data?.agent)
                 setTotalCollections(res?.data?.data?.total_collections);
                 setTotalDeposits(res?.data?.data?.total_remmitance);
                 setTotalPayouts(res?.data?.data?.total_payout);
                 setLoading(false);
-                // toast.success('Got infor')
-            }
-
-        } catch (error) {
-
-        }
-
-    }
-
-    const fetchPayoutHistory = async () => {
-
-        try {
-            setLoading(true)
-            const res = await api.get(`admin/payouts/${id}`, token);
-            if (res?.data?.success) {
-                setArtisanWithdrawThrift(res.data?.payload.reverse());
-                
                 // toast.success('Got infor')
             }
 
@@ -269,25 +261,7 @@ const AdminViewArtisanInfoPage = () => {
         setAddNewBenefOwnerModal(true)
     }
 
-    const handleAddNewBenefOwnerType = (e: any) => {
-        switch (e) {
-            case 1:
-                setAddNewBenefOwnerIndividualModal(true);
-                break;
-            case 2:
-                setAddNewBenefOwnerCoperateModal(true);
-                break;
-            case 3:
-                setAddNewBenefOwnerFundsManagerModal(true);
-                break;
-            case 4:
-                setAddNewBenefOwnerImportModal(true);
-                break;
-            default:
-                break;
-        }
-        setAddNewBenefOwnerModal(false)
-    }
+    
 
 
 
@@ -329,7 +303,6 @@ const AdminViewArtisanInfoPage = () => {
     }
     useEffect(() => {
         fetch();
-        fetchPayoutHistory();
     }, [])
 
     useEffect(() => {
@@ -338,8 +311,7 @@ const AdminViewArtisanInfoPage = () => {
     return (
         <div className="w-100 p-0">
             {/* <MoreInfoModal handleApprv={handleApproveBo} lev={level} info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} /> */}
-            <AddNewBenefOwnerTypeModal action={handleAddNewBenefOwnerType}
-                off={() => setAddNewBenefOwnerModal(false)} show={addNewBenefOwnerModal} />
+           
             <SureToDeleteBmoModal
                 // parentInfo={parentInfo}
                 clickedOwner={selectedOwner}
@@ -361,7 +333,7 @@ const AdminViewArtisanInfoPage = () => {
 
                 </Button>
 
-                <p className="fw-bold">Customer Information</p>
+                <p className="fw-bold">Agent Information</p>
 
             </div>
 
@@ -404,100 +376,67 @@ const AdminViewArtisanInfoPage = () => {
                         <div className="d-flex justify-content-between w-100">
                             <div>
                                 <div className="d-flex gap-3">
-                                    <Image src={artisanInfo?.image} height={'100px'} />
+                                    <Image src={agentInfo?.image} height={'100px'} />
                                     <div>
-                                        <p className="p-0 m-0 text-capitalize">{`Fullname : ${artisanInfo?.full_name}`}</p>
-                                        <p className="p-0 m-0">{`Agent Incharge : ${artisanInfo?.agent_id.first_name} ${artisanInfo?.agent_id.last_name}`}</p>
-                                        <p className="p-0 m-0">{`Mobile : ${artisanInfo?.mobile}`}</p>
-                                        <div className="d-flex gap-2">
+                                        <p className="p-0 m-0 text-capitalize">{`${agentInfo?.first_name} ${agentInfo?.last_name}`}</p>
+                                        <p className="p-0 m-0">{agentInfo?.assigned_id}</p>
+                                        <p className="p-0 m-0">{agentInfo?.mobile}</p>
+                                        {/* <div className="d-flex gap-2">
                                             <div className="d-flex gap-2 text-success" role="button">
                                                 <i className="bi bi-person-vcard"></i>
-                                                <p onClick={()=>setUpdateArtisanModal(true)} className="p-0 m-0">Update Info</p>
+                                                <p onClick={()=>setUpdateAgentModal(true)} className="p-0 m-0">Update Info</p>
                                             </div>
                                             |
-                                            <div className="d-flex gap-2 text-primary" role="button">
-                                                <i className="bi bi-clipboard-pulse"></i>
-                                                <p onClick={()=>setDebitArtisan(true)} className="p-0 m-0">Debit customer</p>
+                                            <div className="d-flex gap-2 text-danger" role="button">
+                                                <i className="bi bi-gear"></i>
+                                                <p onClick={()=>setResetAgentPasswordModal(true)} className="p-0 m-0">Reset Password</p>
                                             </div>
 
-                                        </div>
+                                        </div> */}
                                     </div>
 
 
                                     <div>
-                                        <p className="p-0 m-0 text-success fw-bold">{`Total Savings : ${convertToThousand(artisanInfo?.total_savings)}.`}</p>
-                                        <p className="p-0 m-0 text-danger fw-bold">{`Total Withdrawn : ${convertToThousand(artisanInfo?.total_payouts)}.`}</p>
-                                        <p className="p-0 m-0 text-secondary fw-bold">{`Available Balance : ${convertToThousand(artisanInfo?.total_balance)}.`}</p>
-                                        <p className="p-0 m-0">{`Date started : ${moment(artisanInfo?.createdAt).format('MMM DD YYYY')}`}</p>
+                                        <p className="p-0 m-0 text-success fw-bold">{`Total Collections : ${convertToThousand(totalCollection)}.`}</p>
+                                        <p className="p-0 m-0 text-danger fw-bold">{`Total Payouts : ${convertToThousand(totalPayouts)}.`}</p>
+                                        <p className="p-0 m-0 text-secondary fw-bold">{`Total Deposits : ${convertToThousand(totalDeposits)}.`}</p>
+                                        <p className="p-0 m-0">{`Date employed ${moment(agentInfo?.createdAt).format('MMM DD YYYY')}`}</p>
                                     </div>
 
                                     <div className="">
-                                        {/* <p className="p-0 m-0">{`Nin : ${'tes'}`}</p> */}
-                                        {/* <p className="p-0 m-0">{`Email : ${agentInfo?.email}`}</p>
-                                        <p className="p-0 m-0">{`Address : ${agentInfo?.address}`}</p> */}
+                                        <p className="p-0 m-0">{`Nin : ${agentInfo?.nin?agentInfo?.nin:'N/A'}`}</p>
+                                        <p className="p-0 m-0">{`Email : ${agentInfo?.email}`}</p>
+                                        <p className="p-0 m-0">{`Address : ${agentInfo?.address}`}</p>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* <div className="px-3 text-center">
+                            <div className="px-3 text-center d-flex flex-column">
                                 <i className="bi bi-receipt" style={{ fontSize: '3em' }}></i>
-                                <p className="p-0 m-0" role="button">View Transactions</p>
-                            </div> */}
+                                {/* <Link to={`/admin/agent-transactions/${id}`}>View Transactio</Link> */}
+                                {/* <p className="p-0 m-0" role="button"></p> */}
+                            </div>
                         </div>
                 }
 
             </div>
 
 
-            <div className="d-flex flex-column w-100 ">
-                <div className="w-100 px-2" style={{ height: '80vh', overflowY: 'scroll', scrollbarWidth: 'none' }}>
-                    {
-                        sloading && <div className="w-100 d-flex justify-content-center mt-3"><Spinner size="sm" className="text-primary" /></div>
-                    }
-                    {
-                        !sloading &&
-                        <div className="mt-3 w-100" >
-                            <div className="w-100 d-flex justify-content-between align-items-center">
-                                <p className="fw-bold m-0 p-0">Customer Transaction History</p>
-
-                                {/* <form
-                                    onSubmit={handleSearchByName}
-                                    className="d-flex align-items-center justify-content-center gap-2">
-
-                                    <FormControl
-                                        onChange={(e) => setUserSearchedAgentCustomers(e.target.value)}
-                                        placeholder="Search by Name...."
-                                        value={userSearchedAgentCustomers}
-                                        className="py-2" />
-                                    <i
-                                        className="bi bi-x-lg"
-                                        onClick={handleClear}
-                                        style={{ marginLeft: '50px', display: userSearchedAgentCustomers == '' ? 'none' : 'flex', cursor: 'pointer', float: 'right', position: 'absolute', fontSize: '0.7em' }}></i>
-
-                                    <Button
-                                        disabled={userSearchedAgentCustomers == '' || sloading}
-                                        type="submit"
-                                        variant="secondary" style={{ minWidth: '6em', marginRight: '-5px', minHeight: '2.4em' }}>{sloading ? <Spinner size="sm" /> : 'Search'}</Button>
-
-
-                                </form> */}
-                            </div>
-
-                            <div className="">
+            <div className="mt-4">
                                 <Tabs
                                     defaultActiveKey="saved"
                                     id="uncontrolled-tab-example"
                                     variant="underline"
                                     className="mb-3 gap-5"
                                 >
-                                    <Tab eventKey="saved" title="Savings"
+                                    <Tab eventKey="saved" title="Collections"
                                         tabClassName=""
                                     >
-                                        <ArtisanSavingTab thrifts={artisanSavingThrift} />
+                                        <AgentSavingsTab thrifts={artisanSavingThrift} />
                                     </Tab>
 
-                                    <Tab eventKey="withdrawn" title="Withdrawn">
-                                    <ArtisanWithdrawTab thrifts={artisanWithdrawThrift} />
+                                    <Tab eventKey="withdrawn" title="Payouts">
+                                    <AgentPayoutTab thrifts={artisanSavingThrift} />
                                     </Tab>
 
 
@@ -505,20 +444,12 @@ const AdminViewArtisanInfoPage = () => {
 
                             </div>
 
-                        </div>}
 
-                </div>
-
-
-
-            </div>
-
-
-<EditArtisanInfoModal agentId={id} off={()=>{setUpdateArtisanModal(false); setRefData(!refData)}} agentInfo={artisanInfo} show={updateArtisanModal}/>
-<DebitArtisanModal currentBalance={artisanInfo?.total_balance}  agentId={id} off={()=>{setDebitArtisan(false); setRefData(!refData)}} agentInfo={artisanInfo} show={debitArtisan}/>
+<EditAgentInfoModal agentId={id} off={()=>{setUpdateAgentModal(false); setRefData(!refData)}} agentInfo={agentInfo} show={updateAgentModal}/>
+<ResetAgentPasswordModal agentId={id} off={()=>{setResetAgentPasswordModal(false); setRefData(!refData)}} agentInfo={agentInfo} show={resetAgentPasswordModal}/>
         </div>
     )
 
 }
 
-export default AdminViewArtisanInfoPage;
+export default AdminViewAgentTransactionPage;

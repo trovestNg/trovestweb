@@ -27,6 +27,12 @@ import AdminDashboardContainer from "./pages/user/admin-dashboard-container";
 import AdminDashboardpage from "./pages/user/admin-dashboardpage";
 import AdminViewAgentInfoPage from "./pages/user/admin-view-agent-info-page";
 import AdminViewArtisanInfoPage from "./pages/user/admin-view-artisan-info-page";
+import AdminViewAgentTransactionPage from "./pages/user/admin-view-agent-transaction-page";
+import AdminViewAgentManagementPage from "./pages/user/admin-view-agent-management-page";
+import AdminViewArtisanManagementPage from "./pages/user/admin-view-artisan-management-page";
+import AdminViewTransactionManagementPage from "./pages/user/admin-view-transaction-management-page";
+import AdminGenerateReportPage from "./pages/user/admin-generate-report-page";
+import AdminSettingsPage from "./pages/user/admin-settings-page";
 
 // const UserDBC = React.lazy(() => import("./pages/user/dashboard"));
 
@@ -40,43 +46,16 @@ export default function () {
 
             <Route path="/admin" element={< AdminDashboardContainer />}>
                 <Route index element={<AdminDashboardpage />} />
+                <Route path="agent-management" element={<AdminViewAgentManagementPage />} />
+                <Route path="customer-management" element={<AdminViewArtisanManagementPage />} />
+                <Route path="transaction-management" element={<AdminViewTransactionManagementPage />} />
+                <Route path="report" element={<AdminGenerateReportPage />} />
+                <Route path="settings" element={<AdminSettingsPage />} />
+
                 <Route path="agent/:id" element={<AdminViewAgentInfoPage />} />
+                <Route path="agent-transactions/:id" element={<AdminViewAgentTransactionPage />} />
                 <Route path="artisan/:id" element={<AdminViewArtisanInfoPage />} />
-                {/* <Route path="custormer-details/:le/:curstomerNumber" element={<AuthCustomerViewPage />} />
-                
-                <Route path="bo-risk-assessment" element={<AuthApprovedBmoPage/>} />
-                <Route path="approved-bo" element={<AuthApprovedBmoPage />} />
-                <Route path="pending-bo" element={<AuthPendingBmoPage />} />
-                <Route path="rejected-bo" element={<AuthRejectedBmoPage />} />
-                <Route path="history" element={<AuthHistoryBmoPage />} />
-                <Route path="reports" element={<AuthReportBmoPage />} />
-                <Route path="deleted" element={<AuthDeletedBmoPage />} /> */}
             </Route>
-
-            {/* <Route path="/test" element={<UserPage/>} /> */}
-            {/* <Route path="/" element={<UnAuthUserDashboardContainer />}>;
-                <Route index element={<UboUnAuthUserDashboardpage />} />
-                <Route path="custormer-details/:level/:curstomerNumber" element={<UnAuthUserViewBmoPage />} />
-                <Route path="owner-details/:level/:ownerId" element={<UnAuthBmoOwnerView />} />
-            </Route> */}
-8
-            <Route path="callback" element={<SigninCallBackPage />} />
-            <Route path="logout" element={<LoggedOutPage />} />
-
-            <Route path="ubo-portal" element={< UboAdminDashboardContainer />}>
-                <Route index element={<UboAdminInitDashboardpage />} />
-                <Route path="custormer-details/:level/:curstomerNumber" element={<AuthCustomerViewPage />} />
-                <Route path="owner-details/:level/:ownerId" element={<AuthOwnerViewPage />} />
-                <Route path="bo-risk-assessment" element={<AuthApprovedBmoPage/>} />
-                <Route path="approved-bo" element={<AuthApprovedBmoPage />} />
-                <Route path="pending-bo" element={<AuthPendingBmoPage />} />
-                <Route path="rejected-bo" element={<AuthRejectedBmoPage />} />
-                <Route path="history" element={<AuthHistoryBmoPage />} />
-                <Route path="reports" element={<AuthReportBmoPage />} />
-                <Route path="deleted" element={<AuthDeletedBmoPage />} />
-            </Route>
-
-            
             <Route path="*" element={<ErrorPage />} />
         </Routes>
 

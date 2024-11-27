@@ -46,7 +46,25 @@ export default {
         };
     
         try {
-            const response = await axios.post(`${baseUrl}/${path}`,body, config);
+            const response = await axios.post(`${baseUrl}/api/v1/${path}`,body, config);
+            return response;
+        } catch (error:any) {
+            return error.response
+           
+        }
+    },
+    patch : async (path: string,body:object, token: string)=>{
+        const config: AxiosRequestConfig = {
+            timeout:10000,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Access-Control-Allow-Origin': '*', // Allow requests from any origin
+                // Add other headers if needed
+            }
+        };
+    
+        try {
+            const response = await axios.patch(`${baseUrl}/api/v1/${path}`,body, config);
             return response;
         } catch (error:any) {
             return error.response
