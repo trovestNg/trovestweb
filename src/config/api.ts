@@ -52,5 +52,22 @@ export default {
             return error.response
            
         }
+    },
+    postForm : async (path: string,body:object, token: string)=>{
+        const config: AxiosRequestConfig = {
+            timeout:10000,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type":'multipart/form-data;'
+            }
+        };
+    
+        try {
+            const response = await axios.post(`${baseUrl}/api/v1/${path}`,body, config);
+            return response;
+        } catch (error:any) {
+            return error.response
+           
+        }
     }
 }

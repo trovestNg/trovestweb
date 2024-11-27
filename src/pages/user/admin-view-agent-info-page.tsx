@@ -414,7 +414,7 @@ const AdminViewAgentInfoPage = () => {
                                     </div>
 
                                     <div className="">
-                                        <p className="p-0 m-0">{`Nin : ${agentInfo?.nin}`}</p>
+                                        <p className="p-0 m-0">{`Nin : ${agentInfo?.nin?agentInfo?.nin:'N/A'}`}</p>
                                         <p className="p-0 m-0">{`Email : ${agentInfo?.email}`}</p>
                                         <p className="p-0 m-0">{`Address : ${agentInfo?.address}`}</p>
                                     </div>

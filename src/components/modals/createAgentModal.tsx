@@ -1,209 +1,117 @@
 import React, { useEffect, useState } from "react";
 import { Button, FormControl, FormSelect, Modal, ProgressBar, Spinner } from "react-bootstrap";
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import { object, string, number, date, InferType } from 'yup';
+import { object, string, number, date, InferType, mixed, ref } from 'yup';
 import api from "../../config/api";
 import { getUserInfo } from "../../controllers/auth";
 import { calculatePercent, getCountries } from "../../utils/helpers";
 import { ICountr, ICountry } from "../../interfaces/country";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import style from './upload.module.css';
 
 const CreateAgentModal: React.FC<any> = ({ show, off, lev, parent, custormerNumb, ownerId, totalOwners }) => {
-    console.log({ hereIsP: parent })
+    const userToken = localStorage.getItem('token') || '';
+    const token = JSON.parse(userToken);
+
     const [countries, setCountries] = useState<ICountr[]>()
     const [idTypes, setIdTypes] = useState<string[]>();
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const [fileName, setFileName] = useState('');
+    const [fileUrl, setFileUrl] = useState('');
+    const [secureText, setSecuredText] = useState(false);
+    const [secureTextConf, setSecuredTextConf] = useState(false);
+
+
+    const handleFileChange = (event: any, setFieldValue: any) => {
+        console.log(event)
+        const file = event.currentTarget.files[0];
+
+        if (file) {
+            let path = URL.createObjectURL(file)
+            setFileName(file.name);
+            setFileUrl(path);
+            setFieldValue('image', file);
+        }
+    };
 
     // console.log({hereisParent:parent,hereIdNumber:custormerNumb})
     const initialVal = {
-        "businessName": "",
-        "sourceOfWealth": "",
-        "remark": '',
-        "bvn": "",
-        "idType": "",
-        "idNumber": "",
-        "countryId": "",
-        "percentageHolding": '',
-        "numberOfShares": '',
-        "isPEP": "",
-        "categoryId": "I",
+        first_name: '',
+        last_name: '',
+        username: '',
+        email: '',
+        address: '',
+        mobile: '',
+        password: '',
+        confirmPassword: '',
+        image: null,
+
+    }
+
+    const handleToggleSecured = (field: string) => {
+        if (field == 'p') {
+            setSecuredText(!secureText)
+        } else {
+            setSecuredTextConf(!secureTextConf)
+        }
 
     }
 
 
-
     let validationSchem = object({
-        businessName: string().required().label('Business name'),
-        countryId: string().required().label('Country'),
-        percentageHolding: number().typeError('Must be a number').required().label('Percentage holding'),
-        numberOfShares: number().typeError('Must be a number').required().label('No of share'),
-        bvn: number().typeError('Must be a number').required().label('Bvn'),
-        // isPEP: string().required().label('Politicaly Exposed Status'),
-        idType: string().required().label('ID Type'),
-        idNumber: string().required().label('ID Number'),
-        sourceOfWealth: string().required().label('Source of wealth'),
-        remark: string().required().label('Remark'),
+        first_name: string().required().label('First name'),
+        last_name: string().required().label('Last name'),
+        email: string().email().required().label('Email'),
+        address: string().required().label('Address'),
+        mobile: string().required().label('Phonenumber'),
+        password: string().required().label('Password'),
+        confirmPassword: string()
+            .oneOf([ref('password')], 'Passwords must match')
+            .required('Confirm Password is required')
+            .label('Confirm Password'),
+        image: mixed()
+            .required('A pic is required'),
 
     });
 
 
-    const createNewBMO = async (body: any) => {
-        setLoading(true)
+    const createNewAgent = async (body: any) => {
+        console.log(body)
+        
+         try {
+        let formData = new FormData()
 
-        let parentInfo = {
-            ...parent,
-            AuthorizeBy
-                :
-                parent?.AuthorizeBy,
-            AuthorizeDate
-                :
-                parent?.AuthorizeDate,
-            BVN
-                :
-                parent?.BVN,
-            BusinessName
-                :
-                parent?.BusinessName,
-            Category
-                :
-                parent?.Category,
-            CategoryDescription
-                :
-                parent?.CategoryDescription,
-            Comments
-                :
-                parent?.Comments,
-            CountryName
-                :
-                parent?.CountryName,
-            CreatedBy
-                :
-                parent?.CreatedBy,
-            CreatedDate
-                :
-                parent?.CreatedDate,
-            Id
-                :
-                parent?.Id,
-            IdNumber
-                :
-                parent?.IdNumber,
-            IdType
-                :
-                parent?.IdType,
-            IsAuthorized
-                :
-                parent?.IsAuthorized,
-            IsPEP
-                :
-                parent?.IsPEP,
-            IsRejected
-                :
-                parent?.IsRejected,
-            LastUpdatedBy
-                :
-                parent?.LastUpdatedBy,
-            LastUpdatedDate
-                :
-                parent?.LastUpdatedDate,
-            Level
-                :
-                parent?.Level,
-            NumberOfShares
-                :
-                parent?.NumberOfShares,
-            ParentId
-                :
-                parent?.ParentId,
-            PercentageHolding
-                :
-                parent?.PercentageHolding,
-            RcNumber
-                :
-                parent?.RcNumber,
-            RejectedBy
-                :
-                parent?.RejectedBy,
-            RejectedDate
-                :
-                parent?.RejectedDate,
-            RiskLevel
-                :
-                parent?.RiskLevel,
-            RiskScore
-                :
-                parent?.RiskScore,
-            Ticker
-                :
-                parent?.Ticker,
-            CategoryId: 'I',
-        }
-
-        try {
-            let userInfo = await getUserInfo();
-            const apiBody = {
-                "requesterName": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
-                "parent": { ...parentInfo },
-                "beneficialOwners": [
-                    {
-                        ...body,
-                        "categoryId": "I",
-                        "isPEP": body?.isPEP == 'yes' ? true : false,
-
-                    }
-                ]
-            }
-            const res = await api.post(``, apiBody, `${userInfo?.access_token}`)
-            if (res?.status == 200) {
+        formData.append('first_name', body?.first_name)
+        formData.append('last_name', body?.last_name)
+        formData.append('username', body?.first_name)
+        formData.append('image', body.image)
+        formData.append('email', body?.email)
+        formData.append('address', body?.address)
+        formData.append('mobile', body?.mobile)
+        formData.append('password', body?.password)
+        formData.append('folder', 'admin')
+        console.log(body)
+            setLoading(true)
+            const res = await api.postForm('admin/create-agent',formData,token);
+            if(res?.data?.success){
+                toast.success('New agent created succesfully!');
                 setLoading(false);
-                toast.success('BO created succesfully');
+                setFileName('');
+                setFileUrl('')
                 off()
+            } else {
+                toast.error('Error creating agent');
+                setLoading(false)
             }
-            if (res?.status == 400) {
-                setLoading(false);
-                toast.error(`${res?.data}`);
-            }
+         } catch (error) {
+            toast.error('Network error')
+            setLoading(false)
+         }
 
-        } catch (error: any) {
-            console.log({ seeError: error })
-            setLoading(false);
-            toast.error(`${error?.data}`)
-        }
 
     }
-
-    const handleGetCountries = async () => {
-        try {
-            let userInfo = await getUserInfo();
-            const res = await api.get(`countries?requesterName=${userInfo?.profile.given_name}`, `${userInfo?.access_token}`);
-            console.log({ countHere: res })
-            // const sortedCountries = res?.data.sort((a: any, b: any) =>
-            //     a.name.common.localeCompare(b.name.common)
-            // );
-            setCountries(res?.data)
-        } catch (error) {
-
-        }
-    }
-
-    const handleGetIdTypes = async () => {
-        try {
-            let userInfo = await getUserInfo();
-            const res = await api.get(`idTypes?requesterName=${userInfo?.profile.given_name}`, `${userInfo?.access_token}`)
-
-            setIdTypes(res?.data)
-        } catch (error) {
-
-        }
-    }
-
-
-    useEffect(() => {
-        handleGetCountries();
-        handleGetIdTypes()
-    }, [])
 
     return (
         <div>
@@ -217,12 +125,12 @@ const CreateAgentModal: React.FC<any> = ({ show, off, lev, parent, custormerNumb
                     <Formik
                         initialValues={initialVal}
                         validationSchema={validationSchem}
-                        onReset={off}
+                        onReset={()=>{setFileUrl('');setFileName('');off()}}
                         validateOnBlur
-                        onSubmit={(val) => createNewBMO(val)
+                        onSubmit={(val) => createNewAgent(val)
                         }
                     >{
-                            ({ handleChange, handleSubmit, handleReset, values }) => (
+                            ({ handleSubmit, handleReset, values, setFieldValue, touched, errors }) => (
                                 <Form onSubmit={handleSubmit} onReset={handleReset} className="gap-0 px-3 slide-form">
 
                                     <div className="d-flex  justify-content-between my-3  gap-3 w-100">
@@ -231,29 +139,29 @@ const CreateAgentModal: React.FC<any> = ({ show, off, lev, parent, custormerNumb
                                                 First Name
                                             </label>
                                             <Field
-                                                value={values.businessName}
+                                                value={values.first_name}
                                                 style={{ outline: 'none' }}
                                                 className="rounded rounded-1 p-2  w-100 border border-1 border-grey"
-                                                id='businessName' name='businessName'
+                                                id='first_name' name='first_name'
                                             />
                                             <ErrorMessage
-                                                name="businessName"
+                                                name="first_name"
                                                 component="div"
                                                 className="text-danger fw-medium" />
                                         </div>
 
                                         <div className="w-50">
-                                            <label className="" htmlFor="userEmail">
+                                            <label className="" htmlFor="last_name">
                                                 Last Name
                                             </label>
                                             <Field
-                                                value={values.businessName}
+                                                value={values.last_name}
                                                 style={{ outline: 'none' }}
                                                 className="rounded rounded-1 p-2  w-100 border border-1 border-grey"
-                                                id='businessName' name='businessName'
+                                                id='last_name' name='last_name'
                                             />
                                             <ErrorMessage
-                                                name="businessName"
+                                                name="last_name"
                                                 component="div"
                                                 className="text-danger fw-medium" />
                                         </div>
@@ -265,39 +173,39 @@ const CreateAgentModal: React.FC<any> = ({ show, off, lev, parent, custormerNumb
                                                 Phone number
                                             </label>
                                             <Field
-                                                value={values.businessName}
+                                                value={values.mobile}
                                                 style={{ outline: 'none' }}
                                                 className="rounded rounded-1 p-2  w-100 border border-1 border-grey"
-                                                id='businessName' name='businessName'
+                                                id='mobile' name='mobile'
                                             />
                                             <ErrorMessage
-                                                name="businessName"
+                                                name="mobile"
                                                 component="div"
                                                 className="text-danger fw-medium" />
                                         </div>
 
                                         <div className="w-50">
-                                            <label className="" htmlFor="userEmail">
+                                            <label className="" htmlFor="email">
                                                 Email
                                             </label>
                                             <Field
-                                                value={values.businessName}
+                                                value={values.email}
                                                 style={{ outline: 'none' }}
                                                 className="rounded rounded-1 p-2  w-100 border border-1 border-grey"
-                                                id='businessName' name='businessName'
+                                                id='email' name='email'
                                             />
                                             <ErrorMessage
-                                                name="businessName"
+                                                name="email"
                                                 component="div"
                                                 className="text-danger fw-medium" />
                                         </div>
                                     </div>
 
 
-                                    
 
-                                    <div className="d-flex justify-content-between my-3  gap-3 w-100">
-                                    <div className="w-50">
+
+                                    <div className="d-flex justify-content-between my-3 align-items-center  gap-3 w-100">
+                                        <div className="w-50">
                                             <label className="" htmlFor="userEmail">
                                                 Home address
                                             </label>
@@ -306,49 +214,74 @@ const CreateAgentModal: React.FC<any> = ({ show, off, lev, parent, custormerNumb
                                                 // value={values.idNumber}
                                                 style={{ outline: 'none' }}
                                                 className="rounded rounded-1 p-2 w-100 border border-1 border-grey"
-                                                id='remark' name='remark' />
+                                                id='address' name='address' />
                                             <ErrorMessage
-                                                name="remark"
+                                                name="address"
                                                 component="div"
                                                 className="text-danger fw-medium" />
                                         </div>
 
                                         <div className="w-50">
-                                            <label className="" htmlFor="userEmail">
-                                                Source of Wealth
+                                            <label className="" htmlFor="image">
+                                                Profile pic
                                             </label>
-                                            <Field
+                                            <div>
+                                                <label htmlFor="image" className={`p-4 w-100 text-center text-primary border-1 m-0 ${style.fileUploadLabel}`}>
+                                                    {<i className="bi bi-file-earmark-pdf"></i>}
+                                                    {fileName == '' ? ' Click to upload file' : ' Click to Replace File'}
 
-                                                style={{ outline: 'none' }}
-                                                className="rounded rounded-1 p-2 outline form-control-outline w-100 border border-1 border-grey"
-                                                id='soruceOfWealth' name='sourceOfWealth'>
+                                                </label>
 
-                                            </Field>
+                                                <input
+                                                    id="image"
+                                                    name="image"
+                                                    type="file"
+                                                    className={`p-2 ${style.fileInput}`}
+                                                    onChange={(event) => handleFileChange(event, setFieldValue)}
+
+                                                // {handleFileChange(event: any) => {
+                                                //     setFieldValue("policyDocument", event.currentTarget.files[0]);
+                                                // }}
+                                                />
+                                            </div>
+
+                                            {fileName == '' ?
+                                                <div className="px-3 d-flex mt-2">
+                                                    {fileName && <i className="bi bi-file-earmark-pdf text-danger"></i>}
+                                                    <a href={fileUrl} target="_blank" className="px-1 text-primary">{fileName}</a>
+                                                </div> :
+                                                <div className="mt-2 d-flex">
+                                                    {fileName &&
+                                                        <div className="px-3 d-flex">
+                                                            {/* <i className="bi bi-file-earmark-pdf text-danger"></i> */}
+                                                            <a href={fileUrl} target="_blank" className="px-1 text-primary">{fileName}</a>
+                                                        </div>}
+                                                </div>
+                                            }
                                             <ErrorMessage
-                                                name="sourceOfWealth"
+                                                name="image"
                                                 component="div"
                                                 className="text-danger fw-medium" />
                                         </div>
 
-                                        
                                     </div>
 
                                     <div className="d-flex  justify-content-between my-3  gap-3 w-100">
                                         <div className="w-50">
-                                            <label className="" htmlFor="userEmail">
+                                            <label className="" htmlFor="password">
                                                 Password
                                             </label>
                                             <div className="d-flex align-items-center">
                                                 <Field
-                                                    // value={values.password}
-                                                    // type={secureText ? 'text' : 'password'}
+                                                    value={values.password}
+                                                    type={secureText ? 'text' : 'password'}
                                                     style={{ outline: 'none' }}
                                                     className="rounded rounded-1 p-2  w-100 border border-1 border-grey"
                                                     id='password' name='password'
                                                 />
-                                                <i 
-                                                // onClick={handlePasswordField}
-                                                 role="button" className="bi bi-eye-slash" style={{ marginLeft: '-2em' }}></i>
+                                                <i
+                                                    onClick={() => handleToggleSecured('p')}
+                                                    role="button" className="bi bi-eye-slash" style={{ marginLeft: '-2em' }}></i>
                                             </div>
 
                                             <ErrorMessage
@@ -359,24 +292,24 @@ const CreateAgentModal: React.FC<any> = ({ show, off, lev, parent, custormerNumb
                                         </div>
 
                                         <div className="w-50">
-                                            <label className="" htmlFor="userEmail">
-                                               Confirm Password
+                                            <label className="" htmlFor="confirmPassword">
+                                                Confirm Password
                                             </label>
                                             <div className="d-flex align-items-center">
                                                 <Field
-                                                    // value={values.password}
-                                                    // type={secureText ? 'text' : 'password'}
+                                                    value={values.confirmPassword}
+                                                    type={secureTextConf ? 'text' : 'password'}
                                                     style={{ outline: 'none' }}
                                                     className="rounded rounded-1 p-2  w-100 border border-1 border-grey"
-                                                    id='password' name='password'
+                                                    id='confirmPassword' name='confirmPassword'
                                                 />
-                                                <i 
-                                                // onClick={handlePasswordField} 
-                                                role="button" className="bi bi-eye-slash" style={{ marginLeft: '-2em' }}></i>
+                                                <i
+                                                    onClick={() => handleToggleSecured('c')}
+                                                    role="button" className="bi bi-eye-slash" style={{ marginLeft: '-2em' }}></i>
                                             </div>
 
                                             <ErrorMessage
-                                                name="password"
+                                                name="confirmPassword"
                                                 component="div"
                                                 className="text-danger fw-medium" />
 
