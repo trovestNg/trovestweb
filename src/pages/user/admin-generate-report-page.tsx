@@ -219,7 +219,7 @@ const AdminGenerateReportPage = () => {
                 }
                 else {
                     setLoading(false);
-                    toast.error('Network error')
+                    // toast.error('Network error')
                 }
             } catch (error) {
                 console.log(error)

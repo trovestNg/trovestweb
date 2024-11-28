@@ -13,10 +13,10 @@ import autoTable from "jspdf-autotable";
 import Papa from "papaparse";
 import { saveAs } from "file-saver";
 import { useDispatch, useSelector } from "react-redux";
-import { pushToAuthUserNavArray, reduceAuthUserNavArray, removeFromAuthUserNavArray, setAuthUserBMOOwnerProfile } from "../../store/slices/authUserSlice";
-import { IBMOwnersPublic, IUnAuthUserNavLink } from "../../interfaces/bmOwner";
-import SureToApproveBOModal from "../../components/modals/sureToApproveBOModal";
-import { baseUrl } from "../../config/config";
+import agentPic from '../../assets/images/receipt.png'
+import AgentsPagination from "../../components/paginations/agents-paginations";
+import { convertToThousand } from "../../utils/helpers";
+import moment from "moment";
 import ArtisansPagination from "../../components/paginations/atisans-paginations";
 import EditAgentInfoModal from "../../components/modals/editAgentInfoModal";
 import ResetAgentPasswordModal from "../../components/modals/resetAgentPasswordModal";
@@ -24,8 +24,8 @@ import ArtisanSavingTab from "../../components/tabs/userTabs/artisan-savings-tab
 import AgentSavingsTab from "../../components/tabs/userTabs/agent-savings-tab";
 import AgentPayoutTab from "../../components/tabs/userTabs/agent-payout-tab";
 import ApprovedAgentsTab from "../../components/tabs/userTabs/approved-agents-tab";
-import { IAgent } from "./admin-dashboardpage";
-import SuperApprovedArtisanTab from "../../components/tabs/userTabs/superapproved-artisan-tab";
+import { IAgent } from "./superadmin-dashboardpage";
+import SuperApprovedAdminsTab from "../../components/tabs/userTabs/superapproved-admins-tab";
 
 export interface IAgentInfo {
     address: string,
@@ -98,12 +98,12 @@ export interface IAgentPaymentRecord {
     total_remmitance: string
 }
 
-const SuperAdminViewArtisanManagementPage = () => {
+const SuperAdminViewAdminManagementPage = () => {
     const userToken = localStorage.getItem('token') || '';
     const token = JSON.parse(userToken);
 
     const [agents, setAgents] = useState<IAgent[]>([]);
-
+    
     const [userSearchedAgentCustomers, setUserSearchedAgentCustomers] = useState('');
 
     const [agentInfo, setAgentInfo] = useState<IAgentInfo>();
@@ -215,9 +215,9 @@ const SuperAdminViewArtisanManagementPage = () => {
                     setLoading(false);
                     // toast.success('Fetched info')
                 }
-                else {
+                else{
                     setLoading(false);
-                    // toast.error('Network error')
+                    // toast.error('Network error')  
                 }
             } catch (error) {
                 console.log(error)
@@ -266,35 +266,6 @@ const SuperAdminViewArtisanManagementPage = () => {
 
 
 
-    const handleShowInfoModal = (owner: IBMOwnersPublic) => {
-        // setBmoOwner(owner);
-        setBmoParentId(owner?.ParentId)
-        setViewMoreInfoModal(!viewMoreInfotModal);
-    }
-
-
-
-    // const handleNudgeAuthorizer = async (bmoId: any) => {
-    //     // console.log({here:bmoId})
-    //     let userInfo = await getUserInfo();
-    //     if (userInfo) {
-    //         try {
-    //             // setOLoading(true)
-    //             // let userInfo = await getUserInfo();
-    //             const res = await api.get(`nudge?requsterName=${userInfo?.profile.given_name}&parentId=${parentInfo?.Id}`, userInfo?.access_token);
-    //             if (res?.status == 200) {
-    //                 setViewMoreInfoModal(false)
-    //                 toast.success('Authorizer nudged for approval')
-    //             } else {
-    //                 toast.error('Failed to nudge Authorizer')
-    //             }
-
-    //         } catch (error) {
-
-    //         }
-    //     }
-
-    // }
 
 
 
@@ -312,7 +283,7 @@ const SuperAdminViewArtisanManagementPage = () => {
         <div className="w-100 p-0">
             {/* <MoreInfoModal handleApprv={handleApproveBo} lev={level} info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} /> */}
 
-
+           
 
 
 
@@ -322,10 +293,10 @@ const SuperAdminViewArtisanManagementPage = () => {
                     <p className="p-0 m-0">Go Back</p>
 
                 </Button>
-                {
-                    loading && <Spinner size="sm" />
-                }
-                <p className="fw-bold">Manage Registered Customers.</p>
+{
+    loading && <Spinner size="sm"/>
+}
+                <p className="fw-bold">Manage Registered Admins</p>
 
             </div>
 
@@ -358,7 +329,7 @@ const SuperAdminViewArtisanManagementPage = () => {
 
             </div> */}
 
-
+            
 
 
             <div className="mt-4">
@@ -368,14 +339,14 @@ const SuperAdminViewArtisanManagementPage = () => {
                     variant="underline"
                     className="mb-3 gap-5"
                 >
-                    <Tab eventKey="saved" title="Approved Customers"
-
+                    <Tab eventKey="saved" title="Approved Admins"
+                        
                     >
-                        <SuperApprovedArtisanTab agents={agents} />
+                        <SuperApprovedAdminsTab agents={agents} />
                     </Tab>
 
-                    <Tab eventKey="withdrawn" title="Customers Pending Approval">
-                    <SuperApprovedArtisanTab agents={[]} />
+                    <Tab eventKey="withdrawn" title="Admins Pending Approval">
+                    <ApprovedAgentsTab agents={[]} />
                     </Tab>
 
 
@@ -391,4 +362,4 @@ const SuperAdminViewArtisanManagementPage = () => {
 
 }
 
-export default SuperAdminViewArtisanManagementPage;
+export default SuperAdminViewAdminManagementPage;

@@ -24,6 +24,7 @@ import AgentsPagination from "../../components/paginations/agents-paginations";
 import CreateAgentModal from "../../components/modals/createAgentModal";
 import CreateAdminModal from "../../components/modals/createAdminModal";
 import CreateFinconModal from "../../components/modals/createFinconModal";
+import AdminPagination from "../../components/paginations/admin-pagination";
 
 export interface IAgent {
     _id: string
@@ -36,6 +37,25 @@ export interface IAgent {
 
 }
 
+export interface IAdmin {
+address:string,
+agents:[],
+createdAt:string,
+email:string,
+first_name:string,
+image:string,
+key:string,
+last_name:string,
+location:[],
+mobile:string,
+password:string,
+superAdmin:string,
+updatedAt:string,
+user_type:string,
+username:string
+_id:string
+}
+
 const SuperAdminDashboardpage = () => {
     const bmoList: IBMCustomersPublic[] = useSelector((state: any) => state.authUserSlice.authUserBMOSearch.authUserBMOCustomerSearchResult);
     const authUserBmoSearchWord = useSelector((state: any) => state.authUserSlice.authUserBMOSearch.authUserSearchWord);
@@ -43,12 +63,14 @@ const SuperAdminDashboardpage = () => {
     const [userSearchedAgent, setUserSearchedAgent] = useState('');
     const userToken = localStorage.getItem('token') || '';
     const token = JSON.parse(userToken);
+    let userName = localStorage.getItem('userInfo') || '';
+    let user = JSON.parse(userName)
 
     const [createAgentModal, setCreateAgentModal] = useState(false);
     const [createFinconModal, setCreateFinconModal] = useState(false);
 
 
-    const [agents, setAgents] = useState<IAgent[]>([]);
+    const [admins, setAdmins] = useState<IAdmin[]>([]);
     const [totalCollection, setTotalCollections] = useState('');
     const [totalDeposits, setTotalDeposits] = useState('')
     const [totalPayouts, setTotalPayouts] = useState('')
@@ -78,11 +100,13 @@ const SuperAdminDashboardpage = () => {
 
         // toast.error('Await')
         try {
-            const res = await api.get(`admin/admin-search-agent?name=${userSearchedAgent}&page=1&limit=50`, token);
+            const res = await api.get('super/dashboard?limit=10&page=1', token);
             console.log(res)
             if (res?.data?.success) {
+                const filtered = res?.data?.data?.superadmin?.admin.filter((admin:IAdmin)=>admin.first_name.toLocaleLowerCase().includes(userSearchedAgent.toLocaleLowerCase()))
                 setSLoading(false);
-                setAgents(res?.data?.data?.docs);
+                setAdmins(filtered);
+                // setSLoading(false)
             }
             else {
                 setLoading(false)
@@ -92,30 +116,6 @@ const SuperAdminDashboardpage = () => {
 
             setLoading(false)
         }
-    }
-
-
-
-    const handleNavigateToLevel = (owner: IBMCustomersPublic) => {
-        let payload: IUnAuthUserNavLink = {
-            name: owner.customerName,
-            customerNumber: owner?.customerNumber,
-            ownerId: owner?.ownerId
-        }
-        let unAvOwner: IBMOwnersPublic = {
-            BusinessName: owner.customerName,
-            CustomerNumber: owner.customerNumber,
-            IdType: "CORPORATE",
-            IdNumber: owner.kycReferenceNumber,
-            Level: 1,
-            RiskScore: owner.rating,
-            RcNumber: owner.rcNumber,
-            RiskLevel: owner.riskLevel,
-            Id: 0
-        }
-        dispatch(pushToAuthUserNavArray(payload));
-        dispatch(setAuthUserBmoCustormerProfile(unAvOwner))
-        navigate(`/ubo-portal/custormer-details/${1}/${owner.customerNumber}`)
     }
 
     const handleClear = () => {
@@ -134,9 +134,10 @@ const SuperAdminDashboardpage = () => {
             try {
                 setLoading(true);
                 const res = await api.get('super/dashboard?limit=8&page=1', token);
-                console.log({ seeAgents: res })
+                console.log({ seeAdmins: res?.data?.data?.superadmin?.admin })
                 if (res?.data?.success) {
-                    setAgents(res?.data?.data?.superadmin?.admin);
+                    const filtered = res?.data?.data?.superadmin?.admin.sort((a: IAdmin, b: IAdmin) =>b.agents.length - a.agents.length);
+                    setAdmins(filtered);
                     setTotalCollections(res?.data?.data?.total_collections);
                     setTotalDeposits(res?.data?.data?.total_remmitance);
                     setTotalPayouts(res?.data?.data?.total_payout);
@@ -185,7 +186,7 @@ const SuperAdminDashboardpage = () => {
 
             <div className="w-100 d-flex gap-3 flex-column align-items-end">
                 {
-                    !loading &&
+                    !loading && user?.user_type=='super_admin' &&
                     <div className="d-flex gap-3">
                         {/* <p className="p-0 m-0">Quick action</p> */}
                         <Button onClick={
@@ -254,7 +255,7 @@ const SuperAdminDashboardpage = () => {
                                 <tr className=""><td className="text-center" colSpan={5}><Spinner className="spinner-grow text-primary" /></td></tr>
                             </tbody>
                         </table> :
-                            <AgentsPagination data={[]} />
+                            <AdminPagination data={admins} />
                     }
                 </div>}
             <CreateAdminModal

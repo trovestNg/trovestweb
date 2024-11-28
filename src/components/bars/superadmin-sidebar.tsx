@@ -49,7 +49,7 @@ const SuperAdminSideBar: React.FC<any> = ({ payload }) => {
         {
             title: 'Admin Management',
             icon: 'bi bi-person-circle',
-            path: '/superadmin/agent-management',
+            path: '/superadmin/admin-management',
         },
         {
             title: 'Agent Management',

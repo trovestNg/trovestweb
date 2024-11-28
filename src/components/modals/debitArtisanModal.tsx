@@ -64,6 +64,7 @@ const DebitArtisanModal: React.FC<any> = ({ show, off, agentInfo, agentId, curre
 
                 setLoading(true)
                 const res = await api.post(`admin/payout/${agentId}`, body, token);
+                console.log({here:res})
                 if (res?.data?.success) {
                     toast.success('Customer debit successful');
                     setLoading(false);
@@ -72,7 +73,7 @@ const DebitArtisanModal: React.FC<any> = ({ show, off, agentInfo, agentId, curre
                     off();
                     window.location.reload()
                 } else {
-                    toast.error('Error debiting customer.');
+                    toast.error(res?.data?.message);
                     setLoading(false)
                 }
             } catch (error) {

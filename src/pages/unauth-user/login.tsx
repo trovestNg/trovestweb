@@ -137,6 +137,33 @@ const LoginPage = () => {
 
         };
 
+        if (loginCred.user_type == 'fin_con') {
+
+            try {
+                setLoading(true)
+                const res = await apiUnAuth.post('super/login-super-admin', loginCred);
+                // if(loginCred.user_type=='fincon'){
+                //     localStorage.setItem('userType','fincon');
+                // }
+                if (res?.data?.success) {
+                    setLoading(false)
+                    toast.success(res?.data?.message);
+                    localStorage.setItem('userInfo',JSON.stringify(res?.data?.data));
+                    localStorage.setItem('token',JSON.stringify(res?.data?.token));
+                    navigate('/superadmin')
+                } else {
+                    setLoading(false)
+                    toast.error('Network error')
+                }
+
+            } catch (error:any) {
+                // console.log(error)
+                toast.error('Network error')
+                setLoading(false)
+            }
+
+        };
+
         if (loginCred.user_type == 'admin') {
 
             try {

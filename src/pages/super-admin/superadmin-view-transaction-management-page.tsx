@@ -13,10 +13,6 @@ import autoTable from "jspdf-autotable";
 import Papa from "papaparse";
 import { saveAs } from "file-saver";
 import { useDispatch, useSelector } from "react-redux";
-import { pushToAuthUserNavArray, reduceAuthUserNavArray, removeFromAuthUserNavArray, setAuthUserBMOOwnerProfile } from "../../store/slices/authUserSlice";
-import { IBMOwnersPublic, IUnAuthUserNavLink } from "../../interfaces/bmOwner";
-import SureToApproveBOModal from "../../components/modals/sureToApproveBOModal";
-import { baseUrl } from "../../config/config";
 import ArtisansPagination from "../../components/paginations/atisans-paginations";
 import EditAgentInfoModal from "../../components/modals/editAgentInfoModal";
 import ResetAgentPasswordModal from "../../components/modals/resetAgentPasswordModal";
@@ -24,8 +20,10 @@ import ArtisanSavingTab from "../../components/tabs/userTabs/artisan-savings-tab
 import AgentSavingsTab from "../../components/tabs/userTabs/agent-savings-tab";
 import AgentPayoutTab from "../../components/tabs/userTabs/agent-payout-tab";
 import ApprovedAgentsTab from "../../components/tabs/userTabs/approved-agents-tab";
-import { IAgent } from "./admin-dashboardpage";
-import SuperApprovedArtisanTab from "../../components/tabs/userTabs/superapproved-artisan-tab";
+import { IAgent } from "./superadmin-dashboardpage";
+import AgentsDepositTab from "../../components/tabs/userTabs/agent-deposit-tab";
+import AgentCollectionsTab from "../../components/tabs/userTabs/agent-collections-tab";
+import SuperAgentCollectionsTab from "../../components/tabs/userTabs/superagent-collections-tab";
 
 export interface IAgentInfo {
     address: string,
@@ -98,7 +96,7 @@ export interface IAgentPaymentRecord {
     total_remmitance: string
 }
 
-const SuperAdminViewArtisanManagementPage = () => {
+const SuperAdminViewTransactionManagementPage = () => {
     const userToken = localStorage.getItem('token') || '';
     const token = JSON.parse(userToken);
 
@@ -264,16 +262,6 @@ const SuperAdminViewArtisanManagementPage = () => {
 
 
 
-
-
-    const handleShowInfoModal = (owner: IBMOwnersPublic) => {
-        // setBmoOwner(owner);
-        setBmoParentId(owner?.ParentId)
-        setViewMoreInfoModal(!viewMoreInfotModal);
-    }
-
-
-
     // const handleNudgeAuthorizer = async (bmoId: any) => {
     //     // console.log({here:bmoId})
     //     let userInfo = await getUserInfo();
@@ -312,7 +300,7 @@ const SuperAdminViewArtisanManagementPage = () => {
         <div className="w-100 p-0">
             {/* <MoreInfoModal handleApprv={handleApproveBo} lev={level} info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} /> */}
 
-
+           
 
 
 
@@ -325,7 +313,7 @@ const SuperAdminViewArtisanManagementPage = () => {
                 {
                     loading && <Spinner size="sm" />
                 }
-                <p className="fw-bold">Manage Registered Customers.</p>
+                <p className="fw-bold">Manage Transactions.</p>
 
             </div>
 
@@ -363,19 +351,23 @@ const SuperAdminViewArtisanManagementPage = () => {
 
             <div className="mt-4">
                 <Tabs
-                    defaultActiveKey="saved"
+                    defaultActiveKey="collection"
                     id="uncontrolled-tab-example"
                     variant="underline"
                     className="mb-3 gap-5"
                 >
-                    <Tab eventKey="saved" title="Approved Customers"
+                    <Tab eventKey="collection" title="All Collections"
 
                     >
-                        <SuperApprovedArtisanTab agents={agents} />
+                        <SuperAgentCollectionsTab thrifts={[]} />
                     </Tab>
 
-                    <Tab eventKey="withdrawn" title="Customers Pending Approval">
-                    <SuperApprovedArtisanTab agents={[]} />
+                    <Tab eventKey="deposits" title="All Deposits">
+                    <SuperAgentCollectionsTab thrifts={[]} />
+                    </Tab>
+
+                    <Tab eventKey="payouts" title="All Payouts">
+                    <SuperAgentCollectionsTab thrifts={[]} />
                     </Tab>
 
 
@@ -391,4 +383,4 @@ const SuperAdminViewArtisanManagementPage = () => {
 
 }
 
-export default SuperAdminViewArtisanManagementPage;
+export default SuperAdminViewTransactionManagementPage;

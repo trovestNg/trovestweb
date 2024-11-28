@@ -24,6 +24,7 @@ import ArtisanSavingTab from "../../components/tabs/userTabs/artisan-savings-tab
 import ArtisanWithdrawTab from "../../components/tabs/userTabs/artisan-withdraw-tab";
 import EditArtisanInfoModal from "../../components/modals/editArtisanInfoModal";
 import DebitArtisanModal from "../../components/modals/debitArtisanModal";
+import SuperArtisanSavingTab from "../../components/tabs/userTabs/superartisan-savings-tab";
 
 export interface IArtisanInfo {
     address: string
@@ -91,7 +92,7 @@ export interface IAgentPaymentRecord {
     total_remmitance: string
 }
 
-const AdminViewArtisanInfoPage = () => {
+const SuperAdminViewArtisanInfoPage = () => {
     const userToken = localStorage.getItem('token') || '';
     const token = JSON.parse(userToken);
 
@@ -169,7 +170,7 @@ const AdminViewArtisanInfoPage = () => {
     const searchByName = async () => {
         try {
             setSLoading(true)
-            const res = await api.get(`admin/agent-artisans/${id}?page=1&limit=10`, token);
+            const res = await api.get(`super/artisan/${id}?page=1&limit=10`, token);
             console.log({ artisansHere: res })
             if (res?.data?.success) {
                 let filter = res.data?.data?.artisan.filter((artisan: IArtisan) => artisan.full_name.toLocaleLowerCase().includes(userSearchedAgentCustomers.toLocaleLowerCase()))
@@ -189,7 +190,7 @@ const AdminViewArtisanInfoPage = () => {
 
         try {
             setLoading(true)
-            const res = await api.get(`admin/artisan/${id}`, token);
+            const res = await api.get(`super/artisan/${id}`, token);
             if (res?.data?.success) {
                 setArtisanInfo(res.data?.data?.artisan)
                 setArtisanSavingThrift(res.data?.data?.thrifts)
@@ -206,45 +207,45 @@ const AdminViewArtisanInfoPage = () => {
 
     }
 
-    const fetchPayoutHistory = async () => {
+    // const fetchPayoutHistory = async () => {
 
-        try {
-            setLoading(true)
-            const res = await api.get(`admin/payouts/${id}`, token);
-            if (res?.data?.success) {
-                setArtisanWithdrawThrift(res.data?.payload.reverse());
+    //     try {
+    //         setLoading(true)
+    //         const res = await api.get(`admin/payouts/${id}`, token);
+    //         if (res?.data?.success) {
+    //             setArtisanWithdrawThrift(res.data?.payload.reverse());
                 
-                // toast.success('Got infor')
-            }
+    //             // toast.success('Got infor')
+    //         }
 
-        } catch (error) {
+    //     } catch (error) {
 
-        }
+    //     }
 
-    }
+    // }
 
-    const fetchAtisans = async () => {
-        if (bySearch) {
-            searchByName()
-        } else {
+    // const fetchAtisans = async () => {
+    //     if (bySearch) {
+    //         searchByName()
+    //     } else {
 
-            try {
-                setSLoading(true)
-                const res = await api.get(`admin/agent-artisans/${id}?page=1&limit=10`, token);
-                console.log({ artisansHere: res })
-                if (res?.data?.success) {
-                    setAgentArtisans(res.data?.data?.artisan);
-                    setSLoading(false)
+    //         try {
+    //             setSLoading(true)
+    //             const res = await api.get(`admin/agent-artisans/${id}?page=1&limit=10`, token);
+    //             console.log({ artisansHere: res })
+    //             if (res?.data?.success) {
+    //                 setAgentArtisans(res.data?.data?.artisan);
+    //                 setSLoading(false)
 
-                    // toast.success('Got infor')
-                }
+    //                 // toast.success('Got infor')
+    //             }
 
-            } catch (error) {
+    //         } catch (error) {
 
-            }
-        }
+    //         }
+    //     }
 
-    }
+    // }
 
     const handleClear = () => {
         setBySearch(false)
@@ -318,11 +319,11 @@ const AdminViewArtisanInfoPage = () => {
     }
     useEffect(() => {
         fetch();
-        fetchPayoutHistory();
+        // fetchPayoutHistory();
     }, [])
 
     useEffect(() => {
-        fetchAtisans();
+        // fetchAtisans();
     }, [refData])
     return (
         <div className="w-100 p-0">
@@ -386,7 +387,7 @@ const AdminViewArtisanInfoPage = () => {
                                         <p className="p-0 m-0 text-capitalize">{`Fullname : ${artisanInfo?.full_name}`}</p>
                                         <p className="p-0 m-0">{`Agent Incharge : ${artisanInfo?.agent_id.first_name} ${artisanInfo?.agent_id.last_name}`}</p>
                                         <p className="p-0 m-0">{`Mobile : ${artisanInfo?.mobile}`}</p>
-                                        <div className="d-flex gap-2">
+                                        {/* <div className="d-flex gap-2">
                                             <div className="d-flex gap-2 text-success" role="button">
                                                 <i className="bi bi-person-vcard"></i>
                                                 <p onClick={()=>setUpdateArtisanModal(true)} className="p-0 m-0">Update Info</p>
@@ -397,7 +398,7 @@ const AdminViewArtisanInfoPage = () => {
                                                 <p onClick={()=>setDebitArtisan(true)} className="p-0 m-0">Debit customer</p>
                                             </div>
 
-                                        </div>
+                                        </div> */}
                                     </div>
 
 
@@ -470,11 +471,11 @@ const AdminViewArtisanInfoPage = () => {
                                     <Tab eventKey="saved" title="Savings"
                                         tabClassName=""
                                     >
-                                        <ArtisanSavingTab thrifts={artisanSavingThrift} />
+                                        <SuperArtisanSavingTab thrifts={artisanSavingThrift} />
                                     </Tab>
 
                                     <Tab eventKey="withdrawn" title="Withdrawn">
-                                    <ArtisanWithdrawTab thrifts={artisanWithdrawThrift} />
+                                    <SuperArtisanSavingTab thrifts={artisanWithdrawThrift} />
                                     </Tab>
 
 
@@ -498,4 +499,4 @@ const AdminViewArtisanInfoPage = () => {
 
 }
 
-export default AdminViewArtisanInfoPage;
+export default SuperAdminViewArtisanInfoPage;

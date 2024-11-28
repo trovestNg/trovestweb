@@ -20,6 +20,7 @@ import moment from "moment";
 import ArtisansPagination from "../../components/paginations/atisans-paginations";
 import EditAgentInfoModal from "../../components/modals/editAgentInfoModal";
 import ResetAgentPasswordModal from "../../components/modals/resetAgentPasswordModal";
+import SuperArtisansPagination from "../../components/paginations/superatisans-paginations";
 
 export interface IAgentInfo {
     address: string,
@@ -92,7 +93,7 @@ export interface IAgentPaymentRecord {
     total_remmitance: string
 }
 
-const AdminViewAgentInfoPage = () => {
+const SuperAdminViewAgentInfoPage = () => {
     const userToken = localStorage.getItem('token') || '';
     const token = JSON.parse(userToken);
 
@@ -167,10 +168,10 @@ const AdminViewAgentInfoPage = () => {
     const searchByName = async () => {
         try {
             setSLoading(true)
-            const res = await api.get(`admin/agent-artisans/${id}?page=1&limit=10`, token);
-            console.log({ artisansHere: res })
+            const res = await api.get(`super/agent-artisans/${id}`, token);
+            // console.log({ artisansHere: res })
             if (res?.data?.success) {
-                let filter = res.data?.data?.artisan.filter((artisan: IArtisan) => artisan.full_name.toLocaleLowerCase().includes(userSearchedAgentCustomers.toLocaleLowerCase()))
+                let filter = res.data?.data?.client?.docs.filter((artisan: IArtisan) => artisan.full_name.toLocaleLowerCase().includes(userSearchedAgentCustomers.toLocaleLowerCase()))
                 setAgentArtisans(filter);
                 setSLoading(false);
                 // toast.success('Got infor')
@@ -193,7 +194,7 @@ const AdminViewAgentInfoPage = () => {
 
         try {
             setLoading(true)
-            const res = await api.get(`admin/agent/${id}`, token);
+            const res = await api.get(`super/agent-artisans/${id}`, token);
             if (res?.data?.success) {
                 setAgentInfo(res.data?.data?.agent)
                 setTotalCollections(res?.data?.data?.total_collections);
@@ -216,10 +217,10 @@ const AdminViewAgentInfoPage = () => {
 
             try {
                 setSLoading(true)
-                const res = await api.get(`admin/agent-artisans/${id}?page=1&limit=10`, token);
-                console.log({ artisansHere: res })
+                const res = await api.get(`super/agent-artisans/${id}?page=1&limit=200`, token);
+                console.log({ artisansHereee: res })
                 if (res?.data?.success) {
-                    setAgentArtisans(res.data?.data?.artisan);
+                    setAgentArtisans(res.data?.data?.client?.docs);
                     setSLoading(false)
 
                     // toast.success('Got infor')
@@ -276,7 +277,7 @@ const AdminViewAgentInfoPage = () => {
 
 
     const handleBackToHomePage = () => {
-        navigate('/admin')
+        navigate('/superadmin')
     }
     useEffect(() => {
         fetch();
@@ -348,7 +349,7 @@ const AdminViewAgentInfoPage = () => {
                                         <p className="p-0 m-0 text-capitalize">{`${agentInfo?.first_name} ${agentInfo?.last_name}`}</p>
                                         <p className="p-0 m-0">{agentInfo?.assigned_id}</p>
                                         <p className="p-0 m-0">{agentInfo?.mobile}</p>
-                                        <div className="d-flex gap-2">
+                                        {/* <div className="d-flex gap-2">
                                             <div className="d-flex gap-2 text-success" role="button">
                                                 <i className="bi bi-person-vcard"></i>
                                                 <p onClick={()=>setUpdateAgentModal(true)} className="p-0 m-0">Update Info</p>
@@ -359,7 +360,7 @@ const AdminViewAgentInfoPage = () => {
                                                 <p onClick={()=>setResetAgentPasswordModal(true)} className="p-0 m-0">Reset Password</p>
                                             </div>
 
-                                        </div>
+                                        </div> */}
                                     </div>
 
 
@@ -380,7 +381,7 @@ const AdminViewAgentInfoPage = () => {
 
                             <div className="px-3 text-center d-flex flex-column">
                                 <i className="bi bi-receipt" style={{ fontSize: '3em' }}></i>
-                                <Link to={`/admin/agent-transactions/${id}`}>View Transaction</Link>
+                                {/* <Link to={`/admin/agent-transactions/${id}`}>View Transaction</Link> */}
                                 {/* <p className="p-0 m-0" role="button"></p> */}
                             </div>
                         </div>
@@ -417,7 +418,7 @@ const AdminViewAgentInfoPage = () => {
                                     <Button
                                         disabled={userSearchedAgentCustomers == '' || sloading}
                                         type="submit"
-                                        variant="secondary" style={{ minWidth: '6em', marginRight: '-5px', minHeight: '2.4em' }}>{sloading ? <Spinner size="sm" /> : 'Search'}</Button>
+                                        variant="primary" style={{ minWidth: '6em', marginRight: '-5px', minHeight: '2.4em' }}>{sloading ? <Spinner size="sm" /> : 'Search'}</Button>
 
 
                                 </form>
@@ -437,7 +438,7 @@ const AdminViewAgentInfoPage = () => {
                                         <tr className=""><td className="text-center" colSpan={5}><Spinner className="spinner-grow text-primary" /></td></tr>
                                     </tbody>
                                 </table> :
-                                    <ArtisansPagination data={agentArtisans} />
+                                    <SuperArtisansPagination data={agentArtisans} />
                             }
                         </div>}
 
@@ -455,4 +456,4 @@ const AdminViewAgentInfoPage = () => {
 
 }
 
-export default AdminViewAgentInfoPage;
+export default SuperAdminViewAgentInfoPage;

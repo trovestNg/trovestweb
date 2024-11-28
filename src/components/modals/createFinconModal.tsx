@@ -94,7 +94,7 @@ const CreateFinconModal: React.FC<any> = ({ show, off, lev, parent, custormerNum
             setLoading(true)
             const res = await api.postForm('super/create-fincon',formData,token);
             if(res?.data?.success){
-                toast.success('New admin created succesfully!');
+                toast.success('New fincon created succesfully!');
                 setLoading(false);
                 setFileName('');
                 setFileUrl('')
