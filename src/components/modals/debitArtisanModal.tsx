@@ -66,7 +66,7 @@ const DebitArtisanModal: React.FC<any> = ({ show, off, agentInfo, agentId, curre
                 const res = await api.post(`admin/payout/${agentId}`, body, token);
                 console.log({here:res})
                 if (res?.data?.success) {
-                    toast.success('Successfully debited');
+                    toast.success('Debit success.');
                     setLoading(false);
                     setFileName('');
                     setFileUrl('')
