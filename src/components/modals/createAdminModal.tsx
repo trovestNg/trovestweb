@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import style from './upload.module.css';
 
-const CreateAgentModal: React.FC<any> = ({ show, off, lev, parent, custormerNumb, ownerId, totalOwners }) => {
+const CreateAdminModal: React.FC<any> = ({ show, off, lev, parent, custormerNumb, ownerId, totalOwners }) => {
     const userToken = localStorage.getItem('token') || '';
     const token = JSON.parse(userToken);
 
@@ -92,15 +92,15 @@ const CreateAgentModal: React.FC<any> = ({ show, off, lev, parent, custormerNumb
         formData.append('folder', 'admin')
         console.log(body)
             setLoading(true)
-            const res = await api.postForm('admin/create-agent',formData,token);
+            const res = await api.postForm('super/create-admin',formData,token);
             if(res?.data?.success){
-                toast.success('New agent created succesfully!');
+                toast.success('New admin created succesfully!');
                 setLoading(false);
                 setFileName('');
                 setFileUrl('')
                 off()
             } else {
-                toast.error('Error creating agent');
+                toast.error('Error creating admin');
                 setLoading(false)
             }
          } catch (error) {
@@ -116,7 +116,7 @@ const CreateAgentModal: React.FC<any> = ({ show, off, lev, parent, custormerNumb
             <Modal size="lg" show={show} centered>
                 <Modal.Header className="d-flex justify-content-between"
                     style={{ fontFamily: 'title' }}>
-                    <p className="p-0 m-0 text-secondary">Create New Agent</p>
+                    <p className="p-0 m-0 text-primary">Create New Admin</p>
                     <i className="bi bi-x-circle" onClick={() => off()}></i>
                 </Modal.Header>
                 <Modal.Body >
@@ -320,7 +320,7 @@ const CreateAgentModal: React.FC<any> = ({ show, off, lev, parent, custormerNumb
                                         </div>
 
                                         <div className="w-50">
-                                            <Button disabled={loading} className="w-100 rounded rounded-1" type="submit" variant="secondary mt-3">{loading ? <Spinner size="sm" /> : 'Create'}</Button>
+                                            <Button disabled={loading} className="w-100 rounded rounded-1" type="submit" variant="primary mt-3">{loading ? <Spinner size="sm" /> : 'Create'}</Button>
                                         </div>
                                     </div>
                                 </Form>)
@@ -331,4 +331,4 @@ const CreateAgentModal: React.FC<any> = ({ show, off, lev, parent, custormerNumb
         </div>
     )
 }
-export default CreateAgentModal;
+export default CreateAdminModal;

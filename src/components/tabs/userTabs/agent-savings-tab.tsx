@@ -3,12 +3,6 @@ import { Badge, Button, Form, FormControl, FormSelect, Spinner, Table } from "re
 import { useNavigate, useParams } from "react-router-dom";
 import { IUserPolicy } from "../../../interfaces/user";
 import { IDept } from "../../../interfaces/dept";
-import moment from "moment";
-import { getPolicies } from "../../../controllers/policy";
-import receiptImg from '../../../assets/images/receipt.png';
-import { getAllDepartments } from "../../../controllers/department";
-import { toast } from 'react-toastify';
-import { getUserInfo, loginUser } from "../../../controllers/auth";
 import api from "../../../config/api";
 import successElipse from '../../../assets/images/Ellipse-success.png';
 import UserAttestedPolicyPagination from "../../paginations/user/user-attested-policy-pagiantion";
@@ -62,29 +56,7 @@ const AgentSavingsTab: React.FC<any> = ({thrifts}) => {
 
     }
 
-    const handleSearchByPolicyNameOrDept = async () => {
-        setLoading(true)
-        try {
-            let userInfo = await getUserInfo();
-            let userName = userInfo?.profile?.sub.split('\\')[1]
-            const res = await api.get(`Policy/user-policy?userName=${userName}`, `${userInfo?.access_token}`);
-            if (res?.data) {
-                let attested = res?.data.filter((policy: IUserPolicy) => policy.isAttested && (!policy.isDeleted || !policy.markedForDeletion));
-
-                let filtered = attested.filter((policy: IUserPolicy) =>
-                    policy.fileName.toLowerCase().includes(query.toLowerCase()) ||
-                    policy.policyDepartment.toLowerCase().includes(query.toLowerCase())
-                );
-                setPolicies(filtered);
-                setLoading(false)
-            }
-
-        } catch (error) {
-            // console.log({ gotten: userInfo })(error)
-        }
-
-
-    }
+    
 
     const handleSearch = () => {
         setBySearch(true);

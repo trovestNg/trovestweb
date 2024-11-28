@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import notificationIcon from "../../assets/icons/notification-icon.png";
 import { Button, Card, ListGroup, ListGroupItem, Modal } from "react-bootstrap";
-import { getUserInfo, logoutUser, refreshToken } from "../../controllers/auth";
+import {logoutUser } from "../../controllers/auth";
 import { useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { clearNav } from "../../store/slices/userSlice";
@@ -24,42 +24,7 @@ const AdminTopbar: React.FC<any> = ({ payload }) => {
     const [timer, setTimer] = useState(initialTime);
     const [showModal, setShowModal] = useState(false);
 
-    const getUserType = async () => {
-        let userInfo = await getUserInfo();
-        console.log({userType:userInfo?.profile.role})
-        try {
-            let userInfo = await getUserInfo();
-            // console.log({him:userInfo})
-            if (userInfo?.expired) {
-                logoutUser();
-            }
-
-            if (userInfo?.profile.given_name == null) {
-                logoutUser();
-            }
-            if (userInfo) {
-                // setUserName(`${userInfo?.profile?.given_name} ${userInfo?.profile?.family_name}`)
-                // console.log(userInfo.access_token)
-            }
-            if (userInfo?.profile.role?.includes('DOMAIN1\\CUSTOMER_RISK_INIT')) {
-                setUserType('Initiator');
-                dispatch(setUserClass('Initiator'))
-            }
-            else if (userInfo?.profile.role?.includes('DOMAIN1\\CUSTOMER_RISK_AUTH')) {
-                setUserType('Approver');
-                dispatch(setUserClass('Approver'))
-            } else {
-                setUserType('User')
-                dispatch(setUserClass('Initiator'));
-                toast.error('Un Authorised User!!')
-                logoutUser()
-            }
-
-        } catch (error) {
-            logoutUser()
-        }
-
-    }
+    
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -80,7 +45,7 @@ const AdminTopbar: React.FC<any> = ({ payload }) => {
         // toast.error('refreshed!')
         setShowModal(false);
         setTimer(initialTime); // Reset time
-        refreshToken();
+       
     }, [initialTime]);
 
     useEffect(() => {

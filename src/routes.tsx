@@ -12,6 +12,8 @@ import AdminViewArtisanManagementPage from "./pages/user/admin-view-artisan-mana
 import AdminViewTransactionManagementPage from "./pages/user/admin-view-transaction-management-page";
 import AdminGenerateReportPage from "./pages/user/admin-generate-report-page";
 import AdminSettingsPage from "./pages/user/admin-settings-page";
+import SuperAdminDashboardContainer from "./pages/super-admin/superadmin-dashboard-container";
+import SuperAdminDashboardpage from "./pages/super-admin/superadmin-dashboardpage";
 
 // const UserDBC = React.lazy(() => import("./pages/user/dashboard"));
 
@@ -25,6 +27,19 @@ export default function () {
 
             <Route path="/admin" element={< AdminDashboardContainer />}>
                 <Route index element={<AdminDashboardpage />} />
+                <Route path="agent-management" element={<AdminViewAgentManagementPage />} />
+                <Route path="customer-management" element={<AdminViewArtisanManagementPage />} />
+                <Route path="transaction-management" element={<AdminViewTransactionManagementPage />} />
+                <Route path="report" element={<AdminGenerateReportPage />} />
+                <Route path="settings" element={<AdminSettingsPage />} />
+
+                <Route path="agent/:id" element={<AdminViewAgentInfoPage />} />
+                <Route path="agent-transactions/:id" element={<AdminViewAgentTransactionPage />} />
+                <Route path="artisan/:id" element={<AdminViewArtisanInfoPage />} />
+            </Route>
+
+            <Route path="/superadmin" element={< SuperAdminDashboardContainer />}>
+                <Route index element={<SuperAdminDashboardpage />} />
                 <Route path="agent-management" element={<AdminViewAgentManagementPage />} />
                 <Route path="customer-management" element={<AdminViewArtisanManagementPage />} />
                 <Route path="transaction-management" element={<AdminViewTransactionManagementPage />} />

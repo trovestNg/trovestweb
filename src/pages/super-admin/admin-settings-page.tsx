@@ -24,7 +24,10 @@ import ArtisanSavingTab from "../../components/tabs/userTabs/artisan-savings-tab
 import AgentSavingsTab from "../../components/tabs/userTabs/agent-savings-tab";
 import AgentPayoutTab from "../../components/tabs/userTabs/agent-payout-tab";
 import ApprovedAgentsTab from "../../components/tabs/userTabs/approved-agents-tab";
-import { IAgent } from "./admin-dashboardpage";
+import { IAgent } from "./superadmin-dashboardpage";
+import AgentsDepositTab from "../../components/tabs/userTabs/agent-deposit-tab";
+import AgentCollectionsTab from "../../components/tabs/userTabs/agent-collections-tab";
+import { Field } from "formik";
 
 export interface IAgentInfo {
     address: string,
@@ -97,12 +100,12 @@ export interface IAgentPaymentRecord {
     total_remmitance: string
 }
 
-const AdminViewAgentManagementPage = () => {
+const AdminSettingsPage = () => {
     const userToken = localStorage.getItem('token') || '';
     const token = JSON.parse(userToken);
 
     const [agents, setAgents] = useState<IAgent[]>([]);
-    
+
     const [userSearchedAgentCustomers, setUserSearchedAgentCustomers] = useState('');
 
     const [agentInfo, setAgentInfo] = useState<IAgentInfo>();
@@ -163,6 +166,23 @@ const AdminViewAgentManagementPage = () => {
     const unAvOwner = useSelector((state: any) => state.authUserSlice.authUserBmoOwnerProfile);
     const navArray = useSelector((state: any) => state.authUserSlice.authUserNavigationArray);
 
+
+    const settings = [
+        {
+            'title':'Profile',
+            'icon':'bi bi-person-circle'
+        },
+        {
+            'title':'Notification',
+            'icon':'bi bi-bell-fill'
+        },
+        {
+            'title':'Security',
+            'icon':'bi bi-shield-lock-fill'
+        },
+    ]
+
+
     const handleRejectBo = () => {
         setViewMoreInfoModal(false);
         setRejectBmOwner(true)
@@ -191,13 +211,6 @@ const AdminViewAgentManagementPage = () => {
 
     }
 
-
-
-
-
-
-
-
     const fetch = async () => {
         if (search) {
 
@@ -214,9 +227,9 @@ const AdminViewAgentManagementPage = () => {
                     setLoading(false);
                     // toast.success('Fetched info')
                 }
-                else{
+                else {
                     setLoading(false);
-                    toast.error('Network error')  
+                    toast.error('Network error')
                 }
             } catch (error) {
                 console.log(error)
@@ -224,29 +237,6 @@ const AdminViewAgentManagementPage = () => {
             }
         }
     }
-
-    // const fetchAtisans = async () => {
-    //     if (bySearch) {
-    //         searchByName()
-    //     } else {
-
-    //         try {
-    //             setSLoading(true)
-    //             const res = await api.get(`admin/agent-artisans/${id}?page=1&limit=10`, token);
-    //             console.log({ artisansHere: res })
-    //             if (res?.data?.success) {
-    //                 setAgentArtisans(res.data?.data?.artisan);
-    //                 setSLoading(false)
-
-    //                 // toast.success('Got infor')
-    //             }
-
-    //         } catch (error) {
-
-    //         }
-    //     }
-
-    // }
 
     const handleClear = () => {
         setBySearch(false)
@@ -259,12 +249,7 @@ const AdminViewAgentManagementPage = () => {
     const handleAddNewBenefOwner = () => {
         setAddNewBenefOwnerModal(true)
     }
-
-
-
-
-
-
+   
 
 
 
@@ -282,7 +267,7 @@ const AdminViewAgentManagementPage = () => {
         <div className="w-100 p-0">
             {/* <MoreInfoModal handleApprv={handleApproveBo} lev={level} info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} /> */}
 
-           
+            
 
 
 
@@ -292,68 +277,27 @@ const AdminViewAgentManagementPage = () => {
                     <p className="p-0 m-0">Go Back</p>
 
                 </Button>
-{
-    loading && <Spinner size="sm"/>
-}
-                <p className="fw-bold">Manage Registered Agents</p>
+                {
+                    loading && <Spinner size="sm" />
+                }
+                <p className="fw-bold">Manage user settings.</p>
 
             </div>
 
-            {/* <div className="w-100 d-flex justify-content-between">
-                <div className="d-flex gap-2 align-items-center mt-3">
-                    {parentInfo &&
-                        <>
-                            <h5 className="p-0 m-0 text-primary fw-bold">Beneficial Owner Level </h5>
-                            <Badge className="d-flex justify-content-center align-items-center text-center" style={{ borderRadius: '20px', height: '20px', width: '20px' }}>{level}</Badge>
-                        </>
-                    }
-                </div>
-                <div className="d-flex gap-2">
+            <div className="w-100 mt-4 d-flex gap-3">
+               
                     {
-                        userClass == 'Initiator' &&
-                        <Button
-
-                            onClick={() => calculatePercent(bmoList)} className="d-flex gap-2" style={{ minWidth: '15em' }}>
-                            <i className="bi bi-plus-circle"></i>
-                            <p className="p-0 m-0" >Add New Beneficial Owner</p>
-                        </Button>}
-
-                    {bmoList.length > 0 && <FormSelect style={{ maxWidth: '8em' }} onChange={(e) => handleListDownload(e.currentTarget.value)}>
-                        <option>Download</option>
-                        <option value={'csv'}>CSV</option>
-                        <option value={'pdf'}>PDf</option>
-                    </FormSelect>
+                        settings.map((setting,index)=>(
+                            <Card className="p-2 align-items-center" style={{minWidth:'10em'}}>
+                                <i className={setting.icon} style={{fontSize:'2em'}}></i>
+                                <p>{setting.title}</p>
+                            </Card>
+                        ))
                     }
-                </div>
+                
 
-            </div> */}
-
-            
-
-
-            <div className="mt-4">
-                <Tabs
-                    defaultActiveKey="saved"
-                    id="uncontrolled-tab-example"
-                    variant="underline"
-                    className="mb-3 gap-5"
-                >
-                    <Tab eventKey="saved" title="Approved Agents"
-                        
-                    >
-                        <ApprovedAgentsTab agents={agents} />
-                    </Tab>
-
-                    <Tab eventKey="withdrawn" title="Agents Pending Approval">
-                    <ApprovedAgentsTab agents={[]} />
-                    </Tab>
-
-
-                </Tabs>
 
             </div>
-
-
             <EditAgentInfoModal agentId={id} off={() => { setUpdateAgentModal(false); setRefData(!refData) }} agentInfo={agentInfo} show={updateAgentModal} />
             <ResetAgentPasswordModal agentId={id} off={() => { setResetAgentPasswordModal(false); setRefData(!refData) }} agentInfo={agentInfo} show={resetAgentPasswordModal} />
         </div>
@@ -361,4 +305,4 @@ const AdminViewAgentManagementPage = () => {
 
 }
 
-export default AdminViewAgentManagementPage;
+export default AdminSettingsPage;

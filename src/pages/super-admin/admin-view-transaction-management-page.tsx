@@ -13,10 +13,6 @@ import autoTable from "jspdf-autotable";
 import Papa from "papaparse";
 import { saveAs } from "file-saver";
 import { useDispatch, useSelector } from "react-redux";
-import agentPic from '../../assets/images/receipt.png'
-import AgentsPagination from "../../components/paginations/agents-paginations";
-import { convertToThousand } from "../../utils/helpers";
-import moment from "moment";
 import ArtisansPagination from "../../components/paginations/atisans-paginations";
 import EditAgentInfoModal from "../../components/modals/editAgentInfoModal";
 import ResetAgentPasswordModal from "../../components/modals/resetAgentPasswordModal";
@@ -24,7 +20,9 @@ import ArtisanSavingTab from "../../components/tabs/userTabs/artisan-savings-tab
 import AgentSavingsTab from "../../components/tabs/userTabs/agent-savings-tab";
 import AgentPayoutTab from "../../components/tabs/userTabs/agent-payout-tab";
 import ApprovedAgentsTab from "../../components/tabs/userTabs/approved-agents-tab";
-import { IAgent } from "./admin-dashboardpage";
+import { IAgent } from "./superadmin-dashboardpage";
+import AgentsDepositTab from "../../components/tabs/userTabs/agent-deposit-tab";
+import AgentCollectionsTab from "../../components/tabs/userTabs/agent-collections-tab";
 
 export interface IAgentInfo {
     address: string,
@@ -97,12 +95,12 @@ export interface IAgentPaymentRecord {
     total_remmitance: string
 }
 
-const AdminViewAgentManagementPage = () => {
+const AdminViewTransactionManagementPage = () => {
     const userToken = localStorage.getItem('token') || '';
     const token = JSON.parse(userToken);
 
     const [agents, setAgents] = useState<IAgent[]>([]);
-    
+
     const [userSearchedAgentCustomers, setUserSearchedAgentCustomers] = useState('');
 
     const [agentInfo, setAgentInfo] = useState<IAgentInfo>();
@@ -214,9 +212,9 @@ const AdminViewAgentManagementPage = () => {
                     setLoading(false);
                     // toast.success('Fetched info')
                 }
-                else{
+                else {
                     setLoading(false);
-                    toast.error('Network error')  
+                    toast.error('Network error')
                 }
             } catch (error) {
                 console.log(error)
@@ -263,8 +261,27 @@ const AdminViewAgentManagementPage = () => {
 
 
 
+    // const handleNudgeAuthorizer = async (bmoId: any) => {
+    //     // console.log({here:bmoId})
+    //     let userInfo = await getUserInfo();
+    //     if (userInfo) {
+    //         try {
+    //             // setOLoading(true)
+    //             // let userInfo = await getUserInfo();
+    //             const res = await api.get(`nudge?requsterName=${userInfo?.profile.given_name}&parentId=${parentInfo?.Id}`, userInfo?.access_token);
+    //             if (res?.status == 200) {
+    //                 setViewMoreInfoModal(false)
+    //                 toast.success('Authorizer nudged for approval')
+    //             } else {
+    //                 toast.error('Failed to nudge Authorizer')
+    //             }
 
+    //         } catch (error) {
 
+    //         }
+    //     }
+
+    // }
 
 
 
@@ -292,10 +309,10 @@ const AdminViewAgentManagementPage = () => {
                     <p className="p-0 m-0">Go Back</p>
 
                 </Button>
-{
-    loading && <Spinner size="sm"/>
-}
-                <p className="fw-bold">Manage Registered Agents</p>
+                {
+                    loading && <Spinner size="sm" />
+                }
+                <p className="fw-bold">Manage Transactions.</p>
 
             </div>
 
@@ -328,24 +345,28 @@ const AdminViewAgentManagementPage = () => {
 
             </div> */}
 
-            
+
 
 
             <div className="mt-4">
                 <Tabs
-                    defaultActiveKey="saved"
+                    defaultActiveKey="collection"
                     id="uncontrolled-tab-example"
                     variant="underline"
                     className="mb-3 gap-5"
                 >
-                    <Tab eventKey="saved" title="Approved Agents"
-                        
+                    <Tab eventKey="collection" title="Agent Collections"
+
                     >
-                        <ApprovedAgentsTab agents={agents} />
+                        <AgentCollectionsTab thrifts={[]} />
                     </Tab>
 
-                    <Tab eventKey="withdrawn" title="Agents Pending Approval">
-                    <ApprovedAgentsTab agents={[]} />
+                    <Tab eventKey="deposits" title="Agent Deposits">
+                        <AgentsDepositTab thrifts={[]} />
+                    </Tab>
+
+                    <Tab eventKey="payouts" title="Customer Payouts">
+                        <AgentsDepositTab thrifts={[]} />
                     </Tab>
 
 
@@ -361,4 +382,4 @@ const AdminViewAgentManagementPage = () => {
 
 }
 
-export default AdminViewAgentManagementPage;
+export default AdminViewTransactionManagementPage;

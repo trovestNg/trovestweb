@@ -22,6 +22,8 @@ import { clearAuthUserBmoSearchWord, emptyAuthUserBMOSearchResult, pushToAuthUse
 import { IBMCustomersPublic, IBMOwnersPublic, IUnAuthUserNavLink } from "../../interfaces/bmOwner";
 import AgentsPagination from "../../components/paginations/agents-paginations";
 import CreateAgentModal from "../../components/modals/createAgentModal";
+import CreateAdminModal from "../../components/modals/createAdminModal";
+import CreateFinconModal from "../../components/modals/createFinconModal";
 
 export interface IAgent {
     _id: string
@@ -34,7 +36,7 @@ export interface IAgent {
 
 }
 
-const AdminDashboardpage = () => {
+const SuperAdminDashboardpage = () => {
     const bmoList: IBMCustomersPublic[] = useSelector((state: any) => state.authUserSlice.authUserBMOSearch.authUserBMOCustomerSearchResult);
     const authUserBmoSearchWord = useSelector((state: any) => state.authUserSlice.authUserBMOSearch.authUserSearchWord);
     const userClass = useSelector((state: any) => state.authUserSlice.authUserProfile.UserClass);
@@ -43,6 +45,7 @@ const AdminDashboardpage = () => {
     const token = JSON.parse(userToken);
 
     const [createAgentModal, setCreateAgentModal] = useState(false);
+    const [createFinconModal, setCreateFinconModal] = useState(false);
 
 
     const [agents, setAgents] = useState<IAgent[]>([]);
@@ -130,10 +133,10 @@ const AdminDashboardpage = () => {
         } else {
             try {
                 setLoading(true);
-                const res = await api.get('admin/get-admin-agents?page=1&limit=100', token);
+                const res = await api.get('super/dashboard?limit=8&page=1', token);
                 console.log({ seeAgents: res })
                 if (res?.data?.success) {
-                    setAgents(res?.data?.data?.agents?.docs);
+                    setAgents(res?.data?.data?.superadmin?.admin);
                     setTotalCollections(res?.data?.data?.total_collections);
                     setTotalDeposits(res?.data?.data?.total_remmitance);
                     setTotalPayouts(res?.data?.data?.total_payout);
@@ -157,19 +160,19 @@ const AdminDashboardpage = () => {
 
     const dashboardInfo = [
         {
-            title: 'Your Collections',
+            title: 'Total Collections',
             icon: 'bi bi-graph-down-arrow',
             titleColor: 'success',
             value: totalCollection
         },
         {
-            title: 'Your Deposits',
+            title: 'Total Deposits',
             titleColor: 'primary',
             icon: 'bi bi-bank',
             value: totalDeposits
         },
         {
-            title: 'Your Payouts',
+            title: 'Total Payouts',
             titleColor: 'danger',
             icon: 'bi bi-graph-up-arrow',
             value: totalPayouts
@@ -183,16 +186,20 @@ const AdminDashboardpage = () => {
             <div className="w-100 d-flex gap-3 flex-column align-items-end">
                 {
                     !loading &&
-                    <div>
+                    <div className="d-flex gap-3">
                         {/* <p className="p-0 m-0">Quick action</p> */}
                         <Button onClick={
                             () => setCreateAgentModal(true)
-                        } className="p-2 px-3 bg-secondary">Create New agent</Button>
+                        } className="p-2 px-3">New Admin</Button>
+
+                        <Button variant="outline border" onClick={
+                            () => setCreateFinconModal(true)
+                        } className="p-2 px-3">New Fincon</Button>
                     </div>}
             </div>
 
-            <div className="w-100 d-flex gap-3 justify-content-center">
-                {loading && <Spinner className="text-secondary" />}
+            <div className="w-100 d-flex mt-2 gap-3 justify-content-center">
+                {loading && <Spinner className="text-primary" />}
                 {
                     !loading &&
                     dashboardInfo.map((info, index) => (
@@ -210,7 +217,7 @@ const AdminDashboardpage = () => {
                 !loading &&
                 <div className="mt-5" >
                     <div className="w-100 d-flex justify-content-between align-items-center">
-                        <p className="fw-bold m-0 p-0">Your agents</p>
+                        <p className="fw-bold m-0 p-0">All Your Admins</p>
 
                         <form onSubmit={handleSearchByBmoNameOrNumber} className="d-flex align-items-center justify-content-center gap-2">
 
@@ -227,7 +234,7 @@ const AdminDashboardpage = () => {
                             <Button
                                 disabled={userSearchedAgent == '' || sloading}
                                 type="submit"
-                                variant="secondary" style={{ minWidth: '6em', marginRight: '-5px', minHeight: '2.4em' }}>{sloading ? <Spinner size="sm" /> : 'Search'}</Button>
+                                variant="primary" style={{ minWidth: '6em', marginRight: '-5px', minHeight: '2.4em' }}>{sloading ? <Spinner size="sm" /> : 'Search'}</Button>
 
 
                         </form>
@@ -236,21 +243,21 @@ const AdminDashboardpage = () => {
                         loading ? <table className="table table-stripped w-100">
                             <thead className="thead-dark">
                                 <tr >
-                                    <th scope="col" className="bg-secondary text-light">#</th>
-                                    <th scope="col" className="bg-secondary text-light">Policy Title</th>
-                                    <th scope="col" className="bg-secondary text-light">Department</th>
-                                    <th scope="col" className="bg-secondary text-light">Deadline to Attest</th>
-                                    <th scope="col" className="bg-secondary text-light">Status</th>
+                                    <th scope="col" className="bg-primary text-light">#</th>
+                                    <th scope="col" className="bg-primary text-light">Policy Title</th>
+                                    <th scope="col" className="bg-primary text-light">Department</th>
+                                    <th scope="col" className="bg-primary text-light">Deadline to Attest</th>
+                                    <th scope="col" className="bg-primary text-light">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr className=""><td className="text-center" colSpan={5}><Spinner className="spinner-grow text-primary" /></td></tr>
                             </tbody>
                         </table> :
-                            <AgentsPagination data={agents} />
+                            <AgentsPagination data={[]} />
                     }
                 </div>}
-            <CreateAgentModal
+            <CreateAdminModal
                 // parent={{ ...parentInfo, customerNumber: curstomerNumber, CountryId: "NG", }}
                 totalOwners={bmoList}
                 custormerNumb={34543534}
@@ -263,9 +270,23 @@ const AdminDashboardpage = () => {
                 }
                 show={createAgentModal}
             />
+
+<CreateFinconModal
+                // parent={{ ...parentInfo, customerNumber: curstomerNumber, CountryId: "NG", }}
+                totalOwners={bmoList}
+                custormerNumb={34543534}
+                lev={2}
+                off={() => {
+                    setCreateFinconModal(false);
+                    setRefData(!refData);
+                    // window.location.reload()
+                }
+                }
+                show={createFinconModal}
+            />
         </div>
     )
 
 }
 
-export default AdminDashboardpage;
+export default SuperAdminDashboardpage;

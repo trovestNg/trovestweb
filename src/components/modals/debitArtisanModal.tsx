@@ -3,7 +3,6 @@ import { Button, FormControl, FormSelect, Modal, ProgressBar, Spinner } from "re
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { object, string, number, date, InferType, mixed, ref } from 'yup';
 import api from "../../config/api";
-import { getUserInfo } from "../../controllers/auth";
 import { calculatePercent, convertToThousand, getCountries } from "../../utils/helpers";
 import { ICountr, ICountry } from "../../interfaces/country";
 import { toast } from "react-toastify";

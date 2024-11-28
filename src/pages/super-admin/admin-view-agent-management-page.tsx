@@ -24,7 +24,7 @@ import ArtisanSavingTab from "../../components/tabs/userTabs/artisan-savings-tab
 import AgentSavingsTab from "../../components/tabs/userTabs/agent-savings-tab";
 import AgentPayoutTab from "../../components/tabs/userTabs/agent-payout-tab";
 import ApprovedAgentsTab from "../../components/tabs/userTabs/approved-agents-tab";
-import { IAgent } from "./admin-dashboardpage";
+import { IAgent } from "./superadmin-dashboardpage";
 
 export interface IAgentInfo {
     address: string,

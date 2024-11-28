@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from './sidebar.module.css';
 import logo from '../../assets/icons/logo1.png';
 import { useLocation, useNavigate, useNavigation } from "react-router-dom";
-import { getUserInfo, loginUser, logoutUser } from "../../controllers/auth";
+import { logoutUser } from "../../controllers/auth";
 import PromptModal from "../modals/promptModal";
 import SureToLogoutModal from "../modals/sureToLogoutModal";
 
@@ -59,27 +59,7 @@ const UserSideBar: React.FC<any> = ({ payload }) => {
         }
     ]
 
-    const getUserType = async () => {
-        try {
-            let userInfo = await getUserInfo();
-            if (userInfo?.profile.role?.includes('DOMAIN1\\CUSTOMER_RISK_INIT')) {
-                setUserType('initiator')
-            }
-            else if (userInfo?.profile.role?.includes('DOMAIN1\\CUSTOMER_RISK_AUTH')) {
-                setUserType('authorizer')
-            } else {
-                setUserType('user')
-            }
-
-        } catch (error) {
-
-        }
-
-    }
-
-    useEffect(() => {
-        getUserType();
-    },[])
+    
     return (
         <div className={`min-vh-100 bg-primary ${styles.sidebarContainer}`} style={{ minWidth: '18em' }}>
             <SureToLogoutModal loading={loading} action={logUserOut} show={showlogout} off={()=>setShowlogout(false)}/>

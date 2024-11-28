@@ -5,10 +5,8 @@ import { useNavigate } from "react-router-dom";
 import UserSideBar from "../../components/bars/userSidebar";
 import { getPolicies } from "../../controllers/policy";
 import { IUserDashboard } from "../../interfaces/user";
-import { getUserInfo, loginUser, logoutUser } from "../../controllers/auth";
+import { logoutUser } from "../../controllers/auth";
 import { toast } from "react-toastify";
-import UboAdminSideBar from "../../components/bars/ubo-admin-sidebar";
-import UboAdminTopbar from "../../components/bars/ubo-admin-topbar";
 import AdminSideBar from "../../components/bars/admin-sidebar";
 import AdminTopbar from "../../components/bars/admin-topbar";
 

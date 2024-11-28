@@ -3,7 +3,7 @@ import { Button, Modal, Spinner } from "react-bootstrap";
 import alertIcon from "../../assets/icons/alertIcon.png";
 import { useNavigate } from "react-router-dom";
 
-const SureToLogoutModal : React.FC<any> = ({show, off, action, loading})=>{
+const SureToLogoutModalSuper : React.FC<any> = ({show, off, action, loading})=>{
     const navigate = useNavigate();
 return (
     <div>
@@ -17,11 +17,11 @@ return (
                 </Modal.Header>
                 <Modal.Body>
                     <div className="py-2 d-flex justify-content-center align-items-center flex-column">
-                    <i className="bi bi-info-circle text-secondary" style={{fontSize:'5em'}}></i>
-                        <p className="text-secondary mt-2" style={{ fontFamily: 'title' }}>Are you sure?</p>
+                    <i className="bi bi-info-circle text-primary" style={{fontSize:'5em'}}></i>
+                        <p className="text-primary mt-2" style={{ fontFamily: 'title' }}>Are you sure?</p>
                         <p className="text-center px-3">You are about to logout.</p>
                         
-                        <Button onClick={action} disabled={loading} className="py-2 mt-3 bg-secondary"  style={{minWidth:'20em'}}>
+                        <Button onClick={action} disabled={loading} className="py-2 mt-3"  style={{minWidth:'20em'}}>
                             {
                                 loading?<Spinner/> :'Yes, Please proceed'
                             }
@@ -32,4 +32,4 @@ return (
     </div>
 )
 } 
-export default SureToLogoutModal
+export default SureToLogoutModalSuper

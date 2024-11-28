@@ -5,9 +5,7 @@ import { useNavigate } from "react-router-dom";
 import UserSideBar from "../../components/bars/userSidebar";
 import { getPolicies } from "../../controllers/policy";
 import { IUserDashboard } from "../../interfaces/user";
-import { getUserInfo, loginUser, logoutUser } from "../../controllers/auth";
 import { toast } from "react-toastify";
-import TopBarUnAuth from "../../components/bars/topbar-unauth";
 import { Button, Image, Spinner } from "react-bootstrap";
 import tovmindGif from '../../assets/Gifs/troveMinds.gif';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
@@ -112,17 +110,20 @@ const LoginPage = () => {
     }
     const handleUserLogin = async (loginCred: LoginCred) => {
 
-        if (loginCred.user_type == 'super_admin') {
+        if (loginCred.user_type == 'super_admin' ||'fincon') {
 
             try {
                 setLoading(true)
                 const res = await apiUnAuth.post('super/login-super-admin', loginCred);
-                
+                if(loginCred.user_type=='fincon'){
+                    localStorage.setItem('userType','fincon');
+                }
                 if (res?.data?.success) {
                     setLoading(false)
                     toast.success(res?.data?.message);
-                    localStorage.setItem('userInfo',JSON.stringify(res?.data?.data))
-                    navigate('/super-admin')
+                    localStorage.setItem('userInfo',JSON.stringify(res?.data?.data));
+                    localStorage.setItem('token',JSON.stringify(res?.data?.token));
+                    navigate('/superadmin')
                 } else {
                     setLoading(false)
                     toast.error('Network error')
@@ -151,29 +152,6 @@ const LoginPage = () => {
                 } else {
                     setLoading(false)
                     toast.error('Network error!')
-                }
-
-            } catch (error) {
-                console.log(error)
-                setLoading(false)
-            }
-
-        }
-
-        if (loginCred.user_type == 'fincon') {
-
-            try {
-                setLoading(true)
-                const res = await apiUnAuth.post('super/login-super-admin', loginCred);
-                console.log(res)
-                if (res?.data?.success) {
-                    setLoading(false)
-                    toast.success(res?.data?.message);
-                    localStorage.setItem('userInfo',JSON.stringify(res?.data?.data))
-                    navigate('/super-admin')
-                } else {
-                    setLoading(false)
-                    toast.error(res?.data?.message)
                 }
 
             } catch (error) {

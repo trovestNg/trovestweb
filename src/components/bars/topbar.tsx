@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import notificationIcon from "../../assets/icons/notification-icon.png";
 import { Button, Card, ListGroup, ListGroupItem, Modal } from "react-bootstrap";
-import { getUserInfo, logoutUser, refreshToken } from "../../controllers/auth";
+import {  logoutUser, } from "../../controllers/auth";
 
 
 
@@ -14,34 +14,7 @@ const TopBar: React.FC<any> = ({ payload }) => {
     const [timer, setTimer] = useState(initialTime);
     const [showModal, setShowModal] = useState(false);
 
-    const getUserType = async () => {
-        try {
-            let userInfo = await getUserInfo();
-            // console.log({him:userInfo})
-            if (userInfo?.expired) {
-                logoutUser();
-            }
-
-            if (userInfo?.profile.given_name == null) {
-                logoutUser();
-            }
-            if (userInfo) {
-                setUserName(`${userInfo?.profile?.given_name} ${userInfo?.profile?.family_name}`)
-            }
-            if (userInfo?.profile.role?.includes("DOMAIN1\\GROUP_POLICY_INIT")) {
-                setUserType('Initiator')
-            }
-            else if (userInfo?.profile.role?.includes("DOMAIN1\\GROUP_POLICY_AUTH")) {
-                setUserType('Authorizer')
-            } else {
-                setUserType('User')
-            }
-
-        } catch (error) {
-            logoutUser()
-        }
-
-    }
+   
 
 
 
@@ -63,7 +36,6 @@ const TopBar: React.FC<any> = ({ payload }) => {
     const handleStay = useCallback(() => {
         setShowModal(false);
         setTimer(initialTime); // Reset time
-        refreshToken();
     }, [initialTime]);
 
     const handleLogout = useCallback(() => {
@@ -84,9 +56,6 @@ const TopBar: React.FC<any> = ({ payload }) => {
         }
     }, [timer]);
 
-    useEffect(() => {
-        getUserType();
-    }, [])
     return (
         <div
             className="d-flex align-items-center justify-content-between bg-light shadow-sm w-100 px-4 py-3" style={{ fontFamily: 'title' }}>

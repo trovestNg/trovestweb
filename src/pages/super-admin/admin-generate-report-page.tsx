@@ -24,7 +24,10 @@ import ArtisanSavingTab from "../../components/tabs/userTabs/artisan-savings-tab
 import AgentSavingsTab from "../../components/tabs/userTabs/agent-savings-tab";
 import AgentPayoutTab from "../../components/tabs/userTabs/agent-payout-tab";
 import ApprovedAgentsTab from "../../components/tabs/userTabs/approved-agents-tab";
-import { IAgent } from "./admin-dashboardpage";
+import { IAgent } from "./superadmin-dashboardpage";
+import AgentsDepositTab from "../../components/tabs/userTabs/agent-deposit-tab";
+import AgentCollectionsTab from "../../components/tabs/userTabs/agent-collections-tab";
+import { Field } from "formik";
 
 export interface IAgentInfo {
     address: string,
@@ -97,12 +100,12 @@ export interface IAgentPaymentRecord {
     total_remmitance: string
 }
 
-const AdminViewAgentManagementPage = () => {
+const AdminGenerateReportPage = () => {
     const userToken = localStorage.getItem('token') || '';
     const token = JSON.parse(userToken);
 
     const [agents, setAgents] = useState<IAgent[]>([]);
-    
+
     const [userSearchedAgentCustomers, setUserSearchedAgentCustomers] = useState('');
 
     const [agentInfo, setAgentInfo] = useState<IAgentInfo>();
@@ -214,9 +217,9 @@ const AdminViewAgentManagementPage = () => {
                     setLoading(false);
                     // toast.success('Fetched info')
                 }
-                else{
+                else {
                     setLoading(false);
-                    toast.error('Network error')  
+                    toast.error('Network error')
                 }
             } catch (error) {
                 console.log(error)
@@ -265,6 +268,31 @@ const AdminViewAgentManagementPage = () => {
 
 
 
+    
+
+
+
+    // const handleNudgeAuthorizer = async (bmoId: any) => {
+    //     // console.log({here:bmoId})
+    //     let userInfo = await getUserInfo();
+    //     if (userInfo) {
+    //         try {
+    //             // setOLoading(true)
+    //             // let userInfo = await getUserInfo();
+    //             const res = await api.get(`nudge?requsterName=${userInfo?.profile.given_name}&parentId=${parentInfo?.Id}`, userInfo?.access_token);
+    //             if (res?.status == 200) {
+    //                 setViewMoreInfoModal(false)
+    //                 toast.success('Authorizer nudged for approval')
+    //             } else {
+    //                 toast.error('Failed to nudge Authorizer')
+    //             }
+
+    //         } catch (error) {
+
+    //         }
+    //     }
+
+    // }
 
 
 
@@ -282,7 +310,6 @@ const AdminViewAgentManagementPage = () => {
         <div className="w-100 p-0">
             {/* <MoreInfoModal handleApprv={handleApproveBo} lev={level} info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} /> */}
 
-           
 
 
 
@@ -292,66 +319,59 @@ const AdminViewAgentManagementPage = () => {
                     <p className="p-0 m-0">Go Back</p>
 
                 </Button>
-{
-    loading && <Spinner size="sm"/>
-}
-                <p className="fw-bold">Manage Registered Agents</p>
+                {
+                    loading && <Spinner size="sm" />
+                }
+                <p className="fw-bold">Generate transaction repots.</p>
 
             </div>
 
-            {/* <div className="w-100 d-flex justify-content-between">
-                <div className="d-flex gap-2 align-items-center mt-3">
-                    {parentInfo &&
-                        <>
-                            <h5 className="p-0 m-0 text-primary fw-bold">Beneficial Owner Level </h5>
-                            <Badge className="d-flex justify-content-center align-items-center text-center" style={{ borderRadius: '20px', height: '20px', width: '20px' }}>{level}</Badge>
-                        </>
-                    }
-                </div>
-                <div className="d-flex gap-2">
-                    {
-                        userClass == 'Initiator' &&
-                        <Button
-
-                            onClick={() => calculatePercent(bmoList)} className="d-flex gap-2" style={{ minWidth: '15em' }}>
-                            <i className="bi bi-plus-circle"></i>
-                            <p className="p-0 m-0" >Add New Beneficial Owner</p>
-                        </Button>}
-
-                    {bmoList.length > 0 && <FormSelect style={{ maxWidth: '8em' }} onChange={(e) => handleListDownload(e.currentTarget.value)}>
-                        <option>Download</option>
-                        <option value={'csv'}>CSV</option>
-                        <option value={'pdf'}>PDf</option>
+            <div className="w-100 mt-4 d-flex justify-content-between">
+                <div>
+                    <label>
+                        Select report type
+                    </label>
+                    <FormSelect className="mt-2">
+                        <option>Select</option>
+                        <option>Deposit</option>
+                        <option>Payouts</option>
+                        <option>Collections</option>
+                        <option>Agents</option>
+                        <option>Artisans</option>
                     </FormSelect>
-                    }
                 </div>
 
-            </div> */}
 
-            
+            </div>
 
 
-            <div className="mt-4">
+
+
+            {/* <div className="mt-4">
                 <Tabs
-                    defaultActiveKey="saved"
+                    defaultActiveKey="collection"
                     id="uncontrolled-tab-example"
                     variant="underline"
                     className="mb-3 gap-5"
                 >
-                    <Tab eventKey="saved" title="Approved Agents"
-                        
+                    <Tab eventKey="collection" title="Agent Collections"
+
                     >
-                        <ApprovedAgentsTab agents={agents} />
+                        <AgentCollectionsTab thrifts={[]} />
                     </Tab>
 
-                    <Tab eventKey="withdrawn" title="Agents Pending Approval">
-                    <ApprovedAgentsTab agents={[]} />
+                    <Tab eventKey="deposits" title="Agent Deposits">
+                        <AgentsDepositTab thrifts={[]} />
+                    </Tab>
+
+                    <Tab eventKey="payouts" title="Customer Payouts">
+                        <AgentsDepositTab thrifts={[]} />
                     </Tab>
 
 
                 </Tabs>
 
-            </div>
+            </div> */}
 
 
             <EditAgentInfoModal agentId={id} off={() => { setUpdateAgentModal(false); setRefData(!refData) }} agentInfo={agentInfo} show={updateAgentModal} />
@@ -361,4 +381,4 @@ const AdminViewAgentManagementPage = () => {
 
 }
 
-export default AdminViewAgentManagementPage;
+export default AdminGenerateReportPage;

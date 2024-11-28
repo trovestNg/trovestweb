@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Container, Modal, Card, Button, Spinner, FormControl, Badge, FormSelect, ListGroup, ListGroupItem, Image, Tab, Tabs } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { getUserInfo, loginUser, logoutUser } from "../../controllers/auth";
 import api from "../../config/api";
 import styles from './unAuth.module.css'
 import { IBMO, IOwner, IParent } from "../../interfaces/bmo";
@@ -14,18 +13,6 @@ import autoTable from "jspdf-autotable";
 import Papa from "papaparse";
 import { saveAs } from "file-saver";
 import { useDispatch, useSelector } from "react-redux";
-import { clearNav, handleSetBmoCustormer, reduceNavLink, updateNav } from "../../store/slices/userSlice";
-import AddNewBenefOwnerTypeModal from "../../components/modals/addNewBenefOwnerTypeModal";
-import { pushToAuthUserNavArray, reduceAuthUserNavArray, removeFromAuthUserNavArray, setAuthUserBMOOwnerProfile } from "../../store/slices/authUserSlice";
-import { IBMOwnersPublic, IUnAuthUserNavLink } from "../../interfaces/bmOwner";
-import EditBMOOwnerIndModal from "../../components/modals/editBMOOwnerIndModal";
-import EditBMOOwnerCoperateModal from "../../components/modals/editBMOOwnerCoperateModal";
-import SureToDeleteBmoModal from "../../components/modals/sureToDeleteBmoModal";
-import SureToApproveBOModal from "../../components/modals/sureToApproveBOModal";
-import { baseUrl } from "../../config/config";
-import CreateBMOOwnerImportNodeModal from "../../components/modals/createBMOOwnerImportNodeModal";
-import SureToRejectBOModal from "../../components/modals/sureToRejectBOModal";
-import EditBMOOwnerFundManagerModal from "../../components/modals/editBMOOwnerFundManagerModal";
 import agentPic from '../../assets/images/receipt.png'
 import AgentsPagination from "../../components/paginations/agents-paginations";
 import { convertToThousand } from "../../utils/helpers";
@@ -281,11 +268,7 @@ const AdminGenerateReportPage = () => {
 
 
 
-    const handleShowInfoModal = (owner: IBMOwnersPublic) => {
-        // setBmoOwner(owner);
-        setBmoParentId(owner?.ParentId)
-        setViewMoreInfoModal(!viewMoreInfotModal);
-    }
+    
 
 
 
@@ -327,17 +310,6 @@ const AdminGenerateReportPage = () => {
         <div className="w-100 p-0">
             {/* <MoreInfoModal handleApprv={handleApproveBo} lev={level} info={bmoOwner} off={() => setViewMoreInfoModal(false)} show={viewMoreInfotModal} /> */}
 
-            <SureToDeleteBmoModal
-                // parentInfo={parentInfo}
-                clickedOwner={selectedOwner}
-                show={deleteBmOwner}
-                off={() => {
-                    setDeleteBmOwner(false);
-                    setRefData(!refData);
-                    setIsloaded(!isLoaded);
-                    window.location.reload()
-                }}
-            />
 
 
 

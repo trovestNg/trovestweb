@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import notificationIcon from "../../assets/icons/notification-icon.png";
 import { Button, Card, ListGroup, ListGroupItem, Modal } from "react-bootstrap";
-import { getUserInfo, logoutUser, refreshToken } from "../../controllers/auth";
+import {logoutUser } from "../../controllers/auth";
 import { useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { clearNav } from "../../store/slices/userSlice";
@@ -11,9 +11,10 @@ import { toast } from "react-toastify";
 
 
 
-const UboAdminTopbar: React.FC<any> = ({ payload }) => {
+const SuperAdminTopbar: React.FC<any> = ({ payload }) => {
     const [userType, setUserType] = useState('');
-    const [userName, setUserName] = useState('');
+    let userName = localStorage.getItem('userInfo') || '';
+    let user = JSON.parse(userName)
     const currentPath = useLocation().pathname;
     const dispatch = useDispatch()
     
@@ -23,42 +24,7 @@ const UboAdminTopbar: React.FC<any> = ({ payload }) => {
     const [timer, setTimer] = useState(initialTime);
     const [showModal, setShowModal] = useState(false);
 
-    const getUserType = async () => {
-        let userInfo = await getUserInfo();
-        console.log({userType:userInfo?.profile.role})
-        try {
-            let userInfo = await getUserInfo();
-            // console.log({him:userInfo})
-            if (userInfo?.expired) {
-                logoutUser();
-            }
-
-            if (userInfo?.profile.given_name == null) {
-                logoutUser();
-            }
-            if (userInfo) {
-                setUserName(`${userInfo?.profile?.given_name} ${userInfo?.profile?.family_name}`)
-                // console.log(userInfo.access_token)
-            }
-            if (userInfo?.profile.role?.includes('DOMAIN1\\CUSTOMER_RISK_INIT')) {
-                setUserType('Initiator');
-                dispatch(setUserClass('Initiator'))
-            }
-            else if (userInfo?.profile.role?.includes('DOMAIN1\\CUSTOMER_RISK_AUTH')) {
-                setUserType('Approver');
-                dispatch(setUserClass('Approver'))
-            } else {
-                setUserType('User')
-                dispatch(setUserClass('Initiator'));
-                toast.error('Un Authorised User!!')
-                logoutUser()
-            }
-
-        } catch (error) {
-            logoutUser()
-        }
-
-    }
+    
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -79,7 +45,7 @@ const UboAdminTopbar: React.FC<any> = ({ payload }) => {
         // toast.error('refreshed!')
         setShowModal(false);
         setTimer(initialTime); // Reset time
-        refreshToken();
+       
     }, [initialTime]);
 
     useEffect(() => {
@@ -91,12 +57,12 @@ const UboAdminTopbar: React.FC<any> = ({ payload }) => {
 
     useEffect(() => {
         if (timer === 0) {
-            logoutUser()
+            // logoutUser()
         }
     }, [timer]);
 
     useEffect(() => {
-        getUserType();
+        // getUserType();
     }, [])
 
     // useEffect(() => {
@@ -112,7 +78,7 @@ const UboAdminTopbar: React.FC<any> = ({ payload }) => {
     }, [timer]);
 
     useEffect(() => {
-        getUserType();
+        // getUserType();
     }, []);
 
     const handleClearNav = ()=>{
@@ -130,18 +96,13 @@ const UboAdminTopbar: React.FC<any> = ({ payload }) => {
     return (
         <div
             className="d-flex align-items-center justify-content-between bg-light shadow-sm w-100 px-4 py-3" style={{ fontFamily: 'title' }}>
-            <p className="p-0 m-0 text-primary">Beneficial Owner Portal</p>
+            <p className="p-0 m-0 text-primary">Super admin Portal</p>
 {/* <p>{timer}</p> */}
             <div className="px-1">
-                <div className="d-flex gap-2 px-2">
-                    <div className="table-icon m-0 p-0 d-flex align-items-center" >
-                        {/* <img src={notificationIcon} height={'40px'} /> */}
-                        <i className="bi bi-person-circle text-primary" style={{ fontSize: '1.5em' }}></i>
-                    </div>
-                    <div>
-                        <p className="p-0 m-0">{userName}</p>
-                        <p className="p-0 m-0" style={{ fontFamily: 'primary' }}>{userType}</p>
-                    </div>
+                <div className="d-flex gap-2 px-2 align-items-center">
+                <img className="shadow shadow-sm p-1"  src={user?.image} height={'40px'} width={'40px'}  style={{borderRadius:'40px'}}/>
+                    
+                    <p className="p-0 m-0 text-primary">{`${user?.first_name} ${user?.last_name}`}</p>
 
                 </div>
                 <div>
@@ -164,4 +125,4 @@ const UboAdminTopbar: React.FC<any> = ({ payload }) => {
         </div>
     )
 }
-export default UboAdminTopbar;
+export default SuperAdminTopbar;

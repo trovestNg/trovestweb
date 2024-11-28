@@ -3,7 +3,6 @@ import { Button, Modal, Spinner } from "react-bootstrap";
 import alertIcon from "../../assets/icons/alertIcon.png";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { getUserInfo } from "../../controllers/auth";
 import api from "../../config/api";
 
 const SureToApproveSingleBmoModal: React.FC<any> = ({ show, Id, off, clickedOwner }) => {
@@ -13,32 +12,7 @@ const SureToApproveSingleBmoModal: React.FC<any> = ({ show, Id, off, clickedOwne
 
     // console.log({delThis:clickedOwner})
 
-    const deleteBo = async (body: any) => {
-       try {
-        setLoading(true)
-        let userInfo = await getUserInfo();
-        const delBody = {
-            "requestorUsername": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
-            "comment": deleteComment,
-            "ids": [
-                Id
-            ]
-        }
-        const res = await api.post(`authorize/single`, delBody, `${userInfo?.access_token}`)
-        if (res?.status==200) {
-            setLoading(false);
-            toast.success('Single BO succesfully Approved');
-            off();
-        }
-
-        if(res?.status==400){
-            setLoading(false);
-            toast.error(`${res?.data}`);
-        }
-       } catch (error) {
-        
-       }
-    }
+   
 
     return (
         <div>
@@ -74,7 +48,7 @@ const SureToApproveSingleBmoModal: React.FC<any> = ({ show, Id, off, clickedOwne
 
                         {
                             showCommentBox &&
-                            <Button onClick={deleteBo} disabled={loading} className="py-2 mt-3" style={{ minWidth: '20em' }}>
+                            <Button  disabled={loading} className="py-2 mt-3" style={{ minWidth: '20em' }}>
                                 {
                                     loading ? <Spinner size="sm"/> : 'Approve'
                                 }

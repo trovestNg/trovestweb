@@ -3,7 +3,6 @@ import { Button, Modal, Spinner } from "react-bootstrap";
 import alertIcon from "../../assets/icons/alertIcon.png";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { getUserInfo } from "../../controllers/auth";
 import api from "../../config/api";
 
 const SureToDeclineDeleteBmoModal: React.FC<any> = ({ show, Id, off, clickedOwner }) => {
@@ -13,35 +12,7 @@ const SureToDeclineDeleteBmoModal: React.FC<any> = ({ show, Id, off, clickedOwne
 
     // console.log({delThis:clickedOwner})
 
-    const deleteBo = async (body: any) => {
-        setLoading(true)
-        let userInfo = await getUserInfo();
-
-
-
-        if (userInfo) {
-
-            const delBody = {
-                "requestorUsername": `${userInfo?.profile.given_name} ${userInfo?.profile.family_name}`,
-                "comment": deleteComment,
-                "ids": [
-                    Id
-                ]
-            }
-
-            const res = await api.post(`delete/reject`, delBody, `${userInfo?.access_token}`)
-            if (res?.status == 200) {
-                setLoading(false);
-                setShowCommentBox(false)
-                toast.success('Deletion request successfully declined.');
-                off()
-            } else {
-                toast.error('Operation failed! Check your network.');
-                setLoading(false);
-            }
-
-        }
-    }
+    
 
     return (
         <div>
@@ -77,7 +48,7 @@ const SureToDeclineDeleteBmoModal: React.FC<any> = ({ show, Id, off, clickedOwne
 
                         {
                             showCommentBox &&
-                            <Button onClick={deleteBo} disabled={loading} className="py-2 mt-3" style={{ minWidth: '20em' }}>
+                            <Button  disabled={loading} className="py-2 mt-3" style={{ minWidth: '20em' }}>
                                 {
                                     loading ? <Spinner /> : 'Decline'
                                 }

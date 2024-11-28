@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
-import styles from './sidebar.module.css';
-import logo from '../../assets/icons/logo1.png';
+import styles from './supersidebar.module.css';
+import logo from '../../assets/images/tro-light-logo.png';
 import { useLocation, useNavigate, useNavigation } from "react-router-dom";
-import { getUserInfo, loginUser, logoutUser } from "../../controllers/auth";
+import { logoutUser } from "../../controllers/auth";
 import PromptModal from "../modals/promptModal";
 import SureToLogoutModal from "../modals/sureToLogoutModal";
 import { useDispatch } from "react-redux";
 import { setUserClass } from "../../store/slices/authUserSlice";
+import SureToLogoutModalSuper from "../modals/sureToLogoutModalSuper";
 
-const UboAdminSideBar: React.FC<any> = ({ payload }) => {
+const SuperAdminSideBar: React.FC<any> = ({ payload }) => {
     const currentPath = useLocation().pathname;
     const navigate = useNavigate();
     const [showPromt, setShowPromt] = useState(false);
@@ -41,80 +42,52 @@ const UboAdminSideBar: React.FC<any> = ({ payload }) => {
 
     const navlinksUser = [
         {
-            title: 'Beneficial owner',
+            title: 'Dashboard',
             icon: "bi bi-grid",
-            path: '/ubo-portal',
+            path: '/superadmin',
         },
         {
-            title: 'BO Risk Assessment',
+            title: 'Admin Management',
+            icon: 'bi bi-person-circle',
+            path: '/superadmin/agent-management',
+        },
+        {
+            title: 'Agent Management',
             icon: 'bi bi-person-gear',
-            path: '/bo-risk-portal',
+            path: '/superadmin/agent-management',
         },
         {
-            title: 'Approved BO',
+            title: 'Atisan Management',
             icon: "bi bi-journal-check",
-            path: '/ubo-portal/approved-bo',
+            path: '/superadmin/customer-management',
         },
         {
-            title: 'Pending BO',
-            icon: 'bi bi-hourglass',
-            path: '/ubo-portal/pending-bo',
-        },
-        // {
-        //     title: 'Rejected BO',
-        //     icon: 'bi bi-journal-x',
-        //     path: '/ubo-portal/rejected-bo',
-        // },
-        {
-            title: 'History',
+            title: 'Transactions',
             icon: 'bi bi-journal-x',
-            path: '/ubo-portal/history',
+            path: '/superadmin/transaction-management',
         },
         {
             title: 'Reports',
             icon: 'bi bi-journal-x',
-            path: '/ubo-portal/reports',
+            path: '/superadmin/report',
         },
         {
-            title: 'Marked For Deletion',
-            icon: 'bi bi-trash',
-            path: '/ubo-portal/deleted',
+            title: 'Settings',
+            icon: 'bi bi-gear',
+            path: '/superadmin/settings',
         }
+        
     ]
 
-
-    // const getUserType = async () => {
-    //     try {
-    //         let userInfo = await getUserInfo();
-    //         if (userInfo?.profile.role?.includes('DOMAIN1\\CUSTOMER_RISK_INIT_TEST')) {
-    //             setUserType('initiator');
-    //             dispatch(setUserClass('Initiator'))
-    //         }
-    //         else if (userInfo?.profile.role?.includes('DOMAIN1\\CUSTOMER_RISK_AUTH_TEST')) {
-    //             setUserType('authorizer');
-    //             dispatch(setUserClass('Approver'))
-    //         } else {
-    //             setUserType('User')
-    //             dispatch(setUserClass('Initiator'))
-    //         }
-
-    //     } catch (error) {
-
-    //     }
-
-    // }
-
-    // useEffect(() => {
-    //     getUserType();
-    // },[])
+    
     return (
         <div className={`min-vh-100 bg-primary ${styles.sidebarContainer}`} style={{ minWidth: '18em' }}>
-            <SureToLogoutModal loading={loading} action={logUserOut} show={showlogout} off={()=>setShowlogout(false)}/>
+            <SureToLogoutModalSuper loading={loading} action={logUserOut} show={showlogout} off={()=>setShowlogout(false)}/>
             <PromptModal show={showPromt} off={() => setShowPromt(false)} action={handleSwitch} />
             <PromptModal show={showApproverPrompt} off={() => setApproverPrompt(false)} action={handleAdminSwitch} />
 
             <div className="d-flex justify-content-center mb-3 py-3  align-items-center w-100">
-                <img src={logo} height={'60.15px'} />
+                <img src={logo} height={'80px'} />
             </div>
 
             <ul
@@ -125,7 +98,7 @@ const UboAdminSideBar: React.FC<any> = ({ payload }) => {
                         <li
                             onClick={() => navigate(nav.path)}
                             key={index} className="d-flex  align-items-center gap-3 p-0 m-0"
-                            style={{ cursor: 'pointer', backgroundColor: currentPath == nav.path ? '#236aa9' : '', minHeight: '3.5em' }}
+                            style={{ cursor: 'pointer', backgroundColor: currentPath == nav.path ? '#101630' : '', minHeight: '3.5em' }}
                         >
                             {
                                 currentPath === nav.path &&
@@ -183,4 +156,4 @@ const UboAdminSideBar: React.FC<any> = ({ payload }) => {
         </div>
     )
 }
-export default UboAdminSideBar;
+export default SuperAdminSideBar ;
