@@ -110,14 +110,14 @@ const LoginPage = () => {
     }
     const handleUserLogin = async (loginCred: LoginCred) => {
 
-        if (loginCred.user_type == 'super_admin' ||'fincon') {
+        if (loginCred.user_type == 'super_admin') {
 
             try {
                 setLoading(true)
                 const res = await apiUnAuth.post('super/login-super-admin', loginCred);
-                if(loginCred.user_type=='fincon'){
-                    localStorage.setItem('userType','fincon');
-                }
+                // if(loginCred.user_type=='fincon'){
+                //     localStorage.setItem('userType','fincon');
+                // }
                 if (res?.data?.success) {
                     setLoading(false)
                     toast.success(res?.data?.message);
