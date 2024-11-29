@@ -1,17 +1,74 @@
+
+
+// custom.scss
+$primary: #01065B;
+$secondary: #3F0E38;
+$light: hsl(0, 0%, 100%);
+$grey: #7b7b7b;
+
+@font-face {
+    font-family: 'primary';
+    src: url('./assets/fonts/Avenir-Medium.ttf');
+    font-size: '16px';
+    font-weight: '800';
+}
+
+@font-face {
+    font-family: 'semi-bold';
+    src: url('./assets/fonts/Avenir-Medium.ttf');
+    font-size: '18px';
+    font-weight: 800;
+}
+
+@font-face {
+    font-family: 'title';
+    src: url('./assets/fonts/Avenir-Black.ttf');
+}
+
+body{
+overflow: hidden
+}
+
+.custom-select {
+  /* Force dropdown menu to always drop down */
+  position: relative;
+}
+
+.custom-select select {
+  /* Adjust position to always drop down */
+  transform: translateY(0) !important;
+}
+
+// .nav-item{
+//   // background-color: pink
+// }
+
+.nav-item:hover{
+  background-color: #fff !important;
+}
+
+// thead {
+//   background-color: red !important;
+// }
+
+.nav-link .active{
+ 
+}
+
+.nav-underline .nav-link.active, .nav-underline .show > .nav-link {
+  background-color:none !important;
+  color: #004987 !important;
+}
+// Import Bootstrap SCSS
+
+
+// Override Bootstrap variables
 @import "../node_modules/bootstrap/scss/functions";
 @import "../node_modules/bootstrap/scss/mixins";
+@import "~bootstrap/scss/bootstrap";
+@import "../node_modules/bootstrap/scss/variables.scss";
+@import '~bootstrap/scss/bootstrap.scss';
+@import '~bootstrap-icons/font/bootstrap-icons.css';
 
-$primary : #01065B;
-$secondary : #7A0D0C;
-$light : #FAF1EC;
-$white : #fff;
-$info : #3F0E38;
-
-@import "../node_modules/bootstrap/scss/variables";
-
-@import '../node_modules/bootstrap/scss/bootstrap.scss';
-@import '../node_modules/bootstrap-icons/font/bootstrap-icons.css';
-@import url('https://fonts.googleapis.com/css?family=Montserrat');
-@import url('https://fonts.googleapis.com/css2?family=Philosopher:wght@400;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Philosopher:wght@400;700&family=Ubuntu:wght@300;500;700&display=swap');
-
+// Include custom styles
+// Your custom styles go here
