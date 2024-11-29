@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import TopBar from "../../components/bars/topbar";
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import UserSideBar from "../../components/bars/userSidebar";
 import { getPolicies } from "../../controllers/policy";
@@ -8,6 +8,7 @@ import { IUserDashboard } from "../../interfaces/user";
 import { toast } from "react-toastify";
 import { Button, Image, Spinner } from "react-bootstrap";
 import tovmindGif from '../../assets/Gifs/troveMinds.gif';
+import playstore from '../../assets/images/playstoress.png';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { object, string, number, date, InferType } from 'yup';
 import style from './login.module.css'
@@ -196,8 +197,12 @@ const LoginPage = () => {
 
     return (
         <div className="p-0 m-0 min-vh-100 w-100 d-flex">
-            <div className=" w-50 d-flex justify-content-center align-items-center">
+            <div className=" w-50 d-flex justify-content-center flex-column align-items-center">
                 <Image height={350} src={tovmindGif} />
+                <a href='https://wok9jamedia.s3.eu-north-1.amazonaws.com/TrovMindAlajoV2.apk' style={{textDecoration:'none'}} className="d-flex text-secondary align-items-center">
+                <Image height={30} src={playstore} />
+                    Download App
+                </a>
             </div>
             <div className={`w-50 d-flex justify-content-center align-items-center ${style.right}`}>
                 <Formik

@@ -26,6 +26,7 @@ import AgentPayoutTab from "../../components/tabs/userTabs/agent-payout-tab";
 import ApprovedAgentsTab from "../../components/tabs/userTabs/approved-agents-tab";
 import { IAgent } from "./admin-dashboardpage";
 import SuperApprovedArtisanTab from "../../components/tabs/userTabs/superapproved-artisan-tab";
+import AdminApprovedArtisanTab from "../../components/tabs/userTabs/adminapproved-artisan-tab";
 
 export interface IAgentInfo {
     address: string,
@@ -371,11 +372,11 @@ const SuperAdminViewArtisanManagementPage = () => {
                     <Tab eventKey="saved" title="Approved Customers"
 
                     >
-                        <SuperApprovedArtisanTab agents={agents} />
+                        <AdminApprovedArtisanTab agents={agents} />
                     </Tab>
 
                     <Tab eventKey="withdrawn" title="Customers Pending Approval">
-                    <SuperApprovedArtisanTab agents={[]} />
+                    <AdminApprovedArtisanTab agents={[]} />
                     </Tab>
 
 

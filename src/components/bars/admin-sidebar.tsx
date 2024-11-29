@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import styles from './sidebar.module.css';
 import logo from '../../assets/images/tro-light-logo.png';
 import { useLocation, useNavigate, useNavigation } from "react-router-dom";
 import { logoutUser } from "../../controllers/auth";
 import PromptModal from "../modals/promptModal";
 import SureToLogoutModal from "../modals/sureToLogoutModal";
 import { useDispatch } from "react-redux";
-import { setUserClass } from "../../store/slices/authUserSlice";
+import styles from './sidebar.module.css';
 
 const AdminSideBar: React.FC<any> = ({ payload }) => {
     const currentPath = useLocation().pathname;
