@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 
 
 const SuperAdminTopbar: React.FC<any> = ({ payload }) => {
+    
     const [userType, setUserType] = useState('');
     let userName = localStorage.getItem('userInfo') || '';
     let user = JSON.parse(userName)
@@ -96,7 +97,7 @@ const SuperAdminTopbar: React.FC<any> = ({ payload }) => {
     return (
         <div
             className="d-flex align-items-center justify-content-between bg-light shadow-sm w-100 px-4 py-3" style={{ fontFamily: 'title' }}>
-            <p className="p-0 m-0 text-primary">Super admin Portal</p>
+            <p className="p-0 m-0 text-primary">{user?.user_type=='super_admin'?'Super admin Portal':'Fin-con Portal'}</p>
 {/* <p>{timer}</p> */}
             <div className="px-1">
                 <div className="d-flex gap-2 px-2 align-items-center">

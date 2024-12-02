@@ -54,7 +54,7 @@ const SuperArtisansSavingsPagination: React.FC<any> = ({ data }) => {
                     {currentItems.length <= 0 ? <tr><td className="text-center" colSpan={5}>No Data Available</td></tr> :
                         currentItems.map((agent: IThrift, index: number) => (
                             <tr key={index} style={{ cursor: 'pointer' }}
-                                onClick={() => navigate(`/admin/artisan/${agent._id}`)}
+                                // onClick={() => navigate(`/admin/artisan/${agent._id}`)}
                             >
                                 <th scope="row">{index + 1}</th>
                                 <td>{agent._id}</td>
