@@ -101,41 +101,6 @@ const AdminSideBar: React.FC<any> = ({ payload }) => {
                         </li>
                     ))
                 }
-            </ul>
-            <ul className="px-2 mt-5 w-100">
-                {/* {
-                    userType == 'authorizer' &&
-                    <li
-                        className="d-flex text-light  align-items-center gap-3 p-0 m-0"
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => setApproverPrompt(true)}
-                    >
-                        <span className="bg-light px-0 h-100 py-2" style={{ minHeight: '3.5em' }}></span>
-                        <i className="bi bi-arrow-repeat"></i>
-                        <p className="py-2 m-0"
-                        >Switch to Admin Portal</p>
-                    </li>
-                } */}
-
-                {/* {
-                    userType == 'initiator' &&
-                    <li
-                        className="d-flex text-light  align-items-center gap-3 p-0 m-0"
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => setShowPromt(true)}
-                    >
-                        <span className="bg-light px-0 h-100 py-2" style={{ minHeight: '3.5em' }}></span>
-                        <i className="bi bi-arrow-repeat"></i>
-                        <p className="py-2 m-0"
-                        >Switch to Admin Portal</p>
-                    </li>
-                } */}
-
-                {
-                    userType == 'user' &&
-                    ''
-                }
-
                 <li
                     className="d-flex text-light  align-items-center gap-3 p-0 m-0"
                     style={{ cursor: 'pointer' }}
