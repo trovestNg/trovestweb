@@ -79,9 +79,15 @@ const AdminSideBar: React.FC<any> = ({ payload }) => {
             <PromptModal show={showPromt} off={() => setShowPromt(false)} action={handleSwitch} />
             <PromptModal show={showApproverPrompt} off={() => setApproverPrompt(false)} action={handleAdminSwitch} />
 
-            <div className="d-flex justify-content-center mb-3 py-3  align-items-center w-100">
+            <div className="d-flex flex-column justify-content-center py-3  align-items-center w-100">
                 <img src={logo} height={'80px'} />
+                <div role="button" className="d-flex text-light gap-2 fw-bold" onClick={handleUserLogout}>
+                <i className="bi bi-box-arrow-left"></i>
+                <p className="text-light">Logout</p>
+                </div>
+                
             </div>
+            
 
             <ul
                 className={`d-flex text-light px-2 justify-content-start flex-column gap-2 m-0 ${styles.nav}`}
@@ -101,15 +107,7 @@ const AdminSideBar: React.FC<any> = ({ payload }) => {
                         </li>
                     ))
                 }
-                <li
-                    className="d-flex text-light  align-items-center gap-3 p-0 m-0"
-                    style={{ cursor: 'pointer' }}
-                    onClick={handleUserLogout}
-                >
-                    <span className="bg-light px-0 h-100 py-2" style={{ minHeight: '3.5em' }}></span>
-                    <i className="bi bi-box-arrow-left"></i>
-                    <p className="py-2 m-0">Logout</p>
-                </li>
+               
             </ul>
         </div>
     )
