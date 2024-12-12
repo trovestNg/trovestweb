@@ -171,7 +171,7 @@ const SuperAdminViewAdminInfoPage = () => {
     const searchByName = async () => {
         try {
             setSLoading(true)
-            const res = await api.get(`super/get-admin-agents/${id}?page=1&limit=50`, token);
+            const res = await api.get(`super/get-admin-agents/${id}?page=1&limit=200`, token);
             console.log({ ogahere: res })
             if (res?.data?.success) {
                 let filter = res.data?.data?.agents?.docs.filter((artisan: IAgent) => artisan.first_name.toLocaleLowerCase().includes(userSearchedAgentCustomers.toLocaleLowerCase()))
@@ -187,17 +187,11 @@ const SuperAdminViewAdminInfoPage = () => {
     }
 
 
-
-
-
-
-
-
     const fetch = async () => {
 
         try {
             setLoading(true)
-            const res = await api.get(`super/get-admin-agents/${id}?page=1&limit=50`, token);
+            const res = await api.get(`super/get-admin-agents/${id}?page=1&limit=200`, token);
             if (res?.data?.success) {
                 setAgentInfo(res.data?.data?.admin)
                 setTotalCollections(res?.data?.data?.total_collections);
@@ -220,7 +214,7 @@ const SuperAdminViewAdminInfoPage = () => {
 
             try {
                 setSLoading(true)
-                const res = await api.get(`super/get-admin-agents/${id}?page=1&limit=50`, token);
+                const res = await api.get(`super/get-admin-agents/${id}?page=1&limit=200`, token);
                 console.log({ artisansHere: res })
                 if (res?.data?.success) {
                     setAdminAgents(res.data?.data?.agents?.docs);

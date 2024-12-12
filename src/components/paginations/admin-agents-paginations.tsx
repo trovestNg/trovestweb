@@ -9,11 +9,11 @@ import { IAgent } from "../../pages/user/admin-dashboardpage";
 
 const AdminAgentsPagination: React.FC<any> = ({ data }) => {
     const navigate = useNavigate();
-    const totalPages = Math.ceil(data.length / 5);
+    const totalPages = Math.ceil(data.length / 7);
     const [currentPage, setCurrentPage] = useState(1);
 
-    const indexOfLastItem = currentPage * 5;
-  const indexOfFirstItem = indexOfLastItem - 5;
+    const indexOfLastItem = currentPage * 7;
+  const indexOfFirstItem = indexOfLastItem - 7;
   const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
 
     const renderPaginationItems = () => {
